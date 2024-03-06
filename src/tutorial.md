@@ -349,7 +349,7 @@ During type checking, CN automatically decomposes `struct` resources into resour
 
 If we experimentally, for instance, change the above `transpose` example to force a type error, using an `/*@ assert(false) @*/` CN assertion in the middle of the function (more on CN assertions later), we can inspect how CN decomposes the `Owned<struct point>(p)` from the precondition.
 
-include_example(exercises/transpose.error.c)
+include_example(exercises/transpose.broken.c)
 
 The `assert` leads to an error report that lists under "Available resources", instead of the original `Owned<struct point>(p)` two resources:
 
