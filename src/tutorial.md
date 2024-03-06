@@ -52,37 +52,38 @@ CN flags the undefined behaviour, pointing to the relevant source location and t
 
 ### Error reports
 
-Since diagnosing errors is an important part of using CN, let's take a closer look. The error report consists of two sections:
+Since diagnosing errors is an important part of using CN, let's take a closer look. The error report consists of two sections.
 
-- The first section ("Path to error") contains information about the  control-flow path leading up to the error. 
+**Path.** The first section ("Path to error") contains information about the  control-flow path leading up to the error. 
 
-  When type checking a C function, CN checks each possible control-flow path through the program individually. If CN detects UB or a violation of user-defined specifications, CN reports the problematic control-flow path. A path is reported as a nested structure of statements: paths are split into sections, grouping together statements between high-level control-flow positions (e.g. the start of the function, the start of a loop, the invocation of a `continue`, `break`, or `return` statement, etc.); within each section, the statements are given by their source location in the input file; finally CN reports, per statement, the typechecked sub-expressions, as well as the memory accesses and function calls within these.
+When type checking a C function, CN checks each possible control-flow path through the program individually. If CN detects UB or a violation of user-defined specifications, CN reports the problematic control-flow path. A path is reported as a nested structure of statements: paths are split into sections, grouping together statements between high-level control-flow positions (e.g. the start of the function, the start of a loop, the invocation of a `continue`, `break`, or `return` statement, etc.); within each section, the statements are given by their source location in the input file; finally CN reports, per statement, the typechecked sub-expressions, as well as the memory accesses and function calls within these.
 
-  In our example, there is only one possible control-flow path: entering the function body (section "function body") and executing the block from lines 2 to 4, followed by the return statement at line 3. The entry for the latter contains the sequence of sub-expressions in the return statement, including reads of the variables `x` and `y`. 
+In our example, there is only one possible control-flow path: entering the function body (section "function body") and executing the block from lines 2 to 4, followed by the return statement at line 3. The entry for the latter contains the sequence of sub-expressions in the return statement, including reads of the variables `x` and `y`. 
 
-  **Note.**  In C, a function's local variables, including the function arguments, are mutable and their address can be taken and passed as a value. CN (following Cerberus) therefore represents local variables as memory allocations that are manipulated using memory reads and writes. 
+**Note.**  In C, a function's local variables, including the function arguments, are mutable and their address can be taken and passed as a value. CN (following Cerberus) therefore represents local variables as memory allocations that are manipulated using memory reads and writes. 
   
-  CN's type checking of the return statement therefore involves checking memory reads for `x` and `y`, at their memory locations, which CN names `&ARG0` and `&ARG1`. The first read, at `&ARG0`, here returns the value `x` (that is, the value for `x` originally passed into the function `add`); the second read, at `&ARG1`, returns `y`. 
+CN's type checking of the return statement therefore involves checking memory reads for `x` and `y`, at their memory locations, which CN names `&ARG0` and `&ARG1`. The first read, at `&ARG0`, here returns the value `x` (that is, the value for `x` originally passed into the function `add`); the second read, at `&ARG1`, returns `y`. 
   
-  Alongside this symbolic information, CN also displays concrete values: `1073741825i32 /* 0x40000001 */` for x (here the first value is the decimal representation and the second, in `/*...*/` comments the hex number) and `1073741824i32 /* 0x40000000 */` for `y`. (CN also displays values for the pointers, `{@0; 4}` for `x` and `{@0; 0}` for `y`, which we ignore for now.) 
+Alongside this symbolic information, CN also displays concrete values: `1073741825i32 /* 0x40000001 */` for x (here the first value is the decimal representation and the second, in `/*...*/` comments the hex number) and `1073741824i32 /* 0x40000000 */` for `y`. (CN also displays values for the pointers, `{@0; 4}` for `x` and `{@0; 0}` for `y`, which we ignore for now.) 
   
-  These values are part of a counter example, a concrete valuation of pointers and variables in the program that is consistent with the control flow path taken (and any user-specified assumptions), which leads to the error. The exact values may vary on your machine and also depend on the version of Z3 installed on your system.
+ These values are part of a counter example, a concrete valuation of pointers and variables in the program that is consistent with the control flow path taken (and any user-specified assumptions), which leads to the error. The exact values may vary on your machine and also depend on the version of Z3 installed on your system.
 
-- The second section, below the error trace, lists the verification context CN has reached along this control-flow path. 
 
-  "Available resources" lists the owned resources before the error occurred, such as resources for owned pointers, as discussed later. 
-  
-  "Variables" lists counterexample values for program variables and their addresses. In addition to the variables `x` and `y`, which are assigned the same values as in the trace above, this includes possible values for the pointers `&ARG0` and `&ARG1` to their memory locations, as well as values for function pointers in scope and the `__cn_alloc_history`, both of which we ignore for now. 
-  
-  Finally, "Constraints" records all logical facts CN has learned before reaching the error. This includes any user-specified assumptions from a precondition or loop invariant, value range constraints for variables and function pointers implied by their C-types, and facts CN has learned during the type checking of the current control-flow path. 
-  
-  In this example, the only constraints are value range constraints for variables and functions in scope: e.g. 
+**Proof context.** The second section, below the error trace, lists the verification context CN has reached along this control-flow path. 
 
-    - `good<signed int>(x)` says that the initial value of function argument `x` is a "good" `signed int` value, that is, within the representable range of a C `signed int` value. For C integer types `T`, `good<T>` requires that the argument is representable at C-type `T`; for pointers `good` additionally requires that the argument is aligned with respect to the pointee type; for C structs `good` requires all members to be `good`, for arrays that all array cells have `good` values.
+"Available resources" lists the owned resources before the error occurred, such as resources for owned pointers, as discussed later. 
+  
+"Variables" lists counterexample values for program variables and their addresses. In addition to the variables `x` and `y`, which are assigned the same values as in the trace above, this includes possible values for the pointers `&ARG0` and `&ARG1` to their memory locations, as well as values for function pointers in scope and the `__cn_alloc_history`, both of which we ignore for now. 
+  
+Finally, "Constraints" records all logical facts CN has learned before reaching the error. This includes any user-specified assumptions from a precondition or loop invariant, value range constraints for variables and function pointers implied by their C-types, and facts CN has learned during the type checking of the current control-flow path. 
+  
+In this example, the only constraints are value range constraints for variables and functions in scope: e.g. 
 
-    - `repr<signed int*>(&ARGO)` records that the pointer to the memory location storing the first function argument, `x`, is representable at C-type `signed int*`; 
+- `good<signed int>(x)` says that the initial value of function argument `x` is a "good" `signed int` value, that is, within the representable range of a C `signed int` value. For C integer types `T`, `good<T>` requires that the argument is representable at C-type `T`; for pointers `good` additionally requires that the argument is aligned with respect to the pointee type; for C structs `good` requires all members to be `good`, for arrays that all array cells have `good` values.
+
+- `repr<signed int*>(&ARGO)` records that the pointer to the memory location storing the first function argument, `x`, is representable at C-type `signed int*`; 
     
-    - `aligned(&ARGO, 4u64)`, moreover, states that the same pointer is 4-byte aligned.
+- `aligned(&ARGO, 4u64)`, moreover, states that the same pointer is 4-byte aligned.
 
 
 
@@ -135,10 +136,13 @@ To specify these, we again work at a larger integer type: we cast `n` to type `i
 
 ### Exercise
 
-Specify the precondition needed to ensure safety of the C function `quadruple`, and a postcondition that describes its return value.
+**Quadruple.** Specify the precondition needed to ensure safety of the C function `quadruple`, and a postcondition that describes its return value.
 
 include_example(exercises/slf2_basic_quadruple.signed.c)
 
+**Abs.** Give a specification to the C function `abs`, which computes the absolute value of a given `int` value. To describe the return value, use CN's ternary `_ ? _ : _` operator: given a boolean `b`, and expressions `e1` and `e2` of the same basetype, `b ? e1 : e2` returns `e1` if `b` holds and `e2` if it does not. 
+
+include_example(exercises/abs.c)
 
 
 ## Pointers and ownership
@@ -240,6 +244,11 @@ The `Owned<int>(p)` resource required for reading is missing, since, as per prec
 
 ### Exercises
 
-Give a specification for the function `inplace_double`, which takes an `int` pointer `p` and doubles the pointee value: specify the precondition needed to guarantee safe execution and a postcondition that captures the function's behaviour.
+**Zero.** Write a specification for the function `zero`, which takes a pointer to *uninitialised* memory and initialises it to $0$.
+
+include_example(exercises/zero.c)
+
+**In-place double.** Give a specification for the function `inplace_double`, which takes an `int` pointer `p` and doubles the pointee value: specify the precondition needed to guarantee safe execution and a postcondition that captures the function's behaviour.
 
 include_example(exercises/slf3_basic_inplace_double.c)
+
