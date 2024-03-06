@@ -7,7 +7,8 @@ void transpose (struct point *p)
             s2.y == s.x
 @*/
 {
-  struct point s = *p;
-  p->x = s.y;
-  p->y = s.x;
+  int temp_x = p->x;
+  int temp_y = p->y;
+  p->x = temp_y;
+  p->y = temp_x;
 }

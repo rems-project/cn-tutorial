@@ -336,3 +336,13 @@ For instance, the following function "transposes" a point coordinate, represente
 include_example(exercises/transpose.c)
 
 Here the precondition asserts ownership for `p`, at type `struct point`; the output, bound to name `s`, is a CN value of CN basetype `struct point`, i.e. a record value with members `x` and `y` of `i32` type tagged as a `struct point`.The postcondition similarly asserts ownership of the struct pointer and uses the output `s2` to relate the initial and final struct value.
+
+In CN, the `Owned<T>` and `Block<T>` resource predicates are defined inductively in the structure of the C-type `T`. When `T` is a struct type, `Owned<T>` decomposes into a collection of `Owned` resources for all members, as well as `Block` resources for any padding bytes in-between members. The resource `Block<T>` similarly decomposes into `Block` resources for the members and padding bytes. 
+
+In the above example, an `Owned<struct point>(p)` decomposes into two resources:
+
+- `Owned<int>(member_shift<point>(p,x))` and 
+
+- `Owned<int>(member_shift<point>(p,y))`. 
+
+Here `member_shift<s>(p,m)` is the expression to construct, from a `struct s` pointer `p` the "shifted" pointer for its member `m`.
