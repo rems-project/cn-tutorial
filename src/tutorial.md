@@ -292,4 +292,3 @@ include_example(exercises/zero.c)
 **In-place double.** Give a specification for the function `inplace_double`, which takes an `int` pointer `p` and doubles the pointee value: specify the precondition needed to guarantee safe execution and a postcondition that captures the function's behaviour.
 
 include_example(exercises/slf3_basic_inplace_double.c)
-
