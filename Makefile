@@ -25,4 +25,9 @@ build/tutorial.md: src/tutorial.md $(EXERCISES) $(SOLUTIONS)
 	m4 -I build $< > $@
 
 build/tutorial.html: build/tutorial.md
-	pandoc -t html5 --standalone --embed-resources --highlight-style=pygments $< -o $@
+	pandoc -t html5 \
+	       --standalone \
+		   --embed-resources \
+		   --highlight-style=pygments \
+		   --toc \
+		$< -o $@

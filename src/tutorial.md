@@ -9,8 +9,13 @@ fontsize: 18px
 mainfont: sans-serif
 linestretch: 1.4
 maxwidth: 45em
+lang: en-GB
+toc-title: Table of contents
+header-includes: |
+  <style>
+  h1, h2, h3, h4, h5 { color: hsl(219, 50%, 50%); }
+  </style>
 ---
-
 
 
 CN is a type system for verifying C code, focusing especially on low-level systems code. Compared to the normal C type system, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes *safely* --- does not raise C undefined behaviour --- and *correctly* --- according to strong user-defined specifications. To accurately handle the complex semantics of C, CN builds on the [Cerberus semantics for C](https://github.com/rems-project/cerberus/).
@@ -28,6 +33,7 @@ Type `cn --help` in your terminal to ensure CN is installed and found by your sy
 
 ## Basic usage
 
+### First example
 
 For a first example, consider the simple function `add`, below, which takes two `int` arguments, `x` and `y`, and returns their sum. 
 
@@ -143,7 +149,7 @@ include_example(exercises/slf2_basic_quadruple.signed.c)
 include_example(exercises/abs.c)
 
 
-## Pointers and ownership
+## Pointers and simple ownership
 
 So far we've only considered example functions manipulating integer values. Verification becomes more interesting and challenging when *pointers* are involved, because the safety of memory accesses via pointers has to be verified.
 
@@ -166,7 +172,7 @@ Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_403
 
 CN reports that for the read `*p` to be safe, ownership of a resource is missing: a resource `Owned<signed int>(p)` (where `signed int` and `int` are the same C-type --- CN just makes the sign explicit).
 
-### Owned
+### The Owned resource type
 
 The resource `Owned<T>(p)`, for a C-type `T` and pointer `p`, asserts ownership of a memory cell at location `p` of the size of C-type `T`. It is is CN's equivalent of a points-to assertion in separation logic (indexed by C-types). 
 
@@ -211,7 +217,7 @@ Do the same for function `abs_read`, which computes the absolute value of a numb
 include_example(exercises/abs_read.c)
 
 
-### Linear ownership
+### Linear resource ownership
 
 In the specifications we have written so far, functions that are passed resources as part of their precondition return also return this ownership. Let's try the `read` example from earlier with a differen postcondition that does not return the ownership received on entry:
 
@@ -239,7 +245,7 @@ As a consequence, function specifications have to do precise "book-keeping" of t
 
 
 
-### Block
+### The Block resource type
 
 Aside from the `Owned` resource seen so far, CN has another built-in resource type: `Block`. For a C-type `T` and pointer `p`, `Block<T>(p)` asserts the same ownership as `Owned<T>(p)` (so ownership of a memory cell at `p`, the size of type `T`), but in contrast to `Owned`, `Block` does not assert that the memory cell is initialised. CN uses this distinction to prevent reads from uninitialised memory: 
 
@@ -292,3 +298,41 @@ include_example(exercises/zero.c)
 **In-place double.** Give a specification for the function `inplace_double`, which takes an `int` pointer `p` and doubles the pointee value: specify the precondition needed to guarantee safe execution and a postcondition that captures the function's behaviour.
 
 include_example(exercises/slf3_basic_inplace_double.c)
+
+
+### Multiple owned pointers
+
+When functions manipulate multiple pointers, we can assert their ownership just like before. However, just as in standard separation logic, pointer ownership is unique, so simultaneous ownership of `Owned` or `Block` resources for two pointers requires the pointers to be disjoint.
+
+The following example shows the use of two `Owned` resources for accessing two different pointers: function `add` reads two values in memory and returns their sum.
+
+include_example(exercises/add_read.c)
+
+This time we use C's `unsigned int` type. In C, over- and underflow of unsigned integers is not undefined behaviour. Instead, when an arithmetic operation at unsigned type goes outside the representable range, the value "wraps around". 
+
+The CN variables `m` and `n` (resp. `m2` and `n2`) for the pointee values of `p` and `q` before (resp. after) the execution of `add` have CN basetype `u32`, unsigned 32-bit integers, to match the C `unsigned int` type. Similar to C's unsigned integer arithmetic, CN's unsigned int values similarly wrap around when outside the range of the bitvector. Hence, `return == m+n` holds also when the sum of `m` and `n` exceeds the minimal or maximal `unsigned int` value.
+
+In the following we will often use unsigned integer types to focus on specifying the memory ownership, rather than the conditions necessary to show absence of C undefined behaviour due to arithmetic under or overflows.
+
+
+### Exercises
+
+**Swap.** Specify the function `swap`, which takes two owned `unsigned int` pointers and swaps their values.
+
+include_example(exercises/swap.c)
+
+**Transfer.** Write a specification for the function `transfer`, shown below.
+
+include_example(exercises/slf8_basic_transfer.c)
+
+
+
+### Ownership of compound objects
+
+So far all examples have worked with integers and pointers, but larger programs typically also manipulate compound values, often represented using C struct types. Specifying functions manipulating structs works in much the same way as with basic types.
+
+For instance, the following function "transposes" a point coordinate, represented using a C struct with members `x` and `y` for the two dimensions.
+
+include_example(exercises/transpose.c)
+
+Here the precondition asserts ownership for `p`, at type `struct point`; the output, bound to name `s`, is a CN value of CN basetype `struct point`, i.e. a record value with members `x` and `y` of `i32` type tagged as a `struct point`.The postcondition similarly asserts ownership of the struct pointer and uses the output `s2` to relate the initial and final struct value.
