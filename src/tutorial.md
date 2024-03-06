@@ -327,7 +327,7 @@ include_example(exercises/slf8_basic_transfer.c)
 
 
 
-### Ownership of compound objects
+## Ownership of compound objects
 
 So far all examples have worked with integers and pointers, but larger programs typically also manipulate compound values, often represented using C struct types. Specifying functions manipulating structs works in much the same way as with basic types.
 
@@ -335,14 +335,35 @@ For instance, the following function "transposes" a point coordinate, represente
 
 include_example(exercises/transpose.c)
 
-Here the precondition asserts ownership for `p`, at type `struct point`; the output, bound to name `s`, is a CN value of CN basetype `struct point`, i.e. a record value with members `x` and `y` of `i32` type tagged as a `struct point`.The postcondition similarly asserts ownership of the struct pointer and uses the output `s2` to relate the initial and final struct value.
+Here the precondition asserts ownership for `p`, at type `struct point`; the output, bound to name `s`, is a value of CN basetype `struct point`, i.e. a record value with members `x` and `y` of `i32` type, tagged as a `struct point`. The postcondition similarly asserts ownership of the struct pointer and uses the output `s2` to relate the initial and final struct values.
 
-In CN, the `Owned<T>` and `Block<T>` resource predicates are defined inductively in the structure of the C-type `T`. When `T` is a struct type, `Owned<T>` decomposes into a collection of `Owned` resources for all members, as well as `Block` resources for any padding bytes in-between members. The resource `Block<T>` similarly decomposes into `Block` resources for the members and padding bytes. 
 
-In the above example, an `Owned<struct point>(p)` decomposes into two resources:
+In CN, the `Owned<T>` and `Block<T>` resource predicates are defined inductively in the structure of the C-type `T`. 
 
-- `Owned<int>(member_shift<point>(p,x))` and 
 
-- `Owned<int>(member_shift<point>(p,y))`. 
+### Owned for struct resources
+
+When `T` is a struct type, `Owned<T>` comprises a collection of `Owned` resources for all members, as well as `Block` resources for any padding bytes in-between. The resource `Block<T>` similarly is made up of `Block` resources for members and padding bytes. 
+
+During type checking, CN automatically decomposes `struct` resources into resources for the members, and re-composes them as needed, in order to automate resource inference involving such resources.  
+
+If we experimentally, for instance, change the above `transpose` example to force a type error, using an `/*@ assert(false) @*/` CN assertion in the middle of the function (more on CN assertions later), we can inspect how CN decomposes the `Owned<struct point>(p)` from the precondition.
+
+include_example(exercises/transpose.error.c)
+
+The `assert` leads to an error report that lists under "Available resources", instead of the original `Owned<struct point>(p)` two resources:
+
+- `Owned<signed int>(member_shift<point>(p, x))` with output `s.x` and
+- `Owned<signed int>(member_shift<point>(p, y))` with output `s.y`
 
 Here `member_shift<s>(p,m)` is the expression to construct, from a `struct s` pointer `p` the "shifted" pointer for its member `m`.
+
+
+
+### Example
+
+CN's automatic composing and decomposing of struct resources is useful when reasoning about functions that only manipulate part of a struct. For instance, in the following example, `init_point` has ownership of a `struct point` and calls the function `zero` from earlier twice, to initialise the members `x` and `y`.
+
+include_example(exercises/init_point.c)
+
+The precondition of `init_point` asserts ownership `Block<struct point>(p)`; `zero`, however works on `int` pointers and requires `Block<int>` ownership. When `init_point` calls `zero` on the pointers for struct members `x` and `y`, CN can prove this is safe, because `Block<struct point>(p)` decomposes into a `Block<int>` for each members. Following the calls of `zero`, the reverse happens: `zero`, as per postcondition, returns ownership `Owned<int>`; following the two calls to `zero`, `init_point` therefore "has ownership" of two adjacent `Owned<int>` resources, one for each of the members. The postcondition of `init_point` requires ownership `Owned<struct point>(p)`, which CN can satisfy by combining the two member `Owned<int>` resources. The resulting struct value `s2` combines the zeroed member values for `x` and `y`.
