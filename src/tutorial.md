@@ -121,8 +121,6 @@ Running CN confirms that this postcondition also holds.
 
 Let's apply what we know so far to another simple arithmetic example.
 
-include_example(exercises/slf1_basic_example_let.signed.c)
-
 Function `doubled` take an int `n`, defines `a` and `b` to be `n` incremented and decremented, respectively, and returns their sum. We would like to again verify safety, and prove that `doubled` returns the value of `n` doubled.
 
 include_example(exercises/slf1_basic_example_let.signed.c)
@@ -188,7 +186,7 @@ The `take`-notation in the example above is used to bind the outputs of a resour
 
 We can use the resource outputs to complete the example and specify that `read` leaves the pointee value of `p` unchanged, by adding the constraint `v1 == v2` in the postcondition.
 
-include_example(solutions/read.c)
+include_example(solutions/read2.c)
 
 
 **Aside.** In standard separation logic the equivalent specification for `read` could have been phrased as follows:
@@ -198,9 +196,52 @@ include_example(solutions/read.c)
 CN's `take` notation is just an alternative syntax for existential quantification over the values of resources (e.g. `take v1 = Owned<...>(p)` vs. `∃ v1. p ↦ v1`), but a useful one: the `take` notation syntactically restricts how quantifiers can be used, so CN can always infer them.
 
 
+### Exercises
+
+**Quadruple**.
+
+Specify the function `quadruple_read`, that works as `quadruple` before, except that the input is passed as an `int` *pointer*. Write a specification that takes ownership of the pointer on entry and returns it on exit, leaving the pointee value unchanged.
+
+include_example(exercises/quadruple_read.c)
+
+**Abs**.
+
+Do the same for function `abs_read`, which computes the absolute value of a number passed as an `int` pointer.
+
+include_example(exercises/abs_read.c)
+
+
+### Linear ownership
+
+In the specifications we have written so far, functions that are passed resources as part of their precondition return also return this ownership. Let's try the `read` example from earlier with a differen postcondition that does not return the ownership received on entry:
+
+include_example(exercises/read.broken.c)
+
+CN rejects this program with the following message:
+```
+cn build/exercises/read.broken.c
+[1/1]: read
+build/exercises/read.broken.c:4:3: error: Left-over unused resource 'Owned<signed int>(p)(v1)'
+  return *p;
+  ^~~~~~~~~~
+Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_17eb4a.html
+```
+
+CN has typechecked the function, verified that it is safe to execute assuming the precondition (in particular, given ownership `Owned<int>(p)`), and that it (vacuously) satisfies the postcondition. 
+
+However, following the check of the postcondition it finds that not all ownership has been "used up". Given the above specification, `read` leaks memory: it takes ownership, does not return it, but also does not deallocate the owned memory. In CN this is a type error.
+
+CN's resource types are *linear*, as opposed to affine. This means that in CN, not only can resources not be duplicated, resources can also not be simply dropped. Every resource passed into a function has to either be used up by it, by returning it or passing it to another function that consumes it, or destroyed, by deallocating the owned area of memory (as we shall see later).
+
+CN's motivation for tracking resources linearly is the focus is low-level systems software. CN checks C programs, in which memory is managed manually, as opposed to higher-level garbage-collected languages, and memory leaks are typically very undesirable. 
+
+As a consequence, function specifications have to do precise "book-keeping" of their resource footprint.
+
+
+
 ### Block
 
-Aside from the `Owned` resource seen above, CN has another built-in resource type: `Block`. For a C-type `T` and pointer `p`, `Block<T>(p)` asserts the same ownership as `Owned<T>(p)` (so ownership of a memory cell at `p`, the size of type `T`), but in contrast to `Owned`, `Block` does not assert that the memory cell is initialised. CN uses this distinction to prevent reads from uninitialised memory: 
+Aside from the `Owned` resource seen so far, CN has another built-in resource type: `Block`. For a C-type `T` and pointer `p`, `Block<T>(p)` asserts the same ownership as `Owned<T>(p)` (so ownership of a memory cell at `p`, the size of type `T`), but in contrast to `Owned`, `Block` does not assert that the memory cell is initialised. CN uses this distinction to prevent reads from uninitialised memory: 
 
 - A read at C-type `T` and pointer `p` requires a resource `Owned<T>(p)`, so ownership of *initialised* memory at the right C-type. The load returns the resource unchanged.
 
@@ -222,7 +263,7 @@ In the precondition we assert ownership of resource `Owned<int>(p)`, binding its
 
 If we specified `Block<int>(p)` instead of `Owned<int>(p)` in the precondition, as in the *incorrect* specification below, then CN would reject the program.
 
-include_example(solutions/slf0_basic_incr.signed.broken.c)
+include_example(exercises/slf0_basic_incr.signed.broken.c)
 
 CN then reports:
 ```
