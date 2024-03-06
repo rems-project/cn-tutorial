@@ -13,6 +13,7 @@ lang: en-GB
 toc-title: Table of contents
 header-includes: |
   <style>
+  body { max-width: 650px }
   h1, h2, h3, h4, h5 { color: hsl(219, 50%, 50%); }
   </style>
 ---
@@ -20,13 +21,16 @@ header-includes: |
 
 CN is a type system for verifying C code, focusing especially on low-level systems code. Compared to the normal C type system, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes *safely* --- does not raise C undefined behaviour --- and *correctly* --- according to strong user-defined specifications. To accurately handle the complex semantics of C, CN builds on the [Cerberus semantics for C](https://github.com/rems-project/cerberus/).
 
+The following tutorial introduces CN along a series of examples, starting with basic usage of CN on simple arithmetic functions and slowly moving towards more elaborate separation logic specifications of data structures. Many examples are taken from Arthur Charguéraud's excellent [Separation Logic Foundations](https://softwarefoundations.cis.upenn.edu) (example names starting with `slf...`).
 
 ## Installation 
 
 
 To fetch and install CN, check the Cerberus repository at <https://github.com/rems-project/cerberus> and follow the instructions in [`backend/cn/INSTALL.md`](https://github.com/rems-project/cerberus/blob/master/backend/cn/INSTALL.md).
 
-Type `cn --help` in your terminal to ensure CN is installed and found by your system. This should print the list of available options CN can be executed with. To apply CN to a C file, run `cn CFILE`. 
+Type `cn --help` in your terminal to ensure CN is installed and found by your system. This should print the list of available options CN can be executed with. 
+
+To apply CN to a C file, run `cn CFILE`. 
 
 
 
@@ -35,7 +39,7 @@ Type `cn --help` in your terminal to ensure CN is installed and found by your sy
 
 ### First example
 
-For a first example, consider the simple function `add`, below, which takes two `int` arguments, `x` and `y`, and returns their sum. 
+For a first example, let's look at the simple function `add`, below, which takes two `int` arguments, `x` and `y`, and returns their sum. 
 
 include_example(exercises/0.c)
 
@@ -54,7 +58,7 @@ Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_393
 
 CN flags the undefined behaviour, pointing to the relevant source location and the paragraph of the C standard that specifies the undefined behaviour. The error message also includes a link to an HTML file, shown below, which includes more details on the error.
 
-![CN error report](src/images/0.error.png)
+![**CN error report**](src/images/0.error.png)
 
 ### Error reports
 
@@ -66,26 +70,32 @@ When type checking a C function, CN checks each possible control-flow path throu
 
 In our example, there is only one possible control-flow path: entering the function body (section "function body") and executing the block from lines 2 to 4, followed by the return statement at line 3. The entry for the latter contains the sequence of sub-expressions in the return statement, including reads of the variables `x` and `y`. 
 
-**Note.**  In C, a function's local variables, including the function arguments, are mutable and their address can be taken and passed as a value. CN (following Cerberus) therefore represents local variables as memory allocations that are manipulated using memory reads and writes. 
+**Note.**  In C, a function's local variables, including the function arguments, are mutable and their address can be taken and passed as a value. To support this, CN represents local variables as memory allocations that are manipulated using memory reads and writes. 
   
-CN's type checking of the return statement therefore involves checking memory reads for `x` and `y`, at their memory locations, which CN names `&ARG0` and `&ARG1`. The first read, at `&ARG0`, here returns the value `x` (that is, the value for `x` originally passed into the function `add`); the second read, at `&ARG1`, returns `y`. 
+CN's type checking of the return statement therefore involves checking memory reads for `x` and `y`, at their memory locations, which CN names `&ARG0` and `&ARG1`. The first read, at `&ARG0`, here returns the value `x` (that is, the value of `x` originally passed into the function `add`); the second read, at `&ARG1`, similarly returns `y`. 
   
-Alongside this symbolic information, CN also displays concrete values: `1073741825i32 /* 0x40000001 */` for x (here the first value is the decimal representation and the second, in `/*...*/` comments the hex number) and `1073741824i32 /* 0x40000000 */` for `y`. (CN also displays values for the pointers, `{@0; 4}` for `x` and `{@0; 0}` for `y`, which we ignore for now.) 
+Alongside this symbolic information, CN also displays concrete values: 
+
+- `1073741825i32 /* 0x40000001 */` for x (here the first value is the decimal representation and the second, in `/*...*/` comments the hex number) and 
+
+- `1073741824i32 /* 0x40000000 */` for `y`. 
+
+(CN also displays values for the pointers, `{@0; 4}` for `x` and `{@0; 0}` for `y`, which we ignore for now.) 
   
- These values are part of a counter example, a concrete valuation of pointers and variables in the program that is consistent with the control flow path taken (and any user-specified assumptions), which leads to the error. The exact values may vary on your machine and also depend on the version of Z3 installed on your system.
+These values are part of a *counterexample*: a concrete valuation of variables and pointers in the program that is consistent with the control flow path taken and any user-specified assumptions (here there are none) and leads to the error. The exact values may vary on your machine and also depend on the version of Z3 installed on your system.
 
 
 **Proof context.** The second section, below the error trace, lists the verification context CN has reached along this control-flow path. 
 
 "Available resources" lists the owned resources before the error occurred, such as resources for owned pointers, as discussed later. 
   
-"Variables" lists counterexample values for program variables and their addresses. In addition to the variables `x` and `y`, which are assigned the same values as in the trace above, this includes possible values for the pointers `&ARG0` and `&ARG1` to their memory locations, as well as values for function pointers in scope and the `__cn_alloc_history`, both of which we ignore for now. 
+"Variables" lists counterexample values for program variables and their addresses. In addition to the variables `x` and `y`, which are assigned the same values as in the trace above, this includes possible values for their memory locations `&ARG0` and `&ARG1`, for function pointers in scope, and for the `__cn_alloc_history`, all of which we ignore for now. 
   
 Finally, "Constraints" records all logical facts CN has learned before reaching the error. This includes any user-specified assumptions from a precondition or loop invariant, value range constraints for variables and function pointers implied by their C-types, and facts CN has learned during the type checking of the current control-flow path. 
   
 In this example, the only constraints are value range constraints for variables and functions in scope: e.g. 
 
-- `good<signed int>(x)` says that the initial value of function argument `x` is a "good" `signed int` value, that is, within the representable range of a C `signed int` value. For C integer types `T`, `good<T>` requires that the argument is representable at C-type `T`; for pointers `good` additionally requires that the argument is aligned with respect to the pointee type; for C structs `good` requires all members to be `good`, for arrays that all array cells have `good` values.
+- `good<signed int>(x)` says that the initial value of function argument `x` is a "good" `signed int` value, that is, within the representable range of a C `signed int`. For C integer types `T`, `good<T>` requires that the argument is representable at C-type `T`; for pointers `good` additionally requires that the argument is aligned with respect to the pointee type; for C structs `good` requires all members to be `good`, for arrays that all array cells have `good` values.
 
 - `repr<signed int*>(&ARGO)` records that the pointer to the memory location storing the first function argument, `x`, is representable at C-type `signed int*`; 
     
@@ -123,7 +133,7 @@ Here we specify that the function returns the sum of `x` and `y`: using the keyw
 Running CN confirms that this postcondition also holds.
 
 
-## Simple arithmetic
+### Another arithmetic example
 
 Let's apply what we know so far to another simple arithmetic example.
 
@@ -371,5 +381,4 @@ The precondition of `init_point` asserts ownership `Block<struct point>(p)`; `ze
 ### Exercises
 
 **Init point.** Insert CN `assert(false)` statements in different statement positions of `init_point` and check how the available resources evolve.
-
 
