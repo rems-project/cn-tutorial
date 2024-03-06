@@ -367,3 +367,9 @@ CN's automatic composing and decomposing of struct resources is useful when reas
 include_example(exercises/init_point.c)
 
 The precondition of `init_point` asserts ownership `Block<struct point>(p)`; `zero`, however works on `int` pointers and requires `Block<int>` ownership. When `init_point` calls `zero` on the pointers for struct members `x` and `y`, CN can prove this is safe, because `Block<struct point>(p)` decomposes into a `Block<int>` for each members. Following the calls of `zero`, the reverse happens: `zero`, as per postcondition, returns ownership `Owned<int>`; following the two calls to `zero`, `init_point` therefore "has ownership" of two adjacent `Owned<int>` resources, one for each of the members. The postcondition of `init_point` requires ownership `Owned<struct point>(p)`, which CN can satisfy by combining the two member `Owned<int>` resources. The resulting struct value `s2` combines the zeroed member values for `x` and `y`.
+
+### Exercises
+
+**Init point.** Insert CN `assert(false)` statements in different statement positions of `init_point` and check how the available resources evolve.
+
+
