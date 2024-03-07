@@ -283,31 +283,33 @@ As a consequence, function specifications have to do precise "book-keeping" of t
 
 ### The Block resource type
 
-Aside from the `Owned` resource seen so far, CN has another built-in resource type: `Block`. For a C-type `T` and pointer `p`, `Block<T>(p)` asserts the same ownership as `Owned<T>(p)` (so ownership of a memory cell at `p`, the size of type `T`), but in contrast to `Owned`, `Block` does not assert that the memory cell is initialised. CN uses this distinction to prevent reads from uninitialised memory: 
+Aside from the `Owned` resource seen so far, CN has another built-in resource type: `Block`. Given a C-type `T` and pointer `p`, `Block<T>(p)` asserts the same ownership as `Owned<T>(p)` --- so ownership of a memory cell at `p` the size of type `T` --- but in contrast to `Owned`, `Block` memory is not necessarily initialised. 
+
+CN uses this distinction to prevent reads from uninitialised memory: 
 
 - A read at C-type `T` and pointer `p` requires a resource `Owned<T>(p)`, so ownership of *initialised* memory at the right C-type. The load returns the resource unchanged.
 
-- A write at C-type `T` and pointer `p` needs only a `Block<T>(p)` (so, unlike reads, writes to uninitialised memory are fine). The write consumes ownership of the resource (it destroys it) and returns a new resource `Owned<T>(p)` with appropriate output. Hence the returned resource records the fact that the memory cell is now initialised and can be read from.
+- A write at C-type `T` and pointer `p` needs only a `Block<T>(p)` (so, unlike reads, writes to uninitialised memory are fine). The write consumes ownership of the resource (it destroys it) and returns a new resource `Owned<T>(p)` with the value written as the output. This means the resource returned from a write records the fact that this memory cell is now initialised and can be read from.
 
-Since `Owned` carries the same ownership as `Block`, a resource `Owned<T>(p)` can be used in place of `Block<T>(p)`: for instance the typing of a write requires `Block<T>(p)`, but can just as well be satisfied with a matching `Owned<T>(p)` resource. (Intuitively, an already-initialised memory call can, of course, be written again.)
+Since `Owned` carries the same ownership as `Block`, just with the additional information that the `Owned` memory is initalised, a resource `Owned<T>(p)` is "at least as good" as `Block<T>(p)` --- an `Owned<T>(p)` resource can be used whenever `Block<T>(p)` is needed. For instance CN's type checking of a write to `p` requires a `Block<T>(p)`, but if an `Owned<T>(p)` resource is what is available, this can be used just the same. (In other words, an already-initialised memory cell can, of course, be over-written again.)
 
-Unlike `Owned`, which outputs the pointee value, `Block` has no meaningful output: its output is `void`/`unit`.
+Unlike `Owned`, whose output is the pointee value, `Block` has no meaningful output: its output is `void`/`unit`.
 
 
 ### Write example
 
-Let's test resources and their outputs in another example. The C function `incr` takes an `int` pointer `p` and increments the pointee value. 
+Let's explore resources and their outputs in another example. The C function `incr` takes an `int` pointer `p` and increments the pointee value. 
 
 include_example(solutions/slf0_basic_incr.signed.c)
 
-In the precondition we assert ownership of resource `Owned<int>(p)`, binding its output/pointee value to `v1`, and use `v1` to specify that the pointee value of `p` must be sufficiently small at the start of the function not to overflow when incremented. The postcondition again asserts ownership for `p`, with output `v2`, and uses this to relate the initial pointee value, `v1` with the incremented final value, `v2` (`v2 == v1+1i32`).
+In the precondition we assert ownership of resource `Owned<int>(p)`, binding its output/pointee value to `v1`, and use `v1` to specify that `p` must point to a sufficiently small value at the start of the function not to overflow when incremented. The postcondition asserts ownership of `p` with output `v2`, similar to before, and uses this to express that the value `p` points to is incremented by `incr`: `v2 == v1+1i32`.
 
 
-If we specified `Block<int>(p)` instead of `Owned<int>(p)` in the precondition, as in the *incorrect* specification below, then CN would reject the program.
+If we incorrectly tweaked this specification and used `Block<int>(p)` instead of `Owned<int>(p)` in the precondition, as below, then CN would reject the program.
 
 include_example(exercises/slf0_basic_incr.signed.broken.c)
 
-CN then reports:
+CN reports:
 ```
 build/solutions/slf0_basic_incr.signed.broken.c:6:11: error: Missing resource for reading
   int n = *p;
@@ -318,11 +320,11 @@ Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_5da
 
 The `Owned<int>(p)` resource required for reading is missing, since, as per precondition, only `Block<int>(p)` is available. Checking the linked HTML file confirms this. Here the section "Available resources" lists all resource ownership at the point of the failure:
 
-- `Block<signed int>(p)(u)`, the ownership of uninitialised memory at location `p`; its output is the `void`/`unit` value `u` (specified in the second pair of parentheses)
+- `Block<signed int>(p)(u)`, so ownership of uninitialised memory at location `p`; the output is a `void`/`unit` value `u` (specified in the second pair of parentheses)
 
 - `Owned<signed int*>(&ARG0)(p)`, the ownership of (initialised) memory at location `&ARG0`, so the memory location where the first function argument is stored; its output is the pointer `p` (not to be confused with the pointee of `p`); and finally
 
-- `__CN_Alloc(&ARG0)(void)` is a resource that records allocation information for location `&ARG0`; this is related to CN's memory-object semantics, which we skip over for the moment.
+- `__CN_Alloc(&ARG0)(void)` is a resource that records allocation information for location `&ARG0`; this is related to CN's memory-object semantics, which we ignore for the moment.
 
 
 ### Exercises
@@ -338,17 +340,19 @@ include_example(exercises/slf3_basic_inplace_double.c)
 
 ### Multiple owned pointers
 
-When functions manipulate multiple pointers, we can assert their ownership just like before. However, just as in standard separation logic, pointer ownership is unique, so simultaneous ownership of `Owned` or `Block` resources for two pointers requires the pointers to be disjoint.
+When functions manipulate multiple pointers, we can assert their ownership just like before. However (as in standard separation logic) pointer ownership is unique, so simultaneous ownership of `Owned` or `Block` resources for two pointers requires these pointers to be disjoint.
 
-The following example shows the use of two `Owned` resources for accessing two different pointers: function `add` reads two values in memory and returns their sum.
+The following example shows the use of two `Owned` resources for accessing two different pointers: function `add` reads two `int` values in memory, at locations `p` and `q`, and returns their sum.
 
 include_example(exercises/add_read.c)
 
-This time we use C's `unsigned int` type. In C, over- and underflow of unsigned integers is not undefined behaviour. Instead, when an arithmetic operation at unsigned type goes outside the representable range, the value "wraps around". 
+This time we use C's `unsigned int` type. In C, over- and underflow of unsigned integers is not undefined behaviour, so we do not need any special preconditions to rule this out. Instead, when an arithmetic operation at unsigned type goes outside the representable range, the value "wraps around". 
 
-The CN variables `m` and `n` (resp. `m2` and `n2`) for the pointee values of `p` and `q` before (resp. after) the execution of `add` have CN basetype `u32`, unsigned 32-bit integers, to match the C `unsigned int` type. Similar to C's unsigned integer arithmetic, CN's unsigned int values similarly wrap around when outside the range of the bitvector. Hence, `return == m+n` holds also when the sum of `m` and `n` exceeds the minimal or maximal `unsigned int` value.
+The CN variables `m` and `n` (resp. `m2` and `n2`) for the pointee values of `p` and `q` before (resp. after) the execution of `add` have CN basetype `u32`, so unsigned 32-bit integers, matching the C `unsigned int` type. Like C's unsigned integer arithmetic, CN unsigned int values wrap around when exceeding the value range of the type. 
 
-In the following we will often use unsigned integer types to focus on specifying the memory ownership, rather than the conditions necessary to show absence of C undefined behaviour due to arithmetic under or overflows.
+Hence, the postcondition `return == m+n` holds also when the sum of `m` and `n` is greater than the maximal `unsigned int` value.
+
+In the following we will sometimes use unsigned integer types to focus on specifying memory ownership, rather than the conditions necessary to show absence of C arithmetic undefined behaviour.
 
 
 ### Exercises
@@ -365,51 +369,64 @@ include_example(exercises/slf8_basic_transfer.c)
 
 ## Ownership of compound objects
 
-So far all examples have worked with integers and pointers, but larger programs typically also manipulate compound values, often represented using C struct types. Specifying functions manipulating structs works in much the same way as with basic types.
+So far all examples have worked with just integers and pointers, but larger programs typically also manipulate compound values, often represented using C struct types. Specifying functions manipulating structs works in much the same way as with basic types.
 
-For instance, the following function "transposes" a point coordinate, represented using a C struct with members `x` and `y` for the two dimensions.
+For instance, the following example uses a `struct` `point` to represent a point in two-dimensional space. The function `transpose` swaps a point's `x` and `y` coordinates.
 
 include_example(exercises/transpose.c)
 
-Here the precondition asserts ownership for `p`, at type `struct point`; the output, bound to name `s`, is a value of CN basetype `struct point`, i.e. a record value with members `x` and `y` of `i32` type, tagged as a `struct point`. The postcondition similarly asserts ownership of the struct pointer and uses the output `s2` to relate the initial and final struct values.
+Here the precondition asserts ownership for `p`, at type `struct point`; the output `s` is a value of CN type `struct point`, i.e. a record with members `i32` `x` and `i32` `y`. The postcondition similarly asserts ownership of `p`, with output `s2`, and asserts the coordinates have been swapped, by referring to the members of `s` and `s2` individually.
 
-
-In CN, the `Owned<T>` and `Block<T>` resource predicates are defined inductively in the structure of the C-type `T`. 
-
-
-### Owned for struct resources
-
-When `T` is a struct type, `Owned<T>` comprises a collection of `Owned` resources for all members, as well as `Block` resources for any padding bytes in-between. The resource `Block<T>` similarly is made up of `Block` resources for members and padding bytes. 
-
-During type checking, CN automatically decomposes `struct` resources into resources for the members, and re-composes them as needed, in order to automate resource inference involving such resources.  
-
-If we experimentally, for instance, change the above `transpose` example to force a type error, using an `/*@ assert(false) @*/` CN assertion in the middle of the function (more on CN assertions later), we can inspect how CN decomposes the `Owned<struct point>(p)` from the precondition.
-
-include_example(exercises/transpose.broken.c)
-
-The `assert` leads to an error report that lists under "Available resources", instead of the original `Owned<struct point>(p)` two resources:
-
-- `Owned<signed int>(member_shift<point>(p, x))` with output `s.x` and
-- `Owned<signed int>(member_shift<point>(p, y))` with output `s.y`
-
-Here `member_shift<s>(p,m)` is the expression to construct, from a `struct s` pointer `p` the "shifted" pointer for its member `m`.
+**Note.** In CN, as in C, structurally equal struct types with *different tags* are not the same type. 
 
 
 
-### Example
+### Compound Owned and Block resources
 
-CN's automatic composing and decomposing of struct resources is useful when reasoning about functions that only manipulate part of a struct. For instance, in the following example, `init_point` has ownership of a `struct point` and calls the function `zero` from earlier twice, to initialise the members `x` and `y`.
+While one might like to think of a struct as a single (compound) object that is manipulated as a whole, C permits more flexible struct manipulation: given a struct pointer, programmers can construct pointers to *individual struct members* and pass these as values, even to other functions. 
+
+CN therefore cannot treat resources for compound C types, such as structs, as primitive, indivisible units. Instead, `Owned<T>` and `Block<T>` are defined inductively in the structure of the C-type `T`. 
+
+For struct types `T`, the `Owned<T>` resource is defined as the collection of `Owned` resources for its members, as well as `Block` resources for any padding bytes in-between them. The resource `Block<T>`, similarly, is made up of `Block` resources for all members and padding bytes. 
+
+To handle code that manipulates pointers into parts of a struct object, CN can automatically decompose a struct resource into the member resources, and recompose it, as needed. The following example illustrates this. 
+
+Recall the function `zero` from our earlier exercise. It takes an `int` pointer to uninitialised memory, with `Block<int>` ownership, and initialises the value to zero, returning an `Owned<int>` resource with output $0$. 
+
+Now consider the new function `init_point`, shown below, which takes a pointer `p` to a `struct point` and zero-initialises its members by calling `zero` twice, once with a pointer to struct member `x`, and once with a pointer to `y`. 
 
 include_example(exercises/init_point.c)
 
-The precondition of `init_point` asserts ownership `Block<struct point>(p)`; `zero`, however works on `int` pointers and requires `Block<int>` ownership. When `init_point` calls `zero` on the pointers for struct members `x` and `y`, CN can prove this is safe, because `Block<struct point>(p)` decomposes into a `Block<int>` for each members. Following the calls of `zero`, the reverse happens: `zero`, as per postcondition, returns ownership `Owned<int>`; following the two calls to `zero`, `init_point` therefore "has ownership" of two adjacent `Owned<int>` resources, one for each of the members. The postcondition of `init_point` requires ownership `Owned<struct point>(p)`, which CN can satisfy by combining the two member `Owned<int>` resources. The resulting struct value `s2` combines the zeroed member values for `x` and `y`.
+As per precondition, `init_point` receives ownership `Block<struct point>(p)`. The `zero` function, however, works on `int` pointers and requires `Block<int>` ownership. 
+
+CN can prove the calls to `zero` with `&p->x` and `&p->y`are safe because it decomposes the `Block<struct point>(p)` into two `Block<int>`, one for member `x`, one for member `y`. Later, the reverse happens: following the two calls to `zero`, as per `zero`'s precondition, `init_point` has ownership of two adjacent `Owned<int>` resources: ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `init_point` requires ownership `Owned<struct point>(p)`, CN combines these back into a compound resource. The resulting `Owned<point struct>` resource has for an output the struct value `s2` that is composed of the zeroed member values for `x` and `y`.
+
+### Resource inference
+
+To handle the required resource inference, CN "eagerly" decomposes all `struct` resources into resources for the struct members, and "lazily" re-composes them as needed.  
+
+We can see this if we experimentally, for instance, change the `transpose` example from above to force a type error. Let's insert an `/*@ assert(false) @*/` CN assertion in the middle of the `transpose` function (more on CN assertions later), so we can inspect CN's proof context shown in the error report.
+
+include_example(exercises/transpose.broken.c)
+
+The precondition of `transpose` asserts ownership of an `Owned<struct point>(p)` resource. The error report now instead lists under "Available resources" two resources:
+
+- `Owned<signed int>(member_shift<point>(p, x))` with output `s.x` and
+
+- `Owned<signed int>(member_shift<point>(p, y))` with output `s.y`
+
+Here `member_shift<s>(p,m)` is the CN expression that constructs, from a `struct s` pointer `p`, the "shifted" pointer for its member `m`.
+
+When the function returns the two member resources are recombined "on demand" to satisfy the postcondition `Owned<struct point>(p)`. 
+
+
 
 ### Exercises
 
 **Init point.** Insert CN `assert(false)` statements in different statement positions of `init_point` and check how the available resources evolve.
 
 
-## Data structures
+## TODO: Data structures
 
 ### TODO: Linked lists
 
