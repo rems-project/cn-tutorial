@@ -27,14 +27,16 @@ header-includes: |
 
 CN is a type system for verifying C code, focusing especially on low-level systems code. Compared to the normal C type system, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes *safely* --- does not raise C undefined behaviour --- and *correctly* --- according to strong user-defined specifications. To accurately handle the complex semantics of C, CN builds on the [Cerberus semantics for C](https://github.com/rems-project/cerberus/).
 
-The following tutorial introduces CN along a series of examples, starting with basic usage of CN on simple arithmetic functions and slowly moving towards more elaborate separation logic specifications of data structures. Many examples are taken from Arthur Charguéraud's excellent [Separation Logic Foundations](https://softwarefoundations.cis.upenn.edu) (example names starting with `slf...`).
+This tutorial introduces CN along a series of examples, starting with basic usage of CN on simple arithmetic functions and slowly moving towards more elaborate separation logic specifications of data structures. 
+
+Many examples are taken from Arthur Charguéraud's excellent [Separation Logic Foundations](https://softwarefoundations.cis.upenn.edu). These example have names starting with "slf...".
 
 ## Installation 
 
 
 To fetch and install CN, check the Cerberus repository at <https://github.com/rems-project/cerberus> and follow the instructions in [`backend/cn/INSTALL.md`](https://github.com/rems-project/cerberus/blob/master/backend/cn/INSTALL.md).
 
-Type `cn --help` in your terminal to ensure CN is installed and found by your system. This should print the list of available options CN can be executed with. 
+Once completed, type `cn --help` in your terminal to ensure CN is installed and found by your system. This should print the list of available options CN can be executed with. 
 
 To apply CN to a C file, run `cn CFILE`. 
 
@@ -45,13 +47,11 @@ To apply CN to a C file, run `cn CFILE`.
 
 ### First example
 
-For a first example, let's look at the simple function `add`, below, which takes two `int` arguments, `x` and `y`, and returns their sum. 
+For a first example, let's look at a simple arithmetic function: `add`, shown below, takes two `int` arguments, `x` and `y`, and returns their sum. 
 
 include_example(exercises/0.c)
 
-
-In C `x+y` is only safe to execute when it is guaranteed that the result of the addition can be represented at type `int`: `x` and `y` are signed integers, and signed integer overflow and underflow are undefined behaviour (UB) in C. Running CN on the example therefore raises an error:
-
+Running CN on the example produces an error message:
 ```
 cn exercises/0.c
 [1/1]: add
@@ -62,96 +62,108 @@ an exceptional condition occurs during the evaluation of an expression (§6.5#5)
 Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_393431.html
 ```
 
-CN flags the undefined behaviour, pointing to the relevant source location and the paragraph of the C standard that specifies the undefined behaviour. The error message also includes a link to an HTML file, shown below, which includes more details on the error.
+CN rejects the program because it has *C undefined behaviour*, meaning it is not safe to execute. CN points to the relevant source location, the addition `x+y`, and paragraph §6.5#5 of the C language standard that specifies the undefined behaviour. It also puts a link to an HTML file with more details on the error to help in diagnosing the problem.
 
-![**CN error report**](src/images/0.error.png)
+Inspecting this HTML report (as we do in a moment) gives us possible example values for `x` and `y` that cause the undefined behaviour and hint at the problem: for very large values for `x` and `y`, such as $1073741825$ and $1073741824$, the sum of `x` and `y` can exceed the representable range of a C `int` value: $1073741825 + 1073741824 = 2^31+1$, so their sum is larger than the maximal `int` value, $2^31-1$.
 
-### Error reports
-
-Since diagnosing errors is an important part of using CN, let's take a closer look. The error report consists of two sections.
-
-**Path.** The first section ("Path to error") contains information about the  control-flow path leading up to the error. 
-
-When type checking a C function, CN checks each possible control-flow path through the program individually. If CN detects UB or a violation of user-defined specifications, CN reports the problematic control-flow path. A path is reported as a nested structure of statements: paths are split into sections, grouping together statements between high-level control-flow positions (e.g. the start of the function, the start of a loop, the invocation of a `continue`, `break`, or `return` statement, etc.); within each section, the statements are given by their source location in the input file; finally CN reports, per statement, the typechecked sub-expressions, as well as the memory accesses and function calls within these.
-
-In our example, there is only one possible control-flow path: entering the function body (section "function body") and executing the block from lines 2 to 4, followed by the return statement at line 3. The entry for the latter contains the sequence of sub-expressions in the return statement, including reads of the variables `x` and `y`. 
-
-**Note.**  In C, a function's local variables, including the function arguments, are mutable and their address can be taken and passed as a value. To support this, CN represents local variables as memory allocations that are manipulated using memory reads and writes. 
-  
-CN's type checking of the return statement therefore involves checking memory reads for `x` and `y`, at their memory locations, which CN names `&ARG0` and `&ARG1`. The first read, at `&ARG0`, here returns the value `x` (that is, the value of `x` originally passed into the function `add`); the second read, at `&ARG1`, similarly returns `y`. 
-  
-Alongside this symbolic information, CN also displays concrete values: 
-
-- `1073741825i32 /* 0x40000001 */` for x (here the first value is the decimal representation and the second, in `/*...*/` comments the hex number) and 
-
-- `1073741824i32 /* 0x40000000 */` for `y`. 
-
-(CN also displays values for the pointers, `{@0; 4}` for `x` and `{@0; 0}` for `y`, which we ignore for now.) 
-  
-These values are part of a *counterexample*: a concrete valuation of variables and pointers in the program that is consistent with the control flow path taken and any user-specified assumptions (here there are none) and leads to the error. The exact values may vary on your machine and also depend on the version of Z3 installed on your system.
+Here `x` and `y` are *signed integers*, and in C, signed integer *overflow* is undefined behaviour (UB). Hence, `add` is only safe to execute for smaller values. Similarly, *large negative* values of `x` and `y` can cause signed integer *underflow*, also UB in C. We therefore need to rule out too large values for `x` and `y`, both positive and negative, which we do by writing a CN function specification.
 
 
-**Proof context.** The second section, below the error trace, lists the verification context CN has reached along this control-flow path. 
+### First function specification
 
-"Available resources" lists the owned resources before the error occurred, such as resources for owned pointers, as discussed later. 
-  
-"Variables" lists counterexample values for program variables and their addresses. In addition to the variables `x` and `y`, which are assigned the same values as in the trace above, this includes possible values for their memory locations `&ARG0` and `&ARG1`, for function pointers in scope, and for the `__cn_alloc_history`, all of which we ignore for now. 
-  
-Finally, "Constraints" records all logical facts CN has learned before reaching the error. This includes any user-specified assumptions from a precondition or loop invariant, value range constraints for variables and function pointers implied by their C-types, and facts CN has learned during the type checking of the current control-flow path. 
-  
-In this example, the only constraints are value range constraints for variables and functions in scope: e.g. 
-
-- `good<signed int>(x)` says that the initial value of function argument `x` is a "good" `signed int` value, that is, within the representable range of a C `signed int`. For C integer types `T`, `good<T>` requires that the argument is representable at C-type `T`; for pointers `good` additionally requires that the argument is aligned with respect to the pointee type; for C structs `good` requires all members to be `good`, for arrays that all array cells have `good` values.
-
-- `repr<signed int*>(&ARGO)` records that the pointer to the memory location storing the first function argument, `x`, is representable at C-type `signed int*`; 
-    
-- `aligned(&ARGO, 4u64)`, moreover, states that the same pointer is 4-byte aligned.
-
-
-
-
-
-### Back to the example
-
-
-From the error message we know the problematic expression is the addition `x+y`, and the counterexample values read for `x` and `y` give us a hint for how a concrete error case looks like: for very large values for `x` and `y` their sum can exceed the maximum representable `int` value: $1073741825 + 1073741824 = 2^31+1$. The function `add` only executes safely when called for smaller values. Similarly, *large negative* values of `x` and `y` can cause UB due to signed integer underflow, so these also have to be ruled out.
-
-To ensure safe execution, we specify a precondition for add that constrains the ranges of `x` and `y`. Function specifications in CN are expressed using special `/*@ ... @*/` comments, placed between the function argument list and the function body.
+Shown below is our first function specification, for `add`, with a precondition that constraints `x` and `y` such that the sum of `x` and `y` lies between $-2147483648$ and $2147483647$, so within the representable range of a C `int` value.
 
 include_example(solutions/0.c)
 
-Preconditions are introduced using `requires`, which takes a list of one or more conditions, separated by semicolons. Here, to specify that the sum of `x` and `y` does not over- or underflow we assert that the sum of `x` and `y` is between $-2147483648$ and $2147483647$, the minimum and maximum `int` values, respectively. In detail:
+In detail:
 
-- Function specifications can refer to the values of function arguments (here `x` and `y`). While function arguments are mutable in C; naming an argument in a function specification always refers to the *initial value* passed into the function.
+- Function specification are given using special `/*@ ... @*/` comments, placed in-between the function argument list and the function body.
+ 
+- The keyword `requires` starts the pre-condition, a list of one or more CN conditions separated by semicolons. 
 
-- CN uses fixed width integer types to represent integer values, e.g. `u32` for 32-bit unsigned types and `i64` for signed 64-bit integers. When referring to C variables their C-type is mapped to the corresponding CN type. Here, `x` and `y` of C-type `int` get CN type `i32` (which, compared to the C-type, makes the width unambiguous).
+- In function specifications, the names of the function arguments, here `x` and `y`, refer to their *initial values*. (Function arguments are mutable in C.)
 
-- We cast the values of `x` and `y` to type `i64`, to add their values at this larger type, and let-bind the result to the name `sum`. Sum is then in scope everywhere in the remainder of the specification. 
+- `let sum = (i64) x + (i64) y` is a let-binding, which defines `sum` as the value `(i64) x + (i64) y` in the remainder of the function specification.
 
-- Finally, we constrain `x` and `y` so their sum is in the representable range. Constant integer values, such as `-2147483648i64`, are annotated with the sign and width of the integer type (`i64`).
+- Instead of C syntax, CN uses Rust-like syntax for integer types, such as `u32` for 32-bit unsigned integers and `i64` for signed 64-bit integers to make their sizes unambiguous. Here, `x` and `y`, of C-type `int`, have CN type `i32`. 
 
-Running CN on the annotated program passes with no errors. Which means we now know that `add` is safe to execute given this precondition. We might wish to additionally specify the *functional behaviour* of `add` and make a statement about its return values. We can do this by adding a postcondition using the `ensures` keyword.
+- To define `sum` we cast `x` and `y` to the larger `i64` type, using syntax `(i64)`, which is large enough to hold the sum of any two `i32` values.
+
+- Finally, we require this sum to be in-between the minimal and maximal `int` value. Integer constants, such as `-2147483648i64`, must specifiy their CN type (`i64`).
+
+Running CN on the annotated program passes without errors. This means with our specified precondition, `add` is safe to execute. 
+
+We may, however, wish to be more precise. So far the specification gives no information to callers of `add` about its output. To also specify the return values we add a postcondition, using the `ensures` keyword.
 
 include_example(solutions/1.c)
 
-Here we specify that the function returns the sum of `x` and `y`: using the keyword `return`, which refers to the value returned by `add`, and `sum`, from the precondition (which is also in scope in the postcondition) we specify the return value is this `sum`, cast back to `i32` type. 
+Here we use the keyword `return`, only available in function postconditions, to refer to the return value, and equate it to `sum` as defined in the preconditions, cast back to `i32` type: `add` returns the sum of `x` and `y`.
+
+ 
 
 Running CN confirms that this postcondition also holds.
+
+
+### Error reports
+
+In the original example CN reported a type error due to C undefined behaviour. While that example was perhaps simple enough to guess the problem and solution, this can become extremely challenging as program and specification complexity increases. Diagnosing type errors is therefore an important part of using CN. CN tries to help with that by producting detailed error information, in the form of an HTML error report.
+
+Let's return to the type error from earlier (`add` without precondition) and take a closer look at this report. The report comprises two sections.
+
+
+![**CN error report**](src/images/0.error.png)
+
+**Path.** The first section, "Path to error", contains information about the  control-flow path leading to the error. 
+
+When type checking a C function, CN checks each possible control-flow path through the program individually. If CN detects UB or a violation of user-defined specifications, CN reports the problematic control-flow path, as a nested structure of statements: paths are split into sections, which group together statements between high-level control-flow positions (e.g. function entry, the start of a loop, the invocation of a `continue`, `break`, or `return` statement, etc.); within each section, statements are listed by source code location; finally, per statement, CN lists the typechecked sub-expressions, and the memory accesses and function calls within these.
+
+In our example, there is only one possible control-flow path: entering the function body (section "function body") and executing the block from lines 2 to 4, followed by the return statement at line 3. The entry for the latter contains the sequence of sub-expressions in the return statement, including reads of the variables `x` and `y`. 
+
+In C, local variables in a function, including its arguments, are mutable and their address can be taken and passed as a value. CN therefore represents local variables as memory allocations that are manipulated using memory reads and writes. Here, type checking the return statement therefore includes checking memory reads for `x` and `y`, at their locations `&ARG0` and `&ARG1`. The path report lists these reads and their return values: the read at `&ARG0` returns `x` (that is, the value of `x` originally passed to `add`); the read at `&ARG1` returns `y`. Alongside this symbolic information, CN displays concrete values: 
+
+- `1073741825i32 /* 0x40000001 */` for x (the first value is the decimal representation, the second, in `/*...*/` comments, the hex number) and 
+
+- `1073741824i32 /* 0x40000000 */` for `y`. 
+
+For now, ignore the pointer values `{@0; 4}` for `x` and `{@0; 0}` for `y`. 
+  
+These concrete values are part of a *counterexample*: a concrete valuation of variables and pointers in the program that that leads to the error. (The exact values may vary on your machine and also depend on the version of Z3 installed on your system.)
+
+
+**Proof context.** The second section, below the error trace, lists the proof context CN has reached along this control-flow path. 
+
+"Available resources" lists the owned resources, as discussed in later sections.
+
+"Variables" lists counterexample values for program variables and pointers. In addition to `x` and `y`, assigned the same values as above, this includes values for their memory locations `&ARG0` and `&ARG1`, function pointers in scope, and the `__cn_alloc_history`, all of which we ignore for now. 
+
+Finally, "Constraints" records all logical facts CN has learned along the path. This includes user-specified assumptions from preconditions or loop invariants, value ranges inferred from the C-types of variables, and facts learned during the type checking of the statements. Here (`add` without precondition) the only constraints are some contraints inferred from C-types in the code. 
+
+- For instance, `good<signed int>(x)` says that the initial value of `x` is a "good" `signed int` value (i.e. in range). Here `signed int` is the same type as `int`, CN just makes the sign explicit. For integer types `T`, `good<T>` requires the value to be in range of type `T`; for pointer types `T` it also requires the pointer to be aligned. For structs and arrays this extends in the obviuos way to struct members or array cells.
+
+- `repr<T>` requires representability (not alignment) at type `T`, so `repr<signed int*>(&ARGO)`, for instance, records that the pointer to `x` is representable at C-type `signed int*`; 
+    
+- `aligned(&ARGO, 4u64)`, moreover, states that it is 4-byte aligned.
+
+
 
 
 ### Another arithmetic example
 
 Let's apply what we know so far to another simple arithmetic example.
 
-Function `doubled` take an int `n`, defines `a` and `b` to be `n` incremented and decremented, respectively, and returns their sum. We would like to again verify safety, and prove that `doubled` returns the value of `n` doubled.
+The function `doubled`, shown below, takes an int `n`, defines `a` as `n` incremented, `b` as `n` decremented, and returns the sum of the two. 
 
 include_example(exercises/slf1_basic_example_let.signed.c)
 
-Running CN flags UB for the increment of `a`. As in the first example, we need a precondition that ensures that `n+1` and `n-1` do not over-, respectively, underflow, and similarly the precondition has to ensure `a+b` is representable at `int` type.
+We would like to verify this is safe, and that `doubled` returns twice the value of `n`. Running CN on `doubled` leads to a type error: the increment of `a` has undefined behaviour. 
+
+As in the first example, we need to ensure that `n+1` does not overflow and `n-1` does not underflow. Similarly also `a+b` has to be representable at `int` type.
 
 include_example(solutions/slf1_basic_example_let.signed.c)
 
-To specify these, we again work at a larger integer type: we cast `n` to type `i64` and specify that decrementing `n` does not go below the minimal `int` value, that incrementing `n` does not go above the maximal value, and that `n` doubled is within the right range. The post-condition specifies that `return` is double the value of `n`.
+We can specify these using a similar style of precondition as in the first example. We first define `n_` as `n` cast to type `i64` --- i.e. a type large enough to hold `n+1`, `n-1` and `a+b` for any possible `i32` value for `n`. Then we specify that decrementing `n_` does not go below the minimal `int` value, that incrementing `n_` does not go above the maximal value, and that `n` doubled is also in range. These preconditions together guarantee safe execution.
+
+To capture the functional behaviour, the postcondition specifies that `return` is twice the value of `n`.
 
 
 ### Exercise
@@ -160,7 +172,7 @@ To specify these, we again work at a larger integer type: we cast `n` to type `i
 
 include_example(exercises/slf2_basic_quadruple.signed.c)
 
-**Abs.** Give a specification to the C function `abs`, which computes the absolute value of a given `int` value. To describe the return value, use CN's ternary `_ ? _ : _` operator: given a boolean `b`, and expressions `e1` and `e2` of the same basetype, `b ? e1 : e2` returns `e1` if `b` holds and `e2` if it does not. 
+**Abs.** Give a specification to the C function `abs`, which computes the absolute value of a given `int` value. To describe the return value, use CN's ternary "`_ ? _ : _`" operator. Given a boolean `b`, and expressions `e1` and `e2` of the same basetype, `b ? e1 : e2` returns `e1` if `b` holds and `e2` otherwise. 
 
 include_example(exercises/abs.c)
 
@@ -169,9 +181,9 @@ include_example(exercises/abs.c)
 
 So far we've only considered example functions manipulating integer values. Verification becomes more interesting and challenging when *pointers* are involved, because the safety of memory accesses via pointers has to be verified.
 
-CN uses *separation logic resource types* and the concept of *ownership* to reason about memory accesses. A resource is the permission to access a region of memory. Resources, are different from logical constraints in that resource ownership is *unique*, not duplicable. 
+CN uses *separation logic resource types* and the concept of *ownership* to reason about memory accesses. A resource is the permission to access a region of memory. Unlike logical constraints, resource ownership is *unique*, meaning resources cannot be duplicated. 
 
-Let's look at a simple example function: `read` takes an `int` pointer `p` and returns the value.
+Let's look at a simple example. The function `read` takes an `int` pointer `p` and returns the pointee value.
 
 include_example(exercises/read.c)
 
@@ -186,52 +198,64 @@ Resource needed: Owned<signed int>(p)
 Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_403624.html
 ```
 
-CN reports that for the read `*p` to be safe, ownership of a resource is missing: a resource `Owned<signed int>(p)` (where `signed int` and `int` are the same C-type --- CN just makes the sign explicit).
+For the read `*p` to be safe, ownership of a resource is missing: a resource `Owned<signed int>(p)`. 
 
 ### The Owned resource type
 
-The resource `Owned<T>(p)`, for a C-type `T` and pointer `p`, asserts ownership of a memory cell at location `p` of the size of C-type `T`. It is is CN's equivalent of a points-to assertion in separation logic (indexed by C-types). 
+Given a C-type `T` and pointer `p`, the resource `Owned<T>(p)` asserts ownership of a memory cell at location `p` of the size of C-type `T`. It is is CN's equivalent of a points-to assertion in separation logic (indexed by C-types `T`). 
 
-In this example we can ensure the safe execution of `read` by adding a precondition that requires ownership of `Owned<int>(p)` (for now ignore the notation `take ... = Owned<int>(p)`). We also add a post-condition that specifies that on exiting the function `read`, ownership of `p` is returned in the form of another `Owned<int>(p)` resource.
+In this example we can ensure the safe execution of `read` by adding a precondition that requires ownership of `Owned<int>(p)`, as shown below. For now ignore the notation `take ... = Owned<int>(p)`. Since `read` maintains this ownership, we also add a corresponding post-condition, whereby `read` returns ownership of `p` after it is finished executing, in the form of another `Owned<int>(p)` resource.
 
 include_example(solutions/read.c)
 
-This specifications means that any function calling `read` has to be able to provide a resource `Owned<int>(p)` to pass to `read`, and will receive back a resource `Owned<int>(p)` when the function has finished executing.
+This specifications means that 
+
+- any function calling `read` has to be able to provide a resource `Owned<int>(p)` to pass into `read`, and 
+
+- the caller will receive back a resource `Owned<int>(p)` when `read` returns.
 
 ### Resource outputs
 
-A caller of `read` may wish to know that `read` leaves the value unchanged, so we need a way to refer to the pointee of `p`. 
+However, a caller of `read` may also wish to know that `read` actually returns the correct value, the pointee of `p`, and also that it does not change memory at location `p`. To phrase both we need a way to refer to the pointee of `p`. 
 
-In CN resources have *outputs*. Each resource outputs the information that can be derived from ownership of the resource. What information is returned is specific to the type of resource. The resource `Owned<T>(p)` (for some C-type `T`), for instance, outputs the *pointee value* of `p`, since can be derived from the resource ownership: assume you have a pointer `p` and associated ownership, then this uniquely determines the pointee value. 
+In CN resources have *outputs*. Each resource outputs the information that can be derived from ownership of the resource. What information is returned is specific to the type of resource. A resource `Owned<T>(p)` (for some C-type `T`) outputs the *pointee value* of `p`, since that can be derived from the resource ownership: assume you have a pointer `p` and the associated ownership, then this uniquely determines the pointee value of `p`. 
 
-The `take`-notation in the example above is used to bind the outputs of a resource to a name. Hence the precondition `take v1 = Owned<int>(p)`, in addition to asserting ownership, introduces the name `v1` for the output of `Owned<int>(p)`, the pointee value at the start of the function. Similarly, the postcondition introduces the name `v2` for the pointee value on returning from the function.
+CN uses the `take`-notation seen in the example above to refer to the output of a resource, introducing a new name binding for the output. The precondition `take v1 = Owned<int>(p)` from the precondition does two things: (1.) it assert ownership of resource `Owned<int>(p)`, and (2.) it binds the name `v1` to the resource output, so here the pointee value of `p` at the start of the function. Similarly, the postcondition introduces the name `v2` for the pointee value on function return.
 
-We can use the resource outputs to complete the example and specify that `read` leaves the pointee value of `p` unchanged, by adding the constraint `v1 == v2` in the postcondition.
+That means we can use the resource outputs from the pre- and postcondition to strengthen the specification of `read` as planned. We add two new postconditions: we specify 
+
+#. that `read` returns `v1` (the initial pointee value of `p`), and
+
+#. that the pointee values `v1` and `v2` before and after execution of `read` (respectively) are the same.
 
 include_example(solutions/read2.c)
 
 
-**Aside.** In standard separation logic the equivalent specification for `read` could have been phrased as follows:
+**Aside.** In standard separation logic the equivalent specification for `read` could have been phrased as follows (where `return` binds the return value in the postcondition):
 ```
-{ ∃ v1. p ↦ v1 } read(p) { ∃ v2. ((p ↦ v2) * v1 = v2) }
+{ ∃v1. p ↦ v1 } 
+read(p) 
+{ return. ∃v2. (p ↦ v2) * (return = v1 /\ v1 = v2) }
 ```
-CN's `take` notation is just an alternative syntax for existential quantification over the values of resources (e.g. `take v1 = Owned<...>(p)` vs. `∃ v1. p ↦ v1`), but a useful one: the `take` notation syntactically restricts how quantifiers can be used, so CN can always infer them.
+CN's `take` notation is just an alternative syntax for existential quantification over the values of resources (e.g. `take v1 = Owned<...>(p)` vs. `∃v1. p ↦ v1`), but a useful one: the `take` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
 
 
 ### Exercises
 
-**Quadruple**. Specify the function `quadruple_read`, that works as `quadruple` before, except that the input is passed as an `int` *pointer*. Write a specification that takes ownership of the pointer on entry and returns it on exit, leaving the pointee value unchanged.
+**Quadruple**. Specify the function `quadruple_mem`, that is similar to the earlier `quadruple` function, except that the input is passed as an `int` pointer. Write a specification that takes ownership of this pointer on entry and returns this ownership on exit, leaving the pointee value unchanged.
 
-include_example(exercises/quadruple_read.c)
+include_example(exercises/quadruple_mem.c)
 
-**Abs**. Do the same for function `abs_read`, which computes the absolute value of a number passed as an `int` pointer.
+**Abs**. Give a specification to the function `abs_mem`, which computes the absolute value of a number passed as an `int` pointer.
 
-include_example(exercises/abs_read.c)
+include_example(exercises/abs_mem.c)
 
 
 ### Linear resource ownership
 
-In the specifications we have written so far, functions that are passed resources as part of their precondition return also return this ownership. Let's try the `read` example from earlier with a differen postcondition that does not return the ownership received on entry:
+In the specifications we have written so far, functions that receive resources as part of their precondition also return this ownership in their postcondition. 
+
+Let's try the `read` example from earlier again, but with a postcondition that does not return the ownership:
 
 include_example(exercises/read.broken.c)
 
@@ -245,15 +269,15 @@ build/exercises/read.broken.c:4:3: error: Left-over unused resource 'Owned<signe
 Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_17eb4a.html
 ```
 
-CN has typechecked the function, verified that it is safe to execute assuming the precondition (in particular, given ownership `Owned<int>(p)`), and that it (vacuously) satisfies the postcondition. 
+CN has typechecked the function, verified that it is safe to execute under the precondition (given ownership `Owned<int>(p)`), and that the function (vacuously) satisfies its postcondition. But, following the check of the postcondition it finds that not all resources have been "used up". 
 
-However, following the check of the postcondition it finds that not all ownership has been "used up". Given the above specification, `read` leaks memory: it takes ownership, does not return it, but also does not deallocate the owned memory. In CN this is a type error.
+Given the above specification, `read` leaks memory: it takes ownership, does not return it, but also does not deallocate the owned memory or otherwise dispose of it. In CN this is a type error.
 
-CN's resource types are *linear*, as opposed to affine. This means that in CN, not only can resources not be duplicated, resources can also not be simply dropped. Every resource passed into a function has to either be used up by it, by returning it or passing it to another function that consumes it, or destroyed, by deallocating the owned area of memory (as we shall see later).
+CN's resource types are *linear* (as opposed to affine). This means not only that resources cannot be duplicated, resources also cannot simply be dropped or "forgotten". Every resource passed into a function has to either be used up by it, by returning it or passing it to another function that consumes it, or destroyed, by deallocating the owned area of memory (as we shall see later).
 
-CN's motivation for tracking resources linearly is the focus is low-level systems software. CN checks C programs, in which memory is managed manually, as opposed to higher-level garbage-collected languages, and memory leaks are typically very undesirable. 
+CN's motivation for linear tracking of resources is its focus on low-level systems software. CN checks C programs, in which, unlike higher-level garbage-collected languages, memory is managed manually, and memory leaks are typically very undesirable. 
 
-As a consequence, function specifications have to do precise "book-keeping" of their resource footprint.
+As a consequence, function specifications have to do precise "book-keeping" of their resource footprint, and, in particular, return any unused resources back to the caller.
 
 
 
@@ -436,7 +460,7 @@ CN's **resource inference for resource predicates** unfolds resource predicates 
 
 
 
-## Iterated resources and quantified constraints
+## TODO: Iterated resources and quantified constraints
 
 Point aliasing and CN's handling of this?
 
