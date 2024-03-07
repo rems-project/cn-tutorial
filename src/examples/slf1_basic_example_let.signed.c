@@ -11,5 +11,3 @@ int doubled (int n)
   int b = n-1;
   return a+b;
 }
-
-

@@ -15,6 +15,12 @@ header-includes: |
   <style>
   body { max-width: 650px }
   h1, h2, h3, h4, h5 { color: hsl(219, 50%, 50%); }
+  body > .sourceCode { 
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid hsl(44, 7%, 80%);
+    background-color: hsl(44, 7%, 96%); 
+  }
   </style>
 ---
 
@@ -214,15 +220,11 @@ CN's `take` notation is just an alternative syntax for existential quantificatio
 
 ### Exercises
 
-**Quadruple**.
-
-Specify the function `quadruple_read`, that works as `quadruple` before, except that the input is passed as an `int` *pointer*. Write a specification that takes ownership of the pointer on entry and returns it on exit, leaving the pointee value unchanged.
+**Quadruple**. Specify the function `quadruple_read`, that works as `quadruple` before, except that the input is passed as an `int` *pointer*. Write a specification that takes ownership of the pointer on entry and returns it on exit, leaving the pointee value unchanged.
 
 include_example(exercises/quadruple_read.c)
 
-**Abs**.
-
-Do the same for function `abs_read`, which computes the absolute value of a number passed as an `int` pointer.
+**Abs**. Do the same for function `abs_read`, which computes the absolute value of a number passed as an `int` pointer.
 
 include_example(exercises/abs_read.c)
 
@@ -381,4 +383,73 @@ The precondition of `init_point` asserts ownership `Block<struct point>(p)`; `ze
 ### Exercises
 
 **Init point.** Insert CN `assert(false)` statements in different statement positions of `init_point` and check how the available resources evolve.
+
+
+## Data structures
+
+### TODO: Linked lists
+
+
+Introduce a C linked list example. Introduce **resource predicates**, for encoding ownership patterns for recursive datastructures.
+
+Example of CN linked list resource predicate without output (ignore `void` return). Verify safety of (some?) list manipulating functions?
+
+Verify safety of list cons.
+
+Maybe show **manual case splitting**
+
+
+### TODO: CN datatypes and logical functions
+
+
+For going beyond safety there needs to be a way to refer to the data represented in memory.
+
+Define CN list **datatype**.
+
+User-defined resource predicates can have **outputs** other than void: modify linked list predicate to output the represented list.
+
+Re-verify C implementation of list cons, now with trivial functional specification.
+
+
+For more complicated functions there needs to be a way to express operations on lists in the specifications: introduce **(recursive) specification functions** and **CN pattern matching**.
+
+Verify functional properties of some simple list manipulating function(s). (List append, zero'ing out a list, summing all the values, computing the length of a list?)
+
+
+### TODO: Function unfolding and lemmata
+
+Recursive specification functions cannot be handled automatically in verification. CN only knows f(args) = f(args') when args = args' for recursive functions, nothing else.
+
+Show list append example, written as recursive C function, where **unfold** is used to unfold the definition of a recursive specification function to verify the example.
+
+Alternative formulation of list append using a while loop. Now unfold does not work, because the shape of the loop does not align nicely with the recursion of the specification function.
+
+When inductive reasoning is required **users specify and apply lemmata**. Apply that to the example. (There's also the option of VeriFast-style C programs as proofs.)
+
+
+## TODO: Loops and loop invariants
+
+
+Some example that involves loops and requires loop invariants, but not yet resource predicates or iterated resources. Perhaps deleting a list by freeing all elements.
+
+CN's **resource inference for resource predicates** unfolds resource predicates automatically as new information is learned about the inputs. Show with an example, ideally where this unfolding is not available at first, but then works after branching on whether the input pointer is null.
+
+
+
+## Iterated resources and quantified constraints
+
+Point aliasing and CN's handling of this?
+
+
+Now move to arrays, and explain **iterated resources**, using just Owned. 
+
+Verify safety of some simple example program that loops over an array. Specify the ownership using iterated resources. CN rejects the program; fix by adding `extract`. 
+
+Verify a functional property of the same code. The **output of an iterated resource** here is a map from indices to values.
+
+
+Proving functional properties of arrays may require specifying properties that all values of an array have: **logical quantifiers**.
+
+Specify such a property using quantifiers, and show how to **instantiate** using `instantiate`.
+
 
