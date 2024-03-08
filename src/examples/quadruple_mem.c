@@ -1,4 +1,4 @@
-int quadruple_read (int *p)
+int quadruple_mem (int *p)
 --BEGIN--
 /*@ requires take n = Owned<int>(p);
              let n_ = (i64) n;

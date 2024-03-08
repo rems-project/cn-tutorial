@@ -1,4 +1,4 @@
-int abs_read (int *p) 
+int abs_mem (int *p) 
 --BEGIN--
 /*@ requires requires take x = Owned<int>(p);
                       -2147483648i32 < x
