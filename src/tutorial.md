@@ -244,7 +244,7 @@ CN's `take` notation is just an alternative syntax for existential quantificatio
 
 **Quadruple**. Specify the function `quadruple_mem`, that is similar to the earlier `quadruple` function, except that the input is passed as an `int` pointer. Write a specification that takes ownership of this pointer on entry and returns this ownership on exit, leaving the pointee value unchanged.
 
-include_example(exercises/quadruple_mem.c)
+include_example(exercises/slf_quadruple_mem.c)
 
 **Abs**. Give a specification to the function `abs_mem`, which computes the absolute value of a number passed as an `int` pointer.
 
@@ -425,68 +425,71 @@ When the function returns the two member resources are recombined "on demand" to
 
 **Init point.** Insert CN `assert(false)` statements in different statement positions of `init_point` and check how the available resources evolve.
 
+**Transpose (again).** Recreate the transpose function from before, now using the swap function verified earlier (for `struct upoint`, with unsigned member values).
 
-## TODO: Data structures
-
-### TODO: Linked lists
+include_example(exercises/transpose2.c)
 
 
-Introduce a C linked list example. Introduce **resource predicates**, for encoding ownership patterns for recursive datastructures.
 
-Example of CN linked list resource predicate without output (ignore `void` return). Verify safety of (some?) list manipulating functions?
 
-Verify safety of list cons.
 
-Maybe show **manual case splitting**
+## TODO: Datastructures and resource predicates: linked lists
+
+C linked list example. This requires a different ownership pattern from before because the structure is recursive. Introduce **resource predicates** for ownership of recursive datastructures.
+
+Example of CN linked list resource predicate without output ("ignore `void` return"). Verify safety of some simple list manipulating functions? List length?
+
+List by freeing all elements (HLMC).
+
+
+CN's **resource inference for resource predicates** unfolds resource predicates automatically as new information is learned about the inputs. Show with an example, ideally where this unfolding is not available at first, but then works after branching on whether the input pointer is null.
+
+Maybe also show **manual case splitting**?
 
 
 ### TODO: CN datatypes and logical functions
 
+For going beyond safety proofs there needs to be a way to refer to the data represented in memory. User-defined resource predicates have user-defined outputs that return information derived from inputs and owned memory. For instance, resource predicate that returns length or sum of the list as output (VeriFast?).
 
-For going beyond safety there needs to be a way to refer to the data represented in memory.
+We need a way to talk about recursive data in specifications. Define CN list **datatype** and **CN pattern matching**. Modify linked list predicate to output the represented list.
 
-Define CN list **datatype**.
+Verify C implementations of list nil, cons, head, tail, with functional specification (HLMC?). (For the following: HLMC linked list library?)
 
-User-defined resource predicates can have **outputs** other than void: modify linked list predicate to output the represented list.
+For more complicated operations there needs to be a way to express recursive definitions on lists: introduce **(recursive) specification functions** .
 
-Re-verify C implementation of list cons, now with trivial functional specification.
+Define CN list append, zero'ing out a list. Summing all the values and computing the length of a list? (VeriFast) -- so far without matching C functions.
 
+Recursive CN functions cannot be handled automatically in proof. CN only knows f(args) = f(args') when args = args' for recursive functions, nothing else.
 
-For more complicated functions there needs to be a way to express operations on lists in the specifications: introduce **(recursive) specification functions** and **CN pattern matching**.
+Show list append example, written as recursive C function, where **unfold** is used to unfold the definition of a recursive specification function to verify the example. Do the same for zeroing out, summing up the values, counting the list.
 
-Verify functional properties of some simple list manipulating function(s). (List append, zero'ing out a list, summing all the values, computing the length of a list?)
-
-
-### TODO: Function unfolding and lemmata
-
-Recursive specification functions cannot be handled automatically in verification. CN only knows f(args) = f(args') when args = args' for recursive functions, nothing else.
-
-Show list append example, written as recursive C function, where **unfold** is used to unfold the definition of a recursive specification function to verify the example.
-
-Alternative formulation of list append using a while loop. Now unfold does not work, because the shape of the loop does not align nicely with the recursion of the specification function.
-
-When inductive reasoning is required **users specify and apply lemmata**. Apply that to the example. (There's also the option of VeriFast-style C programs as proofs.)
+In all cases the C function should have a recursive structure matching the CN logical function, so unfolding works well. 
 
 
-## TODO: Loops and loop invariants
+
+### TODO: Loops, loop invariants, lemmata
+
+Alternative formulation of list append using a while loop. This requires a loop invariant to give a specification for the list: basically the same as function precondition, more variables are in scope and function arguments are mutable.
+
+To phrase the specification we need a predicate for partial linked lists/linked list segments. Verify list append safey without functional correctness; maybe other examples.
+
+When we move to functional correctness we'll find that often `unfold` does not work, because the shape of the loop does not align nicely with the recursion of the specification function.
+
+Instead, inductive reasoning is required, and we need to **specify and apply lemmata**. Apply that to the append example. (There's also the option of VeriFast-style C programs as proofs?)
 
 
-Some example that involves loops and requires loop invariants, but not yet resource predicates or iterated resources. Perhaps deleting a list by freeing all elements.
-
-CN's **resource inference for resource predicates** unfolds resource predicates automatically as new information is learned about the inputs. Show with an example, ideally where this unfolding is not available at first, but then works after branching on whether the input pointer is null.
-
+### TODO: Binary trees?
 
 
 ## TODO: Iterated resources and quantified constraints
 
-Point aliasing and CN's handling of this?
-
+CN computed pointers and aliasing?
 
 Now move to arrays, and explain **iterated resources**, using just Owned. 
 
 Verify safety of some simple example program that loops over an array. Specify the ownership using iterated resources. CN rejects the program; fix by adding `extract`. 
 
-Verify a functional property of the same code. The **output of an iterated resource** here is a map from indices to values.
+Verify a functional property of the same code. The **output of an iterated resource** is a map from indices to values.
 
 
 Proving functional properties of arrays may require specifying properties that all values of an array have: **logical quantifiers**.
