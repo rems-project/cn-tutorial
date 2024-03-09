@@ -439,7 +439,7 @@ C linked list example. This requires a different ownership pattern from before b
 
 Example of CN linked list resource predicate without output ("ignore `void` return"). Verify safety of some simple list manipulating functions? List length?
 
-List by freeing all elements (HLMC).
+Feeing all elements of a list (HLMC).
 
 
 CN's **resource inference for resource predicates** unfolds resource predicates automatically as new information is learned about the inputs. Show with an example, ideally where this unfolding is not available at first, but then works after branching on whether the input pointer is null.
@@ -469,7 +469,7 @@ In all cases the C function should have a recursive structure matching the CN lo
 
 ### TODO: Loops, loop invariants, lemmata
 
-Alternative formulation of list append using a while loop. This requires a loop invariant to give a specification for the list: basically the same as function precondition, more variables are in scope and function arguments are mutable.
+Alternative formulation of list append using a while loop. This requires a loop invariant: basically this works the same as function preconditions, but more variables are in scope and function arguments are mutable.
 
 To phrase the specification we need a predicate for partial linked lists/linked list segments. Verify list append safey without functional correctness; maybe other examples.
 
@@ -485,15 +485,15 @@ Instead, inductive reasoning is required, and we need to **specify and apply lem
 
 CN computed pointers and aliasing?
 
-Now move to arrays, and explain **iterated resources**, using just Owned. 
+Now move to arrays, and explain **iterated resources**, first using just Owned. 
 
 Verify safety of some simple example program that loops over an array. Specify the ownership using iterated resources. CN rejects the program; fix by adding `extract`. 
 
 Verify a functional property of the same code. The **output of an iterated resource** is a map from indices to values.
 
 
-Proving functional properties of arrays may require specifying properties that all values of an array have: **logical quantifiers**.
+Reasoning about functional properties of an array may require specifying properties that hold for all values of an array: we need **logical quantifiers**.
 
-Specify such a property using quantifiers, and show how to **instantiate** using `instantiate`.
+Specify such a property using quantifiers, and show how to **instantiate** it manually using `instantiate`.
 
 
