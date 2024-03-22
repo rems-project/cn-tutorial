@@ -1,11 +1,14 @@
 .PHONY: default clean
 
-default: build/tutorial.html
+default: build build/tutorial.html
 
-clean:
-	rm -rf build/*
+build:
+	mkdir build
 	mkdir build/exercises
 	mkdir build/solutions
+
+clean:
+	rm -rf build
 
 SRC_EXAMPLES=$(wildcard src/examples/*)
 SOLUTIONS=$(patsubst src/examples/%, build/solutions/%, $(SRC_EXAMPLES))
