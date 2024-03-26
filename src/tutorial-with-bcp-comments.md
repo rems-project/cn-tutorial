@@ -110,6 +110,8 @@ In the original example CN reported a type error due to C undefined behaviour. W
 
 Let's return to the type error from earlier (`add` without precondition) and take a closer look at this report. The report comprises two sections.
 
+BCP: Can it be bigger in the HTML output?  Hard to read...
+
 ![**CN error report**](src/images/0.error.png)
 
 **Path.** The first section, "Path to error", contains information about the  control-flow path leading to the error.
@@ -164,15 +166,69 @@ We can specify these using a similar style of precondition as in the first examp
 
 To capture the functional behaviour, the postcondition specifies that `return` is twice the value of `n`.
 
+BCP: Why don't we have constants we can use for maxint and minint of given size?  Remembering / recognizing these huge numbers feels like a burden...
+
 ### Exercise
 
 **Quadruple.** Specify the precondition needed to ensure safety of the C function `quadruple`, and a postcondition that describes its return value.
 
 include_example(exercises/slf2_basic_quadruple.signed.c)
 
+BCP: Leaving off a semicolon like this...
+  /*@ requires let n_ = (i64) n;
+               -2147483647i64 <= n_ + n_ + n_ + n_
+               n_ + n_ + n_ + n_ <= 2147483647i64
+      ensures return == n * 4i32
+  @*/
+...leads to an exciting run-time failure:
+  cn slf2_basic_quadruple.signed.c
+  cn: internal error, uncaught exception:
+      Invalid_argument("String.sub / Bytes.sub")
+      Raised at Stdlib.invalid_arg in file "stdlib.ml", line 30, characters 20-45
+      Called from Stdlib__String.sub in file "string.ml" (inlined), line 43, characters 2-23
+      Called from Cerb_location.string_at_line in file "util/cerb_location.ml", line 384, characters 28-66
+      Called from Cerb_location.head_pos_of_location in file "util/cerb_location.ml", line 423, characters 14-69
+      Called from Dune__exe__Pp.error in file "backend/cn/pp.ml", line 271, characters 20-54
+      Called from Dune__exe__Main.main in file "backend/cn/main.ml", line 216, characters 64-95
+      Re-raised at Dune__exe__Main.main in file "backend/cn/main.ml", line 222, characters 8-73
+      Called from Cmdliner_term.app.(fun) in file "cmdliner_term.ml", line 24, characters 19-24
+      Called from Cmdliner_eval.run_parser in file "cmdliner_eval.ml", line 34, characters 37-44
+And attempting to rewrite the spec a little...
+  /*@ requires let n_ = (i64) n;
+               -2147483647i64 <= n_ * 4;
+               n_ + n_ + n_ + n_ <= 2147483647i64
+      ensures return == n * 4i32
+  @*/
+...leads to a similar failure:
+  cn slf2_basic_quadruple.signed.c
+  cn: internal error, uncaught exception:
+      Invalid_argument("String.sub / Bytes.sub")
+      Raised at Stdlib.invalid_arg in file "stdlib.ml", line 30, characters 20-45
+      Called from Stdlib__String.sub in file "string.ml" (inlined), line 43, characters 2-23
+      Called from Cerb_location.string_at_line in file "util/cerb_location.ml", line 384, characters 28-66
+      Called from Cerb_location.head_pos_of_location in file "util/cerb_location.ml", line 423, characters 14-69
+      Called from Dune__exe__Pp.error in file "backend/cn/pp.ml", line 271, characters 20-54
+      Called from Dune__exe__Main.main in file "backend/cn/main.ml", line 216, characters 64-95
+      Re-raised at Dune__exe__Main.main in file "backend/cn/main.ml", line 222, characters 8-73
+      Called from Cmdliner_term.app.(fun) in file "cmdliner_term.ml", line 24, characters 19-24
+      Called from Cmdliner_eval.run_parser in file "cmdliner_eval.ml", line 34, characters 37-44
+
+
 **Abs.** Give a specification to the C function `abs`, which computes the absolute value of a given `int` value. To describe the return value, use CN's ternary "`_ ? _ : _`" operator. Given a boolean `b`, and expressions `e1` and `e2` of the same basetype, `b ? e1 : e2` returns `e1` if `b` holds and `e2` otherwise.
 
 include_example(exercises/abs.c)
+
+BCP: There seem to be a LOT of ways to get this Invalid_argument error!
+I "fixed" it by hacking line 384 of util/cerb_location.ml like this:
+    try
+      "  ..." ^ String.sub l_ start (term_col - 5 - 3) ^ "..."
+    with _ -> ("OOPS: " ^ l_))
+
+BCP: I actually found this exercise rather hard -- was not sure how to think about all the different integer widths, which one to use where, etc.  Here was the solution I finally arrived at:
+  /*@ requires let x_ = (i64) x;
+      -2147483647i64 <= x_; x_ <= 2147483647i64
+      ensures return == (x_ <= 0i64 ? 0i32 - x : x) @*/
+Not sure how best to guide people to the correct solution, but maybe we need a few more exercises stressing this stuff?
 
 ## Pointers and simple ownership
 
@@ -211,6 +267,8 @@ This specifications means that
 
 - the caller will receive back a resource `Owned<int>(p)` when `read` returns.
 
+BCP: What are v1 and v2?  Can I leave them out or replace with _?
+
 ### Resource outputs
 
 However, a caller of `read` may also wish to know that `read` actually returns the correct value, the pointee of `p`, and also that it does not change memory at location `p`. To phrase both we need a way to refer to the pointee of `p`.
@@ -234,6 +292,7 @@ include_example(solutions/read2.c)
 read(p)
 { return. ∃v2. (p ↦ v2) * (return = v1 /\ v1 = v2) }
 ```
+BCP: Really??  The uses of v1 on the last line look ill scoped...
 CN's `take` notation is just an alternative syntax for existential quantification over the values of resources (e.g. `take v1 = Owned<...>(p)` vs. `∃v1. p ↦ v1`), but a useful one: the `take` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
 
 
