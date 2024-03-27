@@ -270,7 +270,7 @@ CN has typechecked the function, verified that it is safe to execute under the p
 
 Given the above specification, `read` leaks memory: it takes ownership, does not return it, but also does not deallocate the owned memory or otherwise dispose of it. In CN this is a type error.
 
-CN's resource types are *linear* (as opposed to affine). This means not only that resources cannot be duplicated, resources also cannot simply be dropped or "forgotten". Every resource passed into a function has to either be used up by it, by returning it or passing it to another function that consumes it, or destroyed, by deallocating the owned area of memory (as we shall see later).
+CN's resource types are *linear* (as opposed to affine). This means not only that resources cannot be duplicated, but also that resources cannot simply be dropped or "forgotten". Every resource passed into a function has to either be used up by it, by returning it or passing it to another function that consumes it, or destroyed, by deallocating the owned area of memory (as we shall see later).
 
 CN's motivation for linear tracking of resources is its focus on low-level systems software. CN checks C programs, in which, unlike higher-level garbage-collected languages, memory is managed manually, and memory leaks are typically very undesirable.
 
@@ -284,11 +284,11 @@ Aside from the `Owned` resource seen so far, CN has another built-in resource ty
 
 CN uses this distinction to prevent reads from uninitialised memory:
 
-- A read at C-type `T` and pointer `p` requires a resource `Owned<T>(p)`, so ownership of *initialised* memory at the right C-type. The load returns the resource unchanged.
+- A read at C-type `T` and pointer `p` requires a resource `Owned<T>(p)`, i.e., ownership of *initialised* memory at the right C-type. The load returns the `Owned` resource unchanged.
 
-- A write at C-type `T` and pointer `p` needs only a `Block<T>(p)` (so, unlike reads, writes to uninitialised memory are fine). The write consumes ownership of the resource (it destroys it) and returns a new resource `Owned<T>(p)` with the value written as the output. This means the resource returned from a write records the fact that this memory cell is now initialised and can be read from.
+- A write at C-type `T` and pointer `p` needs only a `Block<T>(p)` (so, unlike reads, writes to uninitialised memory are fine). The write consumes ownership of the `Block` resource (it destroys it) and returns a new resource `Owned<T>(p)` with the value written as the output. This means the resource returned from a write records the fact that this memory cell is now initialised and can be read from.
 
-Since `Owned` carries the same ownership as `Block`, just with the additional information that the `Owned` memory is initalised, a resource `Owned<T>(p)` is "at least as good" as `Block<T>(p)` --- an `Owned<T>(p)` resource can be used whenever `Block<T>(p)` is needed. For instance CN's type checking of a write to `p` requires a `Block<T>(p)`, but if an `Owned<T>(p)` resource is what is available, this can be used just the same. (In other words, an already-initialised memory cell can, of course, be over-written again.)
+Since `Owned` carries the same ownership as `Block`, just with the additional information that the `Owned` memory is initalised, a resource `Owned<T>(p)` is "at least as good" as `Block<T>(p)` --- an `Owned<T>(p)` resource can be used whenever `Block<T>(p)` is needed. For instance CN's type checking of a write to `p` requires a `Block<T>(p)`, but if an `Owned<T>(p)` resource is what is available, this can be used just the same. This allows an already-initialised memory cell to be over-written again.
 
 Unlike `Owned`, whose output is the pointee value, `Block` has no meaningful output: its output is `void`/`unit`.
 
@@ -299,7 +299,7 @@ Let's explore resources and their outputs in another example. The C function `in
 
 include_example(solutions/slf0_basic_incr.signed.c)
 
-In the precondition we assert ownership of resource `Owned<int>(p)`, binding its output/pointee value to `v1`, and use `v1` to specify that `p` must point to a sufficiently small value at the start of the function not to overflow when incremented. The postcondition asserts ownership of `p` with output `v2`, similar to before, and uses this to express that the value `p` points to is incremented by `incr`: `v2 == v1+1i32`.
+In the precondition we assert ownership of resource `Owned<int>(p)`, binding its output/pointee value to `v1`, and use `v1` to specify that `p` must point to a sufficiently small value at the start of the function not to overflow when incremented. The postcondition asserts ownership of `p` with output `v2`, as before, and uses this to express that the value `p` points to is incremented by `incr`: `v2 == v1+1i32`.
 
 
 If we incorrectly tweaked this specification and used `Block<int>(p)` instead of `Owned<int>(p)` in the precondition, as below, then CN would reject the program.
