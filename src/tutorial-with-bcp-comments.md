@@ -410,6 +410,7 @@ Hence, the postcondition `return == m+n` holds also when the sum of `m` and `n` 
 
 In the following we will sometimes use unsigned integer types to focus on specifying memory ownership, rather than the conditions necessary to show absence of C arithmetic undefined behaviour.
 
+BCP: Maybe it would be better to use unsigned throughout the early parts of the tutorial, to emphasize higher-level aspects of reasoning in CN, and then deal with all the intricacies of numbers all at once.
 
 ### Exercises
 
@@ -420,6 +421,30 @@ include_example(exercises/swap.c)
 **Transfer.** Write a specification for the function `transfer`, shown below.
 
 include_example(exercises/slf8_basic_transfer.c)
+
+BCP: I started off with this wrong annotation
+  /*@ requires take p_ = Owned<int>(p);
+               take q_ = Owned<int>(q);
+               -2147483648i64 <= ((i64) p) + ((i64) q);
+               ((i64) p) + ((i64) q) <= 2147483647i64
+      ensures take p_1 = Owned<int>(p);
+              take q_1 = Owned<int>(q);
+              p_1 == p_ + q_;
+              q_1 == 0i32
+  @*/
+but I was confused by the error message:
+  slf8_basic_transfer.c:12:20: error: Missing resource for reading
+    unsigned int n = *p;
+                     ^~
+  Resource needed: Owned<unsigned int>(p)
+Then I fiddled some more and somehow wound up with this annotation (which also didn't work, but it was not immediately clear why):
+  /*@ requires take p_ = Owned<int>(p);
+               take q_ = Owned<int>(q)
+      ensures take p_1 = Owned<int>(p);
+              take q_1 = Owned<int>(q);
+              p_1 == p_ + q_;
+              q_1 == 0u32
+  @*/
 
 
 
@@ -435,7 +460,7 @@ Here the precondition asserts ownership for `p`, at type `struct point`; the out
 
 **Note.** In CN, as in C, structurally equal struct types with *different tags* are not the same type.
 
-
+BCP: ???
 
 ### Compound Owned and Block resources
 

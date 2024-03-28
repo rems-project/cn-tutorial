@@ -384,25 +384,25 @@ While one might like to think of a struct as a single (compound) object that is 
 
 CN therefore cannot treat resources for compound C types, such as structs, as primitive, indivisible units. Instead, `Owned<T>` and `Block<T>` are defined inductively in the structure of the C-type `T`.
 
-For struct types `T`, the `Owned<T>` resource is defined as the collection of `Owned` resources for its members, as well as `Block` resources for any padding bytes in-between them. The resource `Block<T>`, similarly, is made up of `Block` resources for all members and padding bytes.
+For struct types `T`, the `Owned<T>` resource is defined as the collection of `Owned` resources for its members (as well as `Block` resources for any padding bytes in-between). The resource `Block<T>`, similarly, is made up of `Block` resources for all members (and padding bytes).
 
 To handle code that manipulates pointers into parts of a struct object, CN can automatically decompose a struct resource into the member resources, and recompose it, as needed. The following example illustrates this.
 
 Recall the function `zero` from our earlier exercise. It takes an `int` pointer to uninitialised memory, with `Block<int>` ownership, and initialises the value to zero, returning an `Owned<int>` resource with output $0$.
 
-Now consider the new function `init_point`, shown below, which takes a pointer `p` to a `struct point` and zero-initialises its members by calling `zero` twice, once with a pointer to struct member `x`, and once with a pointer to `y`.
+Now consider the function `init_point`, shown below, which takes a pointer `p` to a `struct point` and zero-initialises its members by calling `zero` twice, once with a pointer to struct member `x`, and once with a pointer to `y`.
 
 include_example(exercises/init_point.c)
 
-As per precondition, `init_point` receives ownership `Block<struct point>(p)`. The `zero` function, however, works on `int` pointers and requires `Block<int>` ownership.
+As stated in its precondition, `init_point` receives ownership `Block<struct point>(p)`. The `zero` function, however, works on `int` pointers and requires `Block<int>` ownership.
 
-CN can prove the calls to `zero` with `&p->x` and `&p->y`are safe because it decomposes the `Block<struct point>(p)` into two `Block<int>`, one for member `x`, one for member `y`. Later, the reverse happens: following the two calls to `zero`, as per `zero`'s precondition, `init_point` has ownership of two adjacent `Owned<int>` resources: ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `init_point` requires ownership `Owned<struct point>(p)`, CN combines these back into a compound resource. The resulting `Owned<point struct>` resource has for an output the struct value `s2` that is composed of the zeroed member values for `x` and `y`.
+CN can prove the calls to `zero` with `&p->x` and `&p->y`are safe because it decomposes the `Block<struct point>(p)` into two `Block<int>`, one for member `x`, one for member `y`. Later, the reverse happens: following the two calls to `zero`, as per `zero`'s precondition, `init_point` has ownership of two adjacent `Owned<int>` resources -- ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `init_point` requires ownership `Owned<struct point>(p)`, CN combines these back into a compound resource. The resulting `Owned<point struct>` resource has for an output the struct value `s2` that is composed of the zeroed member values for `x` and `y`.
 
 ### Resource inference
 
 To handle the required resource inference, CN "eagerly" decomposes all `struct` resources into resources for the struct members, and "lazily" re-composes them as needed.
 
-We can see this if we experimentally, for instance, change the `transpose` example from above to force a type error. Let's insert an `/*@ assert(false) @*/` CN assertion in the middle of the `transpose` function (more on CN assertions later), so we can inspect CN's proof context shown in the error report.
+We can see this if, for instance, we experimentally change the `transpose` example from above to force a type error. Let's insert an `/*@ assert(false) @*/` CN assertion in the middle of the `transpose` function (more on CN assertions later), so we can inspect CN's proof context shown in the error report.
 
 include_example(exercises/transpose.broken.c)
 
