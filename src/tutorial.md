@@ -427,7 +427,116 @@ When the function returns the two member resources are recombined "on demand" to
 include_example(exercises/transpose2.c)
 
 
+## Arrays and loops
 
+Another common datatype in C is arrays. Reasoning about memory ownership for arrays is more difficult than for the datatypes we have seen so far: C allows the programmer to access arrays using *computed pointers*, and the size of an array does not need to be known as a constant at compile time. 
+
+To support reasoning about code manipulating arrays and computed pointers CN has *iterated resources*. For instance, to specify ownership of an `int` array with 10 cells starting at pointer `p`, CN uses the iterated resource
+
+```c
+each (i32 i; 0i32 <= i && i < 10i32) 
+     { Owned<int>(array_shift<int>(p,i)) }
+```
+
+In detail, this can be read as follows:
+
+- for each integer `i` of CN type `i32`, ...
+
+- if `i` is between `0` and `10`, ...
+
+- assert ownership of a resource `Owned<int>` ...
+
+- for cell `i` of the array with base-address `p`.
+
+Here `array_shift<int>(p,i)` computes a pointer into the array at pointer `p`, appropriately offset for index `i`.
+
+In general, iterated resource specifications take the form
+
+```c
+each (BT Q; GUARD) { RESOURCE }
+```
+
+comprising three parts:
+
+- `BT Q`, for some CN type `BT` and name `Q`, introduces the quantifier `Q` of basetype `BT`, which is bound in `GUARD` and `RESOURCE`;
+
+- `GUARD` is a boolean-typed expression delimiting the instances of `Q` for which ownership is asserted; and
+
+- any non-iterated CN resource `RESOURCE`.
+
+
+### First array example
+
+Let's see how this applies to a first example of an array-manipulating function. Function `read` takes three arguments: the base pointer `p` of an `int` array, the length `n` of the array, and an index `i` into the array; `read` then returns the value of the `i`-th array cell.
+
+include_example(exercises/array_load.broken.c)
+
+The CN precondition requires ownership of the array on entry --- an iterated `Owned<int>` resource, one for each array index between `0` and `n` --- and that `i` lies within the range of owned indices. On return the array ownership is returned again. 
+
+This specification, in principle, should ensure that the access `p[i]` is safe. However, running CN on the example produces an error: CN is unable to find the required ownership for reading `p[i]`.
+
+```
+cn build/solutions/array_load.broken.c
+[1/1]: read
+build/solutions/array_load.broken.c:5:10: error: Missing resource for reading
+  return p[i];
+         ^~~~
+Resource needed: Owned<signed int>(array_shift<signed int>(p, (u64)i))
+```
+
+The reason is that when searching for a required resource CN's resource inference does not consider iterated resources (such as the required `Owned` resource for `p[i]` here). Quantifiers, such as used by iterated resources, can make verification undecidable, so, in order to maintain predictable type checking, CN delegates this aspect of the reasoning to the user. 
+
+To make the (single) `Owned` resource required for accessing `p[i]` available to CN's resource inference we have to "extract" ownership for index `i` out of the iterated resource. 
+
+include_example(exercises/array_load.c)
+
+Here the CN comment `/*@ extract Owned<int>, i; @*/` is a CN "ghost statement"/proof hint that instructs CN to instantiate any available iterated `Owned<int>` resource for index `i`. In our example this operation splits the iterated resource into two:
+
+```c
+each(i32 j; 0i32 <= j && j < n) { Owned<int>(array_shift<int>(p,j)) }
+```
+is split into
+
+1. the instantiation of the iterated resource at `i`
+
+    ```c
+    Owned<int>(array_shift<int>(p,i))
+    ```
+
+2. the remainder of the iterated resource, the ownership for all indices except `i`
+
+    ```c
+    each(i32 j; 0i32 <= j && j < n && j != i) 
+        { Owned<int>(array_shift<int>(p,j)) }
+    ```
+   
+   
+After this extraction step, CN can use the (former) extracted resource to justify the access `p[i]`. 
+
+Moreover, following an `extract` statement, CN remembers the extracted index and can automatically "reverse" the extraction when needed: after type checking the access `p[i]` CN must ensure the function's postcondition holds, which needs the full array ownership again (including the extracted index `i`); CN then automatically merges resources (1.) and (2.) again to obtain the required full array ownership, and completes the verification of the function.
+
+So far the specification only guarantees safe execution but does not specify the behaviour of `read`. To address this, let's return to the iterated resources in the function specification. When we specify `take a1 = each ...` here, what is `a1`? In CN, the output of an iterated resource is a *map* from indices to resource outputs. In this example, where index `j` has CN type `i32` and the iterated resource is `Owned<int>`, the output `a1` is a map from `i32` indices to `i32` values --- CN type `map<i32,i32>`. (If the type of `j` was `i64` and the resource `Owned<char>`, `a1` would have type `map<i64,u8>`.)
+
+We can use this to refine our specification with information about the functional behaviour of `read`.
+
+include_example(exercises/array_load2.c)
+
+We specify that `read` does not change the array --- the outputs `a1` and `a2`, before resp. after running the function, are the same --- and that the value returned is `a1[i]`, `a1` at index `i`.
+
+### Exercise
+
+**Array read two.** Specify and verify the following function, `array_read_two`, which takes the base pointer `p` of an `unsigned int` array, the array length `n`, and two indices `i` and `j`. Assuming `i` and `j` are different, it returns their sum.
+
+  include_example(exercises/add_two_array.c)
+
+
+**Swap array.** Specify and verify `swap_array`, which swaps the values of two cells of an `int` array. Assume again that `i` and `j` are different, and describe the effect of `swap_array` on the array value using the CN map update expression: `a[i:v]` denotes the same map as `a`, except with index `i` updated to `v`.
+
+  include_example(exercises/swap_array.c)
+
+### Loops
+
+Array-manipulating functions 
 
 
 ## TODO: Datastructures and resource predicates: linked lists
@@ -492,3 +601,6 @@ Verify a functional property of the same code. The **output of an iterated resou
 Reasoning about functional properties of an array may require specifying properties that hold for all values of an array: we need **logical quantifiers**.
 
 Specify such a property using quantifiers, and show how to **instantiate** it manually using `instantiate`.
+
+
+
