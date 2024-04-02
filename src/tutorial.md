@@ -375,7 +375,7 @@ include_example(exercises/transpose.c)
 
 Here the precondition asserts ownership for `p`, at type `struct point`; the output `s` is a value of CN type `struct point`, i.e. a record with members `i32` `x` and `i32` `y`. The postcondition similarly asserts ownership of `p`, with output `s2`, and asserts the coordinates have been swapped, by referring to the members of `s` and `s2` individually.
 
-**Note.** In CN, as in C, structurally equal struct types with *different tags* are not the same type.
+<!-- **Note.** In CN, as in C, structurally equal struct types with *different tags* are not the same type. -->
 
 
 
