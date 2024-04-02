@@ -230,11 +230,12 @@ include_example(solutions/read2.c)
 
 **Aside.** In standard separation logic the equivalent specification for `read` could have been phrased as follows (where `return` binds the return value in the postcondition):
 ```
-{ ∃v1. p ↦ v1 }
-read(p)
-{ return. ∃v2. (p ↦ v2) * (return = v1 /\ v1 = v2) }
+∀p.
+∀v1. { p ↦ v1 }
+     read(p)
+     { return. ∃v2. (p ↦ v2) /\ return = v1 /\ v1 = v2 }
 ```
-CN's `take` notation is just an alternative syntax for existential quantification over the values of resources (e.g. `take v1 = Owned<...>(p)` vs. `∃v1. p ↦ v1`), but a useful one: the `take` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
+CN's `take` notation is just alternative syntax for quantification over the values of resources, but a useful one: the `take` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
 
 
 ### Exercises
