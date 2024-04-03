@@ -7,7 +7,7 @@
 
 ++++
 <style>
-body { 
+body {
   max-width: 800px;
   margin: auto;
   font-family: sans-serif;
@@ -23,8 +23,8 @@ body {
 // h3 { font-size: 22px; margin-top: 2em; }
 
 
-h1, h2, h3, h4, h5 { 
-  color: hsl(219, 50%, 50%); 
+h1, h2, h3, h4, h5 {
+  color: hsl(219, 50%, 50%);
   font-family: sans-serif;
   font-weight: bold;
 }
@@ -500,3 +500,11 @@ When the function returns the two member resources are recombined "`on demand`" 
 include::exercises/transpose2.c[]
 ----
 
+////
+BCP: Some more things to think about including...
+      - Something about CN's version of the frame rule (see
+        bcp_framerule.c, though the example is arguably a bit
+        unnatural).
+      - Examples from Basic.v with allocation - there are lots of
+        interesting ones!
+////
