@@ -1,5 +1,5 @@
-void free_ (unsigned int *p)
+void free_ (int *p)
 /*@ trusted
-    requires take v = Owned(p) @*/
+    requires take v = Owned<int>(p) @*/
 {}
 

@@ -3,9 +3,12 @@
 default: build build/tutorial.html
 
 build:
-	mkdir build
-	mkdir build/exercises
-	mkdir build/solutions
+	mkdir -p build
+	mkdir -p build/exercises
+	mkdir -p build/solutions
+
+clean:
+	rm -rf build
 
 clean:
 	rm -rf build
@@ -23,14 +26,24 @@ build/solutions/%: src/examples/%
 	cat $< | sed '/^--BEGIN--$$/d' | sed '/^--END--$$/d' > $@
 
 
-build/tutorial.md: src/tutorial.md $(EXERCISES) $(SOLUTIONS)
-	@echo $(EXERCISES)
-	m4 -I build $< > $@
+# build/tutorial.md: src/tutorial.md $(EXERCISES) $(SOLUTIONS)
+# 	@echo $(EXERCISES)
+# 	m4 -I build $< > $@
 
-build/tutorial.html: build/tutorial.md
-	pandoc -t html5 \
-	       --standalone \
-		   --embed-resources \
-		   --highlight-style=pygments \
-		   --toc \
-		$< -o $@
+# build/tutorial.html: build/tutorial.md
+# 	pandoc -t html5 \
+# 	       --standalone \
+# 		   --embed-resources \
+# 		   --highlight-style=pygments \
+# 		   --toc \
+# 		$< -o $@
+
+
+build/tutorial.adoc: src/tutorial.adoc
+	cp $< $@
+
+build/images: src/images
+	cp -r $< $@
+
+build/tutorial.html: build/tutorial.adoc $(EXERCISES) $(SOLUTIONS) build/images
+	asciidoctor --doctype book $< -o $@
