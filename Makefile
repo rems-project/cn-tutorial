@@ -27,16 +27,16 @@ build/solutions/%: src/examples/%
 
 
 # build/tutorial.md: src/tutorial.md $(EXERCISES) $(SOLUTIONS)
-# 	@echo $(EXERCISES)
-# 	m4 -I build $< > $@
+#	@echo $(EXERCISES)
+#	m4 -I build $< > $@
 
 # build/tutorial.html: build/tutorial.md
-# 	pandoc -t html5 \
-# 	       --standalone \
-# 		   --embed-resources \
-# 		   --highlight-style=pygments \
-# 		   --toc \
-# 		$< -o $@
+#	pandoc -t html5 \
+#	       --standalone \
+#		   --embed-resources \
+#		   --highlight-style=pygments \
+#		   --toc \
+#		$< -o $@
 
 
 build/tutorial.adoc: src/tutorial.adoc
@@ -47,3 +47,9 @@ build/images: src/images
 
 build/tutorial.html: build/tutorial.adoc $(EXERCISES) $(SOLUTIONS) build/images
 	asciidoctor --doctype book $< -o $@
+
+
+upenn-install: default
+	rm -rf $(HOME)/pub/courses/6700-SL-2024/current/CN
+	mkdir $(HOME)/pub/courses/6700-SL-2024/current/CN
+	cp -r build/tutorial.html build/images $(HOME)/pub/courses/6700-SL-2024/current/CN

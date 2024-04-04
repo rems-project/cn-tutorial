@@ -203,7 +203,7 @@ To capture the functional behaviour, the postcondition specifies that `+return+`
 include::exercises/slf2_basic_quadruple.signed.c[]
 ----
 
-*Abs.* Give a specification to the C function `+abs+`, which computes the absolute value of a given `+int+` value. To describe the return value, use CN’s ternary "``+_ ? _ : _+``" operator. Given a boolean `+b+`, and expressions `+e1+` and `+e2+` of the same basetype, `+b ? e1 : e2+` returns `+e1+` if `+b+` holds and `+e2+` otherwise.
+*Abs.* Give a specification to the C function `+abs+`, which computes the absolute value of a given `+int+` value. To describe the return value, use CN’s ternary "`+_ ? _ : _+`" operator. Given a boolean `+b+`, and expressions `+e1+` and `+e2+` of the same basetype, `+b ? e1 : e2+` returns `+e1+` if `+b+` holds and `+e2+` otherwise.
 
 [source,c]
 ----
