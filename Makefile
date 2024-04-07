@@ -1,43 +1,33 @@
-.PHONY: default clean
+.PHONY: default clean exercises
 
-default: build build/tutorial.html
+SRC_EXAMPLES=$(wildcard src/examples/*)
+SOLUTIONS=$(patsubst src/examples/%, build/solutions/%, $(SRC_EXAMPLES))
+EXERCISES=$(patsubst src/examples/%, build/exercises/%, $(SRC_EXAMPLES))
+
+default: build build/tutorial.html exercises
+
+clean:
+	rm -rf build
 
 build:
 	mkdir -p build
 	mkdir -p build/exercises
 	mkdir -p build/solutions
 
-clean:
-	rm -rf build
+##############################################################################
+# Exercises
 
-clean:
-	rm -rf build
-
-SRC_EXAMPLES=$(wildcard src/examples/*)
-SOLUTIONS=$(patsubst src/examples/%, build/solutions/%, $(SRC_EXAMPLES))
-EXERCISES=$(patsubst src/examples/%, build/exercises/%, $(SRC_EXAMPLES))
-
-
+exercises: $(EXERCISES) $(SOLUTIONS)
 
 build/exercises/%: src/examples/%
 	sed -E '/^--BEGIN--$$/,/^--END--$$/d' $< > $@
 
 build/solutions/%: src/examples/%
 	cat $< | sed '/^--BEGIN--$$/d' | sed '/^--END--$$/d' > $@
+	@[[ $< != *broken* ]] && echo cn $@ && cn $@
 
-
-# build/tutorial.md: src/tutorial.md $(EXERCISES) $(SOLUTIONS)
-#	@echo $(EXERCISES)
-#	m4 -I build $< > $@
-
-# build/tutorial.html: build/tutorial.md
-#	pandoc -t html5 \
-#	       --standalone \
-#		   --embed-resources \
-#		   --highlight-style=pygments \
-#		   --toc \
-#		$< -o $@
-
+##############################################################################
+# Tutorial document
 
 build/tutorial.adoc: src/tutorial.adoc
 	cp $< $@
@@ -48,6 +38,8 @@ build/images: src/images
 build/tutorial.html: build/tutorial.adoc $(EXERCISES) $(SOLUTIONS) build/images
 	asciidoctor --doctype book $< -o $@
 
+##############################################################################
+# Site-specific stuff
 
 upenn-install: default
 	rm -rf $(HOME)/pub/courses/6700-SL-2024/current/CN

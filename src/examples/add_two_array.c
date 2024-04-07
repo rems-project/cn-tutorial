@@ -10,12 +10,10 @@ unsigned int array_read_two (unsigned int *p, int n, int i, int j)
 @*/
 --END--
 {
---BEGIN--
   /*@ extract Owned<unsigned int>, i; @*/
---END--
   unsigned int tmp1 = p[i];
-  /*@ extract Owned<unsigned int>, j; @*/
 --BEGIN--
+  /*@ extract Owned<unsigned int>, j; @*/
   unsigned int tmp2 = p[j];
 --END--
   return (tmp1 + tmp2);
