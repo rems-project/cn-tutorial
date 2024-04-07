@@ -632,12 +632,38 @@ We specify that `+read+` does not change the array — the outputs `+a1+` and `+
 include::exercises/add_two_array.c[]
 ----
 
-*Swap array.* Specify and verify `+swap_array+`, which swaps the values of two cells of an `+int+` array. Assume again that `+i+` and `+j+` are different, and describe the effect of `+swap_array+` on the array value using the CN map update expression: `+a[i:v]+` denotes the same map as `+a+`, except with index `+i+` updated to `+v+`.
+////
+BCP: In this one I got quite tangled up in different kinds of integers, then got tangled up in (I think) putting the extract declarations in the wrong place.  (I didn't save the not-working version, I'm afraid.)
+////
+
+*Swap array.* Specify and verify `+swap_array+`, which swaps the values of two cells of an `+int+` array. Assume again that `+i+` and `+j+` are different, and describe the effect of `+swap_array+` on the array value using the CN map update expression `+a[i:v]+`, which denotes the same map as `+a+`, except with index `+i+` updated to `+v+`.
 
 [source,c]
 ----
 include::exercises/swap_array.c[]
 ----
+
+////
+BCP: I wrote this, which seemed natural but did not work -- I still don't fully understand why.  I think this section will need some more examples / exercises to be fully digestible, or perhaps this is just yet another symptom of my imperfecdt understanding of how the numeric stuff works.
+
+    void swap_array (int *p, int n, int i, int j)
+    /*@ requires take a1 = each(i32 k; 0i32 <= k && k < n) { Owned<unsigned int>(array_shift<unsigned int>(p,k)) };
+                 0i32 <= i && i < n;
+                 0i32 <= j && j < n;
+                 j != i;
+                 take xi = Owned<unsigned int>(array_shift(p,i));
+                 take xj = Owned<unsigned int>(array_shift(p,j))
+        ensures take a2 = each(i32 k; 0i32 <= k && k < n) { Owned<unsigned int>(array_shift<unsigned int>(p,k)) };
+                a1[i:xj][j:xi] == a2
+    @*/
+    {
+      extract Owned<unsigned int>, i;
+      extract Owned<unsigned int>, j;
+      int tmp = p[i];
+      p[i] = p[j];
+      p[j] = tmp;
+    }
+////
 
 === Loops
 
@@ -646,29 +672,35 @@ The array examples covered so far manipulate one or two individual cells of an a
 In order to verify code with loops, CN requires the user to supply loop invariants -- CN specifications of all owned resources and the constraints required to verify each iteration of the loop.
 
 
-Let's take a look at a simple first example. The following function `+init_array+`, takes the base pointer `+p+` of a `+char+` array and the array length `+n+` and writes `+0+` to each array cell.
+Let's take a look at a simple first example. The following function, `+init_array+`, takes the base pointer `+p+` of a `+char+` array and the array length `+n+` and writes `+0+` to each array cell.
 [source,c]
 ----
 include::exercises/init_array.c[]
 ----
 
-If, for the moment, we focus just on proving safe execution of `+init_array+`, and ignore its functional behaviour, a specification might look as above: on entry `+init_array+` takes ownership of an iterated `+Owned<char>+` resource -- one `+Owned+` resource for each index `+i+` of type `+u32+` (so greater or equal to `+0+`) up to `+n+`; on exit `+init_array+` returns the ownership.
+If, for the moment, we focus just on proving safe execution of `+init_array+`, ignoring its functional behaviour, a specification might look as above: on entry `+init_array+` takes ownership of an iterated `+Owned<char>+` resource -- one `+Owned+` resource for each index `+i+` of type `+u32+` (so necessarily greater or equal to `+0+`) up to `+n+`; on exit `+init_array+` returns the ownership.
 
 To verify this, we have to supply a loop invariant that specifies all resource ownership and the necessary constraints that hold before and after each iteration of the loop. Loop invariants are specified using the keyword `inv`, followed by CN specifications using the same syntax as in function pre- and postconditions. The variables in scope for loop invariants are all in-scope C variables, as well as CN variables introduced in the function precondition. *In loop invariants, the name of a C variable refers to its current value* (more on this shortly).
-
-In our example, the main condition is unsurprising: we specify ownership of an iterated resource for an array just like in the the pre- and postcondition.
-
-The second line, however, is less straightforward. Recall that, as discussed at the start of the tutorial, function arguments in C are mutable, and so CN permits this as well.While in this example it is obvious that `+p+` and `+n+` do not change, CN (currently) requires the loop invariant to explicitly state this, using special notation `+{p} unchanged+` (and similarly for `+n+`).
-
-**Note.** If we forgot to specify `+unchanged+`, this can lead to confusing errors. In this example, for instance, CN would verify the loop against the loop invariant, but would be unable to prove a function postcondition seemingly directly implied by the loop invariant (lacking the information that the postcondition's `+p+` and `+n+` are the same as the loop invariant's). Future CN versions may handle loop invariants differently and treat variables as immutable by default.
-
-The final piece needed in the verification is an extract statement, as used in the previous examples: to separate the individual `+Owned<char>+` resource for index `+j+` out of the iterated `+Owned+` resource and make it available to the resource inference, we specify `+extract Owned<char>, j;+`.
-
 
 [source,c]
 ----
 include::solutions/init_array.c[]
 ----
+////
+BCP: Concrete syntax: Why not write something like "unchanged {p,n}" or "unchanged: p,n"?
+////
+
+The main condition here is unsurprising: we specify ownership of an iterated resource for an array just like in the the pre- and postcondition.
+
+The second thing we need to do, however, is less straightforward. Recall that, as discussed at the start of the tutorial, function arguments in C are mutable, and so CN permits this as well.While in this example it is obvious that `+p+` and `+n+` do not change, CN currently requires the loop invariant to explicitly state this, using special notation `+{p} unchanged+` (and similarly for `+n+`).
+
+**Note.** If we forget to specify `+unchanged+`, this can lead to confusing errors. In this example, for instance, CN would verify the loop against the loop invariant, but would be unable to prove a function postcondition seemingly directly implied by the loop invariant (lacking the information that the postcondition's `+p+` and `+n+` are the same as the loop invariant's). Future CN versions may handle loop invariants differently and treat variables as immutable by default.
+////
+BCP: This seems like a good idea!
+////
+
+The final piece needed in the verification is an `+extract+` statement, as used in the previous examples: to separate the individual `+Owned<char>+` resource for index `+j+` out of the iterated `+Owned+` resource and make it available to the resource inference, we specify `+extract Owned<char>, j;+`.
+
 
 === Second loop example
 
