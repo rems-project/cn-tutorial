@@ -39,3 +39,11 @@ struct int_list* IntList_cons(int h, struct int_list* t)
 {
   // (a raw, unchecked call to malloc goes here)
 }
+
+void IntList_free(struct int_list* p)
+/*@ trusted
+    requires take H = Owned<struct int_list>(p)
+ @*/
+{
+  // (a raw, unchecked call to free goes here)
+}

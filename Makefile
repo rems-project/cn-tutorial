@@ -15,7 +15,6 @@ build:
 	mkdir -p build/solutions
 
 hfiles:
-	echo HERE
 	cp src/examples/*.h build/exercises
 	cp src/examples/*.h build/solutions
 

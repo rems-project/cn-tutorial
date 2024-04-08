@@ -881,5 +881,32 @@ functional-programming trick of copying xs but sharing ys.  (Why?)
 include::exercises/bcp_length.c[]
 ----
 
-// BCP: We should include the file names of the exercises so that people doM
+*List deallocation*.  Fill in the body of the following procedure and
+add annotations as appropriate:
+
+[source,c]
+----
+include::exercises/list_free.c[]
+----
+
+// BCP: We should include the file names of the exercises so that people do
 // not have to cut and paste.
+
+// -------------------------------------------------------------------------
+
+// TODO: More exercises from Repr.v...
+
+// TODO: acclength
+
+// TODO (exercise?): list free
+
+// TODO (exercise?): in-place list reversal
+
+// TODO (exercise?): sized stacks (significant exercise)
+
+// TODO: Trees:
+//          - deep copy
+//          - sum
+//          - maybe the accumulating sum
+
+// TODO: Counter with internal state??  (Can CN do this?)
