@@ -1,3 +1,5 @@
+// append.h
+
 /*@
 function [rec] (datatype seq) append(datatype seq xs, datatype seq ys) {
   match xs {

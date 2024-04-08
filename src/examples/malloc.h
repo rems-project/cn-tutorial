@@ -1,3 +1,5 @@
+// malloc.h
+
 int *mallocInt ()
 /*@ trusted
     requires true
