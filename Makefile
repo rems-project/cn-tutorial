@@ -1,10 +1,10 @@
-.PHONY: default clean exercises
+.PHONY: default clean exercises hfiles
 
 SRC_EXAMPLES=$(wildcard src/examples/*)
 SOLUTIONS=$(patsubst src/examples/%, build/solutions/%, $(SRC_EXAMPLES))
 EXERCISES=$(patsubst src/examples/%, build/exercises/%, $(SRC_EXAMPLES))
 
-default: build build/tutorial.html exercises
+default: build hfiles build/tutorial.html exercises
 
 clean:
 	rm -rf build
@@ -13,6 +13,11 @@ build:
 	mkdir -p build
 	mkdir -p build/exercises
 	mkdir -p build/solutions
+
+hfiles:
+	echo HERE
+	cp src/examples/*.h build/exercises
+	cp src/examples/*.h build/solutions
 
 ##############################################################################
 # Exercises
@@ -24,7 +29,7 @@ build/exercises/%: src/examples/%
 
 build/solutions/%: src/examples/%
 	cat $< | sed '/^--BEGIN--$$/d' | sed '/^--END--$$/d' > $@
-	@[[ $< != *broken* ]] && echo cn $@ && cn $@
+	if [[ "$<" != *"broken"* ]]; then echo cn $@ && cn $@; fi
 
 ##############################################################################
 # Tutorial document

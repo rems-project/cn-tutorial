@@ -1,5 +1,4 @@
 unsigned int val_rand (unsigned int n);
-
 /*@ spec val_rand(u32 n)
     requires n > 0u32
     ensures 0u32 <= return && return < n

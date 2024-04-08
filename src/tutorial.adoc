@@ -764,3 +764,89 @@ include::exercises/init_array_rev.c[]
 BCP: I'll put my new stuff below here...
 ////
 
+== Defining Predicates
+
+(Text is needed from here on!  But hopefully there's enough structure here to
+make sense of the examples...)
+
+[source,c]
+----
+include::exercises/bcp_incr2.c[]
+----
+
+== Allocating and Deallocating Memory
+
+[source,c]
+----
+include::exercises/malloc.h[]
+----
+
+[source,c]
+----
+include::exercises/free.h[]
+----
+
+[source,c]
+----
+include::exercises/slf17_get_and_free.c[]
+----
+
+[source,c]
+----
+include::exercises/ref.h[]
+----
+
+[source,c]
+----
+include::exercises/slf16_basic_succ_using_incr.c[]
+----
+
+=== Exercises
+
+// BCP: There should be a non-ref-using version of this earlier, for comparison.
+
+Prove a specification for the following program that reveals *only* that
+it returns a number that is greater than its argument.
+
+[source,c]
+----
+include::exercises/slf_ref_greater.c[]
+----
+
+=== Side note: External functions
+
+Another way to specify external / unknown functions:
+
+[source,c]
+----
+include::exercises/slf18_two_dice.c[]
+----
+
+
+== Lists
+
+Common definitions for lists:
+
+[source,c]
+----
+include::exercises/list.h[]
+----
+
+A simple destructive append:
+
+[source,c]
+----
+include::exercises/bcp_append.c[]
+----
+
+A non-allocating merge sort:
+
+[source,c]
+----
+include::exercises/bcp_mergesort.c[]
+----
+
+An allocating list-copy:
+----
+include::exercises/bcp_copy.c[]
+----

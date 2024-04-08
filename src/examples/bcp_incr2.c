@@ -1,4 +1,8 @@
-/* First, let's deal with the "normal" case where p and q do not alias... */
+/* Suppose we want to write a function that takes *two* pointers to
+   integers and increments the contents of both of them.  
+
+   First, let's deal with the "normal" case where the two arguments do
+   not alias... */
 
 void incr2a (unsigned int *p, unsigned int *q)
 /*@ requires take pv = Owned<unsigned int>(p);
@@ -18,7 +22,8 @@ void incr2a (unsigned int *p, unsigned int *q)
 }
 
 /* Now, what if they do alias?  The clunky solution is to write a
-   whole 'nother version of incr2 with a different spec... */
+   whole different version of incr2 with a different embedded
+   specification... */
 
 void incr2b (unsigned int *p, unsigned int *q)
 /*@ requires take pv = Owned<unsigned int>(p);
@@ -49,7 +54,7 @@ void call_both (unsigned int *p, unsigned int *q)
   incr2b(p, p);
 }
 
-/* But this is horrible.  Much better is to define a predicate to use
+/* This is horrible.  Much better is to define a predicate to use
    in the pre- and postconditions that captures both cases together: */
 
 /*@
