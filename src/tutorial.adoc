@@ -738,7 +738,7 @@ Let's go through this line-by-line:
 
 As before, we also have to instruct CN to `+extract+` ownership of individual array cells out of the iterated resources:
 
-- to allow CN to extract the individual `+Block+` to be written we use `+extract Block<char>, j;+`; 
+- to allow CN to extract the individual `+Block+` to be written we use `+extract Block<char>, j;+`;
 
 - the store returns a matching `+Owned<char>+` resource for index `+j+`;
 
@@ -753,3 +753,14 @@ As before, we also have to instruct CN to `+extract+` ownership of individual ar
 ----
 include::exercises/init_array_rev.c[]
 ----
+
+
+
+
+
+
+
+////
+BCP: I'll put my new stuff below here...
+////
+
