@@ -5,9 +5,9 @@ int *mallocInt ()
 @*/
 {}
 
-int *mallocUnsignedInt ()
+unsigned int *mallocUnsignedInt ()
 /*@ trusted
     requires true
-    ensures take v = Block<int>(return)
+    ensures take v = Block<unsigned int>(return)
 @*/
 {}
