@@ -5,6 +5,6 @@ unsigned int get_and_free (unsigned int *p)
     ensures return == v1_ @*/
 {
   unsigned int v = *p;
-  free_ (p);
+  freeUnsignedInt (p);
   return v;
 }
