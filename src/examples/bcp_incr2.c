@@ -6,7 +6,7 @@ void incr2a (unsigned int *p, unsigned int *q)
     ensures take pv_ = Owned<unsigned int>(p);
             take qv_ = Owned<unsigned int>(q);
             pv_ == pv + 1u32;
-
+            qv_ == qv + 1u32
 @*/
 {
   unsigned int n = *p;
