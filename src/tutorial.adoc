@@ -894,13 +894,19 @@ include::exercises/list_free.c[]
 
 // -------------------------------------------------------------------------
 
-// TODO: More exercises from Repr.v...
-
 // TODO: acclength
 
 // TODO (exercise?): list free
 
+== External Lemmas
+
 // TODO (exercise?): in-place list reversal
+
+[source,c]
+----
+include::exercises/list_rev.c[]
+----
+
 
 // TODO (exercise?): sized stacks (significant exercise)
 
