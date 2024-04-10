@@ -48,8 +48,6 @@ body > .sourceCode {
 
 = CN tutorial
 
-
-
 CN is a type system for verifying C code, focusing especially on low-level systems code. Compared to the normal C type system, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes _safely_ — does not raise C undefined behaviour — and _correctly_ — according to strong user-defined specifications. To accurately handle the complex semantics of C, CN builds on the https://github.com/rems-project/cerberus/[Cerberus semantics for C].
 
 This tutorial introduces CN along a series of examples, starting with basic usage of CN on simple arithmetic functions and slowly moving towards more elaborate separation logic specifications of data structures.
@@ -762,11 +760,15 @@ include::exercises/init_array_rev.broken.c[]
 
 
 
+//// _____________________________________________________________________
 ////
 BCP: I'll put my new stuff below here...
 ////
 
 == Defining Predicates
+
+// We should show how to define predicates earlier --
+//     - e.g., with numeric ranges!!
 
 (Text is needed from here on!  But hopefully there's enough structure to
 make sense of the examples...)
@@ -889,24 +891,27 @@ add annotations as appropriate:
 include::exercises/list_free.c[]
 ----
 
+*Length with an accumulator*.  Add annotations as appropriate:
+// BCP: Removing / forgetting the unfold in this one gives a truly 
+// bizarre error message saying that the constraint "n == (n + length(L1))" 
+// is unsatisfiable...
+
+[source,c]
+----
+include::exercises/slf_length_acc.c[]
+----
+
 // BCP: We should include the file names of the exercises so that people do
 // not have to cut and paste.
 
-// -------------------------------------------------------------------------
-
-// TODO: acclength
-
-// TODO (exercise?): list free
-
+////
 == External Lemmas
-
-// TODO (exercise?): in-place list reversal
 
 [source,c]
 ----
 include::exercises/list_rev.c[]
 ----
-
+////
 
 // TODO (exercise?): sized stacks (significant exercise)
 
