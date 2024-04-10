@@ -2,7 +2,7 @@
 
 void IntList_free_list(struct int_list* xs)
 // You fill in the rest...
---BEGIN--
+/* --BEGIN-- */
 /*@ requires take L1 = IntList(xs) @*/
 {
   if (xs == 0) {
@@ -11,4 +11,4 @@ void IntList_free_list(struct int_list* xs)
     IntList_free(xs);
   }
 }
---END--
+/* --END-- */

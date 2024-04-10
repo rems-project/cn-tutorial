@@ -15,7 +15,7 @@ void swap (unsigned int *p, unsigned int *q)
 struct upoint { unsigned int x; unsigned int y; };
 
 void transpose2 (struct upoint *p)
---BEGIN--
+/* --BEGIN-- */
 /*@ requires take s = Owned<struct upoint>(p)
     ensures take s2 = Owned<struct upoint>(p);
             s2.x == s.y;
@@ -23,4 +23,4 @@ void transpose2 (struct upoint *p)
 {
   swap(&p->x, &p->y);
 }
---END--
+/* --END-- */

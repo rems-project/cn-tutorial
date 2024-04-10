@@ -1,22 +1,59 @@
 #include "list.h"
-#include "length.c"
+
+// BCP: Should really #include this from bcp_length.c, not repeat it!
+
+/* --BEGIN-- */
+/*@
+function [rec] (u32) length(datatype seq xs) {
+  match xs {
+    Seq_Nil {} => {
+      0u32
+    }
+    Seq_Cons {head : h, tail : zs}  => {
+      1u32 + length(zs)
+    }
+  }
+}
+@*/
+
+/* --END-- */
+unsigned int IntList_length (struct int_list *xs)
+/* --BEGIN-- */
+/*@ requires take L1 = IntList(xs)
+    ensures take L1_ = IntList(xs);
+            L1 == L1_;
+            return == length(L1)
+@*/
+/* --END-- */
+{
+  if (xs == 0) {
+/* --BEGIN-- */
+    /*@ unfold length(L1); @*/
+/* --END-- */
+    return 0;
+  } else {
+/* --BEGIN-- */
+    /*@ unfold length(L1); @*/
+/* --END-- */
+    return 1 + IntList_length (xs->tail);
+  }
+}
+
 
 struct sized_stack {
-  int size;
+  unsigned int size;
   struct int_list* data;
 };
 
 /*@
 datatype sizeAndData {
-  SD {unisgned int s, datatype seq d}
+  SD {u32 s, datatype seq d}
 }
 
-predicate (datatype seq) SizedStack(pointer p) {
+predicate (datatype sizeAndData) SizedStack(pointer p) {
     take S = Owned<struct sized_stack>(p);
-    take s = Owned<unsigned int>(S.size);
+    let s = S.size;
     take d = IntList(S.data);
-    return { s: s, d: d };
-  }
+    return (SD { s: s, d: d });
 }
 @*/
-

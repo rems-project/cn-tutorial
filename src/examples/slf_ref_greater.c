@@ -1,7 +1,7 @@
 #include "malloc.h"
 
 unsigned int *ref_greater_abstract (unsigned int *p)
---BEGIN--
+/* --BEGIN-- */
 /*@ requires take m1 = Owned<unsigned int>(p);
              m1 < 4294967295u32
     ensures take m2 = Owned<unsigned int>(p);
@@ -9,7 +9,7 @@ unsigned int *ref_greater_abstract (unsigned int *p)
             m1 == m2;
             m1 <= n2
 @*/
---END--
+/* --END-- */
 {
   unsigned int* q = mallocUnsignedInt();
   *q = *p + 1;

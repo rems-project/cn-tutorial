@@ -1,6 +1,6 @@
 #include "list.h"
 
---BEGIN--
+/* --BEGIN-- */
 /*@
 function [rec] (u32) length(datatype seq xs) {
   match xs {
@@ -14,25 +14,25 @@ function [rec] (u32) length(datatype seq xs) {
 }
 @*/
 
---END--
+/* --END-- */
 unsigned int IntList_length (struct int_list *xs)
---BEGIN--
+/* --BEGIN-- */
 /*@ requires take L1 = IntList(xs)
     ensures take L1_ = IntList(xs);
             L1 == L1_;
             return == length(L1)
 @*/
---END--
+/* --END-- */
 {
   if (xs == 0) {
---BEGIN--
+/* --BEGIN-- */
     /*@ unfold length(L1); @*/
---END--
+/* --END-- */
     return 0;
   } else {
---BEGIN--
+/* --BEGIN-- */
     /*@ unfold length(L1); @*/
---END--
+/* --END-- */
     return 1 + IntList_length (xs->tail);
   }
 }

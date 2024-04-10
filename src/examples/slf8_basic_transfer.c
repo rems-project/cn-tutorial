@@ -1,5 +1,5 @@
 void transfer (unsigned int *p, unsigned int *q)
---BEGIN--
+/* --BEGIN-- */
 /*@ requires take n1 = Owned(p);
              take m1 = Owned(q)
     ensures  take n2 = Owned(p);
@@ -7,7 +7,7 @@ void transfer (unsigned int *p, unsigned int *q)
              n2 == n1 + m1;
              m2 == 0u32
 @*/
---END--
+/* --END-- */
 {
   unsigned int n = *p;
   unsigned int m = *q;
