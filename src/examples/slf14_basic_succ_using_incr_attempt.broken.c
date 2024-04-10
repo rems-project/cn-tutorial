@@ -7,7 +7,7 @@ unsigned int succ_using_incr_attempt(unsigned int n)
 @*/
 --END--
 {
-  unsigned int *p = ref(n);
+  unsigned int *p = refUnsignedInt(n);
   incr(p);
   return *p;
 }

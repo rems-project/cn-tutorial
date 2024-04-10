@@ -12,5 +12,5 @@ unsigned int *ref_greater (unsigned int *p)
 {
   unsigned int n = *p;
   unsigned int m = n+1;
-  return ref(m);
+  return refUnsignedInt(m);
 }

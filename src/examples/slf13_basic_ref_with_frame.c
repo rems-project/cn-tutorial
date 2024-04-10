@@ -10,5 +10,5 @@ unsigned int *triple_ref_with_frame(unsigned int *p_, unsigned int v)
 @*/
 --END--
 {
-  return ref(v);
+  return refUnsignedInt(v);
 }
