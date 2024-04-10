@@ -1,10 +1,10 @@
-.PHONY: default clean exercises hfiles
+.PHONY: default clean exercises 
 
 SRC_EXAMPLES=$(wildcard src/examples/*)
 SOLUTIONS=$(patsubst src/examples/%, build/solutions/%, $(SRC_EXAMPLES))
 EXERCISES=$(patsubst src/examples/%, build/exercises/%, $(SRC_EXAMPLES))
 
-default: build hfiles build/tutorial.html exercises
+default: build exercises build/tutorial.html 
 
 clean:
 	rm -rf build
@@ -13,10 +13,6 @@ build:
 	mkdir -p build
 	mkdir -p build/exercises
 	mkdir -p build/solutions
-
-hfiles:
-	cp src/examples/*.h build/exercises
-	cp src/examples/*.h build/solutions
 
 ##############################################################################
 # Exercises
@@ -41,7 +37,7 @@ build/tutorial.adoc: src/tutorial.adoc
 build/images: src/images
 	cp -r $< $@
 
-build/tutorial.html: build/tutorial.adoc $(EXERCISES) $(SOLUTIONS) build/images
+build/tutorial.html: build/tutorial.adoc $(SRC_EXAMPLES) build/images
 	asciidoctor --doctype book $< -o $@
 
 ##############################################################################
