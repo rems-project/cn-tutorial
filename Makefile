@@ -1,9 +1,5 @@
 .PHONY: default clean exercises 
 
-SRC_EXAMPLES=$(wildcard src/examples/*)
-SOLUTIONS=$(patsubst src/examples/%, build/solutions/%, $(SRC_EXAMPLES))
-EXERCISES=$(patsubst src/examples/%, build/exercises/%, $(SRC_EXAMPLES))
-
 default: build exercises build/tutorial.html 
 
 clean:
@@ -16,6 +12,10 @@ build:
 
 ##############################################################################
 # Exercises
+
+SRC_EXAMPLES=$(wildcard src/examples/*)
+SOLUTIONS=$(patsubst src/examples/%, build/solutions/%, $(SRC_EXAMPLES))
+EXERCISES=$(patsubst src/examples/%, build/exercises/%, $(SRC_EXAMPLES))
 
 exercises: $(EXERCISES) $(SOLUTIONS)
 
@@ -48,6 +48,3 @@ upenn-install: default
 	mkdir $(HOME)/pub/courses/6700-SL-2024/current/CN
 	cp -r build/tutorial.html build/images $(HOME)/pub/courses/6700-SL-2024/current/CN
 
-testsed: 
-	sed -E '\|^.*--BEGIN--.*$$|,\|^.*--END--.*$$|d' test.tmp 
-	cat test.tmp | sed '\|^.*--BEGIN--.*$$|d' | sed '\|^.*--END--.*$$|d' 
