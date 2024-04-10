@@ -892,8 +892,8 @@ include::exercises/list_free.c[]
 ----
 
 *Length with an accumulator*.  Add annotations as appropriate:
-// BCP: Removing / forgetting the unfold in this one gives a truly 
-// bizarre error message saying that the constraint "n == (n + length(L1))" 
+// BCP: Removing / forgetting the unfold in this one gives a truly
+// bizarre error message saying that the constraint "n == (n + length(L1))"
 // is unsatisfiable...
 
 [source,c]
@@ -928,4 +928,6 @@ Further exercises:
 Misc things to do:
   - create a top-level TAGS file for emacs
   - remove the bcp_ prefix from filenames (and here)
+  - Figure out the smoothest way to do multiple includes
+  - Figure out how to display filenames
 ////

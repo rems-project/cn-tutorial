@@ -21,16 +21,18 @@ exercises: $(EXERCISES) $(SOLUTIONS)
 
 build/exercises/%: src/examples/%
 #	sed -E '/^--BEGIN--$$/,/^--END--$$/d' $< > $@
-	sed -E '\|^.*--BEGIN--.*$$|,\|^.*--END--.*$$|d' $< > $@
+	@echo Rebuild $@
+	@sed -E '\|^.*--BEGIN--.*$$|,\|^.*--END--.*$$|d' $< > $@
 
 build/solutions/%: src/examples/%
-	if [[ "$<" = *".c"* ]]; then \
+	@if [[ "$<" = *".c"* ]]; then \
 	  if [[ "$<" != *"broken"* ]]; then \
 	     echo cn $< && cn $<; \
 	  fi; \
 	fi
 #	cat $< | sed '/^--BEGIN--$$/d' | sed '/^--END--$$/d' > $@
-	cat $< | sed '\|^.*--BEGIN--.*$$|d' | sed '\|^.*--END--.*$$|d' > $@
+	@echo Rebuild $@
+	@cat $< | sed '\|^.*--BEGIN--.*$$|d' | sed '\|^.*--END--.*$$|d' > $@
 
 ##############################################################################
 # Tutorial document
