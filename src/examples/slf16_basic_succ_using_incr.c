@@ -1,5 +1,5 @@
 #include "free.h"
-#include "ref.h"
+#include "slf_ref.h"
 #include "slf0_basic_incr.c"
 
 unsigned int succ_using_incr (unsigned int n)
