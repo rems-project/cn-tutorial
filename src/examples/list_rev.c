@@ -30,10 +30,6 @@ lemma append_nil_r (datatype seq l1)
 requires true
 ensures append(l1, Seq_Nil {}) == l1
 
-lemma rev_cons (i32 h, datatype seq t)
-requires true
-ensures rev(Seq_Cons {head: h, tail: t}) == snoc (rev(t), h)
-
 lemma append_cons_r (datatype seq l1, i32 l2_hd, datatype seq l2_tl)
 requires true
 ensures append(l1, Seq_Cons {head: l2_hd, tail: l2_tl})
