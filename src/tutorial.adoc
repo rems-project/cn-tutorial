@@ -797,7 +797,7 @@ include::exercises/slf17_get_and_free.c[]
 
 [source,c]
 ----
-include::exercises/ref.h[]
+include::exercises/slf_ref.h[]
 ----
 
 [source,c]
