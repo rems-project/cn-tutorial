@@ -1,15 +1,15 @@
 // malloc.h
 
-int *mallocInt ()
-/*@ trusted
+extern int *mallocInt ();
+/*@ spec mallocInt()
     requires true
     ensures take v = Block<int>(return)
 @*/
-{}
 
-unsigned int *mallocUnsignedInt ()
-/*@ trusted
+
+extern unsigned int *mallocUnsignedInt ();
+/*@ spec mallocUnsignedInt()
     requires true
     ensures take v = Block<unsigned int>(return)
 @*/
-{}
+
