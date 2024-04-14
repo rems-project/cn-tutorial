@@ -81,7 +81,7 @@ int pop (struct sized_stack *p)
   if (data != 0) {
     int head = data->head;
     struct int_list *tail = data->tail;
-    IntList_free(data);
+    freeIntList(data);
     p->data = tail;
     p->size--;
     /*@ unfold length(S.d); @*/

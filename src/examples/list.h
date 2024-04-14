@@ -8,6 +8,21 @@ struct int_list {
   struct int_list* tail;
 };
 
+
+extern struct int_list *mallocIntList();
+/*@ spec mallocIntList()
+    requires true
+    ensures take u = Block<struct int_list>(return);
+            return != NULL
+@*/ // 'return != NULL' should not be needed
+
+extern void freeIntList (struct int_list *p);
+/*@ spec freeIntList(pointer p)
+    requires take u = Block<struct int_list>(p)
+    ensures true
+@*/
+
+
 /*@
 datatype seq {
   Seq_Nil {},
@@ -34,21 +49,15 @@ struct int_list* IntList_nil()
 }
 
 struct int_list* IntList_cons(int h, struct int_list* t)
-/*@ trusted
-    requires take l = IntList(t)
+/*@ requires take l = IntList(t)
     ensures take ret = IntList(return);
             ret == Seq_Cons{ head: h, tail: l}
  @*/
 {
-  // (a raw, unchecked call to malloc goes here)
-}
-
-void IntList_free(struct int_list* p)
-/*@ trusted
-    requires take H = Owned<struct int_list>(p)
- @*/
-{
-  // (a raw, unchecked call to free goes here)
+  struct int_list *p = mallocIntList();
+  p->head = h;
+  p->tail = t;
+  return p;
 }
 
 

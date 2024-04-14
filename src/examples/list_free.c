@@ -8,7 +8,7 @@ void IntList_free_list(struct int_list* xs)
   if (xs == 0) {
   } else {
     IntList_free_list(xs->tail);
-    IntList_free(xs);
+    freeIntList(xs);
   }
 }
 /* --END-- */
