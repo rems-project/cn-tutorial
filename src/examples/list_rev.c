@@ -36,15 +36,6 @@ ensures append(l1, Seq_Cons {head: x, tail: l2})
         == append(snoc(l1, x), l2)
 @*/
 
-/*
-when L2 == cons (L2_hd, L2_tl)
-HAVE append(rev(L2_tl), cons(L2_hd, L1))
-       ==                                (by append_cons_r)
-     append(snoc(rev(L2_tl),L2_hd), L1) 
-       ==                                (by definition of rev)
-NEED append(rev(cons(L2_hd, L2_tl)), L1)
-*/
-
 
 struct int_list* IntList_rev_aux(struct int_list* xs, struct int_list* ys)
 /*@ requires take L1 = IntList(xs) @*/
@@ -75,7 +66,7 @@ struct int_list* IntList_rev(struct int_list* xs)
 }
 
 
-
+/* A different way... */
 
 
 struct int_list* IntList_rev_loop(struct int_list *xs)
@@ -87,7 +78,7 @@ struct int_list* IntList_rev_loop(struct int_list *xs)
   struct int_list *last = 0;
   struct int_list *cur = xs;
   /*@ apply append_nil_r(rev(L)); @*/
-  while(1) 
+  while(1)
   /*@ inv take L1 = IntList(last);
           take L2 = IntList(cur);
           append(rev(L2), L1) == rev(L)
@@ -109,16 +100,3 @@ struct int_list* IntList_rev_loop(struct int_list *xs)
 
 
 
-
-
-/*
-append(rev(L2), L1) 
-
-by def rev(L2)
-
-append(snoc (rev (tl(L2)), hd(L2)), L1) 
-
-by append_cons_r (rev (tl(L2)), hd(L2), L1)
-
-append(rev (tl(L2)), Seq_Cons {head: hd(L2), tail: L1})
-*/
