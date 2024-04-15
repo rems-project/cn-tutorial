@@ -12,7 +12,7 @@ void init_array2 (char *p, unsigned int n)
           {p} unchanged; {n} unchanged;
           0u32 <= j && j <= n
   @*/
---END--
+/* --END-- */
   {
 /* --BEGIN-- */
     /*@ extract Block<char>, n-(j+1u32); @*/
