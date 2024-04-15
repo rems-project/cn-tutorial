@@ -24,8 +24,6 @@ function [rec] (datatype seq) rev(datatype seq xs) {
   }
 }
 
-
-
 lemma append_nil_r (datatype seq l1)
 requires true
 ensures append(l1, Seq_Nil {}) == l1
@@ -66,8 +64,7 @@ struct int_list* IntList_rev(struct int_list* xs)
 }
 
 
-/* A different way... */
-
+/* A different way to write the program... */
 
 struct int_list* IntList_rev_loop(struct int_list *xs)
 /*@ requires take L = IntList(xs)
@@ -97,6 +94,3 @@ struct int_list* IntList_rev_loop(struct int_list *xs)
     /*@ apply append_cons_r (rev (tl(L2)), hd(L2), L1); @*/
   }
 }
-
-
-

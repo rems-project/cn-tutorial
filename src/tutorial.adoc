@@ -747,21 +747,16 @@ As before, we also have to instruct CN to `+extract+` ownership of individual ar
 
 **Init array reverse.** Verify the function `+init_array_rev+`, which has the same specification as `+init_array2+`, but reverses the array in decreasing index order ("`from right to left`").
 
-(BCP: Currently broken...)
-////
 [source,c]
 ----
-include::exercises/init_array_rev.broken.c[]
+include::exercises/init_array_rev.c[]
 ----
+
+
+
+
 ////
-
-
-
-
-
-
-//// _____________________________________________________________________
-////
+___________________________________________________________________________
 BCP: I'll put my new stuff below here...
 ////
 
@@ -904,14 +899,12 @@ include::exercises/slf_length_acc.c[]
 // BCP: We should include the file names of the exercises so that people do
 // not have to cut and paste.
 
-////
 == External Lemmas
 
 [source,c]
 ----
 include::exercises/list_rev.c[]
 ----
-////
 
 // TODO (exercise?): sized stacks (significant exercise)
 
