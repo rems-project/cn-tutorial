@@ -875,7 +875,7 @@ functional-programming trick of copying xs but sharing ys.  (Why?)
 
 [source,c]
 ----
-include::exercises/bcp_length.c[]
+include::exercises/list_length.c[]
 ----
 
 *List deallocation*.  Fill in the body of the following procedure and
@@ -906,7 +906,10 @@ include::exercises/slf_length_acc.c[]
 include::exercises/list_rev.c[]
 ----
 
-// TODO (exercise?): sized stacks (significant exercise)
+[source,c]
+----
+include::exercises/slf_sized_stack.c[]
+----
 
 // TODO: Trees:
 //          - deep copy

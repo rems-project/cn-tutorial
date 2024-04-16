@@ -1,5 +1,5 @@
 #include "list.h"
-#include "bcp_length.c"
+#include "list_length.c"
 
 struct sized_stack {
   unsigned int size;

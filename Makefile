@@ -1,9 +1,9 @@
-.PHONY: default clean exercises
+.PHONY: default clean exercises 
 
-default: build exercises build/tutorial.html
+default: build exercises build/tutorial.html 
 
 clean:
-	rm -rf build
+	rm -rf build TAGS
 
 build:
 	mkdir -p build
@@ -45,6 +45,12 @@ build/images: src/images
 
 build/tutorial.html: build/tutorial.adoc $(SRC_EXAMPLES) build/images
 	asciidoctor --doctype book $< -o $@
+
+##############################################################################
+# Misc
+
+TAGS:
+	etags src/tutorial.adoc $(SRC_EXAMPLES)
 
 ##############################################################################
 # Site-specific stuff
