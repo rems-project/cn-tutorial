@@ -4,7 +4,6 @@ unsigned int val_rand (unsigned int n);
     ensures 0u32 <= return && return < n
 @*/
 
-
 unsigned int two_dice ()
 /*@ ensures 2u32 <= return && return <= 12u32 @*/
 {

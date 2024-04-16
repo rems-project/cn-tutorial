@@ -174,6 +174,7 @@ Let’s apply what we know so far to another simple arithmetic example.
 
 The function `+doubled+`, shown below, takes an int `+n+`, defines `+a+` as `+n+` incremented, `+b+` as `+n+` decremented, and returns the sum of the two.
 
+// BCP: Is it important to number the slf examples?  If so, we should do it consistently, but IMO it is not.
 [source,c]
 ----
 include::exercises/slf1_basic_example_let.signed.c[]
@@ -745,7 +746,7 @@ As before, we also have to instruct CN to `+extract+` ownership of individual ar
 
 === Exercises
 
-**Init array reverse.** Verify the function `+init_array_rev+`, which has the same specification as `+init_array2+`, but reverses the array in decreasing index order ("`from right to left`").
+**Init array reverse.** Verify the function `+init_array_rev+`, which has the same specification as `+init_array2+`, but reverses the array in decreasing index order (from right to left).
 
 [source,c]
 ----
@@ -754,9 +755,13 @@ include::exercises/init_array_rev.c[]
 
 
 
-
 ////
 ___________________________________________________________________________
+___________________________________________________________________________
+___________________________________________________________________________
+___________________________________________________________________________
+___________________________________________________________________________
+
 BCP: I'll put my new stuff below here...
 ////
 
@@ -765,35 +770,92 @@ BCP: I'll put my new stuff below here...
 // We should show how to define predicates earlier --
 //     - e.g., with numeric ranges!!
 
-(Text is needed from here on!  But hopefully there's enough structure to
-make sense of the examples...)
+////
+BCP: The text becomes a bit sketchy from here on!  But hopefully there's
+still enough structure here to make sense of the examples...
+////
+
+Suppose we want to write a function that takes *two* pointers to
+integers and increments the contents of both of them.  
+
+First, let's deal with the "normal" case where the two arguments do
+not alias...
 
 [source,c]
 ----
-include::exercises/bcp_incr2.c[]
+include::exercises/slf_incr2_noalias.c[]
 ----
+
+But what if they do alias?  The clunky solution is to write a whole
+different version of incr2 with a different embedded specification...
+
+[source,c]
+----
+include::exercises/slf_incr2_alias.c[]
+----
+
+This is horrible.  Much better is to define a predicate to use
+in the pre- and postconditions that captures both cases together:
+
+[source,c]
+----
+include::exercises/slf_incr2.c[]
+----
+
+**Note**: At the moment, CN does not derive pointer disjointness
+constraints from resources: from simultaneous ownership of the
+resources `+Owned(p)+` and `+Owned(q)+` CN does not automatically
+learn `+(p != q)+`, even though that’s clearly implied. This was
+turned that off for performance reasons at some point, but once
+performance is back to normal again it should come back.  In the mean
+time, we have to add `+(p != q)+` as an additional precondition to
+`+call_both+`.
 
 == Allocating and Deallocating Memory
 
+At the moment, CN does not understand the `+malloc+` and `+free+`
+functions.  They are a bit tricky because they rely on a bit of
+polymorphism and a typecast between `+char*+` -- the result type of
+`+malloc+` and argument type of `+free+` -- and the actual type of the
+object being allocated or deallocated.
+
+However, for any given type, we can define a type-specific function
+that allocates heap storage with exactly that type.  The
+implementation of this function cannot be checked by CN, but we can
+give just the spec, together with a promise to link against an
+external C library providing the implementation:
 [source,c]
 ----
 include::exercises/malloc.h[]
 ----
 
+(Alternatively we can include an implementation written in arbitrary C
+inside a CN file by marking it with the keyword `+trusted+` at the top
+of its CN specification.)
+
+Similarly:
 [source,c]
 ----
 include::exercises/free.h[]
 ----
 
+Now we can write code that allocates and frees memory:
 [source,c]
 ----
 include::exercises/slf17_get_and_free.c[]
 ----
 
+We can also define a "safer", ML-style version of `+malloc+` that
+handles both allocation and initialization:
+
 [source,c]
 ----
-include::exercises/slf_ref.h[]
+include::exercises/ref.h[]
 ----
+
+////
+BCP: This example is a bit broken: the file `+slf0_basic_incr.c+` does not appear at all in the tutorial, though a slightly different version (with signed numbers) does...
+////
 
 [source,c]
 ----
@@ -804,68 +866,141 @@ include::exercises/slf16_basic_succ_using_incr.c[]
 
 // BCP: There should be a non-ref-using version of this earlier, for comparison.
 
-Prove a specification for the following program that reveals *only* that
-it returns a number that is greater than its argument.
-
+Prove a specification for the following program that reveals *only*
+that it returns a pointer to a number that is greater than the number
+pointed to by its argument.
+ 
 [source,c]
 ----
 include::exercises/slf_ref_greater.c[]
 ----
 
-=== Side note: External functions
+== Side Note
 
-Another way to specify external / unknown functions:
+Here is another syntax for external / unknown
+functions, together with an example of a loose specification:
+
+////
+BCP: This is a bit random -- it's not clear people need to know about this alternate syntax, and it's awkwardly mixed with a semi-interesting example that's not relevant to this section.
+////
 
 [source,c]
 ----
 include::exercises/slf18_two_dice.c[]
 ----
 
-
 == Lists
 
-Common definitions for lists:
+Now it's time to look at some more interesting heap structures.
+
+To begin with, here is a C definition for linked list cells, together
+with allocation and deallocation functions:
+
+[source,c]
+----
+include::exercises/list1.h[]
+----
+
+To write specifications for C functions that manipulate lists, we need
+to define a CN "predicate" that describes *mathematical* list
+structures, as one would do in ML, Haskell, or Coq.  (We call them
+"sequences" here to avoid overloading the word "list".)
+
+Intuitively, the `+IntList+` predicate walks over a pointer structure
+in the C heap and extracts an `+Owned+` version of the mathematical
+list that it represents.
+
+[source,c]
+----
+include::exercises/list2.h[]
+----
+
+We can also write specification-level "functions" by ordinary
+functional programming (in slightly strange, unholy-union-of-C-and-ML
+syntax):
+
+[source,c]
+----
+include::exercises/list3.h[]
+----
+
+We use the `+IntList+` predicate to specify functions returning the
+empty list and the cons of a number and a list.
+
+[source,c]
+----
+include::exercises/list4.h[]
+----
+
+Finally, we can collect all this stuff into a single header file and
+add the usual C `+#ifndef+` gorp to avoid complaints from the compiler
+if it happens to get included twice from the same source file later.
 
 [source,c]
 ----
 include::exercises/list.h[]
 ----
 
-The spec of append:
+////
+BCP: What does this comment mean?
+       'return != NULL' should not be needed
+////
+
+=== Append
+
+With this basic infrastructure in place, we can start specifying and
+verifying list-manipulating functions.  First, `+append+`.  
+
+Here is its specification (in a separate file, because we'll want to
+use it multiple times below.)
+
 [source,c]
 ----
 include::exercises/append.h[]
 ----
 
-A simple destructive append:
+Here is a simple destructive `+append+` function.  Note thw two uses
+of the `+unfold+` annotation in the body, which are needed to help the
+CN typechecker.
+
+// BCP: Can someone add a more technical explanation of why they are needed and exactly what they do?
 
 [source,c]
 ----
-include::exercises/bcp_append.c[]
+include::exercises/append.c[]
 ----
 
-A non-allocating merge sort:
+=== List copy
 
-[source,c]
-----
-include::exercises/bcp_mergesort.c[]
-----
-
-An allocating list-copy:
+Here is an allocating list copy function with a pleasantly light
+annotation burden.
 
 [source,c]
 ----
-include::exercises/bcp_copy.c[]
+include::exercises/list_copy.c[]
+----
+
+=== Merge sort
+
+Finally, here is a slightly tricky in-place version of merge sort that
+avoids allocating any new list cells in the splitting step by taking
+alternate cells from the original list and linking them together into
+two new lists of roughly equal lengths.
+
+[source,c]
+----
+include::exercises/mergesort.c[]
 ----
 
 === Exercises
 
-*Allocating append*.  Fill in the CN annotations on IntList_append2.  (You will need
-some in the body as well as at the top.)
+*Allocating append*.  Fill in the CN annotations on
+`+IntList_append2+`.  (You will need some in the body as well as at
+the top.)
 
 [source,c]
 ----
-include::exercises/bcp_append2.c[]
+include::exercises/append2.c[]
 ----
 
 Note that it would not make sense to do the usual
@@ -896,16 +1031,63 @@ include::exercises/list_free.c[]
 include::exercises/slf_length_acc.c[]
 ----
 
-// BCP: We should include the file names of the exercises so that people do
-// not have to cut and paste.
+== Working with External Lemmas
 
-== External Lemmas
+**TODO**: This section should also show what the proof of the lemmas
+looks like on the Coq side!
+
+// BCP: This needs to be filled in urgently!!
+
+=== List reverse
+
+The specification of list reversal in CN relies on the familiar
+recursive list reverse function, with a recursive helper.
+
+[source,c]
+----
+include::exercises/list_rev_spec.h[]
+----
+
+To reason about the C implementation of list reverse, we need to help
+the SMT solver by enriching its knowledge base with a couple of facts
+about lists.  The proofs of these facts require induction, so in CN we
+simply state them as lemmas and defer the proofs to Coq.
+
+[source,c]
+----
+include::exercises/list_rev_lemmas.h[]
+----
+
+Having stated these lemmnas, we can now complete the specification and
+proof of `+IntList_rev+`.  Note the two places where `+apply+` is used
+to tell the SMT solver where to pay attention to the lemmas.
+
+////
+BCP: Why can't it always pay attention to them?  (I guess
+"performance", but at least it would be nice to be able to declare a
+general scope where a given set of lemmas might be needed, rather than
+specifying exactly where to use them.)
+////
 
 [source,c]
 ----
 include::exercises/list_rev.c[]
 ----
 
+For comparison, here is another way to write the program, using a
+while loop instead of recursion, with its specification and proof.
+
+// BCP: Why 0 instead of NULL??  (Is 0 better?)
+
+[source,c]
+----
+include::exercises/list_rev_alt.c[]
+----
+
+=== Exercises
+    
+**Sized stacks:** Fill in annotations where requested:
+    
 [source,c]
 ----
 include::exercises/slf_sized_stack.c[]
@@ -923,7 +1105,6 @@ Further exercises:
 
 Misc things to do:
   - create a top-level TAGS file for emacs
-  - remove the bcp_ prefix from filenames (and here)
   - Figure out the smoothest way to do multiple includes
   - Figure out how to display filenames
 ////

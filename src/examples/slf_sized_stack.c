@@ -32,9 +32,6 @@ spec free_sized_stack(pointer p)
      ensures true
 @*/
 
-
-
-
 struct sized_stack* create()
 /*@ ensures take S = SizedStack(return);
             S.s == 0u32
@@ -48,16 +45,20 @@ struct sized_stack* create()
 }
 
 unsigned int sizeOf (struct sized_stack *p)
+/* FILL IN HERE */
+/* ---BEGIN--- */
 /*@ requires take S = SizedStack(p)
     ensures take S_ = SizedStack(p);
             S_ == S;
             return == S.s
 @*/
+/* ---END--- */
 {
   return p->size;
 }
 
 void push (struct sized_stack *p, int x)
+/* FILL IN HERE */
 /*@ requires take S = SizedStack(p)
     ensures take S_ = SizedStack(p);
             S_.d == Seq_Cons {head:x, tail:S.d}
@@ -66,16 +67,20 @@ void push (struct sized_stack *p, int x)
   struct int_list *data = IntList_cons(x, p->data);
   p->size++;
   p->data = data;
+/* ---BEGIN--- */
   /*@ unfold length (Seq_Cons {head: x, tail: S.d}); @*/
+/* ---END--- */
 }
 
-
 int pop (struct sized_stack *p)
+/* FILL IN HERE */
+/* ---BEGIN--- */
 /*@ requires take S = SizedStack(p);
              S.s > 0u32
     ensures  take S_ = SizedStack(p);
              S_.d == tl(S.d)
 @*/
+/* ---END--- */
 {
   struct int_list *data = p->data;
   if (data != 0) {
@@ -84,7 +89,9 @@ int pop (struct sized_stack *p)
     freeIntList(data);
     p->data = tail;
     p->size--;
+/* ---BEGIN--- */
     /*@ unfold length(S.d); @*/
+/* ---END--- */
     return head;
   }
   return 42;
@@ -98,11 +105,13 @@ int top (struct sized_stack *p)
              return == hd(S.d)
 @*/
 {
-  /*@ unfold length(S.d); @*/ //from S.s > 0u32 follows that the 'else' branch is impossible
+  /*@ unfold length(S.d); @*/ 
+  // from S.s > 0u32 it follows that the 'else' branch is impossible
   if (p->data != 0) {
     return (p->data)->head;
   }
   else {
-    return 42; // provably-dead code
+    // provably dead code
+    return 42; 
   }
 }
