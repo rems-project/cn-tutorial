@@ -1,6 +1,6 @@
 .PHONY: default clean exercises 
 
-default: build exercises build/tutorial.html 
+default: build exercises build/tutorial.html build/exercises.zip
 
 clean:
 	rm -rf build TAGS
@@ -34,6 +34,9 @@ build/solutions/%: src/examples/%
 	@echo Rebuild $@
 	@cat $< | sed '\|^.*--BEGIN--.*$$|d' | sed '\|^.*--END--.*$$|d' > $@
 
+build/exercises.zip: $(EXERCISES)
+	cd build; zip -r exercises.zip exercises
+
 ##############################################################################
 # Tutorial document
 
@@ -58,4 +61,4 @@ TAGS:
 upenn-install: default
 	rm -rf $(HOME)/pub/courses/6700-SL-2024/current/CN
 	mkdir $(HOME)/pub/courses/6700-SL-2024/current/CN
-	cp -r build/tutorial.html build/images $(HOME)/pub/courses/6700-SL-2024/current/CN
+	cp -r build/* $(HOME)/pub/courses/6700-SL-2024/current/CN

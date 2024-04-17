@@ -4,7 +4,6 @@
 :nofooter:
 :prewrap!:
 
-
 ++++
 <style>
 body {
@@ -21,7 +20,6 @@ body {
 // h1 { font-size: 32px; margin-top: 4em; }
 // h2 { font-size: 26px; margin-top: 2em; }
 // h3 { font-size: 22px; margin-top: 2em; }
-
 
 h1, h2, h3, h4, h5 {
   color: hsl(219, 50%, 50%);
@@ -44,7 +42,7 @@ body > .sourceCode {
 </style>
 ++++
 
-
+// __________________________________________________________________________
 
 = CN tutorial
 
@@ -54,7 +52,7 @@ This tutorial introduces CN along a series of examples, starting with basic usag
 
 Many examples are taken from Arthur Charguéraud’s excellent https://softwarefoundations.cis.upenn.edu[Separation Logic Foundations]. These example have names starting with "`slf...`".
 
-== Installation
+== Installing CN
 
 To fetch and install CN, check the Cerberus repository at https://github.com/rems-project/cerberus and follow the instructions in https://github.com/rems-project/cerberus/blob/master/backend/cn/INSTALL.md[backend/cn/INSTALL.md].
 
@@ -62,12 +60,21 @@ Once completed, type `+cn --help+` in your terminal to ensure CN is installed an
 
 To apply CN to a C file, run `+cn CFILE+`.
 
+== Source files for the exercises and examples
+
+The source files can be downloaded from link:exercises.zip[here].
+
 == Basic usage
 
 === First example
 
 For a first example, let’s look at a simple arithmetic function: `+add+`, shown below, takes two `+int+` arguments, `+x+` and `+y+`, and returns their sum.
 
+// BCP: We should probably adopt the convention that all the files in
+// the exercises directory have a comment at the top giving their name.
+// (We could actually auto-generate those header comments when we process
+// /src/examples into build/exercises, to avoid having to maintain them
+// and possibly get them wrong...)
 [source,c]
 ----
 include::exercises/0.c[]
