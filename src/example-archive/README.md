@@ -4,6 +4,12 @@ This directory contains examples for CN. Each subdirectory contains examples fro
 
 * `c-testsuite` - Examples from the [`c-testsuite`](https://github.com/c-testsuite/c-testsuite) database of C compiler tests. 
 
+To confirm that examples have been correctly categorized, you can use the `check.sh` shell script as follows: 
+```
+$ cd <subdirectory>
+$ sh ../check.sh
+``` 
+
 # Directory structure 
 
 Each example is categorized into subdirectories as follows: 
