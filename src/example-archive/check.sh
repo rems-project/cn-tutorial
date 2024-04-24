@@ -1,34 +1,46 @@
+process_files() {
+  local dir=$1
+  local pattern=$2
+  local action=$3
+  local expected_exit_code=$4 
+
+  if [ -d "$dir" ]; then 
+    # Array to hold files matching the pattern
+    local files=($(find "$dir" -maxdepth 1 -type f -name "$pattern" | sort))
+    
+    # Check if the array is not empty
+    if [ "${#files[@]}" -gt 0 ]; then
+      for file in "${files[@]}"; do
+        # Ensure the file variable is not empty
+        if [[ -n "$file" ]]; then
+          "$action" "$file" "$expected_exit_code"
+        fi
+      done
+    else
+      echo "No files matching '$pattern' found in $dir"
+    fi
+  else 
+    echo "Directory $dir does not exist" 
+  fi 
+}
+
 check_file() {
   local file=$1
   local expected_exit_code=$2
 
   printf "[$file]... "
   timeout 60 cn "$file" > /dev/null 2>&1
-  result=$?
+  local result=$?
+
   if [ $result -eq $expected_exit_code ]; then
-    echo "\033[32mPASS\033[0m"
+    printf "\033[32mPASS\033[0m\n"
   else
-    echo "\033[31mFAIL\033[0m (Unexpected error: $result)"
+    printf "\033[31mFAIL\033[0m (Unexpected error: $result)\n"
   fi
 }
 
-for file in working/*.c; do
-  check_file "$file" 0 
-done
-
-for file in broken/error-cerberus/*.c; do
-  check_file "$file" 2 
-done
-
-for file in broken/error-crash/*.c; do
-  check_file "$file" 125 
-done
-
-for file in broken/error-proof/*.c; do
-  check_file "$file" 1 
-done
-
-for file in broken/error-timeout/*.c; do
-  check_file "$file" 124
-done
-
+process_files "working" "*.c" check_file 0
+process_files "broken/error-cerberus" "*.c" check_file 2 
+process_files "broken/error-crash" "*.c" check_file 125
+process_files "broken/error-proof" "*.c" check_file 1
+process_files "broken/error-timeout" "*.c" check_file 124
