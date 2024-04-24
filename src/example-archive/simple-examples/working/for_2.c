@@ -1,11 +1,12 @@
 // A trivial for-loop with an invariant 
-// TODO: doesn't parse 
 
-int for_1() 
+int for_2() 
 {
   int acc = 0; 
-  for(int i = 0; i <= 99; i++)
-  /*@ inv acc < 99 @*/
+  int i; 
+  for(i = 0; i < 10; i++)
+  /*@ inv 0i32 <= i; i <= 10i32;
+          acc <= 10i32 @*/
   {
     acc = i; 
   }; 
