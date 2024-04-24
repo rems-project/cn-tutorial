@@ -35,7 +35,7 @@ check_file() {
   if [ $result -eq $expected_exit_code ]; then
     printf "\033[32mPASS\033[0m\n"
   else
-    printf "\033[31mFAIL\033[0m (Unexpected error: $result)\n"
+    printf "\033[31mFAIL\033[0m (Unexpected return code: $result)\n"
   fi
 }
 
