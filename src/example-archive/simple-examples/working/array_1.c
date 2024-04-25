@@ -2,10 +2,9 @@
 
 void array_1(int *arr, int size, int off)
 /*@ requires 
-      take arrayStart = each (i32 j; 0i32 <= j && j < size) {Owned(arr + j)} 
+      take arrayStart = each (i32 j; 0i32 <= j && j < size) {Owned(arr + j)}; 
       0i32 <= off; 
-      off < size;
-      @*/
+      off < size @*/
 /*@ ensures take arrayEnd = each (i32 j; 0i32 <= j && j < size) {Owned(arr + j)} @*/
 {
   int i = off;

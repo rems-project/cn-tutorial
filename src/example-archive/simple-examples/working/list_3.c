@@ -1,28 +1,51 @@
-// Reverse a list. Compare with:
-// https://github.com/rems-project/cerberus/blob/master/tests/cn/list_rev01.c
+// The same code as list_2.c, but the proof establishes that every node in the
+// list is rewritten to the value 7. 
 
 #include "list_preds.h"
 
-struct list_node *list_reverse_1(struct list_node *head)
-/*@ requires take ListPre  = IntListSeg(head, NULL) @*/
-/*@ ensures  take ListPost = IntListSeg(return, NULL) @*/
+// This version of the predicate takes an i32 argument. Every node in the list
+// must store this value. 
+
+/*@
+predicate (datatype seq) IntListSegVal(pointer p, pointer tail, i32 tval) {
+  if (addr_eq(p,tail)) {
+    return Seq_Nil{};
+  } else {
+    take H = Owned<struct list_node>(p);
+    assert (is_null(H.next) || H.next != NULL);
+    assert (H.val == tval); 
+    take tl = IntListSeg(H.next, tail);
+    return (Seq_Cons { val: H.val, next: tl });
+  }
+}
+@*/
+/*@
+lemma IntListSeqSnocVal(pointer p, pointer tail, i32 tval)
+  requires take l1 = IntListSegVal(p, tail, tval);
+           take v = Owned<struct list_node>(tail);
+           v.val == tval 
+  ensures take l2 = IntListSegVal(p, v.next, tval);
+          l2 == append(l1, Seq_Cons { val: v.val, next: Seq_Nil {} })
+@*/
+
+
+void list_3(struct list_node *head)
+/*@ requires take Xs = IntListSeg(head,NULL) @*/
+/*@ ensures  take Ys = IntListSegVal(head,NULL,7i32) @*/
 {
-  struct list_node *prev, *next, *curr;
+  struct list_node *curr;
   curr = head;
 
-  prev = 0;
-  next = 0; // TODO: Shouldn't be needed  Note that this is also
-            // called out as a FIXME in the CN repo version
-
   while (curr != 0)
-  /*@ inv take InInv = IntListSeg(curr, NULL);
-          take RevInv = IntListSeg(prev, NULL) @*/
+  /*@ inv take Visited = IntListSegVal(head,curr,7i32);
+          take Remaining = IntListSeg(curr,NULL);
+          {head}unchanged;
+          let i_curr = curr 
+          @*/
   {
-    next = curr->next;
-    curr->next = prev;
-    prev = curr;
-    curr = next;
+    curr->val = 7;
+    curr = curr->next;
+    /*@ apply IntListSeqSnocVal(head, i_curr, 7i32); @*/
   }
-  return prev;
+  return;
 }
-

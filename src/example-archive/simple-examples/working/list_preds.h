@@ -51,17 +51,15 @@ function [rec] (datatype seq) append(datatype seq xs, datatype seq ys) {
 }
 @*/
 
-// A lemma saying that a list segment followed by a list node can be folded into
-// a list segment. This lemma is assumed by CN and must be proved inductively in
-// Coq.
-// TODO: as of April 2024, CN cannot export such lemmas to Coq because they
-// involve resource predicates. Resolving this would require integration with
-// Iris or some other Coq resource logic. 
-
-/*@
-lemma IntListSeqSnocVal(pointer p, pointer tail)
-  requires take l1 = IntListSeg(p, tail);
-           take v = Owned<struct list_node>(tail)
-  ensures take l2 = IntListSeg(p, v.next);
-          l2 == append(l1, Seq_Cons { val: v.val, next: Seq_Nil {} })
-@*/
+// /*@
+// function [rec] (bool) fold_eq(datatype seq xs, i32 test) {
+//   match xs {
+//     Seq_Nil {} => {
+//       true 
+//     }
+//     Seq_Cons {val : h, next : zs} => {
+//       (h == test) && fold_eq(zs, test)
+//     }
+//   }
+// }
+// @*/
