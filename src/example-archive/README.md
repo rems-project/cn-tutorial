@@ -1,18 +1,12 @@
-## Overview 
+This directory contains examples for CN. Each subdirectory contains examples from one source. 
 
-This directory contains examples for CN. Each subdirectory contains examples from one source. Currently: 
+## Current example sources
 
 * `simple-examples` - Many small examples showing off individual CN features and
   reasoning patterns.
 * `c-testsuite` - Examples from the [`c-testsuite`](https://github.com/c-testsuite/c-testsuite) database of C compiler tests. 
 * `dafny-tutorial` - Examples constructed by following the Dafny tutorial
   [here](https://dafny.org/dafny/OnlineTutorial/guide.html).
-
-To confirm that examples have been correctly categorized, you can use the `check.sh` shell script as follows: 
-```
-$ cd <subdirectory>
-$ sh ../check.sh
-``` 
 
 ## Organization  
 
@@ -28,4 +22,12 @@ are categorized according to the following schema.
 * `<source>/broken/error-proof` - examples where CN fails with error 1,
   indicating the proof failed. 
 * `<source>/broken/error-timeout` - examples where CN times out after 60s. 
+* `<source>/inprogress` - unfinished examples. 
 
+## Check script
+
+To confirm that examples have been correctly categorized, you can use the `check.sh` shell script as follows: 
+```
+$ cd <subdirectory>
+$ sh ../check.sh
+``` 
