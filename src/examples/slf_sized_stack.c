@@ -59,10 +59,12 @@ unsigned int sizeOf (struct sized_stack *p)
 
 void push (struct sized_stack *p, int x)
 /* FILL IN HERE */
+/* ---BEGIN--- */
 /*@ requires take S = SizedStack(p)
     ensures take S_ = SizedStack(p);
             S_.d == Seq_Cons {head:x, tail:S.d}
 @*/
+/* ---END--- */
 {
   struct int_list *data = IntList_cons(x, p->data);
   p->size++;
