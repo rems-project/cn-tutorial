@@ -1,9 +1,9 @@
 // A trivial for-loop 
 
-int for_3() 
+int for_1() 
 {
   int acc = 0; 
-  for(int i = 0; i <= 99; i++)
+  for(int i = 0; i <= 10; i++)
   {
     acc = i; 
   }; 
