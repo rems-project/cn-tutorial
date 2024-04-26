@@ -966,7 +966,7 @@ use it multiple times below.)
 include::exercises/append.h[]
 ----
 
-Here is a simple destructive `+append+` function.  Note thw two uses
+Here is a simple destructive `+append+` function.  Note the two uses
 of the `+unfold+` annotation in the body, which are needed to help the
 CN typechecker.
 
