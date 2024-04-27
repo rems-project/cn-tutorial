@@ -25,10 +25,9 @@ function [rec] (datatype seq) merge(datatype seq xs, datatype seq ys) {
         match ys {
           Seq_Nil {} => { xs }
           Seq_Cons{ head: y, tail: ys1} => {
-            let tail = merge(xs1, ys1);
             (x < y) ?
-            (Seq_Cons{ head: x, tail: Seq_Cons {head: y, tail: tail}})
-            : (Seq_Cons{ head: y, tail: Seq_Cons {head: x, tail: tail}})
+              (Seq_Cons{ head: x, tail: merge(xs1, ys) })
+            : (Seq_Cons{ head: y, tail: merge(xs, ys1) })
           }
         }
       }
@@ -97,14 +96,13 @@ struct int_list* merge(struct int_list *xs, struct int_list *ys)
       return xs;
     } else {
       /*@ unfold merge(Xs, Ys); @*/
-      struct int_list *zs = merge(xs->tail, ys->tail);
       if (xs->head < ys->head) {
-        xs->tail = ys;
-        ys->tail = zs;
+        struct int_list *zs = merge(xs->tail, ys);
+        xs->tail = zs;
         return xs;
       } else {
-        ys->tail = xs;
-        xs->tail = zs;
+        struct int_list *zs = merge(xs, ys->tail);
+        ys->tail = zs;
         return ys;
       }
     }

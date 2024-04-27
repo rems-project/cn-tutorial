@@ -1107,9 +1107,11 @@ include::exercises/slf_sized_stack.c[]
 
 ////
 Further topics:
+  - queues, doubly linked lists
   - cn_function
   - pack
   - bitwise functions (operators are not present in the logical language)
+  - "ownership" in Rust vs. CN
 
 Further exercises:
   - Some exercises that get THEM to write predicates, datatype
