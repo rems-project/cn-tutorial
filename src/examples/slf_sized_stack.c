@@ -20,14 +20,14 @@ predicate (sizeAndData) SizedStack(pointer p) {
 
 extern struct sized_stack *malloc_sized_stack ();
 /*@
-spec malloc_sized_stack()
+spec malloc_sized_stack();
      requires true;
      ensures take u = Block<struct sized_stack>(return);
 @*/
 
 extern void *free_sized_stack (struct sized_stack *p);
 /*@
-spec free_sized_stack(pointer p)
+spec free_sized_stack(pointer p);
      requires take u = Block<struct sized_stack>(p);
      ensures true;
 @*/

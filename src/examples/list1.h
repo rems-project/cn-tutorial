@@ -6,14 +6,14 @@ struct int_list {
 };
 
 extern struct int_list *mallocIntList();
-/*@ spec mallocIntList()
+/*@ spec mallocIntList();
     requires true;
     ensures take u = Block<struct int_list>(return);
             return != NULL;
 @*/ // 'return != NULL' should not be needed
 
 extern void freeIntList (struct int_list *p);
-/*@ spec freeIntList(pointer p)
+/*@ spec freeIntList(pointer p);
     requires take u = Block<struct int_list>(p);
     ensures true;
 @*/
