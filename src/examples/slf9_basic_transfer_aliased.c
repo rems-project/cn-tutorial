@@ -1,8 +1,8 @@
 void transfer (unsigned int *p, unsigned int *q)
 /*@ requires take n1 = Owned(p);
-             p == q
+             p == q;
     ensures  take n2 = Owned(p);
-             n2 == 0u32
+             n2 == 0u32;
 @*/
 {
   unsigned int n = *p;

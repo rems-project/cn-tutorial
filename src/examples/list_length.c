@@ -19,10 +19,10 @@ function [rec] (u32) length(datatype seq xs) {
 /* --END-- */
 unsigned int IntList_length (struct int_list *xs)
 /* --BEGIN-- */
-/*@ requires take L1 = IntList(xs)
+/*@ requires take L1 = IntList(xs);
     ensures take L1_ = IntList(xs);
             L1 == L1_;
-            return == length(L1)
+            return == length(L1);
 @*/
 /* --END-- */
 {

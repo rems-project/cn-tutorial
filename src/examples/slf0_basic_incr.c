@@ -1,8 +1,8 @@
 void incr (unsigned int *p)
 /* --BEGIN-- */
-/*@ requires take n1 = Owned<unsigned int>(p)
+/*@ requires take n1 = Owned<unsigned int>(p);
     ensures take n2 = Owned<unsigned int>(p);
-            n2 == n1 + 1u32
+            n2 == n1 + 1u32;
 @*/
 /* --END-- */
 {

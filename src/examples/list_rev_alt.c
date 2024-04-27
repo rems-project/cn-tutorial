@@ -4,9 +4,9 @@
 #include "list_rev_lemmas.h"
 
 struct int_list* IntList_rev_loop(struct int_list *xs)
-/*@ requires take L = IntList(xs)
+/*@ requires take L = IntList(xs);
     ensures  take L_ = IntList(return);
-             L_ == rev(L)
+             L_ == rev(L);
 @*/
 {
   struct int_list *last = 0;
@@ -15,7 +15,7 @@ struct int_list* IntList_rev_loop(struct int_list *xs)
   while(1)
   /*@ inv take L1 = IntList(last);
           take L2 = IntList(cur);
-          append(rev(L2), L1) == rev(L)
+          append(rev(L2), L1) == rev(L);
   @*/
   {
     if (cur == 0) {

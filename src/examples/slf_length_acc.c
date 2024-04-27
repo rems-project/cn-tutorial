@@ -17,11 +17,11 @@ function [rec] (u32) length(datatype seq xs) {
 
 void IntList_length_acc_aux (struct int_list *xs, unsigned int *p)
 /*@ requires take L1 = IntList(xs);
-             take n = Owned<unsigned int>(p)
+             take n = Owned<unsigned int>(p);
     ensures take L1_ = IntList(xs);
             take n_ = Owned<unsigned int>(p);
             L1 == L1_;
-            n_ == n + length(L1)
+            n_ == n + length(L1);
 @*/
 {
   /*@ unfold length(L1); @*/
@@ -33,10 +33,10 @@ void IntList_length_acc_aux (struct int_list *xs, unsigned int *p)
 }
 
 unsigned int IntList_length_acc (struct int_list *xs)
-/*@ requires take L1 = IntList(xs)
+/*@ requires take L1 = IntList(xs);
     ensures take L1_ = IntList(xs);
             L1 == L1_;
-            return == length(L1)
+            return == length(L1);
 @*/
 {
   unsigned int *p = refUnsignedInt(0);

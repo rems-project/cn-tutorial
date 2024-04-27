@@ -2,16 +2,16 @@
 
 struct int_list* IntList_nil()
 /*@ ensures take ret = IntList(return);
-            ret == Seq_Nil{}
+            ret == Seq_Nil{};
  @*/
 {
   return 0;
 }
 
 struct int_list* IntList_cons(int h, struct int_list* t)
-/*@ requires take l = IntList(t)
+/*@ requires take l = IntList(t);
     ensures take ret = IntList(return);
-            ret == Seq_Cons{ head: h, tail: l}
+            ret == Seq_Cons{ head: h, tail: l};
  @*/
 {
   struct int_list *p = mallocIntList();

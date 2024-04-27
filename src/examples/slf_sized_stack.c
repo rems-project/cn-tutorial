@@ -21,20 +21,20 @@ predicate (sizeAndData) SizedStack(pointer p) {
 extern struct sized_stack *malloc_sized_stack ();
 /*@
 spec malloc_sized_stack()
-     requires true
-     ensures take u = Block<struct sized_stack>(return)
+     requires true;
+     ensures take u = Block<struct sized_stack>(return);
 @*/
 
 extern void *free_sized_stack (struct sized_stack *p);
 /*@
 spec free_sized_stack(pointer p)
-     requires take u = Block<struct sized_stack>(p)
-     ensures true
+     requires take u = Block<struct sized_stack>(p);
+     ensures true;
 @*/
 
 struct sized_stack* create()
 /*@ ensures take S = SizedStack(return);
-            S.s == 0u32
+            S.s == 0u32;
 @*/
 {
   struct sized_stack *p = malloc_sized_stack();
@@ -47,10 +47,10 @@ struct sized_stack* create()
 unsigned int sizeOf (struct sized_stack *p)
 /* FILL IN HERE */
 /* ---BEGIN--- */
-/*@ requires take S = SizedStack(p)
+/*@ requires take S = SizedStack(p);
     ensures take S_ = SizedStack(p);
             S_ == S;
-            return == S.s
+            return == S.s;
 @*/
 /* ---END--- */
 {
@@ -60,9 +60,9 @@ unsigned int sizeOf (struct sized_stack *p)
 void push (struct sized_stack *p, int x)
 /* FILL IN HERE */
 /* ---BEGIN--- */
-/*@ requires take S = SizedStack(p)
+/*@ requires take S = SizedStack(p);
     ensures take S_ = SizedStack(p);
-            S_.d == Seq_Cons {head:x, tail:S.d}
+            S_.d == Seq_Cons {head:x, tail:S.d};
 @*/
 /* ---END--- */
 {
@@ -78,9 +78,9 @@ int pop (struct sized_stack *p)
 /* FILL IN HERE */
 /* ---BEGIN--- */
 /*@ requires take S = SizedStack(p);
-             S.s > 0u32
+             S.s > 0u32;
     ensures  take S_ = SizedStack(p);
-             S_.d == tl(S.d)
+             S_.d == tl(S.d);
 @*/
 /* ---END--- */
 {
@@ -101,10 +101,10 @@ int pop (struct sized_stack *p)
 
 int top (struct sized_stack *p)
 /*@ requires take S = SizedStack(p);
-             S.s > 0u32
+             S.s > 0u32;
     ensures  take S_ = SizedStack(p);
              S_ == S;
-             return == hd(S.d)
+             return == hd(S.d);
 @*/
 {
   /*@ unfold length(S.d); @*/ 

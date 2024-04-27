@@ -1106,6 +1106,11 @@ include::exercises/slf_sized_stack.c[]
 //          - maybe the accumulating sum
 
 ////
+Further topics:
+  - cn_function
+  - pack
+  - bitwise functions (operators are not present in the logical language)
+
 Further exercises:
   - Some exercises that get THEM to write predicates, datatype
     declarations, etc.
