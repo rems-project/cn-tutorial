@@ -71,8 +71,8 @@ int ColorPoint_equal(ColorPoint *self, ColorPoint *other) {
 
 // Wrapper functions for handling inheritance
 int Point_equal_wrapper(Point *self, Point *other) 
-  /*@ requires take vs0 = BothOwned(self,other)
-      ensures take vs1 = BothOwned(self,other)
+  /*@ requires take vs0 = BothOwned(self,other); 
+      ensures take vs1 = BothOwned(self,other); 
   @*/
   {
     // Direct call to the function based on actual type
