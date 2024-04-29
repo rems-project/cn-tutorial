@@ -1112,6 +1112,8 @@ Further topics:
   - pack
   - bitwise functions (operators are not present in the logical language)
   - "ownership" in Rust vs. CN
+  - tips amnd tricks --
+    cf. https://dafny.org/dafny/DafnyRef/DafnyRef.html#sec-verification
 
 Further exercises:
   - Some exercises that get THEM to write predicates, datatype
