@@ -30,9 +30,9 @@ fn borrow<'a>(input: &'a i32) -> &'a i32 {
 
 // Function to "borrow" an integer pointer
 int* borrow(int* input)
-  /*@ requires take v1 = Block<int>(input)
+  /*@ requires take v1 = Block<int>(input); 
       ensures take v2 = Block<int>(input);
-              return == input
+              return == input; 
   @*/
 {
   return input;  // Return the input pointer

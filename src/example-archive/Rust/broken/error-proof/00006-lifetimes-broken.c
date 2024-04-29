@@ -32,9 +32,9 @@ fn borrow<'a>(input: &'a i32) -> &'a i32 {
 int global_int = 0;
 
 int* borrow(const int* input)
-  /*@ requires take v1 = Owned<int>(input)
+  /*@ requires take v1 = Owned<int>(input); 
       ensures take v2 = Owned<int>(input);
-              return == input
+              return == input; 
   @*/
 {
     return (int*) input;  // Return the input pointer (no lifetime tracking)
