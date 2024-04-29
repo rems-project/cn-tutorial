@@ -100,7 +100,7 @@ Here `+x+` and `+y+` are _signed integers_, and in C, signed integer _overflow_ 
 
 === First function specification
 
-Shown below is our first function specification, for `+add+`, with a precondition that constraints `+x+` and `+y+` such that the sum of `+x+` and `+y+` lies between `+-2147483648+` and `+2147483647+`, so within the representable range of a C `+int+` value.
+Shown below is our first function specification, for `+add+`, with a precondition that constrains `+x+` and `+y+` such that the sum of `+x+` and `+y+` lies between `+-2147483648+` and `+2147483647+`, so within the representable range of a C `+int+` value.
 
 [source,c]
 ----
@@ -109,7 +109,7 @@ include::solutions/0.c[]
 
 In detail:
 
-* Function specification are given using special `+/*@ ... @*/+` comments, placed in-between the function argument list and the function body.
+* Function specifications are given using special `+/*@ ... @*/+` comments, placed in-between the function argument list and the function body.
 
 * The keyword `+requires+` starts the precondition, a list of one or more CN conditions separated by semicolons.
 
@@ -627,7 +627,7 @@ We can use this to refine our specification with information about the functiona
 include::exercises/array_load2.c[]
 ----
 
-We specify that `+read+` does not change the array — the outputs `+a1+` and `+a2+`, before resp. after running the function, are the same — and that the value returned is `+a1[i]+`, `+a1+` at index `+i+`.
+We specify that `+read+` does not change the array — the outputs `+a1+` and `+a2+`, taken before and after running the function, are the same — and that the value returned is `+a1[i]+`, `+a1+` at index `+i+`.
 
 === Exercises
 
