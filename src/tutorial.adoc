@@ -1113,6 +1113,8 @@ Further topics:
   - "ownership" in Rust vs. CN
   - tips amnd tricks --
     cf. https://dafny.org/dafny/DafnyRef/DafnyRef.html#sec-verification
+  - more data structures to try out
+    https://www.geeksforgeeks.org/data-structures/#most-popular-data-structures
 
 Further exercises:
   - Some exercises that get THEM to write predicates, datatype
