@@ -138,7 +138,7 @@ Running CN confirms that this postcondition also holds.
 
 === Error reports
 
-In the original example CN reported a type error due to C undefined behaviour. While that example was perhaps simple enough to guess the problem and solution, this can become quite challenging as program and specification complexity increases. Diagnosing type errors is therefore an important part of using CN. CN tries to help with that by producting detailed error information, in the form of an HTML error report.
+In the original example CN reported a type error due to C undefined behaviour. While that example was perhaps simple enough to guess the problem and solution, this can become quite challenging as program and specification complexity increases. Diagnosing type errors is therefore an important part of using CN. CN tries to help with that by producing detailed error information, in the form of an HTML error report.
 
 Let’s return to the type error from earlier (`+add+` without precondition) and take a closer look at this report. The report comprises two sections.
 
@@ -634,7 +634,6 @@ We specify that `+read+` does not change the array — the outputs `+a1+` and `+
 
 *Array read two.* Specify and verify the following function, `+array_read_two+`, which takes the base pointer `+p+` of an `+unsigned int+` array, the array length `+n+`, and two indices `+i+` and `+j+`. Assuming `+i+` and `+j+` are different, it returns the sum of the values at these two indices.
 
-
 [source,c]
 ----
 include::exercises/add_two_array.c[]
@@ -1065,7 +1064,7 @@ simply state them as lemmas and defer the proofs to Coq.
 include::exercises/list_rev_lemmas.h[]
 ----
 
-Having stated these lemmnas, we can now complete the specification and
+Having stated these lemmas, we can now complete the specification and
 proof of `+IntList_rev+`.  Note the two places where `+apply+` is used
 to tell the SMT solver where to pay attention to the lemmas.
 
