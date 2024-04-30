@@ -3,7 +3,7 @@
 #include <stdint.h> // For uintptr_t, intptr_t
 
 int cast_1()
-/*@ ensures return == 7i32 @*/
+/*@ ensures return == 7i32; @*/
 {
   int x = 7;
   int *ptr_original = &x;

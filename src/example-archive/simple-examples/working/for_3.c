@@ -7,7 +7,7 @@ int for_3()
   for(int i = 0; i < 10; i++) 
   /*@ inv 0i32 <= i; 
           i <= 10i32;
-          acc <= 10i32 @*/
+          acc <= 10i32; @*/
   {
     acc = i; 
   }; 

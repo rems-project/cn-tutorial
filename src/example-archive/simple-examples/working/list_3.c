@@ -23,15 +23,15 @@ predicate (datatype seq) IntListSegVal(pointer p, pointer tail, i32 tval) {
 lemma IntListSeqSnocVal(pointer p, pointer tail, i32 tval)
   requires take l1 = IntListSegVal(p, tail, tval);
            take v = Owned<struct list_node>(tail);
-           v.val == tval 
+           v.val == tval; 
   ensures take l2 = IntListSegVal(p, v.next, tval);
-          l2 == append(l1, Seq_Cons { val: v.val, next: Seq_Nil {} })
+          l2 == append(l1, Seq_Cons { val: v.val, next: Seq_Nil {} }); 
 @*/
 
 
 void list_3(struct list_node *head)
-/*@ requires take Xs = IntListSeg(head,NULL) @*/
-/*@ ensures  take Ys = IntListSegVal(head,NULL,7i32) @*/
+/*@ requires take Xs = IntListSeg(head,NULL); @*/
+/*@ ensures  take Ys = IntListSegVal(head,NULL,7i32); @*/
 {
   struct list_node *curr;
   curr = head;
@@ -40,7 +40,7 @@ void list_3(struct list_node *head)
   /*@ inv take Visited = IntListSegVal(head,curr,7i32);
           take Remaining = IntListSeg(curr,NULL);
           {head}unchanged;
-          let i_curr = curr 
+          let i_curr = curr; 
           @*/
   {
     curr->val = 7;

@@ -7,11 +7,11 @@ struct s
 };
 
 void struct_1(struct s *p)
-/*@ requires take StructPre  = Owned<struct s>(p) @*/
+/*@ requires take StructPre  = Owned<struct s>(p); @*/
 /*@ ensures  
       take StructPost = Owned<struct s>(p);
       StructPre.x == StructPost.x;
-      StructPost.y == 0i32 @*/
+      StructPost.y == 0i32; @*/
 {
   p->y = 0;
   // p->x = 7;  // <-- This would fail

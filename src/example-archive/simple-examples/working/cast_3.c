@@ -5,7 +5,7 @@
 #define OFFSET 374328
 
 int cast_3()
-/*@ ensures return == 7i32 @*/
+/*@ ensures return == 7i32; @*/
 {
   int x = 7;
   int *ptr_original = &x;

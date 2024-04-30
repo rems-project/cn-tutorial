@@ -2,7 +2,7 @@
 // assignment never happens. 
 
 int loop_1()
-/*@ ensures return == 7i32 @*/
+/*@ ensures return == 7i32; @*/
 {
   int i = 0;
   while (i != 7)

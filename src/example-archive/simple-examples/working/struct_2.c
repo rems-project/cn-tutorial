@@ -9,7 +9,7 @@ struct s
 };
 
 int struct_2()
-/*@ ensures return == 7i32 @*/
+/*@ ensures return == 7i32; @*/
 {
   struct s target;
 

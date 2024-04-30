@@ -3,11 +3,11 @@
 // including false
 
 int loop_2()
-/*@ ensures return == 42i32 @*/  // <-- Oops, prove whatever we want 
+/*@ ensures return == 42i32; @*/  // <-- Oops, prove whatever we want 
 {
   int i = 0;
   while (i < 10)
-  /*@ inv i == 0i32 @*/  // <-- Loop exit condition never satisfied
+  /*@ inv i == 0i32; @*/  // <-- Loop exit condition never satisfied
   {
     // Don't do anything
   };

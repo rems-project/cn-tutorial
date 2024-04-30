@@ -4,10 +4,10 @@
 #include "list_preds.h"
 
 struct list_node *list_1(struct list_node *xs)
-/*@ requires take Xs = IntListSeg(xs,NULL) @*/
+/*@ requires take Xs = IntListSeg(xs,NULL); @*/
 /*@ ensures 
       take Ys = IntListSeg(return,NULL); 
-      Ys == Xs @*/
+      Ys == Xs; @*/
 {
   struct list_node *ys;
   ys = xs;

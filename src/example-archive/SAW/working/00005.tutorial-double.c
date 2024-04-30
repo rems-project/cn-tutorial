@@ -24,8 +24,8 @@ print "Done.";
 
 int double_ref(int x)
   /*@ requires let prod = 2i64 * (i64)x;
-               -2147483648i64 <= prod; prod<2147483647i64
-      ensures return == (i32) prod  
+               -2147483648i64 <= prod; prod<2147483647i64; 
+      ensures return == (i32) prod; 
 @*/
 {
     return x * 2;
@@ -33,8 +33,8 @@ int double_ref(int x)
 
 int double_imp(int x) 
   /*@ requires let prod = 2i64 * (i64)x;
-               0i32 <= x; prod<2147483647i64
-      ensures return == (i32) prod
+               0i32 <= x; prod<2147483647i64; 
+      ensures return == (i32) prod; 
       @*/
 {
   return x << 1;
