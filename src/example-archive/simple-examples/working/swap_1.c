@@ -3,12 +3,12 @@
 void swap_1(int *a, int *b)
 /*@ requires 
     take Pa = Owned(a); 
-    take Pb = Owned(b) @*/
+    take Pb = Owned(b); @*/
 /*@ ensures 
     take Qa = Owned(a);
     take Qb = Owned(b);
     Qb == Pa;
-    Qa == Pb @*/
+    Qa == Pb; @*/
 {
   int temp = *a;
   *a = *b;

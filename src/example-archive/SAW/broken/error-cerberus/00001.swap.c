@@ -141,11 +141,11 @@ llvm_verify swapmod "wacky_sort"
 
 void swap(uint32_t *x, uint32_t *y)
 /*@ requires take xv0 = Owned<uint32_t>(x);
-             take yv0 = Owned<uint32_t>(y)
+             take yv0 = Owned<uint32_t>(y); 
     ensures  take xv1 = Owned<uint32_t>(x);
              take yv1 = Owned<uint32_t>(y);
 	     xv1 == yv0;
-	     yv1 == xv0
+	     yv1 == xv0; 
 @*/
 {
     uint32_t tmp = *x;
@@ -155,11 +155,11 @@ void swap(uint32_t *x, uint32_t *y)
 
 void xor_swap(uint32_t *x, uint32_t *y)
 /*@ requires take xv0 = Owned<uint32_t>(x);
-             take yv0 = Owned<uint32_t>(y)
+             take yv0 = Owned<uint32_t>(y); 
     ensures  take xv1 = Owned<uint32_t>(x);
              take yv1 = Owned<uint32_t>(y);
 	     xv1 == yv0;
-	     yv1 == xv0
+	     yv1 == xv0; 
 @*/
 {
     *x ^= *y;
@@ -169,15 +169,15 @@ void xor_swap(uint32_t *x, uint32_t *y)
 
 // selection sort
 void selection_sort(uint32_t *a, size_t len)
-/*@ requires take av0 = each(size_t  j; 0u64 <= j && j < len) { Owned<int>(array_shift<int>(a,j)) }
-    ensures  take av1 = each(size_t  j; 0u64 <= j && j < len) { Owned<int>(array_shift<int>(a,j)) }
+/*@ requires take av0 = each(size_t  j; 0u64 <= j && j < len) { Owned<int>(array_shift<int>(a,j)) }; 
+    ensures  take av1 = each(size_t  j; 0u64 <= j && j < len) { Owned<int>(array_shift<int>(a,j)) }; 
 @*/
 {
     for (size_t i = 0; i < len - 1; ++i)
       /*@ inv take avl = each(u64 k; 0u64 <= k && k < i) { Owned<int>(array_shift<int>(a,k)) };
 	      take avr = each(u64 k; i <= k && k < len) { Owned<int>(array_shift<int>(a,k)) } ;
 	      {a} unchanged; {len} unchanged;
-	      i <= len
+	      i <= len; 
       @*/
       {
         size_t j_min = i;
@@ -186,7 +186,7 @@ void selection_sort(uint32_t *a, size_t len)
 	          take avr = each(u64 k; i <= k && k < j)    { Owned<int>(array_shift<int>(a,k)) };
 		  take avr = each(u64 k; j <= k && k < len) { Owned<int>(array_shift<int>(a,k)) };
 		  {a} unchanged; {len} unchanged;
-		  j <= len
+		  j <= len; 
 		  @*/
 	  {
             if (a[j] < a[j_min]) {

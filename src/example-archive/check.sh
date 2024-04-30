@@ -1,3 +1,13 @@
+if [ -n "$1" ] 
+then
+    echo "using CN=$1"
+    CN="$1"
+else
+    CN=cn
+fi
+
+
+
 process_files() {
   local dir=$1
   local pattern=$2
@@ -24,18 +34,21 @@ process_files() {
   fi 
 }
 
+failures=0
+
 check_file() {
   local file=$1
   local expected_exit_code=$2
 
   printf "[$file]... "
-  timeout 60 cn "$file" > /dev/null 2>&1
+  timeout 10 cn "$file" > /dev/null 2>&1
   local result=$?
 
   if [ $result -eq $expected_exit_code ]; then
     printf "\033[32mPASS\033[0m\n"
   else
     printf "\033[31mFAIL\033[0m (Unexpected return code: $result)\n"
+    failures=$(( $failures + 1 ))
   fi
 }
 
@@ -44,3 +57,10 @@ process_files "broken/error-cerberus" "*.c" check_file 2
 process_files "broken/error-crash" "*.c" check_file 125
 process_files "broken/error-proof" "*.c" check_file 1
 process_files "broken/error-timeout" "*.c" check_file 124
+
+if [[ "$failures" = 0 ]]
+then
+  exit 0
+else
+  exit 1
+fi

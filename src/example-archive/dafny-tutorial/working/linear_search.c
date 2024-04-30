@@ -4,14 +4,14 @@ int linear_search(int *a, int length, int key)
 /*@ requires 
       0i32 < length; 
       take IndexPre = each (i32 j; 0i32 <= j && j < length)
-                           {Owned<int>(a + j)} @*/
+                           {Owned<int>(a + j)}; @*/
 /*@ ensures 
       take IndexPost = each (i32 j; 0i32 <= j && j < length)
                             {Owned<int>(a + j)};
       (return < 0i32) || (IndexPost[return] == key); 
       each (i32 j; 0i32 <= j && j < length) 
            {return >= 0i32 || IndexPre[j] != key}; 
-      IndexPre == IndexPost @*/
+      IndexPre == IndexPost; @*/
 {
   int idx = 0;
 
@@ -23,7 +23,7 @@ int linear_search(int *a, int length, int key)
         take IndexInv = each (i32 j; 0i32 <= j && j < length)
                              {Owned<int>(a + j)}; 
         IndexInv == IndexPre; 
-        each (i32 j; 0i32 <= j && j < idx) {IndexPre[j] != key} @*/
+        each (i32 j; 0i32 <= j && j < idx) {IndexPre[j] != key}; @*/
   {
     /*@ extract Owned<int>, idx; @*/
     /*@ instantiate good<int>, idx;  @*/

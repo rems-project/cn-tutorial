@@ -4,8 +4,8 @@
 #include "list_preds.h"
 
 struct list_node *list_reverse_1(struct list_node *head)
-/*@ requires take ListPre  = IntListSeg(head, NULL) @*/
-/*@ ensures  take ListPost = IntListSeg(return, NULL) @*/
+/*@ requires take ListPre  = IntListSeg(head, NULL); @*/
+/*@ ensures  take ListPost = IntListSeg(return, NULL); @*/
 {
   struct list_node *prev, *next, *curr;
   curr = head;
@@ -16,7 +16,7 @@ struct list_node *list_reverse_1(struct list_node *head)
 
   while (curr != 0)
   /*@ inv take InInv = IntListSeg(curr, NULL);
-          take RevInv = IntListSeg(prev, NULL) @*/
+          take RevInv = IntListSeg(prev, NULL); @*/
   {
     next = curr->next;
     curr->next = prev;

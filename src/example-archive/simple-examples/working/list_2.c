@@ -12,14 +12,14 @@
 /*@
 lemma IntListSeqSnoc(pointer p, pointer tail)
   requires take l1 = IntListSeg(p, tail);
-           take v = Owned<struct list_node>(tail)
+           take v = Owned<struct list_node>(tail);
   ensures take l2 = IntListSeg(p, v.next);
-          l2 == append(l1, Seq_Cons { val: v.val, next: Seq_Nil {} })
+          l2 == append(l1, Seq_Cons { val: v.val, next: Seq_Nil {} });
 @*/
 
 void list_2(struct list_node *head)
-/*@ requires take Xs = IntListSeg(head,NULL) @*/
-/*@ ensures take Ys = IntListSeg(head,NULL) @*/
+/*@ requires take Xs = IntListSeg(head,NULL); @*/
+/*@ ensures take Ys = IntListSeg(head,NULL); @*/
 {
   struct list_node *curr;
   curr = head;
@@ -28,7 +28,7 @@ void list_2(struct list_node *head)
   /*@ inv take Visited = IntListSeg(head,curr);
           take Remaining = IntListSeg(curr,NULL);
           {head}unchanged;
-          let prev_curr = curr @*/
+          let prev_curr = curr; @*/
   {
     curr->val = 7;
     curr = curr->next;

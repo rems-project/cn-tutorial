@@ -14,9 +14,9 @@ function (i32) max_spec (i32 a, i32 b)
 
 int max(int a, int b)
 /*@ ensures 
-      (a >= b && return == a) || (a < b && return == b) @*/
+      (a >= b && return == a) || (a < b && return == b); @*/
 /*@ ensures 
-      return == max_spec(a,b) @*/
+      return == max_spec(a,b); @*/
 {
   if (a > b)
   {
