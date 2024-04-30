@@ -1,3 +1,13 @@
+if [ -n "$1" ] 
+then
+    echo "using CN=$1"
+    CN="$1"
+else
+    CN=cn
+fi
+
+
+
 process_files() {
   local dir=$1
   local pattern=$2
