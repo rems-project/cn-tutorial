@@ -12,14 +12,19 @@ fi
 good=0
 bad=0
 
-for file in src/examples/*c; do
-    if [[ $file == *.broken.c ]] ; then
-        echo "(skipping $file)";
-    else if $CN $file ; then
-        good=$(($good+1))
+for file in src/examples/*c; 
+do
+    if [[ $file == *.broken.c ]]
+    then
+        echo "(skipping $file)"
     else 
-        bad=$(($bad+1))
-    fi fi ;
+        if $CN $file 
+        then
+            good=$(($good+1))
+        else 
+            bad=$(($bad+1))
+        fi 
+    fi
 done
 
 
