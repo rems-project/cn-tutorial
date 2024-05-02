@@ -7,6 +7,8 @@ This directory contains examples for CN. Each subdirectory contains examples fro
 * `c-testsuite` - Examples from the [`c-testsuite`](https://github.com/c-testsuite/c-testsuite) database of C compiler tests. 
 * `dafny-tutorial` - Examples constructed by following the Dafny tutorial
   [here](https://dafny.org/dafny/OnlineTutorial/guide.html).
+* `SAW` - Examples taken from the SAW repository.
+* `Rust` - C versions of Rust programs, with CN annotations that provide the same guarantees as the Rust type-checker.
 
 ## Organization  
 
