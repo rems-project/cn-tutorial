@@ -74,13 +74,15 @@ unsigned int pass_references()
   unsigned int* s1 = &s; // Mutable reference to s
   unsigned int* s2 = &s; // Another mutable reference to s
 
-  change(s1); // Requires s2 to be mutable 
-  change(s2); // Requires s3 to be mutable
+  change(s1); // Requires s1 to be mutable 
+  change(s2); // Requires s2 to be mutable
 
   // bad_change(s1); // Doesn't guarantee return of ownership
   // change(s2); // this would fail, since `bad_change consumes the resource`
   
   return s;
+  // At the end of the function, s must be removed from the stack
+  // if bad_change(s1) consumes the ownership verification fails here
 }
 
 int main(){
