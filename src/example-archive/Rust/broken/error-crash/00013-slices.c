@@ -79,7 +79,7 @@ bool has_zero(const int *p, unsigned int len)
 bool use_slices()
 {
   int fibs[10] = {1,1,2,3,5,8,13,0,21,34};
-  bool s1 = has_zero(fibs,10); // `s1_` is unused
+  bool s1 = has_zero(fibs,10);
 
   return s1;
 }

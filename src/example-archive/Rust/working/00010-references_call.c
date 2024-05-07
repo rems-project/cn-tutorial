@@ -41,8 +41,8 @@ fn pass_references() -> u32 {
     let s2 = &mut x; 
     let s3:&mut u32 = &mut x; // Fails: can't have two mutable refs.
     
-    change(*s2);
-    change(*s3);
+    change(s2);
+    change(s3);
 
     x
 }
