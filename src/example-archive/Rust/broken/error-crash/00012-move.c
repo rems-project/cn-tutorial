@@ -33,14 +33,14 @@
 /* Rust code:
 
 // Function to create and populate a String of a given length
-fn create_string(len: usize) -> String;
+fn create_and_populate_string(len: usize) -> String;
 
 // Function that uses a string slice
 fn use_string(s: &str);
 
 fn move_example() {
     let len = 13;
-    let mut s1 = create_string(len);
+    let mut s1 = create_and_populate_string(len);
     let mut s2 = s1; //move
     
     use_string(&s1); // This would fail to typecheck
@@ -55,8 +55,8 @@ fn main() {
 
 
 // Allocates and populates a string of size `len`. 
-extern char *createString (unsigned int len);
-/*@ spec createString(pointer p, u32 len);
+extern char *createAndPopulateString (unsigned int len);
+/*@ spec createAndPopulateString(pointer p, u32 len);
     requires true;
     ensures  take vp1 = each(u32 i; i < len) { Owned<char>( array_shift<char>(return, i)) };
 @*/
@@ -77,7 +77,7 @@ extern void use_string(char* p, unsigned int len);
 void move()
 {
   unsigned int len = 13;
-  char* s1 = createString(len);
+  char* s1 = createAndPopulateString(len);
   char* s2 = s1;
 
   use_string(s1, len); // Without move, we can still use `s1`

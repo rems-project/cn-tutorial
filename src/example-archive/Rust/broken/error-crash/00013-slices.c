@@ -56,7 +56,7 @@ fn main() {
 #include <stdbool.h> // Include for `bool` type
 
 
-// Check if there is a space within the first `len` characters of the string `s`
+// Check if there is a 0 within the first `len` elements of array `s`
 bool has_zero(const int *p, unsigned int len)
 /*@ requires take vp0 = each(u32 i; i < len) { Owned<int>( array_shift<int>(p, i)) };
     ensures  take vp2 = each(u32 i; i < len) { Owned<int>( array_shift<int>(p, i)) };
