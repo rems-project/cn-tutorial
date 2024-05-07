@@ -32,12 +32,25 @@
 
 /* Rust code:
 
-fn move(){
-  let x = 42;
-  let s1 = &x;
-  let s2 = s1;
-  use_string(s1);
+// Function to create and populate a String of a given length
+fn create_string(len: usize) -> String;
+
+// Function that uses a string slice
+fn use_string(s: &str);
+
+fn move_example() {
+    let len = 13;
+    let mut s1 = create_string(len);
+    let mut s2 = s1; //move
+    
+    use_string(&s1); // This would fail to typecheck
+    use_string(&s2); // s2 is live because it's used here
 }
+
+fn main() {
+    move_example();
+}
+
 */
 
 

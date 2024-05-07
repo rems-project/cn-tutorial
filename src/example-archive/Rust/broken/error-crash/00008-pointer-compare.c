@@ -8,16 +8,25 @@
 */
 
 /* Rust code:
-   
-fn main() {
-    let x = 42; // 'x' lives throughout the outer scope
-    let r = borrow(&x); // 'r' now correctly borrows 'x' and can be used as long as 'x' is alive
-    println!("The number is: {}", r); // Safe to use 'r' here
+
+
+fn compare<'a, 'b>(p: &'a mut i32, bound: &'b i32) -> &'a mut i32 {
+    if std::ptr::eq(p as *const _, bound as *const _) {
+        println!("yes");
+    // Do something
+    }
+    p
 }
 
-fn borrow<'a>(input: &'a i32) -> &'a i32 {
-    input
+fn main() {
+    let mut x = [42, 0]; 
+    let r = compare(&mut x[0], &x[1]);
+    let ret = *r; 
+
+    println!("{}", ret);
+    // The return value is printed to the console instead of returning it from 'main'
 }
+
 
 */
 
