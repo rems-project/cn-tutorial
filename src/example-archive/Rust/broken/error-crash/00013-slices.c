@@ -18,10 +18,12 @@
     This iterated resource corresponds to Rust's slices and states
     that all the elements, from index 0 to `len`, are owned.
 
-    Often times resources have to be manually extracted from an
-    iterated resource by using the `extract` hint. In the example,
-    this is used before accessing `p[i]` to demonstrate that the
-    execution has the ownership required to read the value.
+    Unlike in Rust, in CN we must help the verifier extract the right
+    resouces from an iterated resource. Since resource are not
+    attached to references, CN doens't necsarily know what iterated
+    resource to use and trying them all could be slow. In this case
+    we use `extract Owned<unsigned int>, i; ` to tell CN that it can
+    speciallise the iterated resource to index `i`.
     
 */
 
