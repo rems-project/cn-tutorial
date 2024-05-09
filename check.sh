@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ -n "$1" ] 
+if [ -n "$1" ]
 then
-    echo "using CN=$1"
+    echo "using CN=$1 in $PWD"
     CN="$1"
 else
     CN=cn
@@ -12,18 +12,18 @@ fi
 good=0
 bad=0
 
-for file in src/examples/*c; 
+for file in src/examples/*c;
 do
     if [[ $file == *.broken.c ]]
     then
         echo "(skipping $file)"
-    else 
-        if $CN $file 
+    else
+        if $CN $file
         then
             good=$(($good+1))
-        else 
+        else
             bad=$(($bad+1))
-        fi 
+        fi
     fi
 done
 

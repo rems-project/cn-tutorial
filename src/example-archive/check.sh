@@ -1,6 +1,8 @@
-if [ -n "$1" ] 
+#!/bin/env bash
+
+if [ -n "$1" ]
 then
-    echo "using CN=$1"
+    echo "using CN=$1 in $PWD"
     CN="$1"
 else
     CN=cn
@@ -12,12 +14,12 @@ process_files() {
   local dir=$1
   local pattern=$2
   local action=$3
-  local expected_exit_code=$4 
+  local expected_exit_code=$4
 
-  if [ -d "$dir" ]; then 
+  if [ -d "$dir" ]; then
     # Array to hold files matching the pattern
     local files=($(find "$dir" -maxdepth 1 -type f -name "$pattern" | sort))
-    
+
     # Check if the array is not empty
     if [ "${#files[@]}" -gt 0 ]; then
       for file in "${files[@]}"; do
@@ -29,9 +31,9 @@ process_files() {
     else
       echo "No files matching '$pattern' found in $dir"
     fi
-  else 
-    echo "Directory $dir does not exist" 
-  fi 
+  else
+    echo "Directory $dir does not exist"
+  fi
 }
 
 failures=0
@@ -53,7 +55,7 @@ check_file() {
 }
 
 process_files "working" "*.c" check_file 0
-process_files "broken/error-cerberus" "*.c" check_file 2 
+process_files "broken/error-cerberus" "*.c" check_file 2
 process_files "broken/error-crash" "*.c" check_file 125
 process_files "broken/error-proof" "*.c" check_file 1
 process_files "broken/error-timeout" "*.c" check_file 124
