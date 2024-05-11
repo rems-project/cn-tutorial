@@ -1,3 +1,5 @@
+// Currently unprovable: goto unsupported 
+
 int
 main()
 {
