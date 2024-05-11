@@ -1,3 +1,6 @@
+// Should be provable, but doesn't work
+// Cause: bug in initialization reasoning for loops  
+
 int
 main() {
 	int n;

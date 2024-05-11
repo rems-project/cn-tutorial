@@ -1,5 +1,6 @@
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	struct T { int x; } s1;
 	s1.x = 1;

@@ -1,17 +1,20 @@
 int
 zero()
+/*@ ensures return == 0i32; @*/
 {
 	return 0;
 }
 
 int
 one()
+/*@ ensures return == 1i32; @*/
 {
 	return 1;
 }
 
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	int x;
 	int y;

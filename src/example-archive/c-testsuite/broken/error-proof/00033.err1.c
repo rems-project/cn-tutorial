@@ -1,7 +1,16 @@
+// Provable but post-condition is weaker than we want 
+
 int g;
 
 int
 effect()
+/*@ accesses g; @*/
+/*@ requires 
+        take Pre = Owned<int>(&g); @*/
+/*@ ensures 
+        take Post = Owned<int>(&g); 
+        Post == 1i32;  
+        return == 1i32; @*/
 {
 	g = 1;
 	return 1;
@@ -9,6 +18,12 @@ effect()
 
 int
 main()
+/*@ accesses g; @*/
+/*@ requires 
+        take Pre = Owned<int>(&g); @*/
+/*@ ensures 
+        take Post = Owned<int>(&g); @*/
+/*@ ensures return == 0i32; @*/
 {
     int x;
     

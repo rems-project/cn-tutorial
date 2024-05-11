@@ -1,3 +1,6 @@
+// Should be provable, but doesn't work
+// Cause: stack-allocated array 
+
 int
 main()
 {
