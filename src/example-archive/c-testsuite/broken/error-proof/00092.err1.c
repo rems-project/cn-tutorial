@@ -2,6 +2,7 @@ int a[] = {5, [2] = 2, 3};
 
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	if (sizeof(a) != 4*sizeof(int))
 		return 1;

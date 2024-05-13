@@ -4,6 +4,8 @@ char s[] = "a" B "c";
 
 int
 main()
+/*@ accesses s; @*/
+/*@ ensures return == 0i32; @*/
 {
 	if (s[0] != 'a')
 		return 1;

@@ -3,6 +3,7 @@ struct S s = {1, 2};
 
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	if(s.a != 1)
 		return 1;

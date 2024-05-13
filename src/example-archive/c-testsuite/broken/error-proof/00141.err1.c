@@ -5,6 +5,7 @@
 
 int
 main(void)
+/*@ ensures return == 0i32; @*/
 {
 	int foo, bar, foobar;
 

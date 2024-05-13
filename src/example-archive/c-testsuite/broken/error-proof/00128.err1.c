@@ -13,6 +13,8 @@ unsigned short k;
 
 int
 main(void)
+/*@ accesses a; b; c; d; e; f; g; h; i; j; k; @*/
+/*@ ensures return == 0i32; @*/
 {
 	a = b;
 	a = c;

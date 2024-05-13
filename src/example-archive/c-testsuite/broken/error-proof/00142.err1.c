@@ -10,6 +10,7 @@ int d;
 
 int
 main(void)
+/*@ ensures return == 0i32; @*/
 {
 	return c;
 }

@@ -2,7 +2,9 @@
 // Cause: bug in initialization reasoning for loops  
 
 int
-main() {
+main() 
+/*@ ensures return == 0i32; @*/
+{
 	int n;
 	int t;
 	int c;
