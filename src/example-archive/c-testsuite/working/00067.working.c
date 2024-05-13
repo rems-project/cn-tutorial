@@ -13,6 +13,7 @@ int x = 1;
 #endif
 
 int main()
+/*@ accesses x; @*/
 {
 	return x;
 }

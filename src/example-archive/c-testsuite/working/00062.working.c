@@ -16,6 +16,7 @@ int x = 0;
 
 int
 main()
+/*@ accesses x; @*/
 {
 	return x;
 }

@@ -1,11 +1,17 @@
 int
 f1(char *p)
+/*@ requires 
+			take PreP = Owned<char>(p); @*/
+/*@ ensures 
+			take PostP = Owned<char>(p);
+			return == 1i32 + (i32) PreP; @*/
 {
 	return *p+1;
 }
 
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	char s = 1;
 	int v[1000];

@@ -3,7 +3,7 @@ main()
 {
 	int arr[2];
 	int *p;
-	
+	/*@ extract Block<int>, 1u64; @*/
 	p = &arr[0];
 	p += 1;
 	*p = 123;

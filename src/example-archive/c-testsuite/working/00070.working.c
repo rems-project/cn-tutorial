@@ -10,6 +10,7 @@ X
 
 int
 main()
+/*@ accesses x; @*/
 {
 	return x;
 }
