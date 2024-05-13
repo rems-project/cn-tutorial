@@ -6,10 +6,10 @@ int
 main()
 /*@ accesses x; y; p;  @*/
 /*@ requires 
-			take PreP = Owned<int>(p); @*/
-/*@ ensures 
-			take PostP = Owned<int>(p); 
-			return != 5i32; @*/
+			x == 5i32; 
+			y == 6i64; 
+			p == &x; @*/
+/*@ ensures return == 0i32; @*/
 {
 	if (x != 5) 
 		return 1;

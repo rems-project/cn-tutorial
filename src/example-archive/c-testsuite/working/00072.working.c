@@ -1,5 +1,6 @@
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	int arr[2];
 	int *p;
