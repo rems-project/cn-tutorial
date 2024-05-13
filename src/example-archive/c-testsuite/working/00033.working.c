@@ -1,10 +1,7 @@
-// Provable but post-condition is weaker than we want 
-
 int g;
 
 int
 effect()
-/*@ accesses g; @*/
 /*@ requires 
         take Pre = Owned<int>(&g); @*/
 /*@ ensures 
@@ -18,7 +15,6 @@ effect()
 
 int
 main()
-/*@ accesses g; @*/
 /*@ requires 
         take Pre = Owned<int>(&g); @*/
 /*@ ensures 
