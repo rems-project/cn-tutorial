@@ -1124,4 +1124,11 @@ Misc things to do:
   - create a top-level TAGS file for emacs
   - Figure out the smoothest way to do multiple includes
   - Figure out how to display filenames
+
+Alternative formatting tools to consider:
+  probably the best fit:
+    https://myst-parser.readthedocs.io/en/latest/
+  another very standard one to consider:
+    alternative: https://www.sphinx-doc.org/en/master/index.html
+
 ////
