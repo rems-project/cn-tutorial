@@ -1,3 +1,5 @@
+// Currently unprovable: spurious type error on negation 
+
 int
 main(void)
 /*@ ensures return == 0i32; @*/
