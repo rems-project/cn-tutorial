@@ -1,4 +1,4 @@
-// Crash 
+// Crash: caused by pointer decrement 
 
 int
 main()
@@ -28,7 +28,7 @@ main()
 		return 1;
 	
 	p = &arr[1];
-	if(*(--p) != 2)
+	if(*(--p) != 2) // <-- cause of the crash  
 		return 1;
 
 	return 0;
