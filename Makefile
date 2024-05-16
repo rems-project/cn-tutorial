@@ -1,4 +1,6 @@
-.PHONY: default clean exercises 
+.PHONY: default check clean exercises
+
+MAKEFILE_DIR:=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 default: build exercises build/tutorial.html build/exercises.zip
 
@@ -36,6 +38,10 @@ build/solutions/%: src/examples/%
 
 build/exercises.zip: $(EXERCISES)
 	cd build; zip -r exercises.zip exercises
+
+check:
+	@echo Check examples
+	@$(MAKEFILE_DIR)/check.sh
 
 ##############################################################################
 # Tutorial document
