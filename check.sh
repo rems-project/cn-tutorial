@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
 if [ -n "$1" ]
 then
@@ -12,7 +14,7 @@ fi
 good=0
 bad=0
 
-for file in src/examples/*c;
+for file in $SCRIPT_DIR/src/examples/*c;
 do
     if [[ $file == *.broken.c ]]
     then
