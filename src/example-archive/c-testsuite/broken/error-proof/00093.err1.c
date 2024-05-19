@@ -1,3 +1,5 @@
+// Currently unprovable: type error caused by CN bug 
+
 int a[] = {1, 2, 3, 4};
 
 int
