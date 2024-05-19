@@ -7,7 +7,9 @@ struct s {
 };
 
 int
-main() {
+main() 
+/*@ ensures return == 0i32; @*/
+{
     struct s v;
     v.x = 1;
     v.nest.y = 2;

@@ -4,6 +4,7 @@ int foo(void);
 
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	return FOO;
 }

@@ -1,5 +1,8 @@
+// Currently unprovable: spurious type error on negation 
+
 int
 main(void)
+/*@ ensures return == 0i32; @*/
 {
 	long long i;
 	unsigned long long u;

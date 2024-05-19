@@ -5,6 +5,7 @@ typedef struct { int f; } S;
 
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	S s;
 

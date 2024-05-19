@@ -6,6 +6,7 @@ enum E {
 
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	enum E e;
 
