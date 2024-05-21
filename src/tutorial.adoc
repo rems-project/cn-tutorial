@@ -1099,13 +1099,12 @@ include::exercises/list_rev_alt.c[]
 include::exercises/slf_sized_stack.c[]
 ----
 
-// TODO: Trees:
-//          - deep copy
-//          - sum
-//          - maybe the accumulating sum
-
 ////
 Further topics:
+  - Trees:
+        - deep copy
+        - sum
+        - maybe the accumulating sum
   - queues, doubly linked lists
   - cn_function
   - pack
@@ -1124,4 +1123,6 @@ Misc things to do:
   - create a top-level TAGS file for emacs
   - Figure out the smoothest way to do multiple includes
   - Figure out how to display filenames
+  - some of the examples use int while the exercises that follow use
+    unsigned int.  This is a needless source of potential confusion.
 ////
