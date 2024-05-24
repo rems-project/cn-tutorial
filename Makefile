@@ -43,7 +43,7 @@ build/exercises.zip: $(EXERCISES)
 # Tutorial document
 
 build/tutorial.adoc: src/tutorial.adoc
-	cp $< $@
+	sed -E 's/include_example\((.+)\)/.link:\1[\1]\n[source,c]\n----\ninclude::\1\[\]\n----/g' $< > $@
 
 build/images: src/images
 	cp -r $< $@
