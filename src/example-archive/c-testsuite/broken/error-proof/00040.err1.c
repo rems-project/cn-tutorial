@@ -1,3 +1,5 @@
+// Currently unprovable: calloc unsupported 
+
 #include <stdlib.h>
 
 int N;
@@ -45,6 +47,7 @@ go(int n, int x, int y)
 
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
         t = calloc(64, sizeof(int));
         go(0, 0, 0);

@@ -8,6 +8,7 @@
 
 int
 main(void)
+/*@ ensures return == 0i32; @*/
 {
         int f = 0;
 

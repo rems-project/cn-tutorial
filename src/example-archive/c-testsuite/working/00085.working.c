@@ -6,6 +6,7 @@
 
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	if (ZERO_0())
 		return 1;

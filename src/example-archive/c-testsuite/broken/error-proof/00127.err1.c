@@ -2,6 +2,8 @@ int c;
 
 int
 main()
+/*@ accesses c; @*/
+/*@ ensures return == 0i32; @*/
 {
 	if(0) {
 		return 1;

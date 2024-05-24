@@ -13,6 +13,7 @@ struct s {
 
 int
 main(void)
+/*@ ensures return == 0i32; @*/
 {
 #undef s
 	goto s;

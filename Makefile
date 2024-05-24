@@ -25,10 +25,12 @@ build/exercises/%: src/examples/%
 	@sed -E '\|^.*--BEGIN--.*$$|,\|^.*--END--.*$$|d' $< > $@
 
 build/solutions/%: src/examples/%
-	@if [[ "$<" = *".c"* ]]; then \
-	  if [[ "$<" != *"broken"* ]]; then \
-	     echo cn $< && cn $<; \
-	  fi; \
+	@if [ $(which cn) ]; then \
+	  if [[ "$<" = *".c"* ]]; then \
+	    if [[ "$<" != *"broken"* ]]; then \
+	       echo cn $< && cn $<; \
+	    fi; \
+	  fi \
 	fi
 #	cat $< | sed '/^--BEGIN--$$/d' | sed '/^--END--$$/d' > $@
 	@echo Rebuild $@
@@ -41,7 +43,7 @@ build/exercises.zip: $(EXERCISES)
 # Tutorial document
 
 build/tutorial.adoc: src/tutorial.adoc
-	cp $< $@
+	sed -E 's/include_example\((.+)\)/.link:\1[\1]\n[source,c]\n----\ninclude::\1\[\]\n----/g' $< > $@
 
 build/images: src/images
 	cp -r $< $@

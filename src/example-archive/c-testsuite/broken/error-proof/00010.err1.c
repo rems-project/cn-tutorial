@@ -1,5 +1,8 @@
+// Currently unprovable: goto unsupported 
+
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	start:
 		goto next;
