@@ -19,15 +19,14 @@ jobs:
       - name: Checkout repository and submodules
         uses: actions/checkout@v4
       - name: Prove MPS Components
-        uses: tj-actions/docker-run@v2
+        uses: addnab/docker-run-action@v3
         with:
           # TODO: replace this with an official cerberus docker image!
           image: podhrmic/cerberus:release
-          name: cerberus
           options: -v ${{ github.workspace }}:/data
           # This action seems to override the docker image entrypoint, as a result
           # we need to run "eval `opam env`" first
           # Use `>` so newlines will be replaced with spaces
-          args: >
+          run: >
             eval `opam env` &&
             ./checks.sh
