@@ -29,4 +29,4 @@ jobs:
           # Use `>` so newlines will be replaced with spaces
           run: >
             eval `opam env` &&
-            ./checks.sh
+            ./check.sh
