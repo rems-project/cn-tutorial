@@ -105,6 +105,7 @@ In detail:
 
 * Function specifications are given using special `+/*@ ... @*/+` comments, placed in-between the function argument list and the function body.
 // BCP: We should mention the alternative concrete syntax, when it is decided and implemented.
+// Add CN flag '--magic-comment-char-dollar' to switch CN comment syntax to '/*$ ... $*/'.
 
 * The keyword `+requires+` starts the precondition, a list of one or more CN conditions separated by semicolons.
 

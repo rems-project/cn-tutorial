@@ -14,4 +14,3 @@ predicate (datatype seq) IntList(pointer p) {
   }
 }
 @*/
-
