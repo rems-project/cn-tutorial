@@ -1,5 +1,3 @@
-/* list1.h */
-
 struct int_list {
   int head;
   struct int_list* tail;

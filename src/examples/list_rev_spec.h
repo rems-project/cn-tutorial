@@ -1,4 +1,3 @@
-/* list_rev_spec.h */
 /*@
 function [rec] (datatype seq) snoc(datatype seq xs, i32 y) {
   match xs {

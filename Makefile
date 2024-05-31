@@ -64,3 +64,13 @@ upenn-install: default
 	rm -rf $(HOME)/pub/courses/6700-SL-2024/current/CN
 	mkdir $(HOME)/pub/courses/6700-SL-2024/current/CN
 	cp -r build/* $(HOME)/pub/courses/6700-SL-2024/current/CN
+
+bcp:
+	$(MAKE) default
+	osascript \
+	   -e 'tell application "Safari"' \
+	     -e 'tell its first document' \
+	       -e 'set its URL to (get its URL)' \
+	     -e 'end tell' \
+	   -e 'activate' \
+	   -e 'end tell'

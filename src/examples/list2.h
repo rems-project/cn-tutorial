@@ -1,5 +1,3 @@
-/* list2.h */
-
 /*@
 datatype seq {
   Seq_Nil {},
