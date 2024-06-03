@@ -16,6 +16,10 @@ struct int_queueCell {
 /*@
 predicate (datatype seq) IntQueue(pointer q) {
   take H = Owned<struct int_queue>(q);
+  return (IntQueue1 (H));
+}
+
+predicate (datatype seq) IntQueue1(pointer H) {
   if (is_null(H.head)) {
     assert (is_null(H.tail));
     return Seq_Nil{};
@@ -82,7 +86,7 @@ function [rec] (i32) pop (datatype seq xs, i32 y) {
 // {
 //   return 0;
 // }
-// 
+//
 // struct int_queue* IntQueue_cons(int h, struct int_queue* t)
 // /*@ requires take l = IntQueue(t);
 //     ensures take ret = IntQueue(return);
