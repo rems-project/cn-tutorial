@@ -16,25 +16,27 @@ struct int_queueCell {
 /*@
 predicate (datatype seq) IntQueue(pointer q) {
   take H = Owned<struct int_queue>(q);
-  return (IntQueue1 (H));
+  return (IntQueue1(q,H));
 }
 
-predicate (datatype seq) IntQueue1(pointer H) {
+predicate (datatype seq) IntQueueAux(pointer h, pointer t) {
+  if (is_null(h)) {
+    return Seq_Nil{};
+  } else {
+    take H = Owned<struct int_list>(h);
+    take tl = IntList(H.tail);
+    // assert
+    return (Seq_Cons { head: H.head, tail: tl });
+  }
+}
+
+predicate (datatype seq) IntQueue1(pointer q, struct int_queue H) {
   if (is_null(H.head)) {
     assert (is_null(H.tail));
     return Seq_Nil{};
   } else {
-    return (IntQueueAux (H.head, H.tail));
-  }
-}
-
-predicate (datatype seq) IntQueueAux(pointer h, pointer t) {
-  if (is_null(p)) {
-    return Seq_Nil{};
-  } else {
-    take H = Owned<struct int_list>(p);
-    take tl = IntList(H.tail);
-    return (Seq_Cons { head: H.head, tail: tl });
+    // return (IntQueueAux (H.head, H.tail));
+    return (Seq_Nil{});
   }
 }
 @*/
