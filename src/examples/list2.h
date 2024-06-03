@@ -1,5 +1,3 @@
-/* list2.h */
-
 /*@
 datatype seq {
   Seq_Nil {},
@@ -16,4 +14,3 @@ predicate (datatype seq) IntList(pointer p) {
   }
 }
 @*/
-
