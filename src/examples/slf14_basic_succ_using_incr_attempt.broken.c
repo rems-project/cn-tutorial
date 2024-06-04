@@ -3,7 +3,7 @@
 
 unsigned int succ_using_incr_attempt(unsigned int n)
 /* --BEGIN-- */
-/*@ ensures return == n+1u32
+/*@ ensures return == n+1u32; 
 @*/
 /* --END-- */
 {
