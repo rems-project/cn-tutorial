@@ -107,6 +107,7 @@ struct int_queue* IntQueue_empty ()
 }
 
 /*@
+// This doesn't appear to be quite what's needed...
 lemma snac_nil (datatype seq l, i32 x)
   requires true;
   ensures Seq_Cons {head: x, tail: Seq_Nil {}} == snoc(l, x);
@@ -118,6 +119,7 @@ struct int_queue* IntQueue_push (int x, struct int_queue *q)
             ret == snoc (l, x);
 @*/
 {
+  // ... or maybe this unfold is not enough ...
   /*@ unfold snoc(l, x); @*/
   if (q->head == 0) {
     struct int_queueCell *c = mallocIntQueueCell();
