@@ -881,6 +881,7 @@ looks like on the Coq side!
 The specification of list reversal in CN relies on the familiar
 recursive list reverse function, with a recursive helper.
 
+include_example(exercises/list_snoc_spec.h)
 include_example(exercises/list_rev_spec.h)
 
 To reason about the C implementation of list reverse, we need to help
@@ -937,13 +938,12 @@ Further exercises:
     declarations, etc.
 
 Misc things to do:
+  - rename list_rev_spec and list_snoc_spec to seq_rev.h etc.
   - create a top-level TAGS file for emacs
-  - Figure out the smoothest way to do multiple includes
-  - Figure out how to display filenames
   - some of the examples use int while the exercises that follow use
     unsigned int.  This is a needless source of potential confusion.
 
-Alternative formatting tools to consider:
+Alternative formatting tools to consider at some point (not now!):
   probably the best fit:
     https://myst-parser.readthedocs.io/en/latest/
   another very standard one to consider:

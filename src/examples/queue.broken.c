@@ -1,7 +1,7 @@
 /* queue.c */
 
 #include "list.h"
-#include "list_rev_spec.h"  /* (For snoc) */
+#include "list_snoc_spec.h" 
 
 struct int_queue {
   struct int_queueCell* head;
@@ -107,28 +107,27 @@ struct int_queue* IntQueue_empty ()
 }
 
 /*@
-// This doesn't appear to be quite what's needed...
-lemma snac_nil (datatype seq l, i32 x)
+lemma snac_nil (i32 foo)
   requires true;
-  ensures Seq_Cons {head: x, tail: Seq_Nil {}} == snoc(l, x);
+  ensures snoc (Seq_Nil{}, foo) == Seq_Cons {head: foo, tail: Seq_Nil{}};
 @*/
 
+// should return void!
 struct int_queue* IntQueue_push (int x, struct int_queue *q)
 /*@ requires take l = IntQueue(q);
     ensures take ret = IntQueue(return);
             ret == snoc (l, x);
 @*/
 {
-  // ... or maybe this unfold is not enough ...
-  /*@ unfold snoc(l, x); @*/
-  if (q->head == 0) {
-    struct int_queueCell *c = mallocIntQueueCell();
-    c->first = x;
-    c->next = 0;
+  struct int_queueCell *c = mallocIntQueueCell();
+  c->first = x;
+  c->next = 0;
+  if (q->tail == 0) {
     q->head = c;
     q->tail = c;
-    return q;
   } else {
-    return 0;
+    q->tail->next = c;
+    q->tail = c;
   }
+  return q;
 }
