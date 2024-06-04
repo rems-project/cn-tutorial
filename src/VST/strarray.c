@@ -7,6 +7,7 @@ predicate (datatype strf) Stringa (pointer p)
 {
   take h = Owned<char>(p);
   take s = Stringa_Aux(p, h);
+  //assert (h != 0u8 || s == Strf_E { } );
   return s;
 }
 
@@ -16,6 +17,7 @@ predicate (datatype strf) Stringa_Aux (pointer p, u8 h)
     return Strf_E { };
   }
   else {
+    assert (h != 0u8);
     take t = Stringa(array_shift<char>(p, 1u64));
     return Strf_NE { head : h, tail : t };
   }
@@ -23,7 +25,7 @@ predicate (datatype strf) Stringa_Aux (pointer p, u8 h)
 
 predicate (datatype strf) StringaBlock(pointer p, u64 len) {
   assert (len >= 1u64); // required for null termination
-  take s = each(u64 j; 0u64 <= j && j < len) { Block<char>(array_shift<char>(p,j)) };
+  take s = each(u64 j; j < len) { Block<char>(array_shift<char>(p,j)) };
   assert (s[len - 1u64] == 0u8);
   return to_strf(s, len);
 }
@@ -100,18 +102,30 @@ extern int strcmp(char * str1, char * str2);
     take sIn = Stringa(s);
   ensures
     take sOut = each(u64 j; j <= strf_len(sIn)) { Owned<char>(array_shift<char>(s, j)) };
+    each (u64 j; j < strf_len(sIn)) { sOut[j] != 0u8 };
     sOut[strf_len(sIn)] == 0u8;
 @*/
 
-char str_get(char * s, size_t i) 
-/*@
-requires 
-  take sIn = Stringa(s);
-  i <= strf_len(sIn);
-ensures
-  take sOut = Stringa(s);
-  return == strf_get(sIn, i);
+/*@ lemma elems_owned_rev (pointer s, u64 len)
+  requires
+    take sIn = each(u64 j; j <= len) { Owned<char>(array_shift<char>(s, j)) };
+    each (u64 j; j < len) { sIn[j] != 0u8 };
+    sIn[len] == 0u8;
+  ensures
+    take sOut = Stringa(s);
+    strf_len(sOut) == len;
 @*/
-{
-  return s[i];
-}
+
+// char str_get(char * s, size_t i) 
+// /*@
+// requires 
+//   take sIn = Stringa(s);
+//   i <= strf_len(sIn);
+// ensures
+//   take sOut = Stringa(s);
+//   return == strf_get(sIn, i);
+// @*/
+// {
+//   /*@ extract Owned<char>, i; @*/
+//   return s[i];
+// }
