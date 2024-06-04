@@ -95,22 +95,38 @@ function [rec] (i32) pop (datatype seq xs, i32 y) {
 }
 @*/
 
-// struct int_queue* IntQueue_empty ()
-// /*@ ensures take ret = IntQueue(return);
-//             ret == Seq_Nil{};
-//  @*/
-// {
-//   return 0;
-// }
-//
-// struct int_queue* IntQueue_cons(int h, struct int_queue* t)
-// /*@ requires take l = IntQueue(t);
-//     ensures take ret = IntQueue(return);
-//             ret == Seq_Cons{ head: h, tail: l};
-//  @*/
-// {
-//   struct int_queue *p = mallocIntQueue();
-//   p->head = h;
-//   p->tail = t;
-//   return p;
-// }
+struct int_queue* IntQueue_empty ()
+/*@ ensures take ret = IntQueue(return);
+            ret == Seq_Nil{};
+@*/
+{
+  struct int_queue *p = mallocIntQueue();
+  p->head = 0;
+  p->tail = 0;
+  return p;
+}
+
+/*@
+lemma snac_nil (datatype seq l, i32 x)
+  requires true;
+  ensures Seq_Cons {head: x, tail: Seq_Nil {}} == snoc(l, x);
+@*/
+
+struct int_queue* IntQueue_push (int x, struct int_queue *q)
+/*@ requires take l = IntQueue(q);
+    ensures take ret = IntQueue(return);
+            ret == snoc (l, x);
+@*/
+{
+  /*@ unfold snoc(l, x); @*/
+  if (q->head == 0) {
+    struct int_queueCell *c = mallocIntQueueCell();
+    c->first = x;
+    c->next = 0;
+    q->head = c;
+    q->tail = c;
+    return q;
+  } else {
+    return 0;
+  }
+}
