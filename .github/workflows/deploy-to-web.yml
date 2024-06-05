@@ -1,0 +1,49 @@
+name: Deploy the CN tutorial to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7' 
+
+      - name: Install AsciiDoctor
+        run: gem install asciidoctor
+
+      - name: Clean and build the tutorial
+        run: |
+          rm -rf build/* 
+          make 
+          mv build/tutorial.html build/index.html  
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './build'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
