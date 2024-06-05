@@ -44,7 +44,7 @@ body > .sourceCode {
 
 // __________________________________________________________________________
 
-= CN tutorial
+= CN tutorial (work in progress)
 
 CN is a type system for verifying C code, focusing especially on low-level systems code. Compared to the normal C type system, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes _safely_ — does not raise C undefined behaviour — and _correctly_ — according to strong user-defined specifications. To accurately handle the complex semantics of C, CN builds on the https://github.com/rems-project/cerberus/[Cerberus semantics for C].
 
