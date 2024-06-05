@@ -1,7 +1,7 @@
 /* queue.c */
 
 #include "list.h"
-#include "list_snoc_spec.h" 
+#include "list_snoc_spec.h"
 
 struct int_queue {
   struct int_queueCell* head;
@@ -15,7 +15,7 @@ struct int_queueCell {
 
 // take V = Owned<t>(p) === p |-t-> V
 
-// Why is the argument type just "pointer" with no info about what 
+// Why is the argument type just "pointer" with no info about what
 // type it points to?
 
 /*@
@@ -107,15 +107,14 @@ struct int_queue* IntQueue_empty ()
 }
 
 /*@
-lemma snac_nil (i32 foo)
+lemma snoc_nil (i32 foo)
   requires true;
   ensures snoc (Seq_Nil{}, foo) == Seq_Cons {head: foo, tail: Seq_Nil{}};
 @*/
 
-// should return void!
-struct int_queue* IntQueue_push (int x, struct int_queue *q)
+void IntQueue_push (int x, struct int_queue *q)
 /*@ requires take l = IntQueue(q);
-    ensures take ret = IntQueue(return);
+    ensures take ret = IntQueue(q);
             ret == snoc (l, x);
 @*/
 {
@@ -123,11 +122,12 @@ struct int_queue* IntQueue_push (int x, struct int_queue *q)
   c->first = x;
   c->next = 0;
   if (q->tail == 0) {
+    /*@ split_case (*q).head == NULL; @*/
+    /*@ apply snoc_nil(x); @*/
     q->head = c;
     q->tail = c;
   } else {
     q->tail->next = c;
     q->tail = c;
   }
-  return q;
 }
