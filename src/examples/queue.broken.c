@@ -13,10 +13,7 @@ struct int_queueCell {
   struct int_queueCell* next;
 };
 
-// take V = Owned<t>(p) === p |-t-> V
-
-// Why is the argument type just "pointer" with no info about what
-// type it points to?
+// Nb: take V = Owned<t>(p) === p |-t-> V
 
 /*@
 predicate (datatype seq) IntQueue(pointer q) {
@@ -31,24 +28,19 @@ predicate (datatype seq) IntQueue1(pointer dummy, struct int_queue H) {
     return (Seq_Nil{});
   } else {
     assert (!is_null(H.tail));
-    take Q = IntQueueAux (H.head, H.tail);
+    take T = Owned<struct int_queueCell>(H.tail);
+    assert (is_null(T.next));
+    take Q = IntQueueAux (H.head, H.tail, T.first);
     return Q;
   }
 }
 
-predicate (datatype seq) IntQueueAux(pointer h, pointer t) {
-  take C = Owned<struct int_queueCell>(h);
-  take L = IntQueueAux1(h, C, t);
-  return L;
-}
-
-predicate (datatype seq) IntQueueAux1
-                           (pointer h, struct int_queueCell C, pointer t) {
-  if (is_null(C.next)) {
-    assert (h == t);
-    return (Seq_Cons{head: C.first, tail: Seq_Nil{}});
+predicate (datatype seq) IntQueueAux (pointer h, pointer t, i32 lastVal) {
+  if (h == t) {
+    return (Seq_Cons{head: lastVal, tail: Seq_Nil{}});
   } else {
-    take TL = IntQueueAux(C.next, t);
+    take C = Owned<struct int_queueCell>(h);
+    take TL = IntQueueAux(C.next, t, lastVal);
     return (Seq_Cons { head: C.first, tail: TL });
   }
 }
