@@ -3,6 +3,7 @@
 // :pygments-style: tango
 :nofooter:
 :prewrap!:
+:sectanchors:
 
 ++++
 <style>
