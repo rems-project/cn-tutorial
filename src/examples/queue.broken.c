@@ -3,6 +3,12 @@
 #include "list.h"
 #include "list_snoc_spec.h"
 
+/*@
+lemma snoc_nil (i32 foo)
+  requires true;
+  ensures snoc (Seq_Nil{}, foo) == Seq_Cons {head: foo, tail: Seq_Nil{}};
+@*/
+
 struct int_queue {
   struct int_queueCell* head;
   struct int_queueCell* tail;
@@ -98,16 +104,29 @@ struct int_queue* IntQueue_empty ()
   return p;
 }
 
-/*@
-lemma snoc_nil (i32 foo)
-  requires true;
-  ensures snoc (Seq_Nil{}, foo) == Seq_Cons {head: foo, tail: Seq_Nil{}};
+int IntQueue_pop (struct int_queue *q)
+/*@ requires take before = IntQueue(q);
+             before != Seq_Nil{};
+    ensures take after = IntQueue(q);
+            after == tl(before);
+            return == hd(before);
 @*/
+{
+  /*@ split_case (*q).head == NULL; @*/
+  int x = q->head->first;
+  if (q->head->next == 0) {
+    q->head = 0;
+    q->tail = 0;
+  } else {
+    q->head = q->head->next;
+  }
+  return x;
+}
 
 void IntQueue_push (int x, struct int_queue *q)
-/*@ requires take l = IntQueue(q);
-    ensures take ret = IntQueue(q);
-            ret == snoc (l, x);
+/*@ requires take before = IntQueue(q);
+    ensures take after = IntQueue(q);
+            after == snoc (before, x);
 @*/
 {
   struct int_queueCell *c = mallocIntQueueCell();
