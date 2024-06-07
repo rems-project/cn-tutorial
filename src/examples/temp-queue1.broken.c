@@ -1,5 +1,9 @@
 #include "list.h"
 
+
+/*@ function (datatype seq) rev(datatype seq xs) @*/
+
+
 // N.b.: This is wrong!
 /*@
 function [rec] (datatype seq) snoc(datatype seq xs, i32 y) {
