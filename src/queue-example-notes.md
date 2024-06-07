@@ -11,9 +11,9 @@ d99e65ed01c7a35408b0e409af3f17ece25bc0bf is the tutorial commit (with the correc
 More notes:
   - path explosion means you can't look at path to error in HTML output
       - it can help to move the return statement (manually explode!)
-        to see which path is failing 
+        to see which path is failing
       - (should be able to annotate after a conditional to pull things
-        back together) 
+        back together)
   - conclude that l is not properly constrained
         because the SMT solver is making crazy choices
 
@@ -90,6 +90,56 @@ has value false!
 
 I.e., something is very wrong.
 
+First, we have to find the path to the error.  Either decode the HTML
+or put in some returns in the branches of the if.  This tells us that
+the problem is in the first branch.
+
+We see
+
+    temp-queue1b.broken.c:95:5: error: Unprovable constraint
+        return;
+        ^~~~~~~
+    Constraint from temp-queue1b.broken.c:86:13:
+                ret == snoc (l, x);
+                ^~~~~~~~~~~~~~~~~~~
+
+To make progress, we need to unfold snoc.  How do we know this?
+Because the constraint that is problematic involves a snoc, and snoc
+is recursive, so we should expect to have to unfold at some point.
+(Non-recursive things are always inlined, but recursive ones obviously
+not, so even to look "one level deep" we need an unfold.)
+
+Once we've unfolded, we get some more hints:
+
+  - Look at the value of l in Terms: Seq_Cons {head: 0i32, tail: Seq_Nil {}}
+  - But we are in the empty queue case, so this seems fishy.
+  - Now, in the constraints, we see   l == unpack_IntQueue1.Q
+  - Then look at the resources and see that unpack_IntQueue1.Q has not
+    been unpacked in the final line:
+        IntQueue1(q, unpack_IntQueue1.H)(unpack_IntQueue1.Q)
+  - This means that CN did not have enough information to decide which
+    way the conditional at the beginning of IntQueue1 is going to go.
+  - But the condition is testing H.head, while the conditional in the
+    code is testing the tail field!
+  - We could get around this mismatch by adjusting the condition
+    itself, or by adjusting the predicate.  E.g., we could change the
+    predicate to test *both* for null at the beginning, so that it
+    doesn't matter which one you test.
+
+This tells us to look at snoc, which turns out to be very wrong!
+
+    function [rec] (datatype seq) snoc(datatype seq xs, i32 y) {
+      match xs {
+        Seq_Nil {} => {
+          Seq_Nil {}
+        }
+        Seq_Cons {head : h, tail : zs}  => {
+          snoc (rev(zs), h)
+        }
+      }
+    }
+
+
 # --------------------------------------------------------------------------
 # Next try
 
@@ -124,7 +174,7 @@ This time the error is:
         .tail, next))
 
 This makes more sense.  [But how to articulate the sense that it
-makes??] 
+makes??]
 
 # --------------------------------------------------------------------------
 # Getting closer
@@ -133,10 +183,10 @@ We could fix this by rewriting the push function so that, instead of
 following the tail pointer, it recurses down from the head until it
 reaches the tail.  This would work (might be a good exercise?), but it
 nullifies the whole purpose of having the tail pointer in the first
-place.  
+place.
 
 Instead, we need to rearrange IntQueue and friends so that we take
-ownership of the very last cell in the list at the very beginning, 
+ownership of the very last cell in the list at the very beginning,
 instead of at the very end.
 
     predicate (datatype seq) IntQueue(pointer q) {
@@ -169,5 +219,4 @@ instead of at the very end.
     }
 
 This matches the access pattern of the push implementation, and
-it... works?? 
-
+it... works??

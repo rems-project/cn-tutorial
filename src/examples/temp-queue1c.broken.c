@@ -1,7 +1,18 @@
 #include "list.h"
 
-// N.b.: This is wrong!
+// Broken snoc
 /*@
+function [rec] (datatype seq) rev(datatype seq xs) {
+  match xs {
+    Seq_Nil {} => {
+      Seq_Nil {}
+    }
+    Seq_Cons {head : h, tail : zs}  => {
+      snoc (rev(zs), h)
+    }
+  }
+}
+
 function [rec] (datatype seq) snoc(datatype seq xs, i32 y) {
   match xs {
     Seq_Nil {} => {
@@ -41,6 +52,7 @@ extern struct int_queueCell *mallocIntQueueCell();
 /*@
 predicate (datatype seq) IntQueue(pointer q) {
   take H = Owned<struct int_queue>(q);
+  assert ((is_null(H.head) && is_null(H.tail)) || (!is_null(H.head) && !is_null(H.tail)));
   take Q = IntQueue1(q,H);
   return Q;
 }
@@ -92,8 +104,11 @@ void IntQueue_push (int x, struct int_queue *q)
   if (q->tail == 0) {
     q->head = c;
     q->tail = c;
+    /*@ unfold snoc(l,x); @*/
+    return;
   } else {
     q->tail->next = c;
     q->tail = c;
+    return;
   }
 }

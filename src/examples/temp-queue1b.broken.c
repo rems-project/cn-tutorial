@@ -1,14 +1,14 @@
 #include "list.h"
 
-// N.b.: This is wrong!
+// Fixed version
 /*@
 function [rec] (datatype seq) snoc(datatype seq xs, i32 y) {
   match xs {
     Seq_Nil {} => {
-      Seq_Nil {}
+      Seq_Cons {head: y, tail: Seq_Nil{}}
     }
-    Seq_Cons {head : h, tail : zs}  => {
-      snoc (rev(zs), h)
+    Seq_Cons {head: x, tail: zs}  => {
+      Seq_Cons{head: x, tail: snoc (zs, y)}
     }
   }
 }
@@ -92,8 +92,10 @@ void IntQueue_push (int x, struct int_queue *q)
   if (q->tail == 0) {
     q->head = c;
     q->tail = c;
+    return;
   } else {
     q->tail->next = c;
     q->tail = c;
+    return;
   }
 }
