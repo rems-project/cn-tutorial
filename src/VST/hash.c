@@ -25,9 +25,8 @@ ensures
 {
   unsigned int n=0;
   size_t i=0;
-  char c = s[i];
-  /*@ assert (c == 0u8 ? sIn == Strf_E { } : true ); @*/
   /*@ apply elems_owned(s); @*/
+  char c = s[i];
   while (c)      
   /*@ 
     inv 
@@ -35,13 +34,17 @@ ensures
       //sInv == sIn;
       i <= strf_len(sIn);
       take sInv = each(u64 j; j <= strf_len(sIn)) { Owned<char>(array_shift<char>(s, j)) };
+      each (u64 j; j < strf_len(sIn)) { sInv[j] != 0u8 };
       sInv[strf_len(sIn)] == 0u8;
       c == sInv[i];
-      i < strf_len(sIn) || c == 0u8;
+      c == 0u8 || i < strf_len(sIn);
   @*/
   {
+    /*@ assert (c != 0u8); @*/
+    /*@ assert (i < strf_len(sIn)); @*/
     n = n*65599u+(unsigned)c;
     i++;
+    /*@ assert (i <= strf_len(sIn)); @*/
     /*@ extract Owned<char>, i; @*/
     c=s[i];
   }
