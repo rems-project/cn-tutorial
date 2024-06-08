@@ -943,6 +943,7 @@ Misc things to do:
   - create a top-level TAGS file for emacs
   - some of the examples use int while the exercises that follow use
     unsigned int.  This is a needless source of potential confusion.
+  - Nb: take V = Owned<t>(p) === p |-t-> V
 
 Alternative formatting tools to consider at some point (not now!):
   probably the best fit:

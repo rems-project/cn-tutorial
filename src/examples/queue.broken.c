@@ -19,8 +19,6 @@ struct int_queueCell {
   struct int_queueCell* next;
 };
 
-// Nb: take V = Owned<t>(p) === p |-t-> V
-
 /*@
 predicate (datatype seq) IntQueue(pointer q) {
   take H = Owned<struct int_queue>(q);
@@ -135,9 +133,15 @@ void IntQueue_push (int x, struct int_queue *q)
   if (q->tail == 0) {
     /*@ split_case (*q).head == NULL; @*/
     /*@ apply snoc_nil(x); @*/
+    // And then this??
+    /*@ split_case (*q).tail == NULL; @*/
     q->head = c;
     q->tail = c;
   } else {
+    // This is needed next:
+    /*@ split_case (*q).head == NULL; @*/
+    // And then this??
+    /*@ split_case (*q).tail == NULL; @*/
     q->tail->next = c;
     q->tail = c;
   }
