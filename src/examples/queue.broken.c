@@ -27,11 +27,11 @@ predicate (datatype seq) IntQueue(pointer q) {
 }
 
 predicate (datatype seq) IntQueue1(pointer dummy, struct int_queue H) {
-  if (is_null(H.head)) {
-    assert (is_null(H.tail));
+  if (is_null(H.head) || is_null(H.tail)) {
+    assert (is_null(H.head) && is_null(H.tail));
     return (Seq_Nil{});
   } else {
-    assert (!is_null(H.tail));
+    assert (!is_null(H.head) && !is_null(H.tail));
     take T = Owned<struct int_queueCell>(H.tail);
     assert (is_null(T.next));
     take Q = IntQueueAux (H.head, H.tail, T.first);
@@ -133,14 +133,14 @@ void IntQueue_push (int x, struct int_queue *q)
   if (q->tail == 0) {
     /*@ split_case (*q).head == NULL; @*/
     /*@ apply snoc_nil(x); @*/
-    // And then this??
+    // And then this??  Trying random stuff...
     /*@ split_case (*q).tail == NULL; @*/
     q->head = c;
     q->tail = c;
   } else {
     // This is needed next:
     /*@ split_case (*q).head == NULL; @*/
-    // And then this??
+    // And then this??  Again, random stuff
     /*@ split_case (*q).tail == NULL; @*/
     q->tail->next = c;
     q->tail = c;
