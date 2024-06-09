@@ -121,7 +121,6 @@ int IntQueue_pop (struct int_queue *q)
   // The return was originally here -- make sure to comment on why it got moved!
 }
 
-
 // Notes:
 // - When I tried /*@ unfold IntQueueAux (H.head, H.tail, T.first); @*/
 //   I was confused by "the specification function `IntQueueAux' is not declared".

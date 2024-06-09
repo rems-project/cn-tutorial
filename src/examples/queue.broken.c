@@ -1,21 +1,23 @@
 /* queue.c */
 
-#include "list.h"
+#include "list1.h"
+#include "list2.h"
+#include "list3.h"
 #include "list_snoc_spec.h"
 
 /*@
-lemma snoc_nil (i32 foo)
+lemma snoc_nil (i32 z)
   requires true;
-  ensures snoc (Seq_Nil{}, foo) == Seq_Cons {head: foo, tail: Seq_Nil{}};
+  ensures snoc (Seq_Nil{}, z) == Seq_Cons {head: z, tail: Seq_Nil{}};
 @*/
 
 struct int_queue {
-  struct int_queueCell* head;
+  struct int_queueCell* head;  // Call them front and back!
   struct int_queueCell* tail;
 };
 
 struct int_queueCell {
-  int first;
+  int first;  // Call it v
   struct int_queueCell* next;
 };
 
@@ -49,7 +51,6 @@ predicate (datatype seq) IntQueueAux (pointer h, pointer t, i32 lastVal) {
     return (Seq_Cons { head: C.first, tail: TL });
   }
 }
-
 @*/
 
 // ---------------------------------------------------------------------
@@ -101,13 +102,12 @@ int IntQueue_pop (struct int_queue *q)
             return == hd(before);
 @*/
 {
-  /*@ split_case (*q).head == NULL; @*/
-  /*@ split_case (*q).tail == NULL; @*/
   // This is needed to unfold IntQueueAux, I guess?
-  /*@ split_case (*q).head == (*q).tail; @*/  // rewrite to h==t!
   struct int_queueCell* h = q->head;
   struct int_queueCell* t = q->tail;
-  /*@ split_case (*h).next == NULL; @*/
+  /*@ split_case h == NULL; @*/
+  /*@ split_case t == NULL; @*/
+  /*@ split_case h == t; @*/
   int x = h->first;
   // This originally tested for h->next == 0, but this didn't seem to fit the structure of
   // the verification; this way works better, at least for the first branch.  But would
@@ -120,12 +120,41 @@ int IntQueue_pop (struct int_queue *q)
     return x;
   } else {
     struct int_queueCell* n = h->next;
-    // Needs to deallocate here too!
     q->head = n;
+    // Needs to deallocate here too!
     freeIntQueueCell(h);
     return x;
   }
   // The return was originally here -- make sure to comment on why it got moved!
+}
+
+void IntQueue_push (int x, struct int_queue *q)
+/*@ requires take before = IntQueue(q);
+    ensures take after = IntQueue(q);
+            after == snoc (before, x);
+@*/
+{
+  struct int_queueCell *c = mallocIntQueueCell();
+  c->first = x;
+  c->next = 0;
+  struct int_queueCell* t = q->tail;
+  struct int_queueCell* h = q->head;
+  if (t == 0) {
+    /*@ split_case h == NULL; @*/
+    q->head = c;
+    q->tail = c;
+    // Figuring out that this was needed was a useful/interesting bit of detective work
+    /*@ apply snoc_nil(x); @*/
+    return;
+  } else {
+    /*@ split_case h == NULL; @*/
+    /*@ split_case h == t; @*/
+    t->next = c;
+    q->tail = c;
+    // This appears to be wanted, but not sure why!
+    /*@ apply snoc_nil(x); @*/
+    return;
+  }
 }
 
 
@@ -138,4 +167,7 @@ int IntQueue_pop (struct int_queue *q)
 //     - Seq is capitalized, but it means seq
 //     - most important part is buried in the middle
 //     - What are the established C conventions here??
-// - lastVal can be eliminated, I think
+// - lastVal can be eliminated, I think  (maybe?!)
+// - The fact that some of the Constraints in the error report are forced while
+//   others are random values filled in by the SMT solver is pretty problematic
+// - There might be a better whole way to do this, using "list segments" a la Chargueraud
