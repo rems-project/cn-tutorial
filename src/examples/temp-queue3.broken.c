@@ -103,25 +103,19 @@ int IntQueue_pop (struct int_queue *q)
   /*@ split_case (*q).head == NULL; @*/
   /*@ split_case (*q).tail == NULL; @*/
   // This is needed to unfold IntQueueAux, I guess?
-  /*@ split_case (*q).head == (*q).tail; @*/  // rewrite to h==t!
+  /*@ split_case (*q).head == (*q).tail; @*/
   struct int_queueCell* h = q->head;
-  struct int_queueCell* t = q->tail;
   /*@ split_case (*h).next == NULL; @*/
   int x = h->first;
-  // This originally tested for h->next == 0, but this didn't seem to fit the structure of
-  // the verification; this way works better, at least for the first branch.  But would
-  // it have been possible to verify it the other way?
-  if (h == t) {
+  if (h->next == 0) {
     // This line was missing originally -- good pedagogy to fix in stages??
     freeIntQueueCell(h);
     q->head = 0;
     q->tail = 0;
     return x;
   } else {
-    struct int_queueCell* n = h->next;
     // Needs to deallocate here too!
-    q->head = n;
-    freeIntQueueCell(h);
+    q->head = h->next;
     return x;
   }
   // The return was originally here -- make sure to comment on why it got moved!

@@ -1,4 +1,4 @@
-# Notes
+2# Notes
 
 - Bad definition of snoc (same as rev). How to spot? Look at constraint context, specifically snoc(listQ, x) == match listQ {Seq\_Nil {} => {Seq\_Nil {}}Seq\_Cons {head: h, tail: zs} => {snoc(rev(zs), h)}}. Other big clue: applying lemma snoc_nil results in an inconsistent context. This is really nasty because snoc(Seq_Nil{}, x) ends up reducing to itself.
 
