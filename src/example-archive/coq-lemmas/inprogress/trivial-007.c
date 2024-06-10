@@ -7,10 +7,7 @@
       return true; 
     }
   } 
-  
-  lemma lem_bit_wise_or (u32 x)
-  requires MyCondition(x) == true;
-  ensures true;
+
 @*/
 
 void trivial() 
