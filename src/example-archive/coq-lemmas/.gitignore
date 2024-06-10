@@ -1,0 +1,7 @@
+build/**/*.vo
+build/**/*.vos
+build/**/*.vok
+build/**/*.glob
+build/**/*.aux
+Makefile.coq
+Makefile.coq.conf
