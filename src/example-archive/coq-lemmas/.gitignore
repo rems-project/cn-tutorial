@@ -5,3 +5,5 @@ build/**/*.glob
 build/**/*.aux
 Makefile.coq
 Makefile.coq.conf
+.Makefile.coq.d
+/build/.lia.cache
