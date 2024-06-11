@@ -3,20 +3,6 @@
 #include "list3.h"
 #include "list_snoc_spec.h"
 
-/*@
-lemma snoc_nil (i32 z)
-  requires true;
-  ensures snoc (Seq_Nil{}, z) == Seq_Cons {head: z, tail: Seq_Nil{}};
-@*/
-
-/*@
-lemma snoc_nonempty (pointer h, pointer t, i32 z)
-  requires take l = IntQueueAux(h, t);
-  ensures take l2 = IntQueueAux(h, t);
-          l == l2;
-          snoc(l, z) != Seq_Nil{};
-@*/
-
 struct int_queue {
   struct int_queueCell* head;  // Call them front and back!
   struct int_queueCell* tail;
@@ -30,7 +16,8 @@ struct int_queueCell {
 /*@
 predicate (datatype seq) IntQueue (pointer q) {
   take H = Owned<struct int_queue>(q);
-  assert (is_null(H.head) && is_null(H.tail) || !is_null(H.head) && !is_null(H.tail));
+  // CN bug: parser associativity needs fixing!
+  assert ((is_null(H.head) && is_null(H.tail)) || (!is_null(H.head) && !is_null(H.tail)));
   take Q = IntQueue1(H.head, H.tail);
   return Q;
 }
@@ -99,6 +86,23 @@ struct int_queue* IntQueue_empty ()
   p->tail = 0;
   return p;
 }
+/*@
+lemma tl_snoc(pointer head, pointer tail, datatype seq before, i32 popped)
+requires
+    take T = Owned<struct int_queueCell>(tail);
+    is_null(T.next);
+    take Q = IntQueueAux(head, tail);
+    let after = snoc(Q, T.first);
+    before == snoc (Seq_Cons{head: popped, tail: Q}, T.first);
+ensures
+    take T2 = Owned<struct int_queueCell>(tail);
+    T == T2;
+    is_null(T.next);
+    take Q2 = IntQueueAux(head, tail);
+    Q == Q2;
+    after == tl(before);
+    popped == hd(before);
+@*/
 
 int IntQueue_pop (struct int_queue *q)
 /*@ requires take before = IntQueue(q);
@@ -111,38 +115,32 @@ int IntQueue_pop (struct int_queue *q)
   // This is needed to unfold IntQueueAux, I guess?
   struct int_queueCell* h = q->head;
   struct int_queueCell* t = q->tail;
-  /*@ split_case h == NULL; @*/
-  /*@ split_case t == NULL; @*/
-  /*@ split_case h == t; @*/
-  int x = h->first;
+  /*@ split_case is_null(h); @*/
   // This originally tested for h->next == 0, but this didn't seem to fit the structure of
   // the verification; this way works better, at least for the first branch.  But would
   // it have been possible to verify it the other way?
   if (h == t) {
+    int x = h->first;
     // This line was missing originally -- good pedagogy to fix in stages??
     freeIntQueueCell(h);
     q->head = 0;
     q->tail = 0;
+    /*@ unfold snoc(Seq_Nil{}, x); @*/
     return x;
   } else {
+    int x = h->first;
     struct int_queueCell* n = h->next;
     q->head = n;
     // Needs to deallocate here too!
     freeIntQueueCell(h);
+    /*@ apply tl_snoc(n, (*q).tail, before, x); @*/
     return x;
   }
   // The return was originally here -- make sure to comment on why it got moved!
 }
 
-/*@ lemma snoc_cong(pointer h, pointer t, datatype seq r, i32 x)
-  requires
-    take l = IntQueueAux(h, t);
-    l == snoc (r, x);
-  ensures
-    take l2 = IntQueueAux(h, t);
-    l == l2;
-    l == snoc(r, x);
-@*/
+/*@
+// A bit heavy handed but couldn't figure out a better way to state this
 
 void IntQueue_push (int x, struct int_queue *q)
 /*@ requires take before = IntQueue(q);
@@ -160,11 +158,12 @@ void IntQueue_push (int x, struct int_queue *q)
     return;
   } else {
     /*@ split_case (*q).head == (*q).tail; @*/
-    /*@ apply snoc_nonempty((*q).head, (*q).tail, (*(*q).tail).first); @*/
-    /*@ assert (before != Seq_Nil{}); @*/
+    struct int_queueCell *prev = q->tail;
     q->tail->next = c;
     q->tail = c;
-    /*@ unfold snoc(before, x); @*/
+    /*@ split_case (*(*q).head).next == c; @*/
+    /*@ apply snoc_snoc((*q).head, c, before, x); @*/
+    // Need to convince CN that prev is not dangling...
     return;
   }
 }
