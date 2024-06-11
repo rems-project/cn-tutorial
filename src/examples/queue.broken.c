@@ -1,5 +1,3 @@
-/* queue.c */
-
 #include "list1.h"
 #include "list2.h"
 #include "list3.h"
@@ -146,7 +144,6 @@ int IntQueue_pop (struct int_queue *q)
     l == snoc(r, x);
 @*/
 
-
 void IntQueue_push (int x, struct int_queue *q)
 /*@ requires take before = IntQueue(q);
     ensures take after = IntQueue(q);
@@ -172,11 +169,12 @@ void IntQueue_push (int x, struct int_queue *q)
   }
 }
 
-
 // Notes:
 // - When I tried /*@ unfold IntQueueAux (H.head, H.tail, T.first); @*/
-//   I was confused by "the specification function `IntQueueAux' is not declared".
-//   I guess this is, again, the distinction between functions and predicates...?
+//   I was confused by "the specification function `IntQueueAux' is not
+//   declared".
+//   I guess this is, again, the distinction between functions and
+//   predicates...?
 // - Seq_Cons is awkward for several reasons:
 //     - long / verbose (nothing to do about that, I guess)
 //     - Seq is capitalized, but it means seq
@@ -185,4 +183,5 @@ void IntQueue_push (int x, struct int_queue *q)
 // - lastVal can be eliminated, I think  (maybe?!)
 // - The fact that some of the Constraints in the error report are forced while
 //   others are random values filled in by the SMT solver is pretty problematic
-// - There might be a better whole way to do this, using "list segments" a la Chargueraud
+// - There might be a better whole way to do this, using "list segments"
+//   a la Chargueraud
