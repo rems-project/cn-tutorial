@@ -141,17 +141,6 @@ int IntQueue_pop (struct int_queue *q)
   // The return was originally here -- make sure to comment on why it got moved!
 }
 
-/*@ lemma snoc_cong(pointer h, pointer t, datatype seq r, i32 x)
-  requires
-    take l = IntQueueAux(h, t);
-    l == snoc (r, x);
-  ensures
-    take l2 = IntQueueAux(h, t);
-    l == l2;
-    l == snoc(r, x);
-@*/
-
-
 /*@
 // A bit heavy handed but couldn't figure out a better way to state this
 
