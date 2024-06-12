@@ -16,15 +16,15 @@ struct int_queueCell {
 };
 
 /*@
-predicate (datatype seq) IntQueue (pointer q) {
+predicate (datatype seq) IntQueuePtr(pointer q) {
   take H = Owned<struct int_queue>(q);
   // CN bug: parser associativity needs fixing!
   assert ((is_null(H.head) && is_null(H.tail)) || (!is_null(H.head) && !is_null(H.tail)));
-  take Q = IntQueue1(H.head, H.tail);
+  take Q = IntQueueHT(H.head, H.tail);
   return Q;
 }
 
-predicate (datatype seq) IntQueue1 (pointer head, pointer tail) {
+predicate (datatype seq) IntQueueHT(pointer head, pointer tail) {
   if (is_null(head)) {
     return Seq_Nil{};
   } else {
@@ -45,6 +45,7 @@ predicate (datatype seq) IntQueueAux (pointer h, pointer t) {
     return Seq_Cons { head: C.first, tail: TL };
   }
 }
+
 @*/
 
 // ---------------------------------------------------------------------
@@ -79,7 +80,7 @@ extern void freeIntQueueCell (struct int_queueCell *p);
 // -----------------------------------------------------------------
 
 struct int_queue* IntQueue_empty ()
-/*@ ensures take ret = IntQueue(return);
+/*@ ensures take ret = IntQueuePtr(return);
             ret == Seq_Nil{};
 @*/
 {
@@ -107,9 +108,9 @@ ensures
 @*/
 
 int IntQueue_pop (struct int_queue *q)
-/*@ requires take before = IntQueue(q);
+/*@ requires take before = IntQueuePtr(q);
              before != Seq_Nil{};
-    ensures take after = IntQueue(q);
+    ensures take after = IntQueuePtr(q);
             after == tl(before);
             return == hd(before);
 @*/
@@ -142,27 +143,21 @@ int IntQueue_pop (struct int_queue *q)
 }
 
 /*@
-// A bit heavy handed but couldn't figure out a better way to state this
-
-lemma snoc_snoc(pointer head, pointer tail, datatype seq before, i32 pushed)
+lemma aux_induction(pointer head, pointer prev, pointer tail, datatype seq before, i32 prev_pushed)
 requires
-    take T = Owned<struct int_queueCell>(tail);
-    is_null(T.next);
-    T.first == pushed;
-    take Q = IntQueueAux(head, tail);
-    let after = snoc(Q, T.first);
+    take Prev = Owned<struct int_queueCell>(prev);
+    Prev.next == tail;              // sanity check
+    Prev.first == prev_pushed;      // sanity check
+    take Q = IntQueueAux(head, prev);
+    snoc(Q, prev_pushed) == before; // sanity check
 ensures
-    take T2 = Owned<struct int_queueCell>(tail);
-    T == T2;
     take Q2 = IntQueueAux(head, tail);
-    Q == Q2;
-    before == Q;
-
+    before == Q2;
 @*/
 
 void IntQueue_push (int x, struct int_queue *q)
-/*@ requires take before = IntQueue(q);
-    ensures take after = IntQueue(q);
+/*@ requires take before = IntQueuePtr(q);
+    ensures take after = IntQueuePtr(q);
             after == snoc (before, x);
 @*/
 {
@@ -179,9 +174,7 @@ void IntQueue_push (int x, struct int_queue *q)
     struct int_queueCell *prev = q->tail;
     q->tail->next = c;
     q->tail = c;
-    /*@ split_case (*(*q).head).next == c; @*/
-    /*@ apply snoc_snoc((*q).head, c, before, x); @*/
-    // Need to convince CN that prev is not dangling...
+    /*@ apply aux_induction((*q).head, prev, c, before, (*prev).first); @*/
     return;
   }
 }
