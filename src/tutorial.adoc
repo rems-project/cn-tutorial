@@ -884,7 +884,7 @@ looks like on the Coq side!
 The specification of list reversal in CN relies on the familiar
 recursive list reverse function, with a recursive helper.
 
-include_example(exercises/list_snoc_cn.h)
+include_example(exercises/list_snoc.h)
 include_example(exercises/list_rev.h)
 
 To reason about the C implementation of list reverse, we need to help
@@ -941,22 +941,40 @@ Further exercises:
     declarations, etc.
 
 Misc things to do:
-  - remove the file name headers
   - replace 0 with NULL in specs
-  - rename == to ptr_eq everywhere in specs
-  - rename list to seq in filenames.  or go more radical and rename seq to cnlist
-  - consider renaming IntList to just List (and int_list to just list,
-    etc.) everywhere (since we are only dealing with one kind of list
-    in the tutorial, the extra pedantry is not getting us much; and
-    this simplification would avoid trying to fix conventions that all
-    CN code should use everywhere...)
+
+  - naming issues
+        - rename == to ptr_eq everywhere in specs
+        - rename list to seq in filenames.  or go more radical and rename seq to cnlist
+        - consider renaming IntList to just List (and int_list to just list,
+          etc.) everywhere (since we are only dealing with one kind of list
+          in the tutorial, the extra pedantry is not getting us much; and
+          this simplification would avoid trying to fix conventions that all
+          CN code should use everywhere...)
+       - related: the name Seq_Cons is awkward for several reasons:
+           - long / verbose (nothing to do about that, I guess)
+           - Seq is capitalized, but it means seq
+           - most important part is buried in the middle
+           - What are the established C conventions here??
+
   - some of the examples use int while the exercises that follow use
     unsigned int.  This is a needless source of potential confusion.
-  - Nb: take V = Owned<t>(p) === p |-t-> V
+
+  - everyplace we do storage allocation, we should really allow the
+    malloc call to return NULL if it wants to; the caller should
+    explicitly check that it didn't get back NULL.  This requires
+    defining an "exit" function" with trivial pre- and postconditions
+    (true / false).
+
+______________________
+For later:
 
 Alternative formatting tools to consider at some point (not now!):
   probably the best fit:
     https://myst-parser.readthedocs.io/en/latest/
   another very standard one to consider:
     alternative: https://www.sphinx-doc.org/en/master/index.html
+
+Misc notes:
+  - Nb: take V = Owned<t>(p) === p |-t-> V
 ////
