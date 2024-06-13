@@ -37,7 +37,7 @@ build/solutions/%: src/examples/%
 	@cat $< | sed '\|^.*--BEGIN--.*$$|d' | sed '\|^.*--END--.*$$|d' > $@
 
 build/exercises.zip: $(EXERCISES)
-	cd build; zip -r exercises.zip exercises >& /dev/null
+	cd build; zip -r exercises.zip exercises > /dev/null
 
 ##############################################################################
 # Tutorial document
