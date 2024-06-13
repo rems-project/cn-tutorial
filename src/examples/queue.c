@@ -14,15 +14,15 @@ struct int_queueCell {
 };
 
 /*@
-predicate (datatype seq) IntQueuePtr(pointer q) {
+predicate (datatype seq) IntQueuePtr (pointer q) {
   take H = Owned<struct int_queue>(q);
-  // CN bug: parser associativity needs fixing!
-  assert ((is_null(H.front) && is_null(H.back)) || (!is_null(H.front) && !is_null(H.back)));
+  assert (   (is_null(H.front)  && is_null(H.back)) 
+          || (!is_null(H.front) && !is_null(H.back)));
   take Q = IntQueueFB(H.front, H.back);
   return Q;
 }
 
-predicate (datatype seq) IntQueueFB(pointer front, pointer back) {
+predicate (datatype seq) IntQueueFB (pointer front, pointer back) {
   if (is_null(front)) {
     return Seq_Nil{};
   } else {
@@ -38,7 +38,7 @@ predicate (datatype seq) IntQueueAux (pointer h, pointer t) {
     return Seq_Nil{};
   } else {
     take C = Owned<struct int_queueCell>(h);
-    assert (!is_null(C.next));  // HERE IS THE KEY!
+    assert (!is_null(C.next));  
     take TL = IntQueueAux(C.next, t);
     return Seq_Cons { head: C.first, tail: TL };
   }
@@ -60,11 +60,10 @@ extern void freeIntQueue (struct int_queue *p);
     ensures true;
 @*/
 
-extern struct int_queueCell *mallocIntQueueCell(struct int_queueCell*);
-/*@ spec mallocIntQueueCell(pointer p);
+extern struct int_queueCell *mallocIntQueueCell();
+/*@ spec mallocIntQueueCell();
     requires true;
     ensures take u = Block<struct int_queueCell>(return);
-            !ptr_eq(return, p);
             !is_null(return);
 @*/ 
 
@@ -113,7 +112,6 @@ int IntQueue_pop (struct int_queue *q)
             return == hd(before);
 @*/
 {
-  // This is needed to unfold IntQueueAux, I guess?
   struct int_queueCell* h = q->front;
   struct int_queueCell* t = q->back;
   /*@ split_case is_null(h); @*/
@@ -132,7 +130,6 @@ int IntQueue_pop (struct int_queue *q)
     int x = h->first;
     struct int_queueCell* n = h->next;
     q->front = n;
-    // Needs to deallocate here too!
     freeIntQueueCell(h);
     /*@ apply tl_snoc(n, (*q).back, before, x); @*/
     return x;
@@ -160,7 +157,7 @@ void IntQueue_push (int x, struct int_queue *q)
             after == snoc (before, x);
 @*/
 {
-  struct int_queueCell *c = mallocIntQueueCell(q->front);
+  struct int_queueCell *c = mallocIntQueueCell();
   c->first = x;
   c->next = 0;
   if (q->back == 0) {
@@ -179,13 +176,5 @@ void IntQueue_push (int x, struct int_queue *q)
 }
 
 // Notes:
-// - When I tried /*@ unfold IntQueueAux (H.front, H.back, T.first); @*/
-//   I was confused by "the specification function `IntQueueAux' is not
-//   declared".
-//   I guess this is, again, the distinction between functions and
-//   predicates...?
-// - lastVal can be eliminated, I think  (maybe?!)
-// - The fact that some of the Constraints in the error report are forced while
-//   others are random values filled in by the SMT solver is pretty problematic
-// - There might be a better whole way to do this, using "list segments"
+// - There might be a better whole way to do this whole example, using "list segments"
 //   a la Chargueraud

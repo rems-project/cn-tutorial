@@ -966,6 +966,15 @@ Misc things to do:
     defining an "exit" function" with trivial pre- and postconditions
     (true / false).
 
+  - In queue.c, when I tried /*@ unfold IntQueueAux (H.front, H.back,
+    T.first); @*/ I was confused by "the specification function
+    `IntQueueAux' is not declared".  I guess this is, again, the
+    distinction between functions and predicates...?
+
+  - In debugging the queue example, The fact that some of the
+    constraints in the error report are forced while others are random
+    values filled in by the SMT solver is pretty problematic...
+
 ______________________
 For later:
 
