@@ -920,6 +920,94 @@ include_example(exercises/list_rev_alt.c)
     
 include_example(exercises/slf_sized_stack.c)
 
+== Worked Examples
+
+=== Bridge Controller
+
+This example comes from Dr. Bryan Parno at Carnegie-Mellon University.
+In this example, we are writing a program that simulates a traffic light
+on a one way bridge. We want to verify that our traffic light always works
+as intended, in order to ensure the safety of those who use it. We can do this by implementing the following specifications in CN:
+
+    * At each end of the bridge (end A and end B), there is a 
+      traffic light that can be either red or green. The two lights 
+      can never be green at the same time.
+
+    * At each end of the bridge, there is also a sensor that can  
+      detect the number of cars currently waiting to cross. These  
+      can be modeled with counters W_A and W_B for the two ends.
+
+    * At any time, a car traveling from A to B is either waiting at  
+      A or has passed across the bridge. During a given “clock tick,"  
+      the following actions happen atomically: If necessary, the  
+      lights change, and one car from one end may cross, decrementing 
+      the appropriate counter W_A or W_B. Time spent traveling across 
+      the bridge is not modeled, and there is no need to keep track 
+      of cars once they cross the bridge.
+
+    * Once a car is waiting at one end to use the bridge, it continues 
+      waiting until it crosses.
+
+    * Both lights start out red, with no cars at either end.
+ 
+    * If there is at least one car waiting at A and no cars at B, the 
+      light at A turns green (and vice versa for end B).
+
+    * If both lights are red and cars arrive simultaneously at both 
+      ends, the light at A turns green first. If the light at A is 
+      green and there are cars waiting at B, no more than 5 cars may 
+      travel A to B from that time point. When either no more cars are 
+      waiting at A or 5 cars have crossed from A to B, the light at A 
+      turns red and the light at B turns green. If the light at A is 
+      green and no cars are waiting at B, then the light at A may stay 
+      green until a car arrives at B, from which time the 5-car limit 
+      is imposed. (And vice versa for end B). In short, this means 
+      that if any cars are waiting at one end of the bridge, and that 
+      end has a red light, that light will turn green no more than 5 
+      clock ticks later.
+
+Wow, that's a lot! Everything we just described are called "informal specifications". They are in natural language, and are easy for humans to read and understand. However, we need to turn these into "formal specifications", which are more mathematically precise. This is what CN can help us do.
+
+First, let's think about how to represent the bridge in our program. We have two traffic lights, and each traffic lights can either be red or green. The best way to represent this would be with an **enum**, but these are not currently supported in CN. To work around this, we can represent a traffic light as a **struct**, and specify that only one field may be "active" at a time.
+
+include_example(exercises/bridge/traffic_light.h)
+
+Now we have a valid representation of a traffic light: whichever field is set to 1 represents the current color of the light.
+
+Next, we need a way to represent whether there are cars waiting at either side. We can create another **struct** to represent this. Since cars could be waiting at either, both, or neither of the sides, we do not have to make specifications like we did for the traffic light.
+
+include_example(exercises/bridge/next_car.h)
+
+Lastly, we need a way to describe the state of the bridge at a given time. This includes the two lights at the bridge, the sensors `W_A` and `W_B` described in the informal specification, and a counter to keep track of how many cars have crossed at a certain light.
+
+We also need to specify what makes a state "valid". This is the main place we can formalize the informal specifications above. Try thinking about what this might look like before looking at the code below.
+
+include_example(exercises/bridge/state.h)
+
+Let's walk through the specifications in `valid_state`:
+
+  * The first two lines ensure that both traffic lights in our model behave as intended: they both invoke the `valid_light` function that ensures they are either red or green, but not both at the same time.
+
+  * The third line says that either Light A or Light B must be red. This goes to the specification that they cannot be green at the same time.
+
+  * The fourth line says that the number of cars waiting at either side must be greater than or equal to zero. This makes sense: we can't have a negative number of cars!
+
+  * The fifth line says that the cross counter must be between 0 and 5. This will help with our specification that no car will wait longer than five clock ticks. However, when we implement our `tick` function, we will need to ensure that we only increment the cross counter if there is a car waiting at the other side!
+
+  * The last specification refers to the state of the bridge at initialization. It is another way of saying that if Light A and Light B are both red, then the cross counter must be zero because the lights are only both red at the very beginning. Since there is not an easy encoding for implication in CN, we use the fact that `P => Q` is equivalent to `Q or ~P`.
+
+Now that we have the tools to reason about the state of the bridge formally, let's start writing some functions.
+
+First, let's look at an initialization function, and increment functions for our two sensors. Step through these yourself, and make sure you understand the reasoning behind each specification.
+
+include_example(exercises/bridge/bridge_funcs1.h)
+
+Now, try adding your own specifications to the following functions. If you get stuck, the solution is in the solutions folder.
+
+include_example(exercises/bridge/bridge_funcs2.c)
+
+For extra practice, try coming up with different specifications or variations for this exercise, and implement them yourself!
+
 ////
 Further topics:
   - Trees:
