@@ -37,7 +37,7 @@ build/solutions/%: src/examples/%
 	@cat $< | sed '\|^.*--BEGIN--.*$$|d' | sed '\|^.*--END--.*$$|d' > $@
 
 build/exercises.zip: $(EXERCISES)
-	cd build; zip -r exercises.zip exercises
+	cd build; zip -r exercises.zip exercises >& /dev/null
 
 ##############################################################################
 # Tutorial document
@@ -55,7 +55,8 @@ build/tutorial.html: build/tutorial.adoc $(SRC_EXAMPLES) build/images
 # Misc
 
 TAGS:
-	etags src/tutorial.adoc $(SRC_EXAMPLES)
+	@echo Rebuilding TAGS
+	@etags src/tutorial.adoc $(SRC_EXAMPLES)
 
 ##############################################################################
 # Site-specific stuff
@@ -65,7 +66,7 @@ upenn-install: default
 	mkdir $(HOME)/pub/courses/6700-SL-2024/current/CN
 	cp -r build/* $(HOME)/pub/courses/6700-SL-2024/current/CN
 
-bcp:
+bcp: TAGS
 	$(MAKE) default
 	osascript \
 	   -e 'tell application "Safari"' \

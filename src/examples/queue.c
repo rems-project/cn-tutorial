@@ -1,15 +1,15 @@
-#include "list1.h"
-#include "list2.h"
-#include "list3.h"
-#include "list_snoc_spec.h"
+#include "list_c_types.h"
+#include "list_cn_types.h"
+#include "list_hdtl.h"
+#include "list_snoc.h"
 
 struct int_queue {
-  struct int_queueCell* head;  // Call them front and back!
+  struct int_queueCell* front;  // Call them front and back!
   struct int_queueCell* tail;
 };
 
 struct int_queueCell {
-  int first;  // Call it v
+  int first;  
   struct int_queueCell* next;
 };
 
@@ -17,24 +17,24 @@ struct int_queueCell {
 predicate (datatype seq) IntQueuePtr(pointer q) {
   take H = Owned<struct int_queue>(q);
   // CN bug: parser associativity needs fixing!
-  assert ((is_null(H.head) && is_null(H.tail)) || (!is_null(H.head) && !is_null(H.tail)));
-  take Q = IntQueueHT(H.head, H.tail);
+  assert ((is_null(H.front) && is_null(H.tail)) || (!is_null(H.front) && !is_null(H.tail)));
+  take Q = IntQueueHT(H.front, H.tail);
   return Q;
 }
 
-predicate (datatype seq) IntQueueHT(pointer head, pointer tail) {
-  if (is_null(head)) {
+predicate (datatype seq) IntQueueHT(pointer front, pointer tail) {
+  if (is_null(front)) {
     return Seq_Nil{};
   } else {
     take T = Owned<struct int_queueCell>(tail);
     assert (is_null(T.next));
-    take Q = IntQueueAux (head, tail);
+    take Q = IntQueueAux (front, tail);
     return snoc(Q, T.first);
   }
 }
 
 predicate (datatype seq) IntQueueAux (pointer h, pointer t) {
-  if (h == t) {
+  if (ptr_eq(h,t)) {
     return Seq_Nil{};
   } else {
     take C = Owned<struct int_queueCell>(h);
@@ -52,7 +52,7 @@ extern struct int_queue *mallocIntQueue();
 /*@ spec mallocIntQueue();
     requires true;
     ensures take u = Block<struct int_queue>(return);
-            return != NULL;
+            !ptr_eq(return,NULL);
 @*/ // 'return != NULL' should not be needed
 
 extern void freeIntQueue (struct int_queue *p);
@@ -65,8 +65,8 @@ extern struct int_queueCell *mallocIntQueueCell(struct int_queueCell*);
 /*@ spec mallocIntQueueCell(pointer p);
     requires true;
     ensures take u = Block<struct int_queueCell>(return);
-            return != p;
-            return != NULL;
+            !ptr_eq(return, p);
+            !is_null(return);
 @*/ // 'return != NULL' should not be needed
 
 extern void freeIntQueueCell (struct int_queueCell *p);
@@ -83,23 +83,23 @@ struct int_queue* IntQueue_empty ()
 @*/
 {
   struct int_queue *p = mallocIntQueue();
-  p->head = 0;
+  p->front = 0;
   p->tail = 0;
   return p;
 }
 /*@
-lemma tl_snoc(pointer head, pointer tail, datatype seq before, i32 popped)
+lemma tl_snoc(pointer front, pointer tail, datatype seq before, i32 popped)
 requires
     take T = Owned<struct int_queueCell>(tail);
     is_null(T.next);
-    take Q = IntQueueAux(head, tail);
+    take Q = IntQueueAux(front, tail);
     let after = snoc(Q, T.first);
     before == snoc (Seq_Cons{head: popped, tail: Q}, T.first);
 ensures
     take T2 = Owned<struct int_queueCell>(tail);
     T == T2;
     is_null(T.next);
-    take Q2 = IntQueueAux(head, tail);
+    take Q2 = IntQueueAux(front, tail);
     Q == Q2;
     after == tl(before);
     popped == hd(before);
@@ -114,7 +114,7 @@ int IntQueue_pop (struct int_queue *q)
 @*/
 {
   // This is needed to unfold IntQueueAux, I guess?
-  struct int_queueCell* h = q->head;
+  struct int_queueCell* h = q->front;
   struct int_queueCell* t = q->tail;
   /*@ split_case is_null(h); @*/
   // This originally tested for h->next == 0, but this didn't seem to fit the structure of
@@ -124,14 +124,14 @@ int IntQueue_pop (struct int_queue *q)
     int x = h->first;
     // This line was missing originally -- good pedagogy to fix in stages??
     freeIntQueueCell(h);
-    q->head = 0;
+    q->front = 0;
     q->tail = 0;
     /*@ unfold snoc(Seq_Nil{}, x); @*/
     return x;
   } else {
     int x = h->first;
     struct int_queueCell* n = h->next;
-    q->head = n;
+    q->front = n;
     // Needs to deallocate here too!
     freeIntQueueCell(h);
     /*@ apply tl_snoc(n, (*q).tail, before, x); @*/
@@ -141,15 +141,15 @@ int IntQueue_pop (struct int_queue *q)
 }
 
 /*@
-lemma aux_induction(pointer head, pointer prev, pointer tail, datatype seq before, i32 prev_pushed)
+lemma aux_induction(pointer front, pointer prev, pointer tail, datatype seq before, i32 prev_pushed)
 requires
     take Prev = Owned<struct int_queueCell>(prev);
-    Prev.next == tail;              // sanity check
-    Prev.first == prev_pushed;      // sanity check
-    take Q = IntQueueAux(head, prev);
-    snoc(Q, prev_pushed) == before; // sanity check
+    ptr_eq(Prev.next, tail);           // sanity check
+    Prev.first == prev_pushed;         // sanity check
+    take Q = IntQueueAux(front, prev);
+    snoc(Q, prev_pushed) == before;    // sanity check
 ensures
-    take Q2 = IntQueueAux(head, tail);
+    take Q2 = IntQueueAux(front, tail);
     before == Q2;
 @*/
 
@@ -159,26 +159,26 @@ void IntQueue_push (int x, struct int_queue *q)
             after == snoc (before, x);
 @*/
 {
-  struct int_queueCell *c = mallocIntQueueCell(q->head);
+  struct int_queueCell *c = mallocIntQueueCell(q->front);
   c->first = x;
   c->next = 0;
   if (q->tail == 0) {
     /*@ assert (before == Seq_Nil{}); @*/
-    q->head = c;
+    q->front = c;
     q->tail = c;
     return;
   } else {
-    /*@ split_case (*q).head == (*q).tail; @*/
+    /*@ split_case ptr_eq((*q).front, (*q).tail); @*/
     struct int_queueCell *prev = q->tail;
     q->tail->next = c;
     q->tail = c;
-    /*@ apply aux_induction((*q).head, prev, c, before, (*prev).first); @*/
+    /*@ apply aux_induction((*q).front, prev, c, before, (*prev).first); @*/
     return;
   }
 }
 
 // Notes:
-// - When I tried /*@ unfold IntQueueAux (H.head, H.tail, T.first); @*/
+// - When I tried /*@ unfold IntQueueAux (H.front, H.tail, T.first); @*/
 //   I was confused by "the specification function `IntQueueAux' is not
 //   declared".
 //   I guess this is, again, the distinction between functions and

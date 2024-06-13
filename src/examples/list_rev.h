@@ -1,4 +1,4 @@
-#include "list_snoc_spec.h"
+#include "list_snoc.h"
 
 /*@
 function [rec] (datatype seq) rev(datatype seq xs) {

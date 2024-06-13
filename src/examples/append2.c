@@ -1,5 +1,5 @@
 #include "list.h"
-#include "append.h"
+#include "list_append.h"
 
 struct int_list* IntList_copy (struct int_list *xs)
 /*@ requires take L1 = IntList(xs);

@@ -1,5 +1,3 @@
-// ref.h
-
 extern unsigned int *refUnsignedInt (unsigned int v);
 /*@ spec refUnsignedInt(u32 v);
     requires true;

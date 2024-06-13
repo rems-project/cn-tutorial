@@ -71,7 +71,7 @@ The source files can be downloaded from link:exercises.zip[here].
 
 For a first example, let’s look at a simple arithmetic function: `+add+`, shown below, takes two `+int+` arguments, `+x+` and `+y+`, and returns their sum.
 
-// BCP: We should probably adopt the convention that all the files in
+// TODO: BCP: We should probably adopt the convention that all the files in
 // the exercises directory have a comment at the top giving their name.
 // (We could actually auto-generate those header comments when we process
 // /src/examples into build/exercises, to avoid having to maintain them
@@ -105,7 +105,7 @@ include_example(solutions/0.c)
 In detail:
 
 * Function specifications are given using special `+/*@ ... @*/+` comments, placed in-between the function argument list and the function body.
-// BCP: We should mention the alternative concrete syntax, when it is decided and implemented.
+// TODO: BCP: We should mention the alternative concrete syntax, when it is decided and implemented.
 // Add CN flag '--magic-comment-char-dollar' to switch CN comment syntax to '/*$ ... $*/'.
 
 * The keyword `+requires+` starts the precondition, a list of one or more CN conditions separated by semicolons.
@@ -115,7 +115,7 @@ In detail:
 * `+let sum = (i64) x + (i64) y+` is a let-binding, which defines `+sum+` as the value `+(i64) x + (i64) y+` in the remainder of the function specification.
 
 * Instead of C syntax, CN uses Rust-like syntax for integer types, such as `+u32+` for 32-bit unsigned integers and `+i64+` for signed 64-bit integers to make their sizes unambiguous. Here, `+x+` and `+y+`, of C-type `+int+`, have CN type `+i32+`.
-// BCP: I understand this reasoning, but I wonder whether it introduces more confusion than it avoids -- it means there are two ways of writing everything, and people have to remember whether the particular thing they are writing right now is C or CN...
+// TODO: BCP: I understand this reasoning, but I wonder whether it introduces more confusion than it avoids -- it means there are two ways of writing everything, and people have to remember whether the particular thing they are writing right now is C or CN...
 
 * To define `+sum+` we cast `+x+` and `+y+` to the larger `+i64+` type, using syntax `+(i64)+`, which is large enough to hold the sum of any two `+i32+` values.
 
@@ -137,6 +137,7 @@ In the original example CN reported a type error due to C undefined behaviour. W
 
 Let’s return to the type error from earlier (`+add+` without precondition) and take a closer look at this report. The report comprises two sections.
 
+// TODO: BCP: It looks different now!
 .*CN error report*
 image::images/0.error.png[*CN error report*]
 
@@ -176,7 +177,7 @@ Let’s apply what we know so far to another simple arithmetic example.
 
 The function `+doubled+`, shown below, takes an int `+n+`, defines `+a+` as `+n+` incremented, `+b+` as `+n+` decremented, and returns the sum of the two.
 
-// BCP: Is it important to number the slf examples?  If so, we should do it consistently, but IMO it is not.
+// TODO: BCP: Is it important to number the slf examples?  If so, we should do it consistently, but IMO it is not.
 include_example(exercises/slf1_basic_example_let.signed.c)
 
 We would like to verify this is safe, and that `+doubled+` returns twice the value of `+n+`. Running CN on `+doubled+` leads to a type error: the increment of `+a+` has undefined behaviour.
@@ -439,7 +440,7 @@ When the function returns the two member resources are recombined "`on demand`" 
 include_example(exercises/transpose2.c)
 
 ////
-BCP: Some more things to think about including...
+TODO: BCP: Some more things to think about including...
       - Something about CN's version of the frame rule (see
         bcp_framerule.c, though the example is arguably a bit
         unnatural).
@@ -560,7 +561,7 @@ We specify that `+read+` does not change the array — the outputs `+a1+` and `+
 include_example(exercises/add_two_array.c)
 
 ////
-BCP: In this one I got quite tangled up in different kinds of integers, then got tangled up in (I think) putting the extract declarations in the wrong place.  (I didn't save the not-working version, I'm afraid.)
+TODO: BCP: In this one I got quite tangled up in different kinds of integers, then got tangled up in (I think) putting the extract declarations in the wrong place.  (I didn't save the not-working version, I'm afraid.)
 ////
 
 *Swap array.* Specify and verify `+swap_array+`, which swaps the values of two cells of an `+int+` array. Assume again that `+i+` and `+j+` are different, and describe the effect of `+swap_array+` on the array value using the CN map update expression `+a[i:v]+`, which denotes the same map as `+a+`, except with index `+i+` updated to `+v+`.
@@ -568,7 +569,7 @@ BCP: In this one I got quite tangled up in different kinds of integers, then got
 include_example(exercises/swap_array.c)
 
 ////
-BCP: I wrote this, which seemed natural but did not work -- I still don't fully understand why.  I think this section will need some more examples / exercises to be fully digestible, or perhaps this is just yet another symptom of my imperfecdt understanding of how the numeric stuff works.
+TODO: BCP: I wrote this, which seemed natural but did not work -- I still don't fully understand why.  I think this section will need some more examples / exercises to be fully digestible, or perhaps this is just yet another symptom of my imperfecdt understanding of how the numeric stuff works.
 
     void swap_array (int *p, int n, int i, int j)
     /*@ requires take a1 = each(i32 k; 0i32 <= k && k < n) { Owned<unsigned int>(array_shift<unsigned int>(p,k)) };
@@ -605,7 +606,7 @@ To verify this, we have to supply a loop invariant that specifies all resource o
 
 include_example(solutions/init_array.c)
 ////
-BCP: Concrete syntax: Why not write something like "unchanged {p,n}" or "unchanged: p,n"?
+TODO: BCP: Concrete syntax: Why not write something like "unchanged {p,n}" or "unchanged: p,n"?
 ////
 
 The main condition here is unsurprising: we specify ownership of an iterated resource for an array just like in the the pre- and postcondition.
@@ -614,7 +615,7 @@ The second thing we need to do, however, is less straightforward. Recall that, a
 
 **Note.** If we forget to specify `+unchanged+`, this can lead to confusing errors. In this example, for instance, CN would verify the loop against the loop invariant, but would be unable to prove a function postcondition seemingly directly implied by the loop invariant (lacking the information that the postcondition's `+p+` and `+n+` are the same as the loop invariant's). Future CN versions may handle loop invariants differently and treat variables as immutable by default.
 ////
-BCP: This seems like a good idea!
+TODO: BCP: This seems like a good idea!
 ////
 
 The final piece needed in the verification is an `+extract+` statement, as used in the previous examples: to separate the individual `+Owned<char>+` resource for index `+j+` out of the iterated `+Owned+` resource and make it available to the resource inference, we specify `+extract Owned<char>, j;+`.
@@ -670,7 +671,7 @@ ___________________________________________________________________________
 ___________________________________________________________________________
 ___________________________________________________________________________
 
-BCP: I'll put my new stuff below here...
+TODO: BCP: I'll put my new stuff below here...
 ////
 
 == Defining Predicates
@@ -679,7 +680,7 @@ BCP: I'll put my new stuff below here...
 //     - e.g., with numeric ranges!!
 
 ////
-BCP: The text becomes a bit sketchy from here on!  But hopefully there's
+TODO: BCP: The text becomes a bit sketchy from here on!  But hopefully there's
 still enough structure here to make sense of the examples...
 ////
 
@@ -723,6 +724,7 @@ that allocates heap storage with exactly that type.  The
 implementation of this function cannot be checked by CN, but we can
 give just the spec, together with a promise to link against an
 external C library providing the implementation:
+
 include_example(exercises/malloc.h)
 
 (Alternatively we can include an implementation written in arbitrary C
@@ -741,14 +743,14 @@ handles both allocation and initialization:
 include_example(exercises/ref.h)
 
 ////
-BCP: This example is a bit broken: the file `+slf0_basic_incr.c+` does not appear at all in the tutorial, though a slightly different version (with signed numbers) does...
+TODO: BCP: This example is a bit broken: the file `+slf0_basic_incr.c+` does not appear at all in the tutorial, though a slightly different version (with signed numbers) does...
 ////
 
 include_example(exercises/slf16_basic_succ_using_incr.c)
 
 === Exercises
 
-// BCP: There should be a non-ref-using version of this earlier, for comparison.
+// TODO: BCP: There should be a non-ref-using version of this earlier, for comparison.
 
 Prove a specification for the following program that reveals *only*
 that it returns a pointer to a number that is greater than the number
@@ -762,7 +764,7 @@ Here is another syntax for external / unknown
 functions, together with an example of a loose specification:
 
 ////
-BCP: This is a bit random -- it's not clear people need to know about this alternate syntax, and it's awkwardly mixed with a semi-interesting example that's not relevant to this section.
+TODO: BCP: This is a bit random -- it's not clear people need to know about this alternate syntax, and it's awkwardly mixed with a semi-interesting example that's not relevant to this section.
 ////
 
 include_example(exercises/slf18_two_dice.c)
@@ -774,7 +776,7 @@ Now it's time to look at some more interesting heap structures.
 To begin with, here is a C definition for linked list cells, together
 with allocation and deallocation functions:
 
-include_example(exercises/list1.h)
+include_example(exercises/list_c_types.h)
 
 To write specifications for C functions that manipulate lists, we need
 to define a CN "predicate" that describes *mathematical* list
@@ -785,18 +787,18 @@ Intuitively, the `+IntList+` predicate walks over a pointer structure
 in the C heap and extracts an `+Owned+` version of the mathematical
 list that it represents.
 
-include_example(exercises/list2.h)
+include_example(exercises/list_cn_types.h)
 
 We can also write specification-level "functions" by ordinary
 functional programming (in slightly strange, unholy-union-of-C-and-ML
 syntax):
 
-include_example(exercises/list3.h)
+include_example(exercises/list_hdtl.h)
 
 We use the `+IntList+` predicate to specify functions returning the
 empty list and the cons of a number and a list.
 
-include_example(exercises/list4.h)
+include_example(exercises/list_constructors.h)
 
 Finally, we can collect all this stuff into a single header file and
 add the usual C `+#ifndef+` gorp to avoid complaints from the compiler
@@ -805,7 +807,7 @@ if it happens to get included twice from the same source file later.
 include_example(exercises/list.h)
 
 ////
-BCP: What does this comment mean?
+TODO: BCP: What does this comment mean?
        'return != NULL' should not be needed
 ////
 
@@ -817,13 +819,13 @@ verifying list-manipulating functions.  First, `+append+`.
 Here is its specification (in a separate file, because we'll want to
 use it multiple times below.)
 
-include_example(exercises/append.h)
+include_example(exercises/list_append.h)
 
 Here is a simple destructive `+append+` function.  Note the two uses
 of the `+unfold+` annotation in the body, which are needed to help the
 CN typechecker.
 
-// BCP: Can someone add a more technical explanation of why they are needed and exactly what they do?
+// TODO: BCP: Can someone add a more technical explanation of why they are needed and exactly what they do?
 
 include_example(exercises/append.c)
 
@@ -864,7 +866,7 @@ add annotations as appropriate:
 include_example(exercises/list_free.c)
 
 *Length with an accumulator*.  Add annotations as appropriate:
-// BCP: Removing / forgetting the unfold in this one gives a truly
+// TODO: BCP: Removing / forgetting the unfold in this one gives a truly
 // bizarre error message saying that the constraint "n == (n + length(L1))"
 // is unsatisfiable...
 
@@ -875,15 +877,15 @@ include_example(exercises/slf_length_acc.c)
 **TODO**: This section should also show what the proof of the lemmas
 looks like on the Coq side!
 
-// BCP: This needs to be filled in urgently!!
+// TODO: BCP: This needs to be filled in urgently!!
 
 === List reverse
 
 The specification of list reversal in CN relies on the familiar
 recursive list reverse function, with a recursive helper.
 
-include_example(exercises/list_snoc_spec.h)
-include_example(exercises/list_rev_spec.h)
+include_example(exercises/list_snoc_cn.h)
+include_example(exercises/list_rev.h)
 
 To reason about the C implementation of list reverse, we need to help
 the SMT solver by enriching its knowledge base with a couple of facts
@@ -897,7 +899,7 @@ proof of `+IntList_rev+`.  Note the two places where `+apply+` is used
 to tell the SMT solver where to pay attention to the lemmas.
 
 ////
-BCP: Why can't it always pay attention to them?  (I guess
+TODO: BCP: Why can't it always pay attention to them?  (I guess
 "performance", but at least it would be nice to be able to declare a
 general scope where a given set of lemmas might be needed, rather than
 specifying exactly where to use them.)
@@ -908,7 +910,7 @@ include_example(exercises/list_rev.c)
 For comparison, here is another way to write the program, using a
 while loop instead of recursion, with its specification and proof.
 
-// BCP: Why 0 instead of NULL??  (Is 0 better?)
+// TODO: BCP: Why 0 instead of NULL??  (Is 0 better?)
 
 include_example(exercises/list_rev_alt.c)
 
@@ -939,8 +941,15 @@ Further exercises:
     declarations, etc.
 
 Misc things to do:
-  - rename list_rev_spec and list_snoc_spec to seq_rev.h etc.
-  - create a top-level TAGS file for emacs
+  - remove the file name headers
+  - replace 0 with NULL in specs
+  - rename == to ptr_eq everywhere in specs
+  - rename list to seq in filenames.  or go more radical and rename seq to cnlist
+  - consider renaming IntList to just List (and int_list to just list,
+    etc.) everywhere (since we are only dealing with one kind of list
+    in the tutorial, the extra pedantry is not getting us much; and
+    this simplification would avoid trying to fix conventions that all
+    CN code should use everywhere...)
   - some of the examples use int while the exercises that follow use
     unsigned int.  This is a needless source of potential confusion.
   - Nb: take V = Owned<t>(p) === p |-t-> V

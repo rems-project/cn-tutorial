@@ -1,7 +1,7 @@
 /* queue.c */
 
 #include "list.h"
-#include "list_snoc_spec.h"
+#include "list_snoc_cn.h"
 
 /*@
 lemma snoc_nil (i32 foo)

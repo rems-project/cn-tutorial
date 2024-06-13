@@ -1,5 +1,5 @@
 #include "list.h"
-#include "list_snoc_spec.h"
+#include "list_snoc_cn.h"
 
 struct int_queue {
   struct int_queueCell* head;
