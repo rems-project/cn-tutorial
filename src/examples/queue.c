@@ -3,15 +3,7 @@
 #include "list_hdtl.h"
 #include "list_snoc.h"
 
-struct int_queue {
-  struct int_queueCell* front;  
-  struct int_queueCell* back;
-};
-
-struct int_queueCell {
-  int first;  
-  struct int_queueCell* next;
-};
+#include "queue_c_types.h"
 
 /*@
 predicate (datatype seq) IntQueuePtr (pointer q) {

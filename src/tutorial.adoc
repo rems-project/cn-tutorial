@@ -807,8 +807,9 @@ if it happens to get included twice from the same source file later.
 include_example(exercises/list.h)
 
 ////
-TODO: BCP: What does this comment mean?
-       'return != NULL' should not be needed
+TODO: BCP: The 'return != NULL' should not be needed, but to remove it
+we need to change the callers of all the allocation functions to check
+for NULL and exit (which requires adding a spec for exit).
 ////
 
 === Append
@@ -920,13 +921,36 @@ include_example(exercises/list_rev_alt.c)
     
 include_example(exercises/slf_sized_stack.c)
 
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
+== More on CN Annotations
+
+Write me:
+  - Introduce all the annotations in the Queue example individually
+    with small examples and exercises.
+
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
+== Case Studies
+
+=== Queues
+
+=== The Bridge Controller
+
+(Liz's stuff goes here)
+
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 ////
 Further topics:
   - Trees:
         - deep copy
         - sum
         - maybe the accumulating sum
-  - queues, doubly linked lists
+  - doubly linked lists
   - cn_function
   - pack
   - bitwise functions (operators are not present in the logical language)

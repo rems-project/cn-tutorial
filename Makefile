@@ -65,12 +65,7 @@ TAGS:
 	@etags src/tutorial.adoc $(SRC_EXAMPLES)
 
 ##############################################################################
-# Site-specific stuff
-
-upenn-install: default
-	rm -rf $(HOME)/pub/courses/6700-SL-2024/current/CN
-	mkdir $(HOME)/pub/courses/6700-SL-2024/current/CN
-	cp -r build/* $(HOME)/pub/courses/6700-SL-2024/current/CN
+# Personal and site-specific stuff
 
 bcp: TAGS
 	$(MAKE) default
