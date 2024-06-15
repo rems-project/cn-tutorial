@@ -13,18 +13,24 @@ build:
 ##############################################################################
 # Exercises
 
-SRC_EXAMPLES=$(wildcard src/examples/*)
+SRC_EXAMPLES=$(shell find src/examples -type file)
 SOLUTIONS=$(patsubst src/examples/%, build/solutions/%, $(SRC_EXAMPLES))
 EXERCISES=$(patsubst src/examples/%, build/exercises/%, $(SRC_EXAMPLES))
+
+test:
+	echo Examples
+	echo $(SRC_EXAMPLES)
 
 exercises: $(EXERCISES) $(SOLUTIONS)
 
 build/exercises/%: src/examples/%
 #	sed -E '/^--BEGIN--$$/,/^--END--$$/d' $< > $@
 	@echo Rebuild $@
-	@sed -E '\|^.*--BEGIN--.*$$|,\|^.*--END--.*$$|d' $< > $@
+	-mkdir -p $(dir $@)
+	sed -E '\|^.*--BEGIN--.*$$|,\|^.*--END--.*$$|d' $< > $@
 
 build/solutions/%: src/examples/%
+	-mkdir -p $(dir $@)
 	@if [ `which cn` ]; then \
 	  if [[ "$<" = *".c"* ]]; then \
 	    if [[ "$<" != *"broken"* ]]; then \
