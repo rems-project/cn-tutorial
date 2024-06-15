@@ -45,13 +45,17 @@ body > .sourceCode {
 
 // __________________________________________________________________________
 
-= CN tutorial (work in progress)
+= CN tutorial
 
 CN is a type system for verifying C code, focusing especially on low-level systems code. Compared to the normal C type system, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes _safely_ — does not raise C undefined behaviour — and _correctly_ — according to strong user-defined specifications. To accurately handle the complex semantics of C, CN builds on the https://github.com/rems-project/cerberus/[Cerberus semantics for C].
 
 This tutorial introduces CN along a series of examples, starting with basic usage of CN on simple arithmetic functions and slowly moving towards more elaborate separation logic specifications of data structures.
 
-Many examples are taken from Arthur Charguéraud’s excellent https://softwarefoundations.cis.upenn.edu[Separation Logic Foundations]. These example have names starting with "`slf...`".
+Some of the examples are adapted from Arthur Charguéraud’s excellent
+https://softwarefoundations.cis.upenn.edu[Separation Logic
+Foundations] textbook. 
+
+This tutorial is a work in progress -- your suggestions are greatly appreciated!
 
 == Installing CN
 
@@ -758,7 +762,7 @@ pointed to by its argument.
  
 include_example(exercises/slf_ref_greater.c)
 
-== Side Note
+=== Side Note
 
 Here is another syntax for external / unknown
 functions, together with an example of a loose specification:
@@ -838,6 +842,8 @@ annotation burden.
 include_example(exercises/list_copy.c)
 
 === Merge sort
+
+// TODO: BCP: This could use a gentler explanation (probably in pieces)
 
 Finally, here is a slightly tricky in-place version of merge sort that
 avoids allocating any new list cells in the splitting step by taking
@@ -926,8 +932,8 @@ include_example(exercises/slf_sized_stack.c)
 
 == More on CN Annotations
 
-Write me:
-  - Introduce all the annotations in the Queue example individually
+*TODO*:
+  * Introduce all the annotations in the Queue example individually
     with small examples and exercises.
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -935,7 +941,138 @@ Write me:
 
 == Case Studies
 
-=== Queues
+To close out the tutorial, let's look at some larger examples.
+
+=== Imperative Queues
+
+A queue is a linked list with O(1) operations for adding things to one
+end (the "back") and removing them from the other (the "front").  Here
+are the C type definitions:
+
+include_example(exercises/queue_c_types.h)
+
+A queue consists of a pair of pointers, one pointing to the front
+element, which is the first in a linked list of `+int_queueCell+`s,
+the other pointing directly to the last cell in this list.  If the
+queue is empty, both pointers are NULL.
+
+Abstractly, a queue just represents a list, so we can reuse the `+seq+`
+type from the list examples earlier in the tutorial.
+
+include_example(exercises/queue_cn_types_1.h)
+////
+TODO: BCP: If we're going to call this IntQueuePtr (Dhruv's suggestion), then
+we have to rename other things above for consistency...
+////
+
+Given a pointer to an `+int_queue+` struct, this predicate grabs
+ownership of the struct, asserts that the `+front+` and `+back+` pointers
+must either both be NULL or both be non-NULL, and then hands off to an
+auxiliary predicate `+IntQueueFB+`.  (Conceptually, `+IntQueueFB+` is
+part of `+IntQueuePTR+`, but CN currently allows conditional
+expressions only at the beginning of predicate definitions, not after
+a `+take+`.)
+
+include_example(exercises/queue_cn_types_1.h)
+
+`+IntQueueFB+` is where the interesting part starts:
+
+include_example(exercises/queue_cn_types_2.h)
+
+First, we case on whether the `+front+` of the queue is NULL.  If so,
+then the queue is empty and we return the empty sequence.
+
+If the queue is not empty, we need to walk down the linked list of
+elements and gather up all their values into a sequence.  But we must
+treat the last element of the queue specially, for two reasons.
+First, because the `+push+` operation is going to follow the `+back+`
+pointer directly to the last list cell without traversing all the
+others, we need to `+take+` that element now rather than waiting to
+get to it at the end of the recursion starting from the `+front+`.
+Second, and relatedly, there will be two pointers to this final list
+cell -- one from the `+back+` field and one from the `+next+` field of
+the second to last cell (or the `+front+` pointer, if there is only
+one cell in the list), so we need to be careful not to `+take+` this
+cell twice.
+
+Accordingly, we begin by `+take+`ing the tail cell and passing it
+separately to the `+IntQueueAux+` predicate, which has the job of
+walking down the cells from the front and gathering all the rest of
+them into a sequence.  We take the result from `+IntQueueAux+` and
+`+snoc+` on the very last element.
+
+The `+assert (is_null(T.next))+` here gives the CN verifier a crucial
+piece of information about an invariant of the representation: The
+`+back+` pointer always points to the very last cell in the list, so
+its `+next+` field will always be NULL.
+
+// TODO: BCP: How to help people guess that this is needed??
+
+Finally, the `+IntQueueAux+` predicate recurses down the list of
+cells.  
+
+include_example(exercises/queue_cn_types_3.h)
+
+Its first argument (`+h+`) starts out at `+front+` and progresses
+through the list on recursive calls; its `+t+` argument is always a
+pointer to the very last cell.
+
+When `+h+` and `+t+` are equal, we have reached the last cell and
+there is nothing to do.  (We don't even have to build a singleton
+list: that's going to happen one level up, in `+IntQueueFB+`.)
+
+Otherwise, we `+take+` the fields of the `+h+`, make a recurive
+call to `+IntQueueAux+` to process the rest of the cells, and cons the
+`+first+` field of this cell onto the resulting sequence before
+returning it.  (Again, we need to help the CN verifier by explicitly
+informing it of the invariant that we know, that `+C.next+` cannot be
+null if `+h+` and `+t+` are different.)
+
+Now we need a bit of boilerplate: just as with linked lists, we need
+to be able to allocate and deallocate queues and queue cells.  There
+are no interesting novelties here.
+
+include_example(exercises/queue_allocation.h)
+
+*Exercise*: The function for creating an empty queue just needs to set
+both of its fields to NULL.  See if you can fill in its specification.
+
+include_example(exercises/queue_empty.c)
+
+The push and pop operations are more involved.  Let's look at `+push+`
+first.  Here's the unannotated C code -- make sure you understand it.
+
+include_example(exercises/queue_push_orig.broken.c)
+
+(One thing you might find odd is that there's a `+return+` statement
+at the end of each branch of the conditional, rather than a single
+`+return+` at the bottom.  The reason for this is that, when CN
+analyzes a function body containing a conditional, it effectively
+_copies_ all the code after the conditional into each of the branches.
+Then, if verification encounters an error related to this code --
+e.g., "you didn't establish the `+ensures+` conditions at the point of
+returning -- the error message will be confusing because it will not
+be clear which branch of the conditional it is associated with.)
+
+*TODO:* The current verification of `push` is actually broken -- it
+depends on a lemma that is not true in general.  Here is the current
+state of play:
+
+include_example(exercises/queue_push.c)
+
+*TODO:* Explain the `pop` function and its lemma...
+
+include_example(exercises/queue_pop.c)
+
+*Final Exercise*: 
+Investigate what happens when you make each of the following changes
+to the queue definitions.  What error does CN report?  Where are the
+telltale clues in the error report that suggest what the problem was?
+
+* Remove `+assert (is_null(T.next));+` from `+InqQueueFB+`.
+* Remove `+assert (is_null(T.next));+` from `+InqQueueAux+`.
+* Remove one or both of occurrences of `+freeIntQueueCell(h)+` in
+  `+IntQueue_pop+`. 
 
 === The Bridge Controller
 

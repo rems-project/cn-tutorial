@@ -24,13 +24,12 @@ test:
 exercises: $(EXERCISES) $(SOLUTIONS)
 
 build/exercises/%: src/examples/%
-#	sed -E '/^--BEGIN--$$/,/^--END--$$/d' $< > $@
 	@echo Rebuild $@
-	-mkdir -p $(dir $@)
-	sed -E '\|^.*--BEGIN--.*$$|,\|^.*--END--.*$$|d' $< > $@
+	@-mkdir -p $(dir $@)
+	@sed -E '\|^.*--BEGIN--.*$$|,\|^.*--END--.*$$|d' $< > $@
 
 build/solutions/%: src/examples/%
-	-mkdir -p $(dir $@)
+	@-mkdir -p $(dir $@)
 	@if [ `which cn` ]; then \
 	  if [[ "$<" = *".c"* ]]; then \
 	    if [[ "$<" != *"broken"* ]]; then \
@@ -38,7 +37,6 @@ build/solutions/%: src/examples/%
 	    fi; \
 	  fi \
 	fi
-#	cat $< | sed '/^--BEGIN--$$/d' | sed '/^--END--$$/d' > $@
 	@echo Rebuild $@
 	@cat $< | sed '\|^.*--BEGIN--.*$$|d' | sed '\|^.*--END--.*$$|d' > $@
 
@@ -49,7 +47,8 @@ build/exercises.zip: $(EXERCISES)
 # Tutorial document
 
 build/tutorial.adoc: src/tutorial.adoc
-	sed -E 's/include_example\((.+)\)/.link:\1[\1]\n[source,c]\n----\ninclude::\1\[\]\n----/g' $< > $@
+	@echo Create build/tutorial.adoc
+	@sed -E 's/include_example\((.+)\)/.link:\1[\1]\n[source,c]\n----\ninclude::\1\[\]\n----/g' $< > $@
 
 build/images: src/images
 	cp -r $< $@
