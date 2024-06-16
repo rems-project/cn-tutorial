@@ -927,8 +927,7 @@ include_example(exercises/list_rev_alt.c)
     
 include_example(exercises/slf_sized_stack.c)
 
-/////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////
+// ======================================================================
 
 == More on CN Annotations
 
@@ -936,8 +935,7 @@ include_example(exercises/slf_sized_stack.c)
   * Introduce all the annotations in the Queue example individually
     with small examples and exercises.
 
-/////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////
+// ======================================================================
 
 == Case Studies
 
@@ -1034,10 +1032,14 @@ are no interesting novelties here.
 
 include_example(exercises/queue_allocation.h)
 
+// ======================================================================
+
 *Exercise*: The function for creating an empty queue just needs to set
 both of its fields to NULL.  See if you can fill in its specification.
 
 include_example(exercises/queue_empty.c)
+
+// ======================================================================
 
 The push and pop operations are more involved.  Let's look at `+push+`
 first.  Here's the unannotated C code -- make sure you understand it.
@@ -1054,17 +1056,60 @@ e.g., "you didn't establish the `+ensures+` conditions at the point of
 returning -- the error message will be confusing because it will not
 be clear which branch of the conditional it is associated with.)
 
-*TODO:* The current verification of `push` is actually broken -- it
-depends on a lemma that is not true in general.  Here is the current
-state of play:
+*Exercise*: Before reading on, see if you can write down a reasonable
+top-level specification for this operation.
+
+include_example(exercises/queue_push_lemma.h)
+
+What we're doing is we're moving the ownership of the previous
+`+tail+` from the +`IntQueueFB`+ into the
+`+IntQueueAux+`. `+IntQueueAux(front,prev)+` represents a linked list
+from pointer `+front+` to pointer `+prev+`. But it makes no
+constraints on `+prev+`: `+prev+` can be anywhere in the list, not
+just at the end. It was the input `+IntQueueFB(front, prev)'s (T.next
+== null)+` that was enforcing `+prev+` is at the end.  
+
+When we do `+queue->tail->next = c;+` we can no longer prove
+`+IntQueueFB(front, prev)+` but that's fine, we don't care since we
+want to prove `+IntQueueFB(front, back)+`. However,
+`+IntQueueAux(front, prev)+` is still true. And `+IntQueueAux(front,
+prev) + Prev.next == back + back+` implies `+(pushed, null) ==
+IntQueueAux(front, back)+` by an inductive argument with base case
+`+front == prev+`, i.e., the singleton queue case.
+
+Now let's go back to the main body of `+push+`.
 
 include_example(exercises/queue_push.c)
 
-*TODO:* Explain the `pop` function and its lemma...
+*TODO* Finish explaining!!
+
+// ======================================================================
+
+Now let's look at the `+pop+` operation.  Here is the un-annotated
+version: 
+
+include_example(exercises/queue_pop_orig.broken.c)
+
+*Exercise*: Again, before reading on, see if you can write down a
+plausible top-level specification.
+
+*TODO* Finish explaining!!
 
 include_example(exercises/queue_pop.c)
 
-*Final Exercise*: 
+*TODO* Finish explaining!!
+
+include_example(exercises/queue_pop_lemma.h)
+
+Note that the `+tl_snoc+` lemma doesn't actually change any resources:
+it's purely there to record the fact that `+snoc (popped :: Q,
+T.first) == popped :: snoc(Q, T.first)+`. The only reason we can't
+currently prove this in CN is that we don't have `+take+`s in CN
+statements, because this is just a simple unfolding.
+
+*TODO* Finish explaining!!
+
+*Exercise*: 
 Investigate what happens when you make each of the following changes
 to the queue definitions.  What error does CN report?  Where are the
 telltale clues in the error report that suggest what the problem was?
@@ -1074,12 +1119,20 @@ telltale clues in the error report that suggest what the problem was?
 * Remove one or both of occurrences of `+freeIntQueueCell(h)+` in
   `+IntQueue_pop+`. 
 
+*Exercise*: The conditional in the `+pop+` function tests whether or
+not `+h == t+` to find out whether we have reached the last element of
+the queue.  Another way to get the same information would be to test
+whether `+h->next == 0+`.  Can you verify this version?
+
+Note: I (BCP) have not worked out the details, so am not sure how hard
+this is (or if it is even not possible, though I'd be surprised).
+Please let me know if you get it working!
+
 === The Bridge Controller
 
 (Liz's stuff goes here)
 
-/////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////
+// ======================================================================
 
 ////
 Further topics:
@@ -1135,7 +1188,7 @@ Misc things to do:
   - In debugging the queue example, The fact that some of the
     constraints in the error report are forced while others are random
     values filled in by the SMT solver is pretty problematic...
-
+2
 ______________________
 For later:
 
