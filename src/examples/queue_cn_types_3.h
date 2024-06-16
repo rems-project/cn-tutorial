@@ -1,12 +1,12 @@
 /*@
-predicate (datatype seq) IntQueueAux (pointer h, pointer t) {
-  if (ptr_eq(h,t)) {
+predicate (datatype seq) IntQueueAux (pointer f, pointer b) {
+  if (ptr_eq(f,b)) {
     return Seq_Nil{};
   } else {
-    take C = Owned<struct int_queueCell>(h);
-    assert (!is_null(C.next));  
-    take TL = IntQueueAux(C.next, t);
-    return Seq_Cons { head: C.first, tail: TL };
+    take F = Owned<struct int_queueCell>(f);
+    assert (!is_null(F.next));  
+    take B = IntQueueAux(F.next, b);
+    return Seq_Cons{head: F.first, tail: B};
   }
 }
 @*/

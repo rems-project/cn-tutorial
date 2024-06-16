@@ -971,8 +971,6 @@ part of `+IntQueuePTR+`, but CN currently allows conditional
 expressions only at the beginning of predicate definitions, not after
 a `+take+`.)
 
-include_example(exercises/queue_cn_types_1.h)
-
 `+IntQueueFB+` is where the interesting part starts:
 
 include_example(exercises/queue_cn_types_2.h)
@@ -999,7 +997,7 @@ walking down the cells from the front and gathering all the rest of
 them into a sequence.  We take the result from `+IntQueueAux+` and
 `+snoc+` on the very last element.
 
-The `+assert (is_null(T.next))+` here gives the CN verifier a crucial
+The `+assert (is_null(B.next))+` here gives the CN verifier a crucial
 piece of information about an invariant of the representation: The
 `+back+` pointer always points to the very last cell in the list, so
 its `+next+` field will always be NULL.
@@ -1011,20 +1009,20 @@ cells.
 
 include_example(exercises/queue_cn_types_3.h)
 
-Its first argument (`+h+`) starts out at `+front+` and progresses
-through the list on recursive calls; its `+t+` argument is always a
+Its first argument (`+f+`) starts out at `+front+` and progresses
+through the list on recursive calls; its `+b+` argument is always a
 pointer to the very last cell.
 
-When `+h+` and `+t+` are equal, we have reached the last cell and
+When `+f+` and `+b+` are equal, we have reached the last cell and
 there is nothing to do.  (We don't even have to build a singleton
 list: that's going to happen one level up, in `+IntQueueFB+`.)
 
-Otherwise, we `+take+` the fields of the `+h+`, make a recurive
+Otherwise, we `+take+` the fields of the `+f+`, make a recurive
 call to `+IntQueueAux+` to process the rest of the cells, and cons the
 `+first+` field of this cell onto the resulting sequence before
 returning it.  (Again, we need to help the CN verifier by explicitly
 informing it of the invariant that we know, that `+C.next+` cannot be
-null if `+h+` and `+t+` are different.)
+null if `+f+` and `+b+` are different.)
 
 Now we need a bit of boilerplate: just as with linked lists, we need
 to be able to allocate and deallocate queues and queue cells.  There
@@ -1042,46 +1040,68 @@ include_example(exercises/queue_empty.c)
 // ======================================================================
 
 The push and pop operations are more involved.  Let's look at `+push+`
-first.  Here's the unannotated C code -- make sure you understand it.
+first.
+
+Here's the unannotated C code -- make sure you understand it.
 
 include_example(exercises/queue_push_orig.broken.c)
-
-(One thing you might find odd is that there's a `+return+` statement
-at the end of each branch of the conditional, rather than a single
-`+return+` at the bottom.  The reason for this is that, when CN
-analyzes a function body containing a conditional, it effectively
-_copies_ all the code after the conditional into each of the branches.
-Then, if verification encounters an error related to this code --
-e.g., "you didn't establish the `+ensures+` conditions at the point of
-returning -- the error message will be confusing because it will not
-be clear which branch of the conditional it is associated with.)
 
 *Exercise*: Before reading on, see if you can write down a reasonable
 top-level specification for this operation.
 
-include_example(exercises/queue_push_lemma.h)
+(One thing you might find odd about this code is that there's a
+`+return+` statement at the end of each branch of the conditional,
+rather than a single `+return+` at the bottom.  The reason for this is
+that, when CN analyzes a function body containing a conditional, it
+effectively _copies_ all the code after the conditional into each of
+the branches.  Then, if verification encounters an error related to
+this code -- e.g., "you didn't establish the `+ensures+` conditions at
+the point of returning -- the error message will be confusing because
+it will not be clear which branch of the conditional it is associated
+with.)
 
-What we're doing is we're moving the ownership of the previous
-`+tail+` from the +`IntQueueFB`+ into the
-`+IntQueueAux+`. `+IntQueueAux(front,prev)+` represents a linked list
-from pointer `+front+` to pointer `+prev+`. But it makes no
-constraints on `+prev+`: `+prev+` can be anywhere in the list, not
-just at the end. It was the input `+IntQueueFB(front, prev)'s (T.next
-== null)+` that was enforcing `+prev+` is at the end.  
-
-When we do `+queue->tail->next = c;+` we can no longer prove
-`+IntQueueFB(front, prev)+` but that's fine, we don't care since we
-want to prove `+IntQueueFB(front, back)+`. However,
-`+IntQueueAux(front, prev)+` is still true. And `+IntQueueAux(front,
-prev) + Prev.next == back + back+` implies `+(pushed, null) ==
-IntQueueAux(front, back)+` by an inductive argument with base case
-`+front == prev+`, i.e., the singleton queue case.
-
-Now let's go back to the main body of `+push+`.
+Now, here is the annotated version of the `+push+` operation.
 
 include_example(exercises/queue_push.c)
 
-*TODO* Finish explaining!!
+The case where the queue starts out empty (`+q->back == 0+`) is easy.
+We just need a little assertion to remind CN that `+before+`, in this
+case, is the empty sequence.  (As usual, it can't work this out for
+itself because it doesn't automatically unfold recursive predicates.)
+
+The case where the starting queue is nonempty is more interesting.
+The `+push+` operation messes with the end of the sequence of queue
+elements, so we should expect that validating `+push+` is going to
+require some reasoning about this sequence.  Here, in fact, is the
+lemma we need.
+
+include_example(exercises/queue_push_lemma.h)
+
+This says, in effect, that we have two choices for how to read out the
+values in some chain of queue cells of length at least 2, starting
+with the cell `+front+` and terminating when we get to the next cell
+_following_ some given cell `+p+` -- call it `+c+`.  We can either
+gather up all the cells from `+front+` to `+c+`, or we can gather up
+just the cells from `+front+` to `+p+` and then `+snoc+` on the single
+value from `+c+`.             
+
+When we apply this lemma, `+p+` will be the old `+back+` cell and
+`+c+` will be the new one. But to prove it (by induction, of course),
+we need to state it more generally, allowing `+p+` to be any internal
+cell in the list starting at `+front+` and `+c+` its successor.
+
+The reason we need this lemma is that, to add a new cell at the end of
+the queue, we need to reassign ownership of the old `+back+` cell.
+In the precondition of `+push+`, we took ownership of this cell
+separately from the rest; in the postcondition, it needs to be treated
+as part of the rest (so that the new `+back+` cell can now be treated
+specially). 
+
+One interesting technicality is worth noting: After the assignment
+`+q->back = c+` we can no longer prove `+IntQueueFB((*q).front,
+oldback)+`, but we don't care, since we want to prove
+`+IntQueueFB((*q).front, (*q).back)+`. However, crucially,
+`+IntQueueAux((*q).front, oldback)+` is still true.
 
 // ======================================================================
 
@@ -1103,7 +1123,7 @@ include_example(exercises/queue_pop_lemma.h)
 
 Note that the `+tl_snoc+` lemma doesn't actually change any resources:
 it's purely there to record the fact that `+snoc (popped :: Q,
-T.first) == popped :: snoc(Q, T.first)+`. The only reason we can't
+B.first) == popped :: snoc(Q, B.first)+`. The only reason we can't
 currently prove this in CN is that we don't have `+take+`s in CN
 statements, because this is just a simple unfolding.
 
@@ -1114,15 +1134,15 @@ Investigate what happens when you make each of the following changes
 to the queue definitions.  What error does CN report?  Where are the
 telltale clues in the error report that suggest what the problem was?
 
-* Remove `+assert (is_null(T.next));+` from `+InqQueueFB+`.
-* Remove `+assert (is_null(T.next));+` from `+InqQueueAux+`.
-* Remove one or both of occurrences of `+freeIntQueueCell(h)+` in
+* Remove `+assert (is_null(B.next));+` from `+InqQueueFB+`.
+* Remove `+assert (is_null(B.next));+` from `+InqQueueAux+`.
+* Remove one or both of occurrences of `+freeIntQueueCell(f)+` in
   `+IntQueue_pop+`. 
 
 *Exercise*: The conditional in the `+pop+` function tests whether or
-not `+h == t+` to find out whether we have reached the last element of
+not `+f == b+` to find out whether we have reached the last element of
 the queue.  Another way to get the same information would be to test
-whether `+h->next == 0+`.  Can you verify this version?
+whether `+f->next == 0+`.  Can you verify this version?
 
 Note: I (BCP) have not worked out the details, so am not sure how hard
 this is (or if it is even not possible, though I'd be surprised).
@@ -1157,6 +1177,9 @@ Further exercises:
 Misc things to do:
   - replace 0 with NULL in specs
 
+  - why do we have to write (*(*q).front).next instead of
+    q->front->next in CN expressions?
+
   - naming issues
         - rename == to ptr_eq everywhere in specs
         - rename list to seq in filenames.  or go more radical and rename seq to cnlist
@@ -1180,8 +1203,8 @@ Misc things to do:
     defining an "exit" function" with trivial pre- and postconditions
     (true / false).
 
-  - In queue.c, when I tried /*@ unfold IntQueueAux (H.front, H.back,
-    T.first); @*/ I was confused by "the specification function
+  - In queue.c, when I tried /*@ unfold IntQueueAux (F.front, F.back,
+    B.first); @*/ I was confused by "the specification function
     `IntQueueAux' is not declared".  I guess this is, again, the
     distinction between functions and predicates...?
 

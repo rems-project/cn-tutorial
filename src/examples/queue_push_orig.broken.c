@@ -10,6 +10,7 @@ void IntQueue_push (int x, struct int_queue *q)
     q->back = c;
     return;
   } else {
+    struct int_queueCell *oldback = q->back;
     q->back->next = c;
     q->back = c;
     return;

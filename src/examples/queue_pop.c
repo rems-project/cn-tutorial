@@ -9,10 +9,9 @@ int IntQueue_pop (struct int_queue *q)
             return == hd(before);
 @*/
 {
+  /*@ split_case is_null((*q).front); @*/
   struct int_queueCell* h = q->front;
-  struct int_queueCell* t = q->back;
-  /*@ split_case is_null(h); @*/
-  if (h == t) {
+  if (h == q->back) {
     int x = h->first;
     freeIntQueueCell(h);
     q->front = 0;
@@ -21,11 +20,13 @@ int IntQueue_pop (struct int_queue *q)
     return x;
   } else {
     int x = h->first;
-    struct int_queueCell* n = h->next;
-    q->front = n;
+    /*@ apply tl_snoc((*h).next, (*q).back, x); @*/
+    q->front = h->next;
     freeIntQueueCell(h);
-    /*@ apply tl_snoc(n, (*q).back, before, x); @*/
     return x;
   }
 }
 
+// Questions for experts:
+//    - If we move the assignment to x from the top of the
+//      branches and to before the conditional, CN fails.  Why?

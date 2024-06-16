@@ -16,11 +16,10 @@ void IntQueue_push (int x, struct int_queue *q)
     q->back = c;
     return;
   } else {
-    /*@ split_case ptr_eq((*q).front, (*q).back); @*/
-    struct int_queueCell *prev = q->back;
+    struct int_queueCell *oldback = q->back;
     q->back->next = c;
     q->back = c;
-    /*@ apply aux_induction((*q).front, prev, c, before, (*prev).first); @*/
+    /*@ apply push_lemma ((*q).front, oldback); @*/
     return;
   }
 }

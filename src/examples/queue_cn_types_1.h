@@ -1,9 +1,9 @@
 /*@
 predicate (datatype seq) IntQueuePtr (pointer q) {
-  take H = Owned<struct int_queue>(q);
-  assert (   (is_null(H.front)  && is_null(H.back)) 
-          || (!is_null(H.front) && !is_null(H.back)));
-  take Q = IntQueueFB(H.front, H.back);
-  return Q;
+  take Q = Owned<struct int_queue>(q);
+  assert (   (is_null(Q.front)  && is_null(Q.back)) 
+          || (!is_null(Q.front) && !is_null(Q.back)));
+  take L = IntQueueFB(Q.front, Q.back);
+  return L;
 }
 @*/
