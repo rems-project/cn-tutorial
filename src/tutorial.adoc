@@ -1290,7 +1290,7 @@ include_example(exercises/bridge/bridge_funcs1.h)
 
 Now, try adding your own specifications to the following functions. If you get stuck, the solution is in the solutions folder.
 
-include_example(exercises/bridge/bridge_funcs2.c)
+include_example(exercises/bridge/bridge_funcs2.broken.c)
 
 For extra practice, try coming up with different specifications or variations for this exercise, and implement them yourself!
 
