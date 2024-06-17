@@ -45,13 +45,17 @@ body > .sourceCode {
 
 // __________________________________________________________________________
 
-= CN tutorial (work in progress)
+= CN tutorial
 
 CN is a type system for verifying C code, focusing especially on low-level systems code. Compared to the normal C type system, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes _safely_ — does not raise C undefined behaviour — and _correctly_ — according to strong user-defined specifications. To accurately handle the complex semantics of C, CN builds on the https://github.com/rems-project/cerberus/[Cerberus semantics for C].
 
 This tutorial introduces CN along a series of examples, starting with basic usage of CN on simple arithmetic functions and slowly moving towards more elaborate separation logic specifications of data structures.
 
-Many examples are taken from Arthur Charguéraud’s excellent https://softwarefoundations.cis.upenn.edu[Separation Logic Foundations]. These example have names starting with "`slf...`".
+Some of the examples are adapted from Arthur Charguéraud’s excellent
+https://softwarefoundations.cis.upenn.edu[Separation Logic
+Foundations] textbook. 
+
+This tutorial is a work in progress -- your suggestions are greatly appreciated!
 
 == Installing CN
 
@@ -758,7 +762,7 @@ pointed to by its argument.
  
 include_example(exercises/slf_ref_greater.c)
 
-== Side Note
+=== Side Note
 
 Here is another syntax for external / unknown
 functions, together with an example of a loose specification:
@@ -807,8 +811,9 @@ if it happens to get included twice from the same source file later.
 include_example(exercises/list.h)
 
 ////
-TODO: BCP: What does this comment mean?
-       'return != NULL' should not be needed
+TODO: BCP: The 'return != NULL' should not be needed, but to remove it
+we need to change the callers of all the allocation functions to check
+for NULL and exit (which requires adding a spec for exit).
 ////
 
 === Append
@@ -837,6 +842,8 @@ annotation burden.
 include_example(exercises/list_copy.c)
 
 === Merge sort
+
+// TODO: BCP: This could use a gentler explanation (probably in pieces)
 
 Finally, here is a slightly tricky in-place version of merge sort that
 avoids allocating any new list cells in the splitting step by taking
@@ -884,7 +891,7 @@ looks like on the Coq side!
 The specification of list reversal in CN relies on the familiar
 recursive list reverse function, with a recursive helper.
 
-include_example(exercises/list_snoc_cn.h)
+include_example(exercises/list_snoc.h)
 include_example(exercises/list_rev.h)
 
 To reason about the C implementation of list reverse, we need to help
@@ -920,7 +927,287 @@ include_example(exercises/list_rev_alt.c)
     
 include_example(exercises/slf_sized_stack.c)
 
-== Worked Examples
+// ======================================================================
+
+////
+== More on CN Annotations
+
+*TODO*: 
+  * Introduce all the different sorts of CN annotations (e.g.,
+    `+split_case+`) individually with small examples and exercises.
+////
+
+// ======================================================================
+
+== Case Studies
+
+To close out the tutorial, let's look at some larger examples.
+
+=== Imperative Queues
+
+A queue is a linked list with O(1) operations for adding things to one
+end (the "back") and removing them from the other (the "front").  Here
+are the C type definitions:
+
+include_example(exercises/queue_c_types.h)
+
+A queue consists of a pair of pointers, one pointing to the front
+element, which is the first in a linked list of `+int_queueCell+`s,
+the other pointing directly to the last cell in this list.  If the
+queue is empty, both pointers are NULL.
+
+Abstractly, a queue just represents a list, so we can reuse the `+seq+`
+type from the list examples earlier in the tutorial.
+
+include_example(exercises/queue_cn_types_1.h)
+////
+TODO: BCP: If we're going to call this IntQueuePtr (Dhruv's suggestion), then
+we have to rename other things above for consistency...
+////
+
+Given a pointer to an `+int_queue+` struct, this predicate grabs
+ownership of the struct, asserts that the `+front+` and `+back+` pointers
+must either both be NULL or both be non-NULL, and then hands off to an
+auxiliary predicate `+IntQueueFB+`.  (Conceptually, `+IntQueueFB+` is
+part of `+IntQueuePTR+`, but CN currently allows conditional
+expressions only at the beginning of predicate definitions, not after
+a `+take+`.)
+
+`+IntQueueFB+` is where the interesting part starts:
+
+include_example(exercises/queue_cn_types_2.h)
+
+First, we case on whether the `+front+` of the queue is NULL.  If so,
+then the queue is empty and we return the empty sequence.
+
+If the queue is not empty, we need to walk down the linked list of
+elements and gather up all their values into a sequence.  But we must
+treat the last element of the queue specially, for two reasons.
+First, because the `+push+` operation is going to follow the `+back+`
+pointer directly to the last list cell without traversing all the
+others, we need to `+take+` that element now rather than waiting to
+get to it at the end of the recursion starting from the `+front+`.
+Second, and relatedly, there will be two pointers to this final list
+cell -- one from the `+back+` field and one from the `+next+` field of
+the second to last cell (or the `+front+` pointer, if there is only
+one cell in the list), so we need to be careful not to `+take+` this
+cell twice.
+
+Accordingly, we begin by `+take+`ing the tail cell and passing it
+separately to the `+IntQueueAux+` predicate, which has the job of
+walking down the cells from the front and gathering all the rest of
+them into a sequence.  We take the result from `+IntQueueAux+` and
+`+snoc+` on the very last element.
+
+The `+assert (is_null(B.next))+` here gives the CN verifier a crucial
+piece of information about an invariant of the representation: The
+`+back+` pointer always points to the very last cell in the list, so
+its `+next+` field will always be NULL.
+
+// TODO: BCP: How to help people guess that this is needed??
+
+Finally, the `+IntQueueAux+` predicate recurses down the list of
+cells.  
+
+include_example(exercises/queue_cn_types_3.h)
+
+Its first argument (`+f+`) starts out at `+front+` and progresses
+through the list on recursive calls; its `+b+` argument is always a
+pointer to the very last cell.
+
+When `+f+` and `+b+` are equal, we have reached the last cell and
+there is nothing to do.  (We don't even have to build a singleton
+list: that's going to happen one level up, in `+IntQueueFB+`.)
+
+Otherwise, we `+take+` the fields of the `+f+`, make a recurive
+call to `+IntQueueAux+` to process the rest of the cells, and cons the
+`+first+` field of this cell onto the resulting sequence before
+returning it.  (Again, we need to help the CN verifier by explicitly
+informing it of the invariant that we know, that `+C.next+` cannot be
+null if `+f+` and `+b+` are different.)
+
+Now we need a bit of boilerplate: just as with linked lists, we need
+to be able to allocate and deallocate queues and queue cells.  There
+are no interesting novelties here.
+
+include_example(exercises/queue_allocation.h)
+
+// ======================================================================
+
+*Exercise*: The function for creating an empty queue just needs to set
+both of its fields to NULL.  See if you can fill in its specification.
+
+include_example(exercises/queue_empty.c)
+
+// ======================================================================
+
+The push and pop operations are more involved.  Let's look at `+push+`
+first.
+
+Here's the unannotated C code -- make sure you understand it.
+
+include_example(exercises/queue_push_orig.broken.c)
+
+*Exercise*: Before reading on, see if you can write down a reasonable
+top-level specification for this operation.
+
+(One thing you might find odd about this code is that there's a
+`+return+` statement at the end of each branch of the conditional,
+rather than a single `+return+` at the bottom.  The reason for this is
+that, when CN analyzes a function body containing a conditional, it
+effectively _copies_ all the code after the conditional into each of
+the branches.  Then, if verification encounters an error related to
+this code -- e.g., "you didn't establish the `+ensures+` conditions at
+the point of returning -- the error message will be confusing because
+it will not be clear which branch of the conditional it is associated
+with.)
+
+Now, here is the annotated version of the `+push+` operation.
+
+include_example(exercises/queue_push.c)
+
+The case where the queue starts out empty (`+q->back == 0+`) is easy.
+CN can work it out all by itself.
+
+The case where the starting queue is nonempty is more interesting.
+The `+push+` operation messes with the end of the sequence of queue
+elements, so we should expect that validating `+push+` is going to
+require some reasoning about this sequence.  Here, in fact, is the
+lemma we need.
+
+include_example(exercises/queue_push_lemma.h)
+
+This says, in effect, that we have two choices for how to read out the
+values in some chain of queue cells of length at least 2, starting
+with the cell `+front+` and terminating when we get to the next cell
+_following_ some given cell `+p+` -- call it `+c+`.  We can either
+gather up all the cells from `+front+` to `+c+`, or we can gather up
+just the cells from `+front+` to `+p+` and then `+snoc+` on the single
+value from `+c+`.             
+
+When we apply this lemma, `+p+` will be the old `+back+` cell and
+`+c+` will be the new one. But to prove it (by induction, of course),
+we need to state it more generally, allowing `+p+` to be any internal
+cell in the list starting at `+front+` and `+c+` its successor.
+
+The reason we need this lemma is that, to add a new cell at the end of
+the queue, we need to reassign ownership of the old `+back+` cell.
+In the precondition of `+push+`, we took ownership of this cell
+separately from the rest; in the postcondition, it needs to be treated
+as part of the rest (so that the new `+back+` cell can now be treated
+specially). 
+
+One interesting technicality is worth noting: After the assignment
+`+q->back = c+` we can no longer prove `+IntQueueFB((*q).front,
+oldback)+`, but we don't care, since we want to prove
+`+IntQueueFB((*q).front, (*q).back)+`. However, crucially,
+`+IntQueueAux((*q).front, oldback)+` is still true.
+
+// ======================================================================
+
+Now let's look at the `+pop+` operation.  Here is the un-annotated
+version: 
+
+include_example(exercises/queue_pop_orig.broken.c)
+
+*Exercise*: Again, before reading on, see if you can write down a
+plausible top-level specification.  (For extra credit, see how far you
+can get with verifying it!)
+
+Here is the fully annotated `+pop+` code:
+
+include_example(exercises/queue_pop.c)
+
+There are three annotations to explain.  Let's consider them in order.
+
+First, the `+split_case+` on `+is_null((*q).front)+` is needed to tell
+CN which of the branches of the `+if+` at the beginning of the
+`+IntQueueFB+` predicate it can "unpack".  (`+IntQueuePtr+` can be
+unpacked immediately because it is unconditional, but `+IntQueueFB+`
+cannot.)
+// TODO: BCP: the word "unpack" is mysterious here.
+
+The guard/condition for `+IntQueueFB+` is `+is_null(front)+`, which is
+why we need to do a `+split_case+` on this value. On one branch of the
+`+split_case+`, we have a contradiction: the fact that `+before ==
+Seq_Nil{}+` (from `+IntQueueFB+`) conflicts with `+before != Seq_Nil+`
+from the precondition, so that case is immediate.  On the other
+branch, CN now knows that the queue is non-empty as required and type
+checking proceeds.
+
+When `+h == q->back+`, we are in the case where the queue contains
+just a single element, so we just need to NULL out its `+front+` and
+`+back+` fields and deallocate the dead cell.  The `+unfold+`
+annotation is needed because the `+snoc+` function is recursive, so CN
+doesn't do the unfolding automatically.
+
+Finally, when the queue contains two or more elements, we need to
+deallocate the front cell, return its `+first+` field, and redirect
+the `+front+` field of the queue structure to point to the next cell.
+To push the verification through, we need a simple lemma about the
+`+snoc+` function:
+
+include_example(exercises/queue_pop_lemma.h)
+
+The crucial part of this lemma is the last three lines, which express
+a simple, general fact about `+snoc+`: 
+if we form a sequence by calling `+snoc+` to add a final element
+`+B.first+` to a sequence with head element `+x+` and tail `+Q+`, then the
+head of the resulting sequence is still `+x+`, and its tail is `+snoc
+(Q, B.first)+`.
+
+The `+requires+` clause and the first three lines of the `+ensures+`
+clause simply set things up so that we can name the various values we
+are talking about.  Since these values come from structures in the
+heap, we need to take ownership of them.  And since lemmas in CN are
+effectively just trusted functions that can also take in ghost values,
+we need to take ownership in both the `+requires+` and `+ensures+`
+clauses.  (Taking them just in the `+requires+` clause would imply
+that they are consumed and deallocated when the lemma is applied --
+not what we want!)
+// TODO: BCP: The thing about ghost values is mysterious.  
+// How to say it better?
+
+(The only reason we can't currently prove this lemma in CN is that we
+don't have `+take+`s in CN statements, because this is just a simple
+unfolding.)
+// TODO: BCP: Ugh.
+
+*Exercise*: 
+Investigate what happens when you make each of the following changes
+to the queue definitions.  What error does CN report?  Where are the
+telltale clues in the error report that suggest what the problem was?
+
+* Remove `+assert (is_null(B.next));+` from `+InqQueueFB+`.
+* Remove `+assert (is_null(B.next));+` from `+InqQueueAux+`.
+* Remove one or both of occurrences of `+freeIntQueueCell(f)+` in
+  `+IntQueue_pop+`. 
+* Remove, in turn, each of the CN annotations in the bodies of
+  `+IntQueue_pop+` and `+IntQueue_push+`.
+
+*Exercise*: The conditional in the `+pop+` function tests whether or
+not `+f == b+` to find out whether we have reached the last element of
+the queue.  Another way to get the same information would be to test
+whether `+f->next == 0+`.  Can you verify this version?
+
+Note: I (BCP) have not worked out the details, so am not sure how hard
+this is (or if it is even not possible, though I'd be surprised).
+Please let me know if you get it working!
+
+*Exercise*: Looking at the code for the `+pop+` operation,
+it might seem reasonable to move the identical assignments to `+x+` in both
+branches to above the `+if+`.  This doesn't "just work" because the
+ownership reasoning is different.  In the first case, ownership of
+`+h+` comes from `+IntQueueFB+` (because `+h == q->back+`). In the
+second case, it comes from `+IntQueueAux+` (because `+h !=
+q->back+`).
+
+Can you generalize the `+snoc_facts+` lemma to handle both cases?  You
+can get past the dereference with a `+split_case+` but formulating the
+lemma before the `+return+` will be a bit more complicated.
+
+Note: Again, this has not been shown to be possible, but Dhruv
+believes it should be!
 
 === Bridge Controller
 
@@ -929,15 +1216,15 @@ In this example, we are writing a program that simulates a traffic light
 on a one way bridge. We want to verify that our traffic light always works
 as intended, in order to ensure the safety of those who use it. We can do this by implementing the following specifications in CN:
 
-    * At each end of the bridge (end A and end B), there is a 
+    1. At each end of the bridge (end A and end B), there is a 
       traffic light that can be either red or green. The two lights 
       can never be green at the same time.
 
-    * At each end of the bridge, there is also a sensor that can  
+    2. At each end of the bridge, there is also a sensor that can  
       detect the number of cars currently waiting to cross. These  
       can be modeled with counters W_A and W_B for the two ends.
 
-    * At any time, a car traveling from A to B is either waiting at  
+    3. At any time, a car traveling from A to B is either waiting at  
       A or has passed across the bridge. During a given “clock tick,"  
       the following actions happen atomically: If necessary, the  
       lights change, and one car from one end may cross, decrementing 
@@ -945,15 +1232,15 @@ as intended, in order to ensure the safety of those who use it. We can do this b
       the bridge is not modeled, and there is no need to keep track 
       of cars once they cross the bridge.
 
-    * Once a car is waiting at one end to use the bridge, it continues 
+    4. Once a car is waiting at one end to use the bridge, it continues 
       waiting until it crosses.
 
-    * Both lights start out red, with no cars at either end.
+    5. Both lights start out red, with no cars at either end.
  
-    * If there is at least one car waiting at A and no cars at B, the 
+    6. If there is at least one car waiting at A and no cars at B, the 
       light at A turns green (and vice versa for end B).
 
-    * If both lights are red and cars arrive simultaneously at both 
+    7. If both lights are red and cars arrive simultaneously at both 
       ends, the light at A turns green first. If the light at A is 
       green and there are cars waiting at B, no more than 5 cars may 
       travel A to B from that time point. When either no more cars are 
@@ -966,35 +1253,34 @@ as intended, in order to ensure the safety of those who use it. We can do this b
       end has a red light, that light will turn green no more than 5 
       clock ticks later.
 
-Wow, that's a lot! Everything we just described are called "informal specifications". They are in natural language, and are easy for humans to read and understand. However, we need to turn these into "formal specifications", which are more mathematically precise. This is what CN can help us do.
-
-First, let's think about how to represent the bridge in our program. We have two traffic lights, and each traffic lights can either be red or green. The best way to represent this would be with an **enum**, but these are not currently supported in CN. To work around this, we can represent a traffic light as a **struct**, and specify that only one field may be "active" at a time.
-
-include_example(exercises/bridge/traffic_light.h)
-
-Now we have a valid representation of a traffic light: whichever field is set to 1 represents the current color of the light.
-
-Next, we need a way to represent whether there are cars waiting at either side. We can create another **struct** to represent this. Since cars could be waiting at either, both, or neither of the sides, we do not have to make specifications like we did for the traffic light.
-
-include_example(exercises/bridge/next_car.h)
-
-Lastly, we need a way to describe the state of the bridge at a given time. This includes the two lights at the bridge, the sensors `W_A` and `W_B` described in the informal specification, and a counter to keep track of how many cars have crossed at a certain light.
-
-We also need to specify what makes a state "valid". This is the main place we can formalize the informal specifications above. Try thinking about what this might look like before looking at the code below.
+First, we need a way to describe the state of the bridge at a given time. We can use a **struct** that includes fields for the two lights at the bridge, the sensors `W_A` and `W_B` described in specification **(2)**, and a `cross_counter` to keep track of how many cars have crossed at a certain light as described in specification **(7)**.
 
 include_example(exercises/bridge/state.h)
 
+Here, `LightA` and `LightB` will be set equal to 1 if they are red and 2 if they are green.
+
+We also need to specify what makes a state "valid". This is the main place we can formalize the informal specifications above. Try thinking about what this might look like before looking at the code below.
+
+include_example(exercises/bridge/valid_state.h)
+
 Let's walk through the specifications in `valid_state`:
 
-  * The first two lines ensure that both traffic lights in our model behave as intended: they both invoke the `valid_light` function that ensures they are either red or green, but not both at the same time.
+  * The first two lines ensure that both traffic lights in our model behave as intended: they can only be 1 or 2, because a traffic light can only be red or green.
 
   * The third line says that either Light A or Light B must be red. This goes to the specification that they cannot be green at the same time.
 
   * The fourth line says that the number of cars waiting at either side must be greater than or equal to zero. This makes sense: we can't have a negative number of cars!
 
-  * The fifth line says that the cross counter must be between 0 and 5. This will help with our specification that no car will wait longer than five clock ticks. However, when we implement our `tick` function, we will need to ensure that we only increment the cross counter if there is a car waiting at the other side!
+  * The fifth line says that the cross counter must be between 0 and 5. This will help with specification **(7)** that no car will wait longer than five clock ticks. However, when we implement our `tick` function, we will need to ensure that we only increment the cross counter if there is a car waiting at the other side!
 
   * The last specification refers to the state of the bridge at initialization. It is another way of saying that if Light A and Light B are both red, then the cross counter must be zero because the lights are only both red at the very beginning. Since there is not an easy encoding for implication in CN, we use the fact that `P => Q` is equivalent to `Q or ~P`.
+
+
+Next, we need a way to represent if cars are approaching the light at either side. We can create another **struct** to represent this. `A` will be 1 if a car is approaching side A, and 0 otherwise. The same can be said about light B.
+
+
+include_example(exercises/bridge/next_car.h)
+
 
 Now that we have the tools to reason about the state of the bridge formally, let's start writing some functions.
 
@@ -1008,13 +1294,15 @@ include_example(exercises/bridge/bridge_funcs2.c)
 
 For extra practice, try coming up with different specifications or variations for this exercise, and implement them yourself!
 
+// ======================================================================
+
 ////
 Further topics:
   - Trees:
         - deep copy
         - sum
         - maybe the accumulating sum
-  - queues, doubly linked lists
+  - doubly linked lists
   - cn_function
   - pack
   - bitwise functions (operators are not present in the logical language)
@@ -1029,22 +1317,52 @@ Further exercises:
     declarations, etc.
 
 Misc things to do:
-  - remove the file name headers
   - replace 0 with NULL in specs
-  - rename == to ptr_eq everywhere in specs
-  - rename list to seq in filenames.  or go more radical and rename seq to cnlist
-  - consider renaming IntList to just List (and int_list to just list,
-    etc.) everywhere (since we are only dealing with one kind of list
-    in the tutorial, the extra pedantry is not getting us much; and
-    this simplification would avoid trying to fix conventions that all
-    CN code should use everywhere...)
+
+  - why do we have to write (*(*q).front).next instead of
+    q->front->next in CN expressions?
+
+  - naming issues
+        - rename == to ptr_eq everywhere in specs
+        - rename list to seq in filenames.  or go more radical and rename seq to cnlist
+        - consider renaming IntList to just List (and int_list to just list,
+          etc.) everywhere (since we are only dealing with one kind of list
+          in the tutorial, the extra pedantry is not getting us much; and
+          this simplification would avoid trying to fix conventions that all
+          CN code should use everywhere...)
+       - related: the name Seq_Cons is awkward for several reasons:
+           - long / verbose (nothing to do about that, I guess)
+           - Seq is capitalized, but it means seq
+           - most important part is buried in the middle
+           - What are the established C conventions here??
+
   - some of the examples use int while the exercises that follow use
     unsigned int.  This is a needless source of potential confusion.
-  - Nb: take V = Owned<t>(p) === p |-t-> V
+
+  - everyplace we do storage allocation, we should really allow the
+    malloc call to return NULL if it wants to; the caller should
+    explicitly check that it didn't get back NULL.  This requires
+    defining an "exit" function" with trivial pre- and postconditions
+    (true / false).
+
+  - In queue.c, when I tried /*@ unfold IntQueueAux (F.front, F.back,
+    B.first); @*/ I was confused by "the specification function
+    `IntQueueAux' is not declared".  I guess this is, again, the
+    distinction between functions and predicates...?
+
+  - In debugging the queue example, The fact that some of the
+    constraints in the error report are forced while others are random
+    values filled in by the SMT solver is pretty problematic...
+
+______________________
+For later:
 
 Alternative formatting tools to consider at some point (not now!):
   probably the best fit:
     https://myst-parser.readthedocs.io/en/latest/
   another very standard one to consider:
     alternative: https://www.sphinx-doc.org/en/master/index.html
+
+Misc notes:
+  - Nb: take V = Owned<t>(p) === p |-t-> V
 ////
