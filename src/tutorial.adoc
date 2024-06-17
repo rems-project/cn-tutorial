@@ -1173,14 +1173,6 @@ don't have `+take+`s in CN statements, because this is just a simple
 unfolding.)
 // TODO: BCP: Ugh.
 
-One final subtlety about the `+pop+` operation: Looking at the code,
-it might seem reasonable to move the identical assignments to `+x+` in both
-branches to above the `+if+`.  But this doesn't work because the
-ownership reasoning is different.  In the first case, ownership of
-`+h+` comes from `+IntQueueFB+` (because `+h == q->back+`). In the
-second case, it comes from `+IntQueueAux+` (because `+h !=
-q->back+`). 
-
 *Exercise*: 
 Investigate what happens when you make each of the following changes
 to the queue definitions.  What error does CN report?  Where are the
@@ -1201,6 +1193,21 @@ whether `+f->next == 0+`.  Can you verify this version?
 Note: I (BCP) have not worked out the details, so am not sure how hard
 this is (or if it is even not possible, though I'd be surprised).
 Please let me know if you get it working!
+
+*Exercise*: Looking at the code for the `+pop+` operation,
+it might seem reasonable to move the identical assignments to `+x+` in both
+branches to above the `+if+`.  This doesn't "just work" because the
+ownership reasoning is different.  In the first case, ownership of
+`+h+` comes from `+IntQueueFB+` (because `+h == q->back+`). In the
+second case, it comes from `+IntQueueAux+` (because `+h !=
+q->back+`).
+
+Can you generalize the `+snoc_facts+` lemma to handle both cases?  You
+can get past the dereference with a `+split_case+` but formulating the
+lemma before the `+return+` will be a bit more complicated.
+
+Note: Again, this has not been shown to be possible, but Dhruv
+believes it should be!
 
 === The Bridge Controller
 
