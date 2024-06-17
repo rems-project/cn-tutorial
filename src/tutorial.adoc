@@ -929,11 +929,13 @@ include_example(exercises/slf_sized_stack.c)
 
 // ======================================================================
 
+////
 == More on CN Annotations
 
-*TODO*:
-  * Introduce all the annotations in the Queue example individually
-    with small examples and exercises.
+*TODO*: 
+  * Introduce all the different sorts of CN annotations (e.g.,
+    `+split_case+`) individually with small examples and exercises.
+////
 
 // ======================================================================
 
@@ -1123,6 +1125,7 @@ CN which of the branches of the `+if+` at the beginning of the
 `+IntQueueFB+` predicate it can "unpack".  (`+IntQueuePtr+` can be
 unpacked immediately because it is unconditional, but `+IntQueueFB+`
 cannot.)
+// TODO: BCP: the word "unpack" is mysterious here.
 
 The guard/condition for `+IntQueueFB+` is `+is_null(front)+`, which is
 why we need to do a `+split_case+` on this value. On one branch of the
@@ -1140,31 +1143,35 @@ doesn't do the unfolding automatically.
 
 Finally, when the queue contains two or more elements, we need to
 deallocate the front cell, return its `+first+` field, and redirect
-the `+front+` field of the queue structure to point to the next cell. 
+the `+front+` field of the queue structure to point to the next cell.
+To push the verification through, we need a simple lemma about the
+`+snoc+` function:
 
 include_example(exercises/queue_pop_lemma.h)
 
-//// 
-    So lemmas are actually closer to escape hatches in the type
-    system. If you delete the first 4 lines od the ensures, then you have
-    a function that consumes those resources (e.g. by freeing them). If
-    delete the NewQ == Q, then the SMT solver has no way of knowing that
-    the value of the returned resource is in anyway related to the
-    incoming one.
+The crucial part of this lemma is the last three lines, which express
+a simple, general fact about `+snoc+`: 
+if we form a sequence by calling `+snoc+` to add a final element
+`+B.first+` to a sequence with head element `+x+` and tail `+Q+`, then the
+head of the resulting sequence is still `+x+`, and its tail is `+snoc
+(Q, B.first)+`.
 
-    Lemmas are just "trusted" C functions which can also take in ghost
-    values. We could tidy this up a bit more once we have the "inv"
-    syntax. But from the perspective of CN checking a function which calls
-    a lemma, it's pretty much the same as a calling a C function -
-    whatever the function body is, it's simply assumed to match the
-    top-level specification.
-////
+The `+requires+` clause and the first three lines of the `+ensures+`
+clause simply set things up so that we can name the various values we
+are talking about.  Since these values come from structures in the
+heap, we need to take ownership of them.  And since lemmas in CN are
+effectively just trusted functions that can also take in ghost values,
+we need to take ownership in both the `+requires+` and `+ensures+`
+clauses.  (Taking them just in the `+requires+` clause would imply
+that they are consumed and deallocated when the lemma is applied --
+not what we want!)
+// TODO: BCP: The thing about ghost values is mysterious.  
+// How to say it better?
 
-Note that the `+tl_snoc+` lemma doesn't actually change any resources:
-it's purely there to record the fact that `+snoc (popped :: Q,
-B.first) == popped :: snoc(Q, B.first)+`. The only reason we can't
-currently prove this in CN is that we don't have `+take+`s in CN
-statements, because this is just a simple unfolding.
+(The only reason we can't currently prove this lemma in CN is that we
+don't have `+take+`s in CN statements, because this is just a simple
+unfolding.)
+// TODO: BCP: Ugh.
 
 One final subtlety about the `+pop+` operation: Looking at the code,
 it might seem reasonable to move the identical assignments to `+x+` in both
