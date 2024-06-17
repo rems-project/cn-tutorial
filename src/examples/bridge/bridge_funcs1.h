@@ -3,18 +3,7 @@ struct State init()
     ensures valid_state(return);
 @*/
 {
-    // LightA is initialized to red
-    struct Traffic_Light la = {1,0};
-    // LightB is initialized to red
-    struct Traffic_Light lb = {1,0};
-
-    struct State initial;
-    initial.LightA = la;
-    initial.LightB = lb;
-    initial.W_A = 0;
-    initial.W_B = 0;
-    initial.Cross_Counter = 0;
-
+    struct State initial = {1,1,0,0,0};
     return initial;
 }
 
