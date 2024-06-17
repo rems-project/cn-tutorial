@@ -3,10 +3,16 @@
 #include "next_car.h"
 #include "bridge_funcs1.h"
 
+
 struct State increment_Cross_Counter(struct State s)
+/* --BEGIN-- */
 /*@ requires valid_state(s);
+             0i32 <= s.Cross_Counter;
+             s.Cross_Counter <= 4i32;
+             s.LightA == 2i32 || s.LightB == 2i32;
     ensures  valid_state(return);
 @*/
+/* --END-- */
 {
   struct State temp = s;
   temp.Cross_Counter = s.Cross_Counter + 1;
@@ -14,9 +20,16 @@ struct State increment_Cross_Counter(struct State s)
 }
 
 struct State reset_Cross_Counter(struct State s)
+/* --BEGIN-- */
 /*@ requires valid_state(s);
     ensures  valid_state(return);
+             s.LightA == return.LightA;
+             s.LightB == return.LightB;
+             s.W_A == return.W_A;
+             s.W_B == return.W_B;
+             return.Cross_Counter == 0i32;
 @*/
+/* --END-- */
 {
   struct State temp = s;
   temp.Cross_Counter = 0;
@@ -24,9 +37,14 @@ struct State reset_Cross_Counter(struct State s)
 }
 
 struct State cross(struct State s)
+/* --BEGIN-- */
 /*@ requires valid_state(s);
+             s.LightA == 2i32 || s.LightB == 2i32;
+             (s.W_A >= 1i32 && s.LightA == 2i32) || (s.W_B >= 1i32 && s.LightB == 2i32);
+             s.Cross_Counter <= 4i32;
     ensures  valid_state(return);
 @*/
+/* --END-- */
 {
   struct State temp = s;
   if (s.LightA == 2) {
@@ -39,9 +57,15 @@ struct State cross(struct State s)
 }
 
 struct State switch_lights(struct State s) 
+/* --BEGIN-- */
 /*@ requires valid_state(s);
+             s.LightA == 2i32 || s.LightB == 2i32;
     ensures  valid_state(return);
+             return.LightA == 2i32 || return.LightB == 2i32;
+             return.W_A == s.W_A;
+             return.W_B == s.W_B;
 @*/
+/* --END-- */
 {
   struct State temp = s;
   if (s.LightA == 1) {
@@ -62,9 +86,14 @@ struct State switch_lights(struct State s)
 }
 
 struct State tick(struct Next_Car next, struct State s)
+/* --BEGIN-- */
 /*@ requires valid_state(s);
+             (i64) s.Cross_Counter < 2147483647i64;
+             (i64) s.W_A < 2147483647i64;
+             (i64) s.W_B < 2147483647i64;
     ensures valid_state(return);
 @*/
+/* --END-- */
 {
   struct State temp = s;
   if (next.A == 1) { temp = increment_W_A(temp); }
