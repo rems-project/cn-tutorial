@@ -26,7 +26,3 @@ int IntQueue_pop (struct int_queue *q)
     return x;
   }
 }
-
-// Questions for experts:
-//    - If we move the assignment to x from the top of the
-//      branches and to before the conditional, CN fails.  Why?

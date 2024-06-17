@@ -1211,7 +1211,7 @@ Misc things to do:
   - In debugging the queue example, The fact that some of the
     constraints in the error report are forced while others are random
     values filled in by the SMT solver is pretty problematic...
-2
+
 ______________________
 For later:
 
