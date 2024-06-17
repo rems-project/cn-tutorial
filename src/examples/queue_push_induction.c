@@ -13,15 +13,11 @@ void push_induction(struct int_queueCell* front, struct int_queueCell* p)
   requires
       take Q = IntQueueAux(front, p);
       take P = Owned(p);
-      take B = Owned(P.next);
-      // Should be derived automatically
       !ptr_eq(front, P.next);
       !is_null(P.next);
   ensures
       take NewQ = IntQueueAux(front, P.next);
       NewQ == snoc(Q, P.first);
-      take NewB = Owned(P.next);
-      B == NewB;
 @*/
 {
     if (front == p) {
@@ -36,3 +32,25 @@ void push_induction(struct int_queueCell* front, struct int_queueCell* p)
     }
 }
 
+void IntQueue_push (int x, struct int_queue *q)
+/*@ requires take before = IntQueuePtr(q);
+    ensures take after = IntQueuePtr(q);
+            after == snoc (before, x);
+@*/
+{
+  struct int_queueCell *c = mallocIntQueueCell();
+  /*@ apply assert_not_equal((*q).front, c); @*/
+  c->first = x;
+  c->next = 0;
+  if (q->back == 0) {
+    q->front = c;
+    q->back = c;
+    return;
+  } else {
+    struct int_queueCell *oldback = q->back;
+    q->back->next = c;
+    q->back = c;
+    push_induction(q->front, oldback);
+    return;
+  }
+}
