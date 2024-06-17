@@ -1288,9 +1288,9 @@ First, let's look at an initialization function, and increment functions for our
 
 include_example(exercises/bridge/bridge_funcs1.h)
 
-Now, try adding your own specifications to the following functions. If you get stuck, the solution is in the solutions folder.
+Now, try adding your own specifications to the following functions. Make sure that you specify a valid state as a pre and post condition for every function. If you get stuck, the solution is in the solutions folder.
 
-include_example(exercises/bridge/bridge_funcs2.broken.c)
+include_example(exercises/bridge/bridge_funcs2.c)
 
 For extra practice, try coming up with different specifications or variations for this exercise, and implement them yourself!
 
