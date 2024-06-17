@@ -20,7 +20,7 @@ int IntQueue_pop (struct int_queue *q)
     return x;
   } else {
     int x = h->first;
-    /*@ apply tl_snoc((*h).next, (*q).back, x); @*/
+    /*@ apply snoc_facts((*h).next, (*q).back, x); @*/
     q->front = h->next;
     freeIntQueueCell(h);
     return x;

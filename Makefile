@@ -51,7 +51,7 @@ build/images: src/images
 
 build/tutorial.html: build/tutorial.adoc $(SRC_EXAMPLES) build/images
 	asciidoctor --doctype book $< -o $@
-	rm build/tutorial.adoc
+	@rm build/tutorial.adoc
 
 ##############################################################################
 # Misc

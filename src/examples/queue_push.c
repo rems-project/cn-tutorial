@@ -11,7 +11,6 @@ void IntQueue_push (int x, struct int_queue *q)
   c->first = x;
   c->next = 0;
   if (q->back == 0) {
-    /*@ assert (before == Seq_Nil{}); @*/
     q->front = c;
     q->back = c;
     return;

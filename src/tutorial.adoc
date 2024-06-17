@@ -1065,9 +1065,7 @@ Now, here is the annotated version of the `+push+` operation.
 include_example(exercises/queue_push.c)
 
 The case where the queue starts out empty (`+q->back == 0+`) is easy.
-We just need a little assertion to remind CN that `+before+`, in this
-case, is the empty sequence.  (As usual, it can't work this out for
-itself because it doesn't automatically unfold recursive predicates.)
+CN can work it out all by itself.
 
 The case where the starting queue is nonempty is more interesting.
 The `+push+` operation messes with the end of the sequence of queue
@@ -1111,15 +1109,56 @@ version:
 include_example(exercises/queue_pop_orig.broken.c)
 
 *Exercise*: Again, before reading on, see if you can write down a
-plausible top-level specification.
+plausible top-level specification.  (For extra credit, see how far you
+can get with verifying it!)
 
-*TODO* Finish explaining!!
+Here is the fully annotated `+pop+` code:
 
 include_example(exercises/queue_pop.c)
 
-*TODO* Finish explaining!!
+There are three annotations to explain.  Let's consider them in order.
+
+First, the `+split_case+` on `+is_null((*q).front)+` is needed to tell
+CN which of the branches of the `+if+` at the beginning of the
+`+IntQueueFB+` predicate it can "unpack".  (`+IntQueuePtr+` can be
+unpacked immediately because it is unconditional, but `+IntQueueFB+`
+cannot.)
+
+The guard/condition for `+IntQueueFB+` is `+is_null(front)+`, which is
+why we need to do a `+split_case+` on this value. On one branch of the
+`+split_case+`, we have a contradiction: the fact that `+before ==
+Seq_Nil{}+` (from `+IntQueueFB+`) conflicts with `+before != Seq_Nil+`
+from the precondition, so that case is immediate.  On the other
+branch, CN now knows that the queue is non-empty as required and type
+checking proceeds.
+
+When `+h == q->back+`, we are in the case where the queue contains
+just a single element, so we just need to NULL out its `+front+` and
+`+back+` fields and deallocate the dead cell.  The `+unfold+`
+annotation is needed because the `+snoc+` function is recursive, so CN
+doesn't do the unfolding automatically.
+
+Finally, when the queue contains two or more elements, we need to
+deallocate the front cell, return its `+first+` field, and redirect
+the `+front+` field of the queue structure to point to the next cell. 
 
 include_example(exercises/queue_pop_lemma.h)
+
+//// 
+    So lemmas are actually closer to escape hatches in the type
+    system. If you delete the first 4 lines od the ensures, then you have
+    a function that consumes those resources (e.g. by freeing them). If
+    delete the NewQ == Q, then the SMT solver has no way of knowing that
+    the value of the returned resource is in anyway related to the
+    incoming one.
+
+    Lemmas are just "trusted" C functions which can also take in ghost
+    values. We could tidy this up a bit more once we have the "inv"
+    syntax. But from the perspective of CN checking a function which calls
+    a lemma, it's pretty much the same as a calling a C function -
+    whatever the function body is, it's simply assumed to match the
+    top-level specification.
+////
 
 Note that the `+tl_snoc+` lemma doesn't actually change any resources:
 it's purely there to record the fact that `+snoc (popped :: Q,
@@ -1127,7 +1166,13 @@ B.first) == popped :: snoc(Q, B.first)+`. The only reason we can't
 currently prove this in CN is that we don't have `+take+`s in CN
 statements, because this is just a simple unfolding.
 
-*TODO* Finish explaining!!
+One final subtlety about the `+pop+` operation: Looking at the code,
+it might seem reasonable to move the identical assignments to `+x+` in both
+branches to above the `+if+`.  But this doesn't work because the
+ownership reasoning is different.  In the first case, ownership of
+`+h+` comes from `+IntQueueFB+` (because `+h == q->back+`). In the
+second case, it comes from `+IntQueueAux+` (because `+h !=
+q->back+`). 
 
 *Exercise*: 
 Investigate what happens when you make each of the following changes
@@ -1138,6 +1183,8 @@ telltale clues in the error report that suggest what the problem was?
 * Remove `+assert (is_null(B.next));+` from `+InqQueueAux+`.
 * Remove one or both of occurrences of `+freeIntQueueCell(f)+` in
   `+IntQueue_pop+`. 
+* Remove, in turn, each of the CN annotations in the bodies of
+  `+IntQueue_pop+` and `+IntQueue_push+`.
 
 *Exercise*: The conditional in the `+pop+` function tests whether or
 not `+f == b+` to find out whether we have reached the last element of
