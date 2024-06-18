@@ -1308,7 +1308,7 @@ Let's walk through the specifications in `valid_state`:
   * The fifth line says that the cross counter must be between 0 and 5. This will help with specification (7) that no car will wait longer than five clock ticks. However, when we implement our `tick` function, we will need to ensure that we only increment the cross counter if there is a car waiting at the other side!
 // TODO: BCP: I find this encoding of the "at most five" constraint a bit hard to understand.  Could there be another way to express it?  (I feel like, in general, the model is missing the concept of "time".)
 
-  * The last specification refers to the state of the bridge at initialization. It is another way of saying that if Light A and Light B are both red, then the cross counter must be zero because the lights are only both red at the very beginning. Since there is not an easy encoding for implication in CN, we use the fact that `P => Q` is equivalent to `Q or ~P`.
+  * The last line refers to the state of the bridge at initialization. It is another way of saying that if Light A and Light B are both red, then the cross counter must be zero because the lights are only both red at the very beginning. Since there is not an easy encoding for implication in CN, we use the fact that `P => Q` is equivalent to `Q or ~P`.
 
 
 Next, we need a way to represent if cars are approaching the light at either side. We can create another `struct` to represent this. `A` will be 1 if a car is approaching side A, and 0 otherwise. The same can be said about light B.
