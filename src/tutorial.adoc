@@ -135,7 +135,7 @@ Here we use the keyword `+return+`, only available in function postconditions, t
 
 Running CN confirms that this postcondition also holds.
 
-One final refinement of this example.  CN defines constant functions `MINi32`, `MAXi64`, etc. so that specifications do not need to be littered with unreadable constants.
+One final refinement of this example.  CN defines constant functions `MINi32`, `MAXi64`, etc. so that specifications do not need to be littered with unreadable numeric constants.
 
 include_example(solutions/add_2.c)
 
@@ -948,6 +948,51 @@ include_example(exercises/slf_sized_stack.c)
 
 // ======================================================================
 
+== CN Style
+
+This section gathers some advice on stylistic conventions and best
+practices in CN.
+
+=== Constants
+
+The syntax of the C language does not actually include constants.
+Instead, the convention is to use the macro preprocessor to replace
+symbolic names by their definitions before the C compiler ever sees
+them.
+
+This raises a slight awkwardness in CN, because CN specifications and
+annotations are written in C comments, so they are not transformed by
+the preprocessor.  However, we can approximate the effect of constant
+_values_ by defining constant _functions_.  We've been working with
+some of these already, e.g., `MINi32()`, but it is also possible to
+define our own constant functions.  Here is the officially approved
+idiom:
+
+include_example(exercises/const_example.c)
+
+Here's how it works:
+
+* We first define a C macro `CONST` in the usual way.
+
+* The next two lines "import" this constant into CN by defining a CN
+  function `CONST()` whose body is the C function `c_CONST()`.  The
+  body of `c_CONST` returns the value of the macro `CONST`.  Notice
+  that the declaration of `CONST()` has no body.
+
+* The annotation `+/*@ cn_function CONST; @*/+` links
+  the two functions, `CONST()` and `cn_CONST()`.
+
+Of course, we could achieve the same effect by defining the CN
+function `CONST()` directly...
+
+include_example(exercises/const_example_lessgood.c)
+
+...but this version repeats the number `1` in two places -- a
+potential source of nasty bugs!
+
+
+// ======================================================================
+
 == Case Studies
 
 To close out the tutorial, let's look at some larger examples.
@@ -1218,10 +1263,12 @@ lemma before the `+return+` will be a bit more complicated.
 Note: Again, this has not been shown to be possible, but Dhruv
 believes it should be!
 
+////
 === The Bridge Controller
 
 (Liz's stuff goes here)
 
+////
 // ======================================================================
 
 ////
