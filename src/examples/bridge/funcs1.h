@@ -3,7 +3,7 @@ struct State init()
     ensures valid_state(return);
 @*/
 {
-    struct State initial = {1,1,0,0,0};
+    struct State initial = {RED,RED,0,0,0};
     return initial;
 }
 

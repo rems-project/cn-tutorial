@@ -1211,7 +1211,7 @@ believes it should be!
 
 === Bridge Controller
 
-This example comes from Dr. Bryan Parno at Carnegie-Mellon University.
+The informal specifications for this example come from Dr. Bryan Parno at Carnegie-Mellon University.
 
 Suppose we are writing a program that simulates a traffic light
 on a one way bridge and we want to verify that our traffic light always behaves
@@ -1263,39 +1263,16 @@ described in specification clause (2), and a `cross_counter` to keep
 track of how many cars have crossed at a certain light as described in
 clause (7).
 
+Although the traffic lights have type `int`, we can assign values to red and green
+and then define them as constants to make them more readable. 
+
+
 include_example(exercises/bridge/state.h)
 
-\\\\
-TODO: BCP:
-
-  One thing that makes this whole example awkward is that we don't
-  really have an established convention in CN for using constants.  I
-  suggest we use this opportunity to create one.
-
-  E.g., what do you think about this?
-
-     #define              RED        1
-       /*@ function (i32) RED ()   { 1i32 } @*/
-     #define              GREEN      2
-       /*@ function (i32) GREEN () { 2i32 } @*/
-
-     int foo (int x)
-     /*@
-       requires true;
-       ensures return == RED();
-     @*/
-     {
-       return RED;
-     }
-\\\\
-
-The convention is that `LightA` and `LightB` will be set equal to 1 if they are red and 2 if they are green.
 
 We also need to specify what makes a state "valid". This is the main place we can formalize the informal specifications above. Try thinking about what this might look like before looking at the code below.
 
 include_example(exercises/bridge/valid_state.h)
-
-\\ TODO: BCP: I think the last line says that both lights are allowed to be green if no cars are waiting, which contradicts the informal spec.
 
 Let's walk through the specifications in `valid_state`:
 
