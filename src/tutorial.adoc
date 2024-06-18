@@ -80,14 +80,14 @@ For a first example, let’s look at a simple arithmetic function: `+add+`, show
 // (We could actually auto-generate those header comments when we process
 // /src/examples into build/exercises, to avoid having to maintain them
 // and possibly get them wrong...)
-include_example(exercises/0.c)
+include_example(exercises/add_0.c)
 
 Running CN on the example produces an error message:
 
 ....
-cn exercises/0.c
+cn exercises/add_0.c
 [1/1]: add
-exercises/0.c:3:10: error: Undefined behaviour
+exercises/add_0.c:3:10: error: Undefined behaviour
   return x+y;
          ~^~
 an exceptional condition occurs during the evaluation of an expression (§6.5#5)
@@ -104,7 +104,7 @@ Here `+x+` and `+y+` are _signed integers_, and in C, signed integer _overflow_ 
 
 Shown below is our first function specification, for `+add+`, with a precondition that constrains `+x+` and `+y+` such that the sum of `+x+` and `+y+` lies between `+-2147483648+` and `+2147483647+`, so within the representable range of a C `+int+` value.
 
-include_example(solutions/0.c)
+include_example(solutions/add_0.c)
 
 In detail:
 
@@ -129,11 +129,20 @@ Running CN on the annotated program passes without errors. This means with our s
 
 We may, however, wish to be more precise. So far the specification gives no information to callers of `+add+` about its output. To also specify the return values we add a postcondition, using the `+ensures+` keyword.
 
-include_example(solutions/1.c)
+include_example(solutions/add_1.c)
 
 Here we use the keyword `+return+`, only available in function postconditions, to refer to the return value, and equate it to `+sum+` as defined in the preconditions, cast back to `+i32+` type: `+add+` returns the sum of `+x+` and `+y+`.
 
 Running CN confirms that this postcondition also holds.
+
+One final refinement of this example.  CN defines constant functions `MINi32`, `MAXi64`, etc. so that specifications do not need to be littered with unreadable constants.
+
+include_example(solutions/add_2.c)
+
+Two things to note:
+   * These are constant _functions_, so they require a following `()`.
+   * The type of `MINi32()` is `i32`, so if we want to use it as a 64-bit constant
+     we need to add the explicit coercion `(i64)`.
 
 === Error reports
 

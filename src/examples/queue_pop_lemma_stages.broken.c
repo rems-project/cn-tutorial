@@ -6,7 +6,7 @@
 predicate (datatype seq) Pre(pointer front, pointer back, i32 popped, datatype seq before) {
   if (is_null(front)) {
     let after = Seq_Nil{};
-    assert (before == snoc(Seq_Nil{}, popped);
+    assert (before == snoc(Seq_Nil{}, popped));
     return after;
   } else {
     take B = Owned<struct int_queueCell>(back);
@@ -32,7 +32,7 @@ ensures
 
 predicate (datatype seq) Post(pointer front, pointer back, i32 popped, datatype seq before) {
   if (is_null(front)) {
-    assert (before == snoc(Seq_Nil{}, popped);
+    assert (before == snoc(Seq_Nil{}, popped));
     let after = Seq_Nil{};
     assert (after == tl(before));
     assert (popped == hd(before));
@@ -84,7 +84,7 @@ ensures
     take NewQ = Queue_pop_lemma(front, back, popped);
     Q == NewQ;
     Q.after == tl(Q.before);
-    popped = hd(Q.before);
+    popped == hd(Q.before);
 @*/
 
 // Step 4 (optional): Remove the sanity checking from the pre-condition.
@@ -98,6 +98,6 @@ ensures
     take NewQ = Post(front, back, popped);
     Q == NewQ;
     Q.after == tl(Q.before);
-    popped = hd(Q.before);
+    popped == hd(Q.before);
 
 @*/
