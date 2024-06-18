@@ -1,8 +1,7 @@
 #include "state.h"
 #include "valid_state.h"
 #include "next_car.h"
-#include "bridge_funcs1.h"
-
+#include "funcs1.h"
 
 struct State increment_Cross_Counter(struct State s)
 /* --BEGIN-- */
@@ -56,7 +55,7 @@ struct State cross(struct State s)
   }
 }
 
-struct State switch_lights(struct State s) 
+struct State switch_lights(struct State s)
 /* --BEGIN-- */
 /*@ requires valid_state(s);
              s.LightA == 2i32 || s.LightB == 2i32;
@@ -76,7 +75,7 @@ struct State switch_lights(struct State s)
     temp.LightA = 1;
   }
   if (s.LightB == 1) {
-    // if LightB is red, switch it to green  
+    // if LightB is red, switch it to green
     temp.LightB = 2;
   } else {
     // if LightB is green, switch it to red

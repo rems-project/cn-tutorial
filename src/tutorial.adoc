@@ -53,7 +53,7 @@ This tutorial introduces CN along a series of examples, starting with basic usag
 
 Some of the examples are adapted from Arthur Charguéraud’s excellent
 https://softwarefoundations.cis.upenn.edu[Separation Logic
-Foundations] textbook. 
+Foundations] textbook.
 
 This tutorial is a work in progress -- your suggestions are greatly appreciated!
 
@@ -617,7 +617,7 @@ The main condition here is unsurprising: we specify ownership of an iterated res
 
 The second thing we need to do, however, is less straightforward. Recall that, as discussed at the start of the tutorial, function arguments in C are mutable, and so CN permits this as well.While in this example it is obvious that `+p+` and `+n+` do not change, CN currently requires the loop invariant to explicitly state this, using special notation `+{p} unchanged+` (and similarly for `+n+`).
 
-**Note.** If we forget to specify `+unchanged+`, this can lead to confusing errors. In this example, for instance, CN would verify the loop against the loop invariant, but would be unable to prove a function postcondition seemingly directly implied by the loop invariant (lacking the information that the postcondition's `+p+` and `+n+` are the same as the loop invariant's). Future CN versions may handle loop invariants differently and treat variables as immutable by default.
+*Note.* If we forget to specify `+unchanged+`, this can lead to confusing errors. In this example, for instance, CN would verify the loop against the loop invariant, but would be unable to prove a function postcondition seemingly directly implied by the loop invariant (lacking the information that the postcondition's `+p+` and `+n+` are the same as the loop invariant's). Future CN versions may handle loop invariants differently and treat variables as immutable by default.
 ////
 TODO: BCP: This seems like a good idea!
 ////
@@ -662,7 +662,7 @@ As before, we also have to instruct CN to `+extract+` ownership of individual ar
 
 === Exercises
 
-**Init array reverse.** Verify the function `+init_array_rev+`, which has the same specification as `+init_array2+`, but initializes the array in decreasing index order (from right to left).
+*Init array reverse.* Verify the function `+init_array_rev+`, which has the same specification as `+init_array2+`, but initializes the array in decreasing index order (from right to left).
 
 include_example(exercises/init_array_rev.c)
 
@@ -689,7 +689,7 @@ still enough structure here to make sense of the examples...
 ////
 
 Suppose we want to write a function that takes *two* pointers to
-integers and increments the contents of both of them.  
+integers and increments the contents of both of them.
 
 First, let's deal with the "normal" case where the two arguments do
 not alias...
@@ -706,7 +706,7 @@ in the pre- and postconditions that captures both cases together:
 
 include_example(exercises/slf_incr2.c)
 
-**Note**: At the moment, CN does not derive pointer disjointness
+*Note*: At the moment, CN does not derive pointer disjointness
 constraints from resources: from simultaneous ownership of the
 resources `+Owned(p)+` and `+Owned(q)+` CN does not automatically
 learn `+(p != q)+`, even though that’s clearly implied. This was
@@ -759,7 +759,7 @@ include_example(exercises/slf16_basic_succ_using_incr.c)
 Prove a specification for the following program that reveals *only*
 that it returns a pointer to a number that is greater than the number
 pointed to by its argument.
- 
+
 include_example(exercises/slf_ref_greater.c)
 
 === Side Note
@@ -819,7 +819,7 @@ for NULL and exit (which requires adding a spec for exit).
 === Append
 
 With this basic infrastructure in place, we can start specifying and
-verifying list-manipulating functions.  First, `+append+`.  
+verifying list-manipulating functions.  First, `+append+`.
 
 Here is its specification (in a separate file, because we'll want to
 use it multiple times below.)
@@ -881,7 +881,7 @@ include_example(exercises/slf_length_acc.c)
 
 == Working with External Lemmas
 
-**TODO**: This section should also show what the proof of the lemmas
+*TODO*: This section should also show what the proof of the lemmas
 looks like on the Coq side!
 
 // TODO: BCP: This needs to be filled in urgently!!
@@ -922,9 +922,9 @@ while loop instead of recursion, with its specification and proof.
 include_example(exercises/list_rev_alt.c)
 
 === Exercises
-    
-**Sized stacks:** Fill in annotations where requested:
-    
+
+*Sized stacks:* Fill in annotations where requested:
+
 include_example(exercises/slf_sized_stack.c)
 
 // ======================================================================
@@ -932,7 +932,7 @@ include_example(exercises/slf_sized_stack.c)
 ////
 == More on CN Annotations
 
-*TODO*: 
+*TODO*:
   * Introduce all the different sorts of CN annotations (e.g.,
     `+split_case+`) individually with small examples and exercises.
 ////
@@ -1007,7 +1007,7 @@ its `+next+` field will always be NULL.
 // TODO: BCP: How to help people guess that this is needed??
 
 Finally, the `+IntQueueAux+` predicate recurses down the list of
-cells.  
+cells.
 
 include_example(exercises/queue_cn_types_3.h)
 
@@ -1083,7 +1083,7 @@ with the cell `+front+` and terminating when we get to the next cell
 _following_ some given cell `+p+` -- call it `+c+`.  We can either
 gather up all the cells from `+front+` to `+c+`, or we can gather up
 just the cells from `+front+` to `+p+` and then `+snoc+` on the single
-value from `+c+`.             
+value from `+c+`.
 
 When we apply this lemma, `+p+` will be the old `+back+` cell and
 `+c+` will be the new one. But to prove it (by induction, of course),
@@ -1095,7 +1095,7 @@ the queue, we need to reassign ownership of the old `+back+` cell.
 In the precondition of `+push+`, we took ownership of this cell
 separately from the rest; in the postcondition, it needs to be treated
 as part of the rest (so that the new `+back+` cell can now be treated
-specially). 
+specially).
 
 One interesting technicality is worth noting: After the assignment
 `+q->back = c+` we can no longer prove `+IntQueueFB((*q).front,
@@ -1106,7 +1106,7 @@ oldback)+`, but we don't care, since we want to prove
 // ======================================================================
 
 Now let's look at the `+pop+` operation.  Here is the un-annotated
-version: 
+version:
 
 include_example(exercises/queue_pop_orig.broken.c)
 
@@ -1150,7 +1150,7 @@ To push the verification through, we need a simple lemma about the
 include_example(exercises/queue_pop_lemma.h)
 
 The crucial part of this lemma is the last three lines, which express
-a simple, general fact about `+snoc+`: 
+a simple, general fact about `+snoc+`:
 if we form a sequence by calling `+snoc+` to add a final element
 `+B.first+` to a sequence with head element `+x+` and tail `+Q+`, then the
 head of the resulting sequence is still `+x+`, and its tail is `+snoc
@@ -1165,7 +1165,7 @@ we need to take ownership in both the `+requires+` and `+ensures+`
 clauses.  (Taking them just in the `+requires+` clause would imply
 that they are consumed and deallocated when the lemma is applied --
 not what we want!)
-// TODO: BCP: The thing about ghost values is mysterious.  
+// TODO: BCP: The thing about ghost values is mysterious.
 // How to say it better?
 
 (The only reason we can't currently prove this lemma in CN is that we
@@ -1173,7 +1173,7 @@ don't have `+take+`s in CN statements, because this is just a simple
 unfolding.)
 // TODO: BCP: Ugh.
 
-*Exercise*: 
+*Exercise*:
 Investigate what happens when you make each of the following changes
 to the queue definitions.  What error does CN report?  Where are the
 telltale clues in the error report that suggest what the problem was?
@@ -1181,7 +1181,7 @@ telltale clues in the error report that suggest what the problem was?
 * Remove `+assert (is_null(B.next));+` from `+InqQueueFB+`.
 * Remove `+assert (is_null(B.next));+` from `+InqQueueAux+`.
 * Remove one or both of occurrences of `+freeIntQueueCell(f)+` in
-  `+IntQueue_pop+`. 
+  `+IntQueue_pop+`.
 * Remove, in turn, each of the CN annotations in the bodies of
   `+IntQueue_pop+` and `+IntQueue_push+`.
 
@@ -1212,56 +1212,90 @@ believes it should be!
 === Bridge Controller
 
 This example comes from Dr. Bryan Parno at Carnegie-Mellon University.
-In this example, we are writing a program that simulates a traffic light
-on a one way bridge. We want to verify that our traffic light always works
-as intended, in order to ensure the safety of those who use it. We can do this by implementing the following specifications in CN:
 
-    1. At each end of the bridge (end A and end B), there is a 
-      traffic light that can be either red or green. The two lights 
+Suppose we are writing a program that simulates a traffic light
+on a one way bridge and we want to verify that our traffic light always behaves
+"safely". We can do this by implementing the following specifications in CN:
+
+    1. At each end of the bridge (end A and end B), there is a
+      traffic light that can be either red or green. The two lights
       can never be green at the same time.
 
-    2. At each end of the bridge, there is also a sensor that can  
-      detect the number of cars currently waiting to cross. These  
+    2. At each end of the bridge, there is also a sensor that can
+      detect the number of cars currently waiting to cross. These
       can be modeled with counters W_A and W_B for the two ends.
 
-    3. At any time, a car traveling from A to B is either waiting at  
-      A or has passed across the bridge. During a given “clock tick,"  
-      the following actions happen atomically: If necessary, the  
-      lights change, and one car from one end may cross, decrementing 
-      the appropriate counter W_A or W_B. Time spent traveling across 
-      the bridge is not modeled, and there is no need to keep track 
+    3. At any time, a car traveling from A to B is either waiting at
+      A or has passed across the bridge. During a given “clock tick,"
+      the following actions happen atomically:  The
+      lights change (if necessary) and one car from one end may cross, decrementing
+      the appropriate counter W_A or W_B. Time spent traveling across
+      the bridge is not modeled, and there is no need to keep track
       of cars once they cross the bridge.
 
-    4. Once a car is waiting at one end to use the bridge, it continues 
+    4. Once a car is waiting at one end to use the bridge, it continues
       waiting until it crosses.
+// TODO: BCP: Where is this modeled?  (More generally, can you point out the place in the formal spec where each clause of the informal one is expressed?)
 
     5. Both lights start out red, with no cars at either end.
- 
-    6. If there is at least one car waiting at A and no cars at B, the 
+
+    6. If there is at least one car waiting at A and no cars at B, the
       light at A turns green (and vice versa for end B).
 
-    7. If both lights are red and cars arrive simultaneously at both 
-      ends, the light at A turns green first. If the light at A is 
-      green and there are cars waiting at B, no more than 5 cars may 
-      travel A to B from that time point. When either no more cars are 
-      waiting at A or 5 cars have crossed from A to B, the light at A 
-      turns red and the light at B turns green. If the light at A is 
-      green and no cars are waiting at B, then the light at A may stay 
-      green until a car arrives at B, from which time the 5-car limit 
-      is imposed. (And vice versa for end B). In short, this means 
-      that if any cars are waiting at one end of the bridge, and that 
-      end has a red light, that light will turn green no more than 5 
+    7. If both lights are red and cars arrive simultaneously at both
+      ends, the light at A turns green first. If the light at A is
+      green and there are cars waiting at B, no more than 5 cars may
+      travel A to B from that time point. When either no more cars are
+      waiting at A or 5 cars have crossed from A to B, the light at A
+      turns red and the light at B turns green. If the light at A is
+      green and no cars are waiting at B, then the light at A may stay
+      green until a car arrives at B, from which time the 5-car limit
+      is imposed. (And vice versa for end B). In short, this means
+      that if any cars are waiting at one end of the bridge, and that
+      end has a red light, that light will turn green no more than 5
       clock ticks later.
+// TODO: BCP: I don't see how the first sentence here is reflected in the model.
 
-First, we need a way to describe the state of the bridge at a given time. We can use a **struct** that includes fields for the two lights at the bridge, the sensors `W_A` and `W_B` described in specification **(2)**, and a `cross_counter` to keep track of how many cars have crossed at a certain light as described in specification **(7)**.
+To encode all this in CN, we first need a way to describe the state of
+the bridge at a given time. We can use a `+struct+` that includes
+fields for the two lights at the bridge, the sensors `W_A` and `W_B`
+described in specification clause (2), and a `cross_counter` to keep
+track of how many cars have crossed at a certain light as described in
+clause (7).
 
 include_example(exercises/bridge/state.h)
 
-Here, `LightA` and `LightB` will be set equal to 1 if they are red and 2 if they are green.
+\\\\
+TODO: BCP:
+
+  One thing that makes this whole example awkward is that we don't
+  really have an established convention in CN for using constants.  I
+  suggest we use this opportunity to create one.
+
+  E.g., what do you think about this?
+
+     #define              RED        1
+       /*@ function (i32) RED ()   { 1i32 } @*/
+     #define              GREEN      2
+       /*@ function (i32) GREEN () { 2i32 } @*/
+
+     int foo (int x)
+     /*@
+       requires true;
+       ensures return == RED();
+     @*/
+     {
+       return RED;
+     }
+\\\\
+
+The convention is that `LightA` and `LightB` will be set equal to 1 if they are red and 2 if they are green.
 
 We also need to specify what makes a state "valid". This is the main place we can formalize the informal specifications above. Try thinking about what this might look like before looking at the code below.
 
 include_example(exercises/bridge/valid_state.h)
+
+\\ TODO: BCP: I think the last line says that both lights are allowed to be green if no cars are waiting, which contradicts the informal spec.
 
 Let's walk through the specifications in `valid_state`:
 
@@ -1271,13 +1305,15 @@ Let's walk through the specifications in `valid_state`:
 
   * The fourth line says that the number of cars waiting at either side must be greater than or equal to zero. This makes sense: we can't have a negative number of cars!
 
-  * The fifth line says that the cross counter must be between 0 and 5. This will help with specification **(7)** that no car will wait longer than five clock ticks. However, when we implement our `tick` function, we will need to ensure that we only increment the cross counter if there is a car waiting at the other side!
+  * The fifth line says that the cross counter must be between 0 and 5. This will help with specification (7) that no car will wait longer than five clock ticks. However, when we implement our `tick` function, we will need to ensure that we only increment the cross counter if there is a car waiting at the other side!
+// TODO: BCP: I find this encoding of the "at most five" constraint a bit hard to understand.  Could there be another way to express it?  (I feel like, in general, the model is missing the concept of "time".)
 
   * The last specification refers to the state of the bridge at initialization. It is another way of saying that if Light A and Light B are both red, then the cross counter must be zero because the lights are only both red at the very beginning. Since there is not an easy encoding for implication in CN, we use the fact that `P => Q` is equivalent to `Q or ~P`.
 
 
-Next, we need a way to represent if cars are approaching the light at either side. We can create another **struct** to represent this. `A` will be 1 if a car is approaching side A, and 0 otherwise. The same can be said about light B.
+Next, we need a way to represent if cars are approaching the light at either side. We can create another `struct` to represent this. `A` will be 1 if a car is approaching side A, and 0 otherwise. The same can be said about light B.
 
+\\ TODO: BCP: Could there be cars approaching both sides?  More than one on each side?
 
 include_example(exercises/bridge/next_car.h)
 
@@ -1288,11 +1324,11 @@ First, let's look at an initialization function, and increment functions for our
 
 include_example(exercises/bridge/funcs1.h)
 
-Now, try adding your own specifications to the following functions. Make sure that you specify a valid state as a pre and post condition for every function. If you get stuck, the solution is in the solutions folder.
+*Exercise*: Now try adding your own specifications to the following functions. Make sure that you specify a valid state as a pre and post condition for every function. If you get stuck, the solution is in the solutions folder.
 
 include_example(exercises/bridge/funcs2.c)
 
-For extra practice, try coming up with different specifications or variations for this exercise, and implement them yourself!
+*Exercise*: For extra practice, try coming up with different specifications or variations for this exercise and implementing them yourself!
 
 // ======================================================================
 

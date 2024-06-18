@@ -1,5 +1,4 @@
 /*@
-
 function (bool) valid_state (struct State s) {
      (s.LightA == 1i32 || s.LightA == 2i32) &&
      (s.LightB == 1i32 || s.LightB == 2i32) &&
