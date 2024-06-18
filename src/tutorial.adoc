@@ -1286,11 +1286,11 @@ Now that we have the tools to reason about the state of the bridge formally, let
 
 First, let's look at an initialization function, and increment functions for our two sensors. Step through these yourself, and make sure you understand the reasoning behind each specification.
 
-include_example(exercises/bridge/bridge_funcs1.h)
+include_example(exercises/bridge/funcs1.h)
 
 Now, try adding your own specifications to the following functions. Make sure that you specify a valid state as a pre and post condition for every function. If you get stuck, the solution is in the solutions folder.
 
-include_example(exercises/bridge/bridge_funcs2.c)
+include_example(exercises/bridge/funcs2.c)
 
 For extra practice, try coming up with different specifications or variations for this exercise, and implement them yourself!
 
