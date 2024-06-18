@@ -53,7 +53,7 @@ This tutorial introduces CN along a series of examples, starting with basic usag
 
 Some of the examples are adapted from Arthur Charguéraud’s excellent
 https://softwarefoundations.cis.upenn.edu[Separation Logic
-Foundations] textbook. 
+Foundations] textbook.
 
 This tutorial is a work in progress -- your suggestions are greatly appreciated!
 
@@ -689,7 +689,7 @@ still enough structure here to make sense of the examples...
 ////
 
 Suppose we want to write a function that takes *two* pointers to
-integers and increments the contents of both of them.  
+integers and increments the contents of both of them.
 
 First, let's deal with the "normal" case where the two arguments do
 not alias...
@@ -759,7 +759,7 @@ include_example(exercises/slf16_basic_succ_using_incr.c)
 Prove a specification for the following program that reveals *only*
 that it returns a pointer to a number that is greater than the number
 pointed to by its argument.
- 
+
 include_example(exercises/slf_ref_greater.c)
 
 === Side Note
@@ -819,7 +819,7 @@ for NULL and exit (which requires adding a spec for exit).
 === Append
 
 With this basic infrastructure in place, we can start specifying and
-verifying list-manipulating functions.  First, `+append+`.  
+verifying list-manipulating functions.  First, `+append+`.
 
 Here is its specification (in a separate file, because we'll want to
 use it multiple times below.)
@@ -922,9 +922,9 @@ while loop instead of recursion, with its specification and proof.
 include_example(exercises/list_rev_alt.c)
 
 === Exercises
-    
+
 **Sized stacks:** Fill in annotations where requested:
-    
+
 include_example(exercises/slf_sized_stack.c)
 
 // ======================================================================
@@ -932,7 +932,7 @@ include_example(exercises/slf_sized_stack.c)
 ////
 == More on CN Annotations
 
-*TODO*: 
+*TODO*:
   * Introduce all the different sorts of CN annotations (e.g.,
     `+split_case+`) individually with small examples and exercises.
 ////
@@ -1007,7 +1007,7 @@ its `+next+` field will always be NULL.
 // TODO: BCP: How to help people guess that this is needed??
 
 Finally, the `+IntQueueAux+` predicate recurses down the list of
-cells.  
+cells.
 
 include_example(exercises/queue_cn_types_3.h)
 
@@ -1083,7 +1083,7 @@ with the cell `+front+` and terminating when we get to the next cell
 _following_ some given cell `+p+` -- call it `+c+`.  We can either
 gather up all the cells from `+front+` to `+c+`, or we can gather up
 just the cells from `+front+` to `+p+` and then `+snoc+` on the single
-value from `+c+`.             
+value from `+c+`.
 
 When we apply this lemma, `+p+` will be the old `+back+` cell and
 `+c+` will be the new one. But to prove it (by induction, of course),
@@ -1095,7 +1095,7 @@ the queue, we need to reassign ownership of the old `+back+` cell.
 In the precondition of `+push+`, we took ownership of this cell
 separately from the rest; in the postcondition, it needs to be treated
 as part of the rest (so that the new `+back+` cell can now be treated
-specially). 
+specially).
 
 One interesting technicality is worth noting: After the assignment
 `+q->back = c+` we can no longer prove `+IntQueueFB((*q).front,
@@ -1106,7 +1106,7 @@ oldback)+`, but we don't care, since we want to prove
 // ======================================================================
 
 Now let's look at the `+pop+` operation.  Here is the un-annotated
-version: 
+version:
 
 include_example(exercises/queue_pop_orig.broken.c)
 
@@ -1150,7 +1150,7 @@ To push the verification through, we need a simple lemma about the
 include_example(exercises/queue_pop_lemma.h)
 
 The crucial part of this lemma is the last three lines, which express
-a simple, general fact about `+snoc+`: 
+a simple, general fact about `+snoc+`:
 if we form a sequence by calling `+snoc+` to add a final element
 `+B.first+` to a sequence with head element `+x+` and tail `+Q+`, then the
 head of the resulting sequence is still `+x+`, and its tail is `+snoc
@@ -1165,7 +1165,7 @@ we need to take ownership in both the `+requires+` and `+ensures+`
 clauses.  (Taking them just in the `+requires+` clause would imply
 that they are consumed and deallocated when the lemma is applied --
 not what we want!)
-// TODO: BCP: The thing about ghost values is mysterious.  
+// TODO: BCP: The thing about ghost values is mysterious.
 // How to say it better?
 
 (The only reason we can't currently prove this lemma in CN is that we
@@ -1173,7 +1173,7 @@ don't have `+take+`s in CN statements, because this is just a simple
 unfolding.)
 // TODO: BCP: Ugh.
 
-*Exercise*: 
+*Exercise*:
 Investigate what happens when you make each of the following changes
 to the queue definitions.  What error does CN report?  Where are the
 telltale clues in the error report that suggest what the problem was?
@@ -1181,7 +1181,7 @@ telltale clues in the error report that suggest what the problem was?
 * Remove `+assert (is_null(B.next));+` from `+InqQueueFB+`.
 * Remove `+assert (is_null(B.next));+` from `+InqQueueAux+`.
 * Remove one or both of occurrences of `+freeIntQueueCell(f)+` in
-  `+IntQueue_pop+`. 
+  `+IntQueue_pop+`.
 * Remove, in turn, each of the CN annotations in the bodies of
   `+IntQueue_pop+` and `+IntQueue_push+`.
 
@@ -1217,11 +1217,11 @@ believes it should be!
 
 ////
 Further topics:
+  - doubly linked lists
   - Trees:
         - deep copy
         - sum
         - maybe the accumulating sum
-  - doubly linked lists
   - cn_function
   - pack
   - bitwise functions (operators are not present in the logical language)
@@ -1230,6 +1230,11 @@ Further topics:
     cf. https://dafny.org/dafny/DafnyRef/DafnyRef.html#sec-verification
   - more data structures to try out
     https://www.geeksforgeeks.org/data-structures/#most-popular-data-structures
+  - Maybe add some explanation of -- or at least a pointer to --
+    Dhruv's Iris-in-C examples:
+       queue_pop_lemma_stages.c
+       queue_push_induction.c
+       queue_pop_unified.c
 
 Further exercises:
   - Some exercises that get THEM to write predicates, datatype
@@ -1239,7 +1244,7 @@ Misc things to do:
   - replace 0 with NULL in specs
 
   - why do we have to write (*(*q).front).next instead of
-    q->front->next in CN expressions?
+    q->front->next in CN expressions?  (Answer: not implemented yet!)
 
   - naming issues
         - rename == to ptr_eq everywhere in specs
