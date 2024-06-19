@@ -1,3 +1,5 @@
+#include "queue_headers.h"
+
 // Step 1: Understand the state we have upon lemma entry accurately.
 //         This is a sanity check that keeps your lemmas honest.
 
@@ -65,7 +67,7 @@ ensures
 
 type_synonym result = { datatype seq after, datatype seq before }
 
-predicate (datatype seq) Queue_pop_lemma(pointer front, pointer back, i32 popped) {
+predicate (result) Queue_pop_lemma(pointer front, pointer back, i32 popped) {
   if (is_null(front)) {
     return { after: Seq_Nil{}, before: snoc(Seq_Nil{}, popped) };
   } else {
@@ -95,7 +97,7 @@ lemma snoc_fact_unified(pointer front, pointer back, i32 popped)
 requires
     take Q = Queue_pop_lemma(front, back, popped);
 ensures
-    take NewQ = Post(front, back, popped);
+    take NewQ = Queue_pop_lemma(front, back, popped);
     Q == NewQ;
     Q.after == tl(Q.before);
     popped == hd(Q.before);
