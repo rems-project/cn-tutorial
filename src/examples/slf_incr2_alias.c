@@ -1,8 +1,8 @@
 void incr2b (unsigned int *p, unsigned int *q)
 /*@ requires take pv = Owned<unsigned int>(p);
-             q == p;
+             ptr_eq(q,p);
     ensures take pv_ = Owned<unsigned int>(p);
-            q == p;
+            ptr_eq(q,p);
             pv_ == pv + 2u32;
 @*/
 {

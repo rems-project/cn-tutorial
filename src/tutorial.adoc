@@ -3,6 +3,7 @@
 // :pygments-style: tango
 :nofooter:
 :prewrap!:
+:sectanchors:
 
 ++++
 <style>
@@ -50,7 +51,11 @@ CN is a type system for verifying C code, focusing especially on low-level syste
 
 This tutorial introduces CN along a series of examples, starting with basic usage of CN on simple arithmetic functions and slowly moving towards more elaborate separation logic specifications of data structures.
 
-Many examples are taken from Arthur Charguéraud’s excellent https://softwarefoundations.cis.upenn.edu[Separation Logic Foundations]. These example have names starting with "`slf...`".
+Some of the examples are adapted from Arthur Charguéraud’s excellent
+https://softwarefoundations.cis.upenn.edu[Separation Logic
+Foundations] textbook.
+
+This tutorial is a work in progress -- your suggestions are greatly appreciated!
 
 == Installing CN
 
@@ -70,22 +75,19 @@ The source files can be downloaded from link:exercises.zip[here].
 
 For a first example, let’s look at a simple arithmetic function: `+add+`, shown below, takes two `+int+` arguments, `+x+` and `+y+`, and returns their sum.
 
-// BCP: We should probably adopt the convention that all the files in
+// TODO: BCP: We should probably adopt the convention that all the files in
 // the exercises directory have a comment at the top giving their name.
 // (We could actually auto-generate those header comments when we process
 // /src/examples into build/exercises, to avoid having to maintain them
 // and possibly get them wrong...)
-[source,c]
-----
-include::exercises/0.c[]
-----
+include_example(exercises/add_0.c)
 
 Running CN on the example produces an error message:
 
 ....
-cn exercises/0.c
+cn exercises/add_0.c
 [1/1]: add
-exercises/0.c:3:10: error: Undefined behaviour
+exercises/add_0.c:3:10: error: Undefined behaviour
   return x+y;
          ~^~
 an exceptional condition occurs during the evaluation of an expression (§6.5#5)
@@ -102,14 +104,13 @@ Here `+x+` and `+y+` are _signed integers_, and in C, signed integer _overflow_ 
 
 Shown below is our first function specification, for `+add+`, with a precondition that constrains `+x+` and `+y+` such that the sum of `+x+` and `+y+` lies between `+-2147483648+` and `+2147483647+`, so within the representable range of a C `+int+` value.
 
-[source,c]
-----
-include::solutions/0.c[]
-----
+include_example(solutions/add_0.c)
 
 In detail:
 
 * Function specifications are given using special `+/*@ ... @*/+` comments, placed in-between the function argument list and the function body.
+// TODO: BCP: We should mention the alternative concrete syntax, when it is decided and implemented.
+// Add CN flag '--magic-comment-char-dollar' to switch CN comment syntax to '/*$ ... $*/'.
 
 * The keyword `+requires+` starts the precondition, a list of one or more CN conditions separated by semicolons.
 
@@ -118,6 +119,7 @@ In detail:
 * `+let sum = (i64) x + (i64) y+` is a let-binding, which defines `+sum+` as the value `+(i64) x + (i64) y+` in the remainder of the function specification.
 
 * Instead of C syntax, CN uses Rust-like syntax for integer types, such as `+u32+` for 32-bit unsigned integers and `+i64+` for signed 64-bit integers to make their sizes unambiguous. Here, `+x+` and `+y+`, of C-type `+int+`, have CN type `+i32+`.
+// TODO: BCP: I understand this reasoning, but I wonder whether it introduces more confusion than it avoids -- it means there are two ways of writing everything, and people have to remember whether the particular thing they are writing right now is C or CN...
 
 * To define `+sum+` we cast `+x+` and `+y+` to the larger `+i64+` type, using syntax `+(i64)+`, which is large enough to hold the sum of any two `+i32+` values.
 
@@ -127,14 +129,20 @@ Running CN on the annotated program passes without errors. This means with our s
 
 We may, however, wish to be more precise. So far the specification gives no information to callers of `+add+` about its output. To also specify the return values we add a postcondition, using the `+ensures+` keyword.
 
-[source,c]
-----
-include::solutions/1.c[]
-----
+include_example(solutions/add_1.c)
 
 Here we use the keyword `+return+`, only available in function postconditions, to refer to the return value, and equate it to `+sum+` as defined in the preconditions, cast back to `+i32+` type: `+add+` returns the sum of `+x+` and `+y+`.
 
 Running CN confirms that this postcondition also holds.
+
+One final refinement of this example.  CN defines constant functions `MINi32`, `MAXi64`, etc. so that specifications do not need to be littered with unreadable numeric constants.
+
+include_example(solutions/add_2.c)
+
+Two things to note:
+   * These are constant _functions_, so they require a following `()`.
+   * The type of `MINi32()` is `i32`, so if we want to use it as a 64-bit constant
+     we need to add the explicit coercion `(i64)`.
 
 === Error reports
 
@@ -142,6 +150,7 @@ In the original example CN reported a type error due to C undefined behaviour. W
 
 Let’s return to the type error from earlier (`+add+` without precondition) and take a closer look at this report. The report comprises two sections.
 
+// TODO: BCP: It looks different now!
 .*CN error report*
 image::images/0.error.png[*CN error report*]
 
@@ -181,20 +190,14 @@ Let’s apply what we know so far to another simple arithmetic example.
 
 The function `+doubled+`, shown below, takes an int `+n+`, defines `+a+` as `+n+` incremented, `+b+` as `+n+` decremented, and returns the sum of the two.
 
-// BCP: Is it important to number the slf examples?  If so, we should do it consistently, but IMO it is not.
-[source,c]
-----
-include::exercises/slf1_basic_example_let.signed.c[]
-----
+// TODO: BCP: Is it important to number the slf examples?  If so, we should do it consistently, but IMO it is not.
+include_example(exercises/slf1_basic_example_let.signed.c)
 
 We would like to verify this is safe, and that `+doubled+` returns twice the value of `+n+`. Running CN on `+doubled+` leads to a type error: the increment of `+a+` has undefined behaviour.
 
 As in the first example, we need to ensure that `+n+1+` does not overflow and `+n-1+` does not underflow. Similarly also `+a+b+` has to be representable at `+int+` type.
 
-[source,c]
-----
-include::solutions/slf1_basic_example_let.signed.c[]
-----
+include_example(solutions/slf1_basic_example_let.signed.c)
 
 We can specify these using a similar style of precondition as in the first example. We first define `+n_+` as `+n+` cast to type `+i64+` — i.e. a type large enough to hold `+n+1+`, `+n-1+` and `+a+b+` for any possible `+i32+` value for `+n+`. Then we specify that decrementing `+n_+` does not go below the minimal `+int+` value, that incrementing `+n_+` does not go above the maximal value, and that `+n+` doubled is also in range. These preconditions together guarantee safe execution.
 
@@ -204,17 +207,11 @@ To capture the functional behaviour, the postcondition specifies that `+return+`
 
 *Quadruple.* Specify the precondition needed to ensure safety of the C function `+quadruple+`, and a postcondition that describes its return value.
 
-[source,c]
-----
-include::exercises/slf2_basic_quadruple.signed.c[]
-----
+include_example(exercises/slf2_basic_quadruple.signed.c)
 
 *Abs.* Give a specification to the C function `+abs+`, which computes the absolute value of a given `+int+` value. To describe the return value, use CN’s ternary "`+_ ? _ : _+`" operator. Given a boolean `+b+`, and expressions `+e1+` and `+e2+` of the same basetype, `+b ? e1 : e2+` returns `+e1+` if `+b+` holds and `+e2+` otherwise.
 
-[source,c]
-----
-include::exercises/abs.c[]
-----
+include_example(exercises/abs.c)
 
 == Pointers and simple ownership
 
@@ -224,10 +221,7 @@ CN uses _separation logic resource types_ and the concept of _ownership_ to reas
 
 Let’s look at a simple example. The function `+read+` takes an `+int+` pointer `+p+` and returns the pointee value.
 
-[source,c]
-----
-include::exercises/read.c[]
-----
+include_example(exercises/read.c)
 
 Running CN on this example produces the following error:
 
@@ -249,10 +243,7 @@ Given a C-type `+T+` and pointer `+p+`, the resource `+Owned<T>(p)+` asserts own
 
 In this example we can ensure the safe execution of `+read+` by adding a precondition that requires ownership of `+Owned<int>(p)+`, as shown below. For now ignore the notation `+take ... = Owned<int>(p)+`. Since `+read+` maintains this ownership, we also add a corresponding postcondition, whereby `+read+` returns ownership of `+p+` after it is finished executing, in the form of another `+Owned<int>(p)+` resource.
 
-[source,c]
-----
-include::solutions/read.c[]
-----
+include_example(solutions/read.c)
 
 This specifications means that
 
@@ -273,10 +264,7 @@ That means we can use the resource outputs from the pre- and postcondition to st
 . that `+read+` returns `+v1+` (the initial pointee value of `+p+`), and
 . that the pointee values `+v1+` and `+v2+` before and after execution of `+read+` (respectively) are the same.
 
-[source,c]
-----
-include::solutions/read2.c[]
-----
+include_example(solutions/read2.c)
 
 *Aside.* In standard separation logic the equivalent specification for `+read+` could have been phrased as follows (where `+return+` binds the return value in the postcondition):
 
@@ -293,17 +281,11 @@ CN’s `+take+` notation is just alternative syntax for quantification over the 
 
 *Quadruple*. Specify the function `+quadruple_mem+`, that is similar to the earlier `+quadruple+` function, except that the input is passed as an `+int+` pointer. Write a specification that takes ownership of this pointer on entry and returns this ownership on exit, leaving the pointee value unchanged.
 
-[source,c]
-----
-include::exercises/slf_quadruple_mem.c[]
-----
+include_example(exercises/slf_quadruple_mem.c)
 
 *Abs*. Give a specification to the function `+abs_mem+`, which computes the absolute value of a number passed as an `+int+` pointer.
 
-[source,c]
-----
-include::exercises/abs_mem.c[]
-----
+include_example(exercises/abs_mem.c)
 
 === Linear resource ownership
 
@@ -311,10 +293,7 @@ In the specifications we have written so far, functions that receive resources a
 
 Let’s try the `+read+` example from earlier again, but with a postcondition that does not return the ownership:
 
-[source,c]
-----
-include::exercises/read.broken.c[]
-----
+include_example(exercises/read.broken.c)
 
 CN rejects this program with the following message:
 
@@ -355,19 +334,13 @@ Unlike `+Owned+`, whose output is the pointee value, `+Block+` has no meaningful
 
 Let’s explore resources and their outputs in another example. The C function `+incr+` takes an `+int+` pointer `+p+` and increments the pointee value.
 
-[source,c]
-----
-include::solutions/slf0_basic_incr.signed.c[]
-----
+include_example(solutions/slf0_basic_incr.signed.c)
 
 In the precondition we assert ownership of resource `+Owned<int>(p)+`, binding its output/pointee value to `+v1+`, and use `+v1+` to specify that `+p+` must point to a sufficiently small value at the start of the function not to overflow when incremented. The postcondition asserts ownership of `+p+` with output `+v2+`, as before, and uses this to express that the value `+p+` points to is incremented by `+incr+`: `+v2 == v1+1i32+`.
 
 If we incorrectly tweaked this specification and used `+Block<int>(p)+` instead of `+Owned<int>(p)+` in the precondition, as below, then CN would reject the program.
 
-[source,c]
-----
-include::exercises/slf0_basic_incr.signed.broken.c[]
-----
+include_example(exercises/slf0_basic_incr.signed.broken.c)
 
 CN reports:
 
@@ -391,17 +364,11 @@ The `+Owned<int>(p)+` resource required for reading is missing, since, as per pr
 
 *Zero.* Write a specification for the function `+zero+`, which takes a pointer to _uninitialised_ memory and initialises it to `+0+`.
 
-[source,c]
-----
-include::exercises/zero.c[]
-----
+include_example(exercises/zero.c)
 
 *In-place double.* Give a specification for the function `+inplace_double+`, which takes an `+int+` pointer `+p+` and doubles the pointee value: specify the precondition needed to guarantee safe execution and a postcondition that captures the function’s behaviour.
 
-[source,c]
-----
-include::exercises/slf3_basic_inplace_double.c[]
-----
+include_example(exercises/slf3_basic_inplace_double.c)
 
 === Multiple owned pointers
 
@@ -409,10 +376,7 @@ When functions manipulate multiple pointers, we can assert their ownership just 
 
 The following example shows the use of two `+Owned+` resources for accessing two different pointers: function `+add+` reads two `+int+` values in memory, at locations `+p+` and `+q+`, and returns their sum.
 
-[source,c]
-----
-include::exercises/add_read.c[]
-----
+include_example(exercises/add_read.c)
 
 This time we use C’s `+unsigned int+` type. In C, over- and underflow of unsigned integers is not undefined behaviour, so we do not need any special preconditions to rule this out. Instead, when an arithmetic operation at unsigned type goes outside the representable range, the value "`wraps around`".
 
@@ -426,17 +390,11 @@ In the following we will sometimes use unsigned integer types to focus on specif
 
 *Swap.* Specify the function `+swap+`, which takes two owned `+unsigned int+` pointers and swaps their values.
 
-[source,c]
-----
-include::exercises/swap.c[]
-----
+include_example(exercises/swap.c)
 
 *Transfer.* Write a specification for the function `+transfer+`, shown below.
 
-[source,c]
-----
-include::exercises/slf8_basic_transfer.c[]
-----
+include_example(exercises/slf8_basic_transfer.c)
 
 == Ownership of compound objects
 
@@ -444,10 +402,7 @@ So far all examples have worked with just integers and pointers, but larger prog
 
 For instance, the following example uses a `+struct+` `+point+` to represent a point in two-dimensional space. The function `+transpose+` swaps a point’s `+x+` and `+y+` coordinates.
 
-[source,c]
-----
-include::exercises/transpose.c[]
-----
+include_example(exercises/transpose.c)
 
 Here the precondition asserts ownership for `+p+`, at type `+struct point+`; the output `+s+` is a value of CN type `+struct point+`, i.e. a record with members `+i32+` `+x+` and `+i32+` `+y+`. The postcondition similarly asserts ownership of `+p+`, with output `+s2+`, and asserts the coordinates have been swapped, by referring to the members of `+s+` and `+s2+` individually.
 
@@ -465,10 +420,7 @@ Recall the function `+zero+` from our earlier exercise. It takes an `+int+` poin
 
 Now consider the function `+init_point+`, shown below, which takes a pointer `+p+` to a `+struct point+` and zero-initialises its members by calling `+zero+` twice, once with a pointer to struct member `+x+`, and once with a pointer to `+y+`.
 
-[source,c]
-----
-include::exercises/init_point.c[]
-----
+include_example(exercises/init_point.c)
 
 As stated in its precondition, `+init_point+` receives ownership `+Block<struct point>(p)+`. The `+zero+` function, however, works on `+int+` pointers and requires `+Block<int>+` ownership.
 
@@ -480,10 +432,7 @@ To handle the required resource inference, CN "`eagerly`" decomposes all `+struc
 
 We can see this if, for instance, we experimentally change the `+transpose+` example from above to force a type error. Let’s insert an `+/*@ assert(false) @*/+` CN assertion in the middle of the `+transpose+` function (more on CN assertions later), so we can inspect CN’s proof context shown in the error report.
 
-[source,c]
-----
-include::exercises/transpose.broken.c[]
-----
+include_example(exercises/transpose.broken.c)
 
 The precondition of `+transpose+` asserts ownership of an `+Owned<struct point>(p)+` resource. The error report now instead lists under "`Available resources`" two resources:
 
@@ -501,13 +450,10 @@ When the function returns the two member resources are recombined "`on demand`" 
 
 *Transpose (again).* Recreate the transpose function from before, now using the swap function verified earlier (for `+struct upoint+`, with unsigned member values).
 
-[source,c]
-----
-include::exercises/transpose2.c[]
-----
+include_example(exercises/transpose2.c)
 
 ////
-BCP: Some more things to think about including...
+TODO: BCP: Some more things to think about including...
       - Something about CN's version of the frame rule (see
         bcp_framerule.c, though the example is arguably a bit
         unnatural).
@@ -559,10 +505,7 @@ comprising three parts:
 
 Let’s see how this applies to a first example of an array-manipulating function. Function `+read+` takes three arguments: the base pointer `+p+` of an `+int+` array, the length `+n+` of the array, and an index `+i+` into the array; `+read+` then returns the value of the `+i+`-th array cell.
 
-[source,c]
-----
-include::exercises/array_load.broken.c[]
-----
+include_example(exercises/array_load.broken.c)
 
 The CN precondition requires
 
@@ -586,10 +529,7 @@ The reason is that when searching for a required resource, such as the `+Owned+`
 
 To make the `+Owned+` resource required for accessing `+p[i]+` available to CN’s resource inference we have to "`extract`" ownership for index `+i+` out of the iterated resource.
 
-[source,c]
-----
-include::exercises/array_load.c[]
-----
+include_example(exercises/array_load.c)
 
 Here the CN comment `+/*@ extract Owned<int>, i; @*/+` is a CN "`ghost statement`"/proof hint that instructs CN to instantiate any available iterated `+Owned<int>+` resource for index `+i+`. In our example this operation splits the iterated resource into two:
 
@@ -622,10 +562,7 @@ So far the specification only guarantees safe execution but does not specify the
 
 We can use this to refine our specification with information about the functional behaviour of `+read+`.
 
-[source,c]
-----
-include::exercises/array_load2.c[]
-----
+include_example(exercises/array_load2.c)
 
 We specify that `+read+` does not change the array — the outputs `+a1+` and `+a2+`, taken before and after running the function, are the same — and that the value returned is `+a1[i]+`, `+a1+` at index `+i+`.
 
@@ -634,24 +571,18 @@ We specify that `+read+` does not change the array — the outputs `+a1+` and `+
 
 *Array read two.* Specify and verify the following function, `+array_read_two+`, which takes the base pointer `+p+` of an `+unsigned int+` array, the array length `+n+`, and two indices `+i+` and `+j+`. Assuming `+i+` and `+j+` are different, it returns the sum of the values at these two indices.
 
-[source,c]
-----
-include::exercises/add_two_array.c[]
-----
+include_example(exercises/add_two_array.c)
 
 ////
-BCP: In this one I got quite tangled up in different kinds of integers, then got tangled up in (I think) putting the extract declarations in the wrong place.  (I didn't save the not-working version, I'm afraid.)
+TODO: BCP: In this one I got quite tangled up in different kinds of integers, then got tangled up in (I think) putting the extract declarations in the wrong place.  (I didn't save the not-working version, I'm afraid.)
 ////
 
 *Swap array.* Specify and verify `+swap_array+`, which swaps the values of two cells of an `+int+` array. Assume again that `+i+` and `+j+` are different, and describe the effect of `+swap_array+` on the array value using the CN map update expression `+a[i:v]+`, which denotes the same map as `+a+`, except with index `+i+` updated to `+v+`.
 
-[source,c]
-----
-include::exercises/swap_array.c[]
-----
+include_example(exercises/swap_array.c)
 
 ////
-BCP: I wrote this, which seemed natural but did not work -- I still don't fully understand why.  I think this section will need some more examples / exercises to be fully digestible, or perhaps this is just yet another symptom of my imperfecdt understanding of how the numeric stuff works.
+TODO: BCP: I wrote this, which seemed natural but did not work -- I still don't fully understand why.  I think this section will need some more examples / exercises to be fully digestible, or perhaps this is just yet another symptom of my imperfecdt understanding of how the numeric stuff works.
 
     void swap_array (int *p, int n, int i, int j)
     /*@ requires take a1 = each(i32 k; 0i32 <= k && k < n) { Owned<unsigned int>(array_shift<unsigned int>(p,k)) };
@@ -680,21 +611,15 @@ In order to verify code with loops, CN requires the user to supply loop invarian
 
 
 Let's take a look at a simple first example. The following function, `+init_array+`, takes the base pointer `+p+` of a `+char+` array and the array length `+n+` and writes `+0+` to each array cell.
-[source,c]
-----
-include::exercises/init_array.c[]
-----
+include_example(exercises/init_array.c)
 
 If, for the moment, we focus just on proving safe execution of `+init_array+`, ignoring its functional behaviour, a specification might look as above: on entry `+init_array+` takes ownership of an iterated `+Owned<char>+` resource -- one `+Owned+` resource for each index `+i+` of type `+u32+` (so necessarily greater or equal to `+0+`) up to `+n+`; on exit `+init_array+` returns the ownership.
 
 To verify this, we have to supply a loop invariant that specifies all resource ownership and the necessary constraints that hold before and after each iteration of the loop. Loop invariants are specified using the keyword `inv`, followed by CN specifications using the same syntax as in function pre- and postconditions. The variables in scope for loop invariants are all in-scope C variables, as well as CN variables introduced in the function precondition. *In loop invariants, the name of a C variable refers to its current value* (more on this shortly).
 
-[source,c]
-----
-include::solutions/init_array.c[]
-----
+include_example(solutions/init_array.c)
 ////
-BCP: Concrete syntax: Why not write something like "unchanged {p,n}" or "unchanged: p,n"?
+TODO: BCP: Concrete syntax: Why not write something like "unchanged {p,n}" or "unchanged: p,n"?
 ////
 
 The main condition here is unsurprising: we specify ownership of an iterated resource for an array just like in the the pre- and postcondition.
@@ -703,7 +628,7 @@ The second thing we need to do, however, is less straightforward. Recall that, a
 
 **Note.** If we forget to specify `+unchanged+`, this can lead to confusing errors. In this example, for instance, CN would verify the loop against the loop invariant, but would be unable to prove a function postcondition seemingly directly implied by the loop invariant (lacking the information that the postcondition's `+p+` and `+n+` are the same as the loop invariant's). Future CN versions may handle loop invariants differently and treat variables as immutable by default.
 ////
-BCP: This seems like a good idea!
+TODO: BCP: This seems like a good idea!
 ////
 
 The final piece needed in the verification is an `+extract+` statement, as used in the previous examples: to separate the individual `+Owned<char>+` resource for index `+j+` out of the iterated `+Owned+` resource and make it available to the resource inference, we specify `+extract Owned<char>, j;+`.
@@ -715,10 +640,7 @@ With the `+extract+` statements in place, CN accepts the function.
 
 However, on closer look, the specification of `+init_array+` is overly strong: it requires an iterated `+Owned+` resource for the array on entry. If, as the name suggests, the purpose of `+init_array+` is to initialise the array, then a precondition asserting only an iterated `+Block+` resource for the array should also be sufficient. The modified specification is then as follows.
 
-[source,c]
-----
-include::exercises/init_array2.c[]
-----
+include_example(exercises/init_array2.c)
 
 This specification *should* hold: assuming ownership of an uninitialised array on entry, each iteration of the loop initialises one cell of the array, moving it from `+Block+` to `+Owned+` "`state`", so that on function return the full array is initialised. (Recall that stores only require `+Block+` ownership of the written memory location, so ownership of not-necessarily-initialised memory.)
 
@@ -726,10 +648,7 @@ To verify this modified example we again need a loop invariant. This time, the l
 
 To do so, we partition the array ownership into two parts: for each index of the array the loop has already visited, we have an `+Owned+` resource, for all other array indices we have the (unchanged) `+Block+` ownership.
 
-[source,c]
-----
-include::solutions/init_array2.c[]
-----
+include_example(solutions/init_array2.c)
 
 Let's go through this line-by-line:
 
@@ -754,10 +673,7 @@ As before, we also have to instruct CN to `+extract+` ownership of individual ar
 
 **Init array reverse.** Verify the function `+init_array_rev+`, which has the same specification as `+init_array2+`, but initializes the array in decreasing index order (from right to left).
 
-[source,c]
-----
-include::exercises/init_array_rev.c[]
-----
+include_example(exercises/init_array_rev.c)
 
 
 
@@ -768,7 +684,7 @@ ___________________________________________________________________________
 ___________________________________________________________________________
 ___________________________________________________________________________
 
-BCP: I'll put my new stuff below here...
+TODO: BCP: I'll put my new stuff below here...
 ////
 
 == Defining Predicates
@@ -777,36 +693,27 @@ BCP: I'll put my new stuff below here...
 //     - e.g., with numeric ranges!!
 
 ////
-BCP: The text becomes a bit sketchy from here on!  But hopefully there's
+TODO: BCP: The text becomes a bit sketchy from here on!  But hopefully there's
 still enough structure here to make sense of the examples...
 ////
 
 Suppose we want to write a function that takes *two* pointers to
-integers and increments the contents of both of them.  
+integers and increments the contents of both of them.
 
 First, let's deal with the "normal" case where the two arguments do
 not alias...
 
-[source,c]
-----
-include::exercises/slf_incr2_noalias.c[]
-----
+include_example(exercises/slf_incr2_noalias.c)
 
 But what if they do alias?  The clunky solution is to write a whole
 different version of incr2 with a different embedded specification...
 
-[source,c]
-----
-include::exercises/slf_incr2_alias.c[]
-----
+include_example(exercises/slf_incr2_alias.c)
 
 This is horrible.  Much better is to define a predicate to use
 in the pre- and postconditions that captures both cases together:
 
-[source,c]
-----
-include::exercises/slf_incr2.c[]
-----
+include_example(exercises/slf_incr2.c)
 
 **Note**: At the moment, CN does not derive pointer disjointness
 constraints from resources: from simultaneous ownership of the
@@ -830,70 +737,50 @@ that allocates heap storage with exactly that type.  The
 implementation of this function cannot be checked by CN, but we can
 give just the spec, together with a promise to link against an
 external C library providing the implementation:
-[source,c]
-----
-include::exercises/malloc.h[]
-----
+
+include_example(exercises/malloc.h)
 
 (Alternatively we can include an implementation written in arbitrary C
 inside a CN file by marking it with the keyword `+trusted+` at the top
 of its CN specification.)
 
 Similarly:
-[source,c]
-----
-include::exercises/free.h[]
-----
+include_example(exercises/free.h)
 
 Now we can write code that allocates and frees memory:
-[source,c]
-----
-include::exercises/slf17_get_and_free.c[]
-----
+include_example(exercises/slf17_get_and_free.c)
 
 We can also define a "safer", ML-style version of `+malloc+` that
 handles both allocation and initialization:
 
-[source,c]
-----
-include::exercises/ref.h[]
-----
+include_example(exercises/ref.h)
 
 ////
-BCP: This example is a bit broken: the file `+slf0_basic_incr.c+` does not appear at all in the tutorial, though a slightly different version (with signed numbers) does...
+TODO: BCP: This example is a bit broken: the file `+slf0_basic_incr.c+` does not appear at all in the tutorial, though a slightly different version (with signed numbers) does...
 ////
 
-[source,c]
-----
-include::exercises/slf16_basic_succ_using_incr.c[]
-----
+include_example(exercises/slf16_basic_succ_using_incr.c)
 
 === Exercises
 
-// BCP: There should be a non-ref-using version of this earlier, for comparison.
+// TODO: BCP: There should be a non-ref-using version of this earlier, for comparison.
 
 Prove a specification for the following program that reveals *only*
 that it returns a pointer to a number that is greater than the number
 pointed to by its argument.
- 
-[source,c]
-----
-include::exercises/slf_ref_greater.c[]
-----
 
-== Side Note
+include_example(exercises/slf_ref_greater.c)
+
+=== Side Note
 
 Here is another syntax for external / unknown
 functions, together with an example of a loose specification:
 
 ////
-BCP: This is a bit random -- it's not clear people need to know about this alternate syntax, and it's awkwardly mixed with a semi-interesting example that's not relevant to this section.
+TODO: BCP: This is a bit random -- it's not clear people need to know about this alternate syntax, and it's awkwardly mixed with a semi-interesting example that's not relevant to this section.
 ////
 
-[source,c]
-----
-include::exercises/slf18_two_dice.c[]
-----
+include_example(exercises/slf18_two_dice.c)
 
 == Lists
 
@@ -902,10 +789,7 @@ Now it's time to look at some more interesting heap structures.
 To begin with, here is a C definition for linked list cells, together
 with allocation and deallocation functions:
 
-[source,c]
-----
-include::exercises/list1.h[]
-----
+include_example(exercises/list_c_types.h)
 
 To write specifications for C functions that manipulate lists, we need
 to define a CN "predicate" that describes *mathematical* list
@@ -916,87 +800,66 @@ Intuitively, the `+IntList+` predicate walks over a pointer structure
 in the C heap and extracts an `+Owned+` version of the mathematical
 list that it represents.
 
-[source,c]
-----
-include::exercises/list2.h[]
-----
+include_example(exercises/list_cn_types.h)
 
 We can also write specification-level "functions" by ordinary
 functional programming (in slightly strange, unholy-union-of-C-and-ML
 syntax):
 
-[source,c]
-----
-include::exercises/list3.h[]
-----
+include_example(exercises/list_hdtl.h)
 
 We use the `+IntList+` predicate to specify functions returning the
 empty list and the cons of a number and a list.
 
-[source,c]
-----
-include::exercises/list4.h[]
-----
+include_example(exercises/list_constructors.h)
 
 Finally, we can collect all this stuff into a single header file and
 add the usual C `+#ifndef+` gorp to avoid complaints from the compiler
 if it happens to get included twice from the same source file later.
 
-[source,c]
-----
-include::exercises/list.h[]
-----
+include_example(exercises/list.h)
 
 ////
-BCP: What does this comment mean?
-       'return != NULL' should not be needed
+TODO: BCP: The 'return != NULL' should not be needed, but to remove it
+we need to change the callers of all the allocation functions to check
+for NULL and exit (which requires adding a spec for exit).
 ////
 
 === Append
 
 With this basic infrastructure in place, we can start specifying and
-verifying list-manipulating functions.  First, `+append+`.  
+verifying list-manipulating functions.  First, `+append+`.
 
 Here is its specification (in a separate file, because we'll want to
 use it multiple times below.)
 
-[source,c]
-----
-include::exercises/append.h[]
-----
+include_example(exercises/list_append.h)
 
 Here is a simple destructive `+append+` function.  Note the two uses
 of the `+unfold+` annotation in the body, which are needed to help the
 CN typechecker.
 
-// BCP: Can someone add a more technical explanation of why they are needed and exactly what they do?
+// TODO: BCP: Can someone add a more technical explanation of why they are needed and exactly what they do?
 
-[source,c]
-----
-include::exercises/append.c[]
-----
+include_example(exercises/append.c)
 
 === List copy
 
 Here is an allocating list copy function with a pleasantly light
 annotation burden.
 
-[source,c]
-----
-include::exercises/list_copy.c[]
-----
+include_example(exercises/list_copy.c)
 
 === Merge sort
+
+// TODO: BCP: This could use a gentler explanation (probably in pieces)
 
 Finally, here is a slightly tricky in-place version of merge sort that
 avoids allocating any new list cells in the splitting step by taking
 alternate cells from the original list and linking them together into
 two new lists of roughly equal lengths.
 
-[source,c]
-----
-include::exercises/mergesort.c[]
-----
+include_example(exercises/mergesort.c)
 
 === Exercises
 
@@ -1004,108 +867,417 @@ include::exercises/mergesort.c[]
 `+IntList_append2+`.  (You will need some in the body as well as at
 the top.)
 
-[source,c]
-----
-include::exercises/append2.c[]
-----
+include_example(exercises/append2.c)
 
 Note that it would not make sense to do the usual
 functional-programming trick of copying xs but sharing ys.  (Why?)
 
 *Length*.  Add annotations as appropriate:
 
-[source,c]
-----
-include::exercises/list_length.c[]
-----
+include_example(exercises/list_length.c)
 
 *List deallocation*.  Fill in the body of the following procedure and
 add annotations as appropriate:
 
-[source,c]
-----
-include::exercises/list_free.c[]
-----
+include_example(exercises/list_free.c)
 
 *Length with an accumulator*.  Add annotations as appropriate:
-// BCP: Removing / forgetting the unfold in this one gives a truly
+// TODO: BCP: Removing / forgetting the unfold in this one gives a truly
 // bizarre error message saying that the constraint "n == (n + length(L1))"
 // is unsatisfiable...
 
-[source,c]
-----
-include::exercises/slf_length_acc.c[]
-----
+include_example(exercises/slf_length_acc.c)
 
 == Working with External Lemmas
 
 **TODO**: This section should also show what the proof of the lemmas
 looks like on the Coq side!
 
-// BCP: This needs to be filled in urgently!!
+// TODO: BCP: This needs to be filled in urgently!!
 
 === List reverse
 
 The specification of list reversal in CN relies on the familiar
 recursive list reverse function, with a recursive helper.
 
-[source,c]
-----
-include::exercises/list_rev_spec.h[]
-----
+include_example(exercises/list_snoc.h)
+include_example(exercises/list_rev.h)
 
 To reason about the C implementation of list reverse, we need to help
 the SMT solver by enriching its knowledge base with a couple of facts
 about lists.  The proofs of these facts require induction, so in CN we
 simply state them as lemmas and defer the proofs to Coq.
 
-[source,c]
-----
-include::exercises/list_rev_lemmas.h[]
-----
+include_example(exercises/list_rev_lemmas.h)
 
 Having stated these lemmas, we can now complete the specification and
 proof of `+IntList_rev+`.  Note the two places where `+apply+` is used
 to tell the SMT solver where to pay attention to the lemmas.
 
 ////
-BCP: Why can't it always pay attention to them?  (I guess
+TODO: BCP: Why can't it always pay attention to them?  (I guess
 "performance", but at least it would be nice to be able to declare a
 general scope where a given set of lemmas might be needed, rather than
 specifying exactly where to use them.)
 ////
 
-[source,c]
-----
-include::exercises/list_rev.c[]
-----
+include_example(exercises/list_rev.c)
 
 For comparison, here is another way to write the program, using a
 while loop instead of recursion, with its specification and proof.
 
-// BCP: Why 0 instead of NULL??  (Is 0 better?)
+// TODO: BCP: Why 0 instead of NULL??  (Is 0 better?)
 
-[source,c]
-----
-include::exercises/list_rev_alt.c[]
-----
+include_example(exercises/list_rev_alt.c)
 
 === Exercises
-    
+
 **Sized stacks:** Fill in annotations where requested:
-    
-[source,c]
-----
-include::exercises/slf_sized_stack.c[]
-----
+
+include_example(exercises/slf_sized_stack.c)
+
+// ======================================================================
+
+////
+== More on CN Annotations
+
+*TODO*:
+  * Introduce all the different sorts of CN annotations (e.g.,
+    `+split_case+`) individually with small examples and exercises.
+////
+
+// ======================================================================
+
+== CN Style
+
+This section gathers some advice on stylistic conventions and best
+practices in CN.
+
+=== Constants
+
+The syntax of the C language does not actually include constants.
+Instead, the convention is to use the macro preprocessor to replace
+symbolic names by their definitions before the C compiler ever sees
+them.
+
+This raises a slight awkwardness in CN, because CN specifications and
+annotations are written in C comments, so they are not transformed by
+the preprocessor.  However, we can approximate the effect of constant
+_values_ by defining constant _functions_.  We've been working with
+some of these already, e.g., `MINi32()`, but it is also possible to
+define our own constant functions.  Here is the officially approved
+idiom:
+
+include_example(exercises/const_example.c)
+
+Here's how it works:
+
+* We first define a C macro `CONST` in the usual way.
+
+* The next two lines "import" this constant into CN by defining a CN
+  function `CONST()` whose body is the C function `c_CONST()`.  The
+  body of `c_CONST` returns the value of the macro `CONST`.  Notice
+  that the declaration of `CONST()` has no body.
+
+* The annotation `+/*@ cn_function CONST; @*/+` links
+  the two functions, `CONST()` and `cn_CONST()`.
+
+Of course, we could achieve the same effect by defining the CN
+function `CONST()` directly...
+
+include_example(exercises/const_example_lessgood.c)
+
+...but this version repeats the number `1` in two places -- a
+potential source of nasty bugs!
+
+
+// ======================================================================
+
+== Case Studies
+
+To close out the tutorial, let's look at some larger examples.
+
+=== Imperative Queues
+
+A queue is a linked list with O(1) operations for adding things to one
+end (the "back") and removing them from the other (the "front").  Here
+are the C type definitions:
+
+include_example(exercises/queue_c_types.h)
+
+A queue consists of a pair of pointers, one pointing to the front
+element, which is the first in a linked list of `+int_queueCell+`s,
+the other pointing directly to the last cell in this list.  If the
+queue is empty, both pointers are NULL.
+
+Abstractly, a queue just represents a list, so we can reuse the `+seq+`
+type from the list examples earlier in the tutorial.
+
+include_example(exercises/queue_cn_types_1.h)
+////
+TODO: BCP: If we're going to call this IntQueuePtr (Dhruv's suggestion), then
+we have to rename other things above for consistency...
+////
+
+Given a pointer to an `+int_queue+` struct, this predicate grabs
+ownership of the struct, asserts that the `+front+` and `+back+` pointers
+must either both be NULL or both be non-NULL, and then hands off to an
+auxiliary predicate `+IntQueueFB+`.  (Conceptually, `+IntQueueFB+` is
+part of `+IntQueuePTR+`, but CN currently allows conditional
+expressions only at the beginning of predicate definitions, not after
+a `+take+`.)
+
+`+IntQueueFB+` is where the interesting part starts:
+
+include_example(exercises/queue_cn_types_2.h)
+
+First, we case on whether the `+front+` of the queue is NULL.  If so,
+then the queue is empty and we return the empty sequence.
+
+If the queue is not empty, we need to walk down the linked list of
+elements and gather up all their values into a sequence.  But we must
+treat the last element of the queue specially, for two reasons.
+First, because the `+push+` operation is going to follow the `+back+`
+pointer directly to the last list cell without traversing all the
+others, we need to `+take+` that element now rather than waiting to
+get to it at the end of the recursion starting from the `+front+`.
+Second, and relatedly, there will be two pointers to this final list
+cell -- one from the `+back+` field and one from the `+next+` field of
+the second to last cell (or the `+front+` pointer, if there is only
+one cell in the list), so we need to be careful not to `+take+` this
+cell twice.
+
+Accordingly, we begin by `+take+`ing the tail cell and passing it
+separately to the `+IntQueueAux+` predicate, which has the job of
+walking down the cells from the front and gathering all the rest of
+them into a sequence.  We take the result from `+IntQueueAux+` and
+`+snoc+` on the very last element.
+
+The `+assert (is_null(B.next))+` here gives the CN verifier a crucial
+piece of information about an invariant of the representation: The
+`+back+` pointer always points to the very last cell in the list, so
+its `+next+` field will always be NULL.
+
+// TODO: BCP: How to help people guess that this is needed??
+
+Finally, the `+IntQueueAux+` predicate recurses down the list of
+cells.
+
+include_example(exercises/queue_cn_types_3.h)
+
+Its first argument (`+f+`) starts out at `+front+` and progresses
+through the list on recursive calls; its `+b+` argument is always a
+pointer to the very last cell.
+
+When `+f+` and `+b+` are equal, we have reached the last cell and
+there is nothing to do.  (We don't even have to build a singleton
+list: that's going to happen one level up, in `+IntQueueFB+`.)
+
+Otherwise, we `+take+` the fields of the `+f+`, make a recurive
+call to `+IntQueueAux+` to process the rest of the cells, and cons the
+`+first+` field of this cell onto the resulting sequence before
+returning it.  (Again, we need to help the CN verifier by explicitly
+informing it of the invariant that we know, that `+C.next+` cannot be
+null if `+f+` and `+b+` are different.)
+
+Now we need a bit of boilerplate: just as with linked lists, we need
+to be able to allocate and deallocate queues and queue cells.  There
+are no interesting novelties here.
+
+include_example(exercises/queue_allocation.h)
+
+// ======================================================================
+
+*Exercise*: The function for creating an empty queue just needs to set
+both of its fields to NULL.  See if you can fill in its specification.
+
+include_example(exercises/queue_empty.c)
+
+// ======================================================================
+
+The push and pop operations are more involved.  Let's look at `+push+`
+first.
+
+Here's the unannotated C code -- make sure you understand it.
+
+include_example(exercises/queue_push_orig.broken.c)
+
+*Exercise*: Before reading on, see if you can write down a reasonable
+top-level specification for this operation.
+
+(One thing you might find odd about this code is that there's a
+`+return+` statement at the end of each branch of the conditional,
+rather than a single `+return+` at the bottom.  The reason for this is
+that, when CN analyzes a function body containing a conditional, it
+effectively _copies_ all the code after the conditional into each of
+the branches.  Then, if verification encounters an error related to
+this code -- e.g., "you didn't establish the `+ensures+` conditions at
+the point of returning -- the error message will be confusing because
+it will not be clear which branch of the conditional it is associated
+with.)
+
+Now, here is the annotated version of the `+push+` operation.
+
+include_example(exercises/queue_push.c)
+
+The case where the queue starts out empty (`+q->back == 0+`) is easy.
+CN can work it out all by itself.
+
+The case where the starting queue is nonempty is more interesting.
+The `+push+` operation messes with the end of the sequence of queue
+elements, so we should expect that validating `+push+` is going to
+require some reasoning about this sequence.  Here, in fact, is the
+lemma we need.
+
+include_example(exercises/queue_push_lemma.h)
+
+This says, in effect, that we have two choices for how to read out the
+values in some chain of queue cells of length at least 2, starting
+with the cell `+front+` and terminating when we get to the next cell
+_following_ some given cell `+p+` -- call it `+c+`.  We can either
+gather up all the cells from `+front+` to `+c+`, or we can gather up
+just the cells from `+front+` to `+p+` and then `+snoc+` on the single
+value from `+c+`.
+
+When we apply this lemma, `+p+` will be the old `+back+` cell and
+`+c+` will be the new one. But to prove it (by induction, of course),
+we need to state it more generally, allowing `+p+` to be any internal
+cell in the list starting at `+front+` and `+c+` its successor.
+
+The reason we need this lemma is that, to add a new cell at the end of
+the queue, we need to reassign ownership of the old `+back+` cell.
+In the precondition of `+push+`, we took ownership of this cell
+separately from the rest; in the postcondition, it needs to be treated
+as part of the rest (so that the new `+back+` cell can now be treated
+specially).
+
+One interesting technicality is worth noting: After the assignment
+`+q->back = c+` we can no longer prove `+IntQueueFB((*q).front,
+oldback)+`, but we don't care, since we want to prove
+`+IntQueueFB((*q).front, (*q).back)+`. However, crucially,
+`+IntQueueAux((*q).front, oldback)+` is still true.
+
+// ======================================================================
+
+Now let's look at the `+pop+` operation.  Here is the un-annotated
+version:
+
+include_example(exercises/queue_pop_orig.broken.c)
+
+*Exercise*: Again, before reading on, see if you can write down a
+plausible top-level specification.  (For extra credit, see how far you
+can get with verifying it!)
+
+Here is the fully annotated `+pop+` code:
+
+include_example(exercises/queue_pop.c)
+
+There are three annotations to explain.  Let's consider them in order.
+
+First, the `+split_case+` on `+is_null((*q).front)+` is needed to tell
+CN which of the branches of the `+if+` at the beginning of the
+`+IntQueueFB+` predicate it can "unpack".  (`+IntQueuePtr+` can be
+unpacked immediately because it is unconditional, but `+IntQueueFB+`
+cannot.)
+// TODO: BCP: the word "unpack" is mysterious here.
+
+The guard/condition for `+IntQueueFB+` is `+is_null(front)+`, which is
+why we need to do a `+split_case+` on this value. On one branch of the
+`+split_case+`, we have a contradiction: the fact that `+before ==
+Seq_Nil{}+` (from `+IntQueueFB+`) conflicts with `+before != Seq_Nil+`
+from the precondition, so that case is immediate.  On the other
+branch, CN now knows that the queue is non-empty as required and type
+checking proceeds.
+
+When `+h == q->back+`, we are in the case where the queue contains
+just a single element, so we just need to NULL out its `+front+` and
+`+back+` fields and deallocate the dead cell.  The `+unfold+`
+annotation is needed because the `+snoc+` function is recursive, so CN
+doesn't do the unfolding automatically.
+
+Finally, when the queue contains two or more elements, we need to
+deallocate the front cell, return its `+first+` field, and redirect
+the `+front+` field of the queue structure to point to the next cell.
+To push the verification through, we need a simple lemma about the
+`+snoc+` function:
+
+include_example(exercises/queue_pop_lemma.h)
+
+The crucial part of this lemma is the last three lines, which express
+a simple, general fact about `+snoc+`:
+if we form a sequence by calling `+snoc+` to add a final element
+`+B.first+` to a sequence with head element `+x+` and tail `+Q+`, then the
+head of the resulting sequence is still `+x+`, and its tail is `+snoc
+(Q, B.first)+`.
+
+The `+requires+` clause and the first three lines of the `+ensures+`
+clause simply set things up so that we can name the various values we
+are talking about.  Since these values come from structures in the
+heap, we need to take ownership of them.  And since lemmas in CN are
+effectively just trusted functions that can also take in ghost values,
+we need to take ownership in both the `+requires+` and `+ensures+`
+clauses.  (Taking them just in the `+requires+` clause would imply
+that they are consumed and deallocated when the lemma is applied --
+not what we want!)
+// TODO: BCP: The thing about ghost values is mysterious.
+// How to say it better?
+
+(The only reason we can't currently prove this lemma in CN is that we
+don't have `+take+`s in CN statements, because this is just a simple
+unfolding.)
+// TODO: BCP: Ugh.
+
+*Exercise*:
+Investigate what happens when you make each of the following changes
+to the queue definitions.  What error does CN report?  Where are the
+telltale clues in the error report that suggest what the problem was?
+
+* Remove `+assert (is_null(B.next));+` from `+InqQueueFB+`.
+* Remove `+assert (is_null(B.next));+` from `+InqQueueAux+`.
+* Remove one or both of occurrences of `+freeIntQueueCell(f)+` in
+  `+IntQueue_pop+`.
+* Remove, in turn, each of the CN annotations in the bodies of
+  `+IntQueue_pop+` and `+IntQueue_push+`.
+
+*Exercise*: The conditional in the `+pop+` function tests whether or
+not `+f == b+` to find out whether we have reached the last element of
+the queue.  Another way to get the same information would be to test
+whether `+f->next == 0+`.  Can you verify this version?
+
+Note: I (BCP) have not worked out the details, so am not sure how hard
+this is (or if it is even not possible, though I'd be surprised).
+Please let me know if you get it working!
+
+*Exercise*: Looking at the code for the `+pop+` operation,
+it might seem reasonable to move the identical assignments to `+x+` in both
+branches to above the `+if+`.  This doesn't "just work" because the
+ownership reasoning is different.  In the first case, ownership of
+`+h+` comes from `+IntQueueFB+` (because `+h == q->back+`). In the
+second case, it comes from `+IntQueueAux+` (because `+h !=
+q->back+`).
+
+Can you generalize the `+snoc_facts+` lemma to handle both cases?  You
+can get past the dereference with a `+split_case+` but formulating the
+lemma before the `+return+` will be a bit more complicated.
+
+Note: Again, this has not been shown to be possible, but Dhruv
+believes it should be!
+
+////
+=== The Bridge Controller
+
+(Liz's stuff goes here)
+
+////
+// ======================================================================
 
 ////
 Further topics:
+  - doubly linked lists
   - Trees:
         - deep copy
         - sum
         - maybe the accumulating sum
-  - queues, doubly linked lists
   - cn_function
   - pack
   - bitwise functions (operators are not present in the logical language)
@@ -1114,15 +1286,63 @@ Further topics:
     cf. https://dafny.org/dafny/DafnyRef/DafnyRef.html#sec-verification
   - more data structures to try out
     https://www.geeksforgeeks.org/data-structures/#most-popular-data-structures
+  - Maybe add some explanation of -- or at least a pointer to --
+    Dhruv's Iris-in-C examples:
+       queue_pop_lemma_stages.c
+       queue_push_induction.c
+       queue_pop_unified.c
 
 Further exercises:
   - Some exercises that get THEM to write predicates, datatype
     declarations, etc.
 
 Misc things to do:
-  - create a top-level TAGS file for emacs
-  - Figure out the smoothest way to do multiple includes
-  - Figure out how to display filenames
+  - replace 0 with NULL in specs
+
+  - why do we have to write (*(*q).front).next instead of
+    q->front->next in CN expressions?  (Answer: not implemented yet!)
+
+  - naming issues
+        - rename == to ptr_eq everywhere in specs
+        - rename list to seq in filenames.  or go more radical and rename seq to cnlist
+        - consider renaming IntList to just List (and int_list to just list,
+          etc.) everywhere (since we are only dealing with one kind of list
+          in the tutorial, the extra pedantry is not getting us much; and
+          this simplification would avoid trying to fix conventions that all
+          CN code should use everywhere...)
+       - related: the name Seq_Cons is awkward for several reasons:
+           - long / verbose (nothing to do about that, I guess)
+           - Seq is capitalized, but it means seq
+           - most important part is buried in the middle
+           - What are the established C conventions here??
+
   - some of the examples use int while the exercises that follow use
     unsigned int.  This is a needless source of potential confusion.
+
+  - everyplace we do storage allocation, we should really allow the
+    malloc call to return NULL if it wants to; the caller should
+    explicitly check that it didn't get back NULL.  This requires
+    defining an "exit" function" with trivial pre- and postconditions
+    (true / false).
+
+  - In queue.c, when I tried /*@ unfold IntQueueAux (F.front, F.back,
+    B.first); @*/ I was confused by "the specification function
+    `IntQueueAux' is not declared".  I guess this is, again, the
+    distinction between functions and predicates...?
+
+  - In debugging the queue example, The fact that some of the
+    constraints in the error report are forced while others are random
+    values filled in by the SMT solver is pretty problematic...
+
+______________________
+For later:
+
+Alternative formatting tools to consider at some point (not now!):
+  probably the best fit:
+    https://myst-parser.readthedocs.io/en/latest/
+  another very standard one to consider:
+    alternative: https://www.sphinx-doc.org/en/master/index.html
+
+Misc notes:
+  - Nb: take V = Owned<t>(p) === p |-t-> V
 ////

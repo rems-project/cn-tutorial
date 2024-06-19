@@ -1,6 +1,6 @@
 #include "list.h"
-#include "append.h"
-#include "list_rev_spec.h"
+#include "list_append.h"
+#include "list_rev.h"
 #include "list_rev_lemmas.h"
 
 struct int_list* IntList_rev_loop(struct int_list *xs)

@@ -1,5 +1,3 @@
-/* list3.h */
-
 /*@
 function (i32) hd (datatype seq xs) {
   match xs {

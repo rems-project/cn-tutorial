@@ -1,5 +1,3 @@
-/* list4.h */
-
 struct int_list* IntList_nil()
 /*@ ensures take ret = IntList(return);
             ret == Seq_Nil{};

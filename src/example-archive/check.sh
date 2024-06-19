@@ -1,8 +1,8 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 if [ -n "$1" ]
 then
-    echo "using CN=$1 in $PWD"
+    echo "check.sh: using CN=$1 in $PWD"
     CN="$1"
 else
     CN=cn

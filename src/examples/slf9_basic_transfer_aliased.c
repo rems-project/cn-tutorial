@@ -1,6 +1,6 @@
 void transfer (unsigned int *p, unsigned int *q)
 /*@ requires take n1 = Owned(p);
-             p == q;
+             ptr_eq(p,q);
     ensures  take n2 = Owned(p);
              n2 == 0u32;
 @*/
