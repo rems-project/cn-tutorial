@@ -1,5 +1,6 @@
 #include "../list.h"
 #include "../list_length.c"
+#include "../list_snoc.h"
 
 struct linkedList {
   struct linkedListCell* front;  
