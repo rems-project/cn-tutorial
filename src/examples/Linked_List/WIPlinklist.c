@@ -29,12 +29,19 @@ predicate (datatype seq) LinkedListFB (pointer front, pointer back) {
     if (is_null(front)) {
         return Seq_Nil{};
     } else {
-        take B = Owned<struct linkedListCell>(back);
-        assert (is_null(B.next));
-        take F = Owned<struct linkedListCell>(front);
-        assert(is_null(F.prev));
-        take L = LinkedListAux (F.next, back);
-        return Seq_Cons{ head: F.data, tail: snoc(L, B.data)};
+        if (front == back) {
+            take F = Owned<struct linkedListCell>(front);
+            assert (is_null(F.next));
+            assert (is_null(F.prev));
+            return Seq_Cons {head: F.data, tail: Seq_Nil{}};
+        } else {
+            take B = Owned<struct linkedListCell>(back);
+            assert (is_null(B.next));
+            take F = Owned<struct linkedListCell>(front); //problem if only one element
+            assert(is_null(F.prev));
+            take L = LinkedListAux (F.next, back);
+            return Seq_Cons{ head: F.data, tail: snoc(L, B.data)};
+        }
     }
 }
 
@@ -123,25 +130,86 @@ struct linkedList* LinkedList_empty ()
   return p;
 }
 
+// // Given a linked list pointer, inserts a new node
+// // to the head of the list
+// void push (struct linkedList* l, int element)
+// /*@ requires (!is_null(l));
+//              take L1 = LinkedListPtr(l);
+//     ensures  take L2 = LinkedListPtr(l);
+//              L2 == Seq_Cons{head: element, tail: L1};
+//              length(L2) == length(L1) + 1u32;
+// @*/
+// {
+//     struct linkedListCell *newCell = mallocLinkedListCell();
+//     newCell->data = element;
+//     newCell->next = l->front;
+//     newCell->prev = 0;
+
+//     if (l->front != 0) {
+//         l->front->prev = newCell;
+//     }
+
+//     l->front = newCell;
+//     l->length = l->length + 1;
+// }
+
+
+/*@
+lemma append_lemma_ll (pointer front, pointer p)
+  requires
+      take L = LinkedListAux(front, p);
+      take P = Owned<struct linkedListCell>(p);
+  ensures
+      take NewL = LinkedListAux(front, P.next);
+      NewL == snoc(L, P.data);
+@*/
+
+/*@
+lemma snoc_facts (pointer front, pointer back, i32 x)
+  requires
+      take L = LinkedListAux(front, back);
+      take B = Owned<struct linkedListCell>(back);
+  ensures
+      take NewL = LinkedListAux(front, back);
+      take NewB = Owned<struct linkedListCell>(back);
+      L == NewL; B == NewB;
+      let S = snoc (Seq_Cons{head: x, tail: L}, B.data);
+      hd(S) == x;
+      tl(S) == snoc (L, B.data);
+@*/
+
 // Given a linked list pointer, inserts a new node
-// to the head of the list
-void push (struct linkedList* l, int element)
+// at the end of the list.
+void append (struct linkedList* l, int element)
 /*@ requires (!is_null(l));
              take L1 = LinkedListPtr(l);
     ensures  take L2 = LinkedListPtr(l);
-             L2 == Seq_Cons{head: element, tail: L1};
+             L2 == snoc(L1, element);
              length(L2) == length(L1) + 1u32;
 @*/
 {
     struct linkedListCell *newCell = mallocLinkedListCell();
     newCell->data = element;
-    newCell->next = l->front;
+    newCell->next = 0;
     newCell->prev = 0;
 
-    if (l->front != 0) {
-        l->front->prev = newCell;
+    // empty list case
+    if (l->back == 0) {
+        /*@ assert(L1 == Seq_Nil{}); @*/
+        l->front = newCell;
+        l->back = newCell;
+        l->length = l->length + 1;
+        /*@ unfold length(Seq_Nil{}); @*/
+        /*@ unfold length(Seq_Cons {head: element, tail: Seq_Nil{}}); @*/
+        /*@ unfold snoc(L1, element); @*/
+        return;
+    } else {
+        struct linkedListCell *oldback = l->back;
+        // l->back->next = newCell;
+        l->back = newCell;
+        newCell->prev = oldback;
+        l->length = l->length + 1;
+        /*@ apply append_lemma_ll((*l).front, oldback); @*/
+        return;
     }
-
-    l->front = newCell;
-    l->length = l->length + 1;
 }
