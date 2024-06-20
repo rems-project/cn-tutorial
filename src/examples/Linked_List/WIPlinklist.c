@@ -48,6 +48,40 @@ predicate (datatype seq) LinkedListAux (pointer f, pointer b) {
         return Seq_Cons{head: F.data, tail: B};
     }
 }
+
+predicate (datatype seq) LinkedListPtr_backwards (pointer l) {
+  take L = Owned<struct linkedList>(l);
+  assert (   (is_null(L.front)  && is_null(L.back)) 
+          || (!is_null(L.front) && !is_null(L.back)));
+  take inner = LinkedListFB_backwards(L.front, L.back);
+  assert ( L.length == length(inner));
+  return inner;
+}
+
+predicate (datatype seq) LinkedListFB_backwards (pointer front, pointer back) {
+    if (is_null(back)) {
+        return Seq_Nil{};
+    } else {
+        take B = Owned<struct linkedListCell>(back);
+        assert (is_null(B.next));
+        take F = Owned<struct linkedListCell>(front);
+        assert(is_null(F.prev));
+        take L = LinkedListAux (front, B.prev);
+        return Seq_Cons{ head: F.data, tail: snoc(L, B.data)};
+    }
+}
+
+
+predicate (datatype seq) LinkedListAux_backwards (pointer f, pointer b) {
+    if (ptr_eq(f,b)) {
+        return Seq_Nil{};
+    } else {
+        take B = Owned<struct linkedListCell>(b);
+        assert (!is_null(B.prev));  
+        take F = LinkedListAux(f, B.prev);
+        return snoc(F, B.data);
+    }
+}
 @*/
 
 extern struct linkedList *mallocLinkedList();
