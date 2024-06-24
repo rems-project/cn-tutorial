@@ -74,8 +74,10 @@ requires take del = Owned<struct Node>(n);
         take rest = OwnForwards(del.next);
         take first = OwnBackwards(del.prev);
         !is_null(del.prev) || !is_null(del.next);
-ensures  take rest1 = OwnForwards(del.next);
-         take first1 = OwnBackwards(del.prev);
+ensures  take rest_ = OwnForwards(del.next);
+         take first_ = OwnBackwards(del.prev);
+         rest == rest_;
+         first == first_;
 @*/
 {
     if (n->prev == 0) {
@@ -92,3 +94,4 @@ ensures  take rest1 = OwnForwards(del.next);
     freeNode(n);
     return temp;
 }
+
