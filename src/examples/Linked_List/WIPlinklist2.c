@@ -54,3 +54,16 @@ extern void freeNode (struct Node *p);
     requires take u = Block<struct Node>(p);
     ensures true;
 @*/
+
+struct Node *singleton(int element)
+/*@ ensures take ret = LinkedList(return);
+            ret == Seq_Cons{head: element, tail: Seq_Nil{}};
+@*/
+{
+   struct Node *n = mallocNode();
+   n->data = element;
+   n->prev = 0;
+   n->next = 0;
+   /*@ unfold append(Seq_Nil{}, (Seq_Cons {head: element, tail: Seq_Nil{}})); @*/
+   return n;
+}
