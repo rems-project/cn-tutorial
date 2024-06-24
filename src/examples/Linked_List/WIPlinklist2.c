@@ -41,3 +41,16 @@ predicate (datatype seq) OwnBackwards(pointer p) {
     }
 }
 @*/
+
+extern struct Node *mallocNode();
+/*@ spec mallocNode();
+    requires true;
+    ensures take u = Block<struct Node>(return);
+            !ptr_eq(return,NULL);
+@*/ 
+
+extern void freeNode (struct Node *p);
+/*@ spec freeNode(pointer p);
+    requires take u = Block<struct Node>(p);
+    ensures true;
+@*/
