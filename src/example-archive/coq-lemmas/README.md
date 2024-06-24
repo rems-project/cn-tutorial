@@ -4,8 +4,8 @@ CN examples using lemmas that can be extracted to Coq. The examples are split in
 
 - Trivial
 - Recursive
-- Lists
-- Advanced
+- Lists (WIP)
+- Advanced (WIP)
 
 ## Generating Coq Lemmas 
 
