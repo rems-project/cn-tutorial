@@ -1,6 +1,10 @@
-# CN-tutorial
+# CN Tutorial
 
-In order to build the tutorial, you will first need to install [asciidoctor](https://asciidoctor.org/).
+View the tutorial here: https://rems-project.github.io/cn-tutorial/
+
+## Building
+
+Install dependencies: [asciidoctor](https://asciidoctor.org/).
 
 Run `make` to produce `build/tutorial.html` and its dependencies: especially, `build/exercises/*.c` and `build/solutions/*c`.
 
