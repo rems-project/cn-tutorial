@@ -107,11 +107,8 @@ struct Node *add_between(int element, struct Node *prevNode, struct Node *nextNo
              take next = Owned<struct Node>(nextNode);
              take rest = OwnForwards(next.next);
              take first = OwnBackwards(prev.prev);
-    ensures  take prev_ = Owned<struct Node>(prevNode);
-             take next_ = Owned<struct Node>(nextNode);
-             take rest_ = OwnForwards(next_.next);
-             take first_ = OwnBackwards(prev_.prev);
-             take u = Owned<struct Node>(return);
+    ensures  take result = LinkedList(return);
+             result == append(snoc(first,prev.data), Seq_Cons{head: element, tail: Seq_Cons{head: next.data, tail: rest}});
 @*/
 {
     struct Node *newNode = mallocNode();
