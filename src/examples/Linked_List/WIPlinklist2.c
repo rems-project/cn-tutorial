@@ -1,3 +1,5 @@
+// More up to date version of the linked list example. This representation of a linked list
+// has no head or tail, but rather is simply made up of nodes.
 #include "../list.h"
 #include "../list_length.c"
 #include "../list_snoc.h"
@@ -130,6 +132,10 @@ struct Node *add_between(int element, struct Node *prevNode, struct Node *nextNo
     return newNode;
 }
 
+
+// This is an add_between function that works as a helper to a regular add function (`add_worse`).
+// It is worse because it does not require that the two input nodes are connected, and does
+// not reason about the list after the add.
 struct Node *add_between_worse(int element, struct Node *prevNode, struct Node *nextNode)
 /*@ requires !is_null(prevNode) && !is_null(nextNode);
              take prev = Owned<struct Node>(prevNode);
@@ -159,6 +165,8 @@ struct Node *add_between_worse(int element, struct Node *prevNode, struct Node *
     return newNode;
 }
 
+// This add works with only one node as input instead of two, however it
+// does not reason about correctness of the list after the add.
 struct Node *add_worse(int element, struct Node *prevNode)
 /*@ requires !is_null(prevNode);
              take n = Owned<struct Node>(prevNode);

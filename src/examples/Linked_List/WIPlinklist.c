@@ -1,3 +1,6 @@
+// NOTE: look at WIPlinklist2.c for more recent/successful developments.
+// This file reasons about a linked list structure with a head and tail pointer.
+
 #include "../list.h"
 #include "../list_length.c"
 #include "../list_snoc.h"
