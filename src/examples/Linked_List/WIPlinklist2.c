@@ -9,7 +9,7 @@ struct Node {
   struct Node* next;
 };
 
-/*@ 
+/*@
 predicate (datatype seq) LinkedList (pointer p) {
     if (is_null(p)) {
         return Seq_Nil{};
@@ -95,3 +95,33 @@ ensures  take rest_ = OwnForwards(del.next);
     return temp;
 }
 
+// // Creates a new node with value `element` and adds it between `prevNode` 
+// // and `nextNode` in the list
+// //
+// // Note: I had to include the two nodes it goes between, 
+// // because otherwise there is a fight for ownership over the
+// // next node. 
+struct Node *add_between(int element, struct Node *prevNode, struct Node *nextNode)
+/*@ requires !is_null(prevNode) && !is_null(nextNode);
+             take prev = Owned<struct Node>(prevNode);
+             take next = Owned<struct Node>(nextNode);
+             take rest = OwnForwards(next.next);
+             take first = OwnBackwards(prev.prev);
+    ensures  take prev_ = Owned<struct Node>(prevNode);
+             take next_ = Owned<struct Node>(nextNode);
+             take rest_ = OwnForwards(next_.next);
+             take first_ = OwnBackwards(prev_.prev);
+             take u = Owned<struct Node>(return);
+@*/
+{
+    struct Node *newNode = mallocNode();
+
+    newNode->prev = prevNode;
+    newNode->data = element;
+    newNode->next = nextNode;
+
+    prevNode->next = newNode;
+    nextNode->prev = newNode;
+
+    return newNode;
+}
