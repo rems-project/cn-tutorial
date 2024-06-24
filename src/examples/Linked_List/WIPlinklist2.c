@@ -67,3 +67,28 @@ struct Node *singleton(int element)
    /*@ unfold append(Seq_Nil{}, (Seq_Cons {head: element, tail: Seq_Nil{}})); @*/
    return n;
 }
+
+int remove(struct Node *n)
+/*@ 
+requires take del = Owned<struct Node>(n);
+        take rest = OwnForwards(del.next);
+        take first = OwnBackwards(del.prev);
+        !is_null(del.prev) || !is_null(del.next);
+ensures  take rest1 = OwnForwards(del.next);
+         take first1 = OwnBackwards(del.prev);
+@*/
+{
+    if (n->prev == 0) {
+        // n is the head
+        n->next->prev = 0;
+    } else if (n->next == 0) {
+        // n is the tail
+       n->prev->next = 0;
+    } else {
+        n->next->prev = 0;
+        n->prev->next = 0;
+    }
+    int temp = n->data;
+    freeNode(n);
+    return temp;
+}
