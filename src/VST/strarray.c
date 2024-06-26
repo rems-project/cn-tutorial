@@ -17,7 +17,6 @@ predicate (datatype strf) Stringa_Aux (pointer p, u8 h)
     return Strf_E { };
   }
   else {
-    assert (h != 0u8);
     take t = Stringa(array_shift<char>(p, 1u64));
     return Strf_NE { head : h, tail : t };
   }
