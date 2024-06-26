@@ -1,218 +1,142 @@
-// NOTE: look at WIPlinklist2.c for more recent/successful developments.
-// This file reasons about a linked list structure with a head and tail pointer.
-
 #include "../list.h"
 #include "../list_length.c"
 #include "../list_snoc.h"
+#include "../list_append.h"
 
-struct linkedList {
-  struct linkedListCell* front;  
-  struct linkedListCell* back;
-  unsigned int length;
-};
-
-struct linkedListCell {
+struct Node {
   int data;  
-  struct linkedListCell* prev;
-  struct linkedListCell* next;
+  struct Node* prev;
+  struct Node* next;
 };
 
 /*@
-predicate (datatype seq) LinkedListPtr (pointer l) {
-  take L = Owned<struct linkedList>(l);
-  assert (   (is_null(L.front)  && is_null(L.back)) 
-          || (!is_null(L.front) && !is_null(L.back)));
-  take inner = LinkedListFB(L.front, L.back);
-  assert ( L.length == length(inner));
-  return inner;
+datatype dblList {
+    dbl_list {datatype seq first, struct Node node, datatype seq rest}
 }
 
+datatype emptyList {
+    empty_list{}
+}
 
-predicate (datatype seq) LinkedListFB (pointer front, pointer back) {
-    if (is_null(front)) {
-        return Seq_Nil{};
-    } else {
-        if (front == back) {
-            take F = Owned<struct linkedListCell>(front);
-            assert (is_null(F.next));
-            assert (is_null(F.prev));
-            return Seq_Cons {head: F.data, tail: Seq_Nil{}};
-        } else {
-            take B = Owned<struct linkedListCell>(back);
-            assert (is_null(B.next));
-            take F = Owned<struct linkedListCell>(front); //problem if only one element
-            assert(is_null(F.prev));
-            take L = LinkedListAux (F.next, back);
-            return Seq_Cons{ head: F.data, tail: snoc(L, B.data)};
+datatype dblListOption {
+    Some {datatype dblList l},
+    None {datatype emptyList nil}
+}
+
+function (struct Node) getNode(datatype dblList l) {
+    match l {
+        dbl_list {first: f, node: n, rest: r} => {
+            n
         }
     }
 }
 
-predicate (datatype seq) LinkedListAux (pointer f, pointer b) {
-    if (ptr_eq(f,b)) {
-        return Seq_Nil{};
-    } else {
-        take F = Owned<struct linkedListCell>(f);
-        assert (!is_null(F.next));  
-        take B = LinkedListAux(F.next, b);
-        return Seq_Cons{head: F.data, tail: B};
+
+function (datatype seq) flatten(datatype dblList l) {
+    match l { 
+        dbl_list {first: f, node: n, rest: r} => {
+            append(f, Seq_Cons{head: n.data, tail: r})
+        }
     }
 }
 
-predicate (datatype seq) LinkedListPtr_backwards (pointer l) {
-  take L = Owned<struct linkedList>(l);
-  assert (   (is_null(L.front)  && is_null(L.back)) 
-          || (!is_null(L.front) && !is_null(L.back)));
-  take inner = LinkedListFB_backwards(L.front, L.back);
-  assert ( L.length == length(inner));
-  return inner;
+function (datatype seq) flattenOption(datatype dblListOption l) {
+    match l { 
+        Some {l: l1} => {
+            flatten(l1)
+        }
+        None {nil: n} => {
+            Seq_Nil{}
+        }
+    }
 }
 
-predicate (datatype seq) LinkedListFB_backwards (pointer front, pointer back) {
-    if (is_null(back)) {
-        return Seq_Nil{};
+function (datatype seq) getFirst(datatype dblList l) {
+    match l { 
+        dbl_list {first: f, node: n, rest: r} => {
+            f
+        }
+    }
+}
+
+function (datatype seq) getRest(datatype dblList l) {
+    match l { 
+        dbl_list {first: f, node: n, rest: r} => {
+            r
+        }
+    }
+}
+
+predicate (datatype dblListOption) LinkedList (pointer p) {
+    if (is_null(p)) {
+        return None{nil: empty_list{}};
     } else {
-        take B = Owned<struct linkedListCell>(back);
-        assert (is_null(B.next));
-        take F = Owned<struct linkedListCell>(front);
-        assert(is_null(F.prev));
-        take L = LinkedListAux (front, B.prev);
-        return Seq_Cons{ head: F.data, tail: snoc(L, B.data)};
+        take N = Owned<struct Node>(p);
+        take ret = LinkedListHelper(p,N);
+        return ret;
+    }
+}
+
+predicate (datatype dblListOption) LinkedListHelper (pointer p, struct Node N) {
+    if (N.next == p && N.prev == p) {
+        return None{nil: empty_list{}};
+    } else {
+        // assert (is_null(N.next) || N.next.prev == N);
+        take first = OwnBackwards(N.prev);
+        // assert (is_null(N.prev) || N.prev.next == N);
+        take rest = OwnForwards(N.next);
+        // let nextNode = 
+        // return dbl_list{first: first, node: N, rest: rest};
+        return Some { l: dbl_list {first: first, node: N, rest: rest} };
+
     }
 }
 
 
-predicate (datatype seq) LinkedListAux_backwards (pointer f, pointer b) {
-    if (ptr_eq(f,b)) {
+predicate (datatype seq) OwnForwards(pointer p) {
+    if (is_null(p)) {
         return Seq_Nil{};
     } else {
-        take B = Owned<struct linkedListCell>(b);
-        assert (!is_null(B.prev));  
-        take F = LinkedListAux(f, B.prev);
-        return snoc(F, B.data);
+        take N = Owned<struct Node>(p);
+        take rest = OwnForwards(N.next);
+        // assert (is_null(N.next) || (*(N.next)).prev == N);
+        return Seq_Cons{head: N.data, tail: rest};
+    }
+}
+
+predicate (datatype seq) OwnBackwards(pointer p) {
+    if (is_null(p)) {
+        return Seq_Nil{};
+    } else {
+        take N = Owned<struct Node>(p);
+        // assert (is_null(N.prev) || N.prev.next == N);
+        take first = OwnBackwards(N.prev);
+        return snoc(first, N.data);
     }
 }
 @*/
 
-extern struct linkedList *mallocLinkedList();
-/*@ spec mallocLinkedList();
+extern struct Node *mallocNode();
+/*@ spec mallocNode();
     requires true;
-    ensures take u = Block<struct linkedList>(return);
+    ensures take u = Block<struct Node>(return);
             !ptr_eq(return,NULL);
 @*/ 
 
-extern void freeLinkedList (struct linkedList *p);
-/*@ spec freeLinkedList(pointer p);
-    requires take u = Block<struct linkedList>(p);
+extern void freeNode (struct Node *p);
+/*@ spec freeNode(pointer p);
+    requires take u = Block<struct Node>(p);
     ensures true;
 @*/
 
-extern struct linkedListCell *mallocLinkedListCell();
-/*@ spec mallocLinkedListCell();
-    requires true;
-    ensures take u = Block<struct linkedListCell>(return);
-            !is_null(return);
-@*/ 
-
-extern void freeLinkedListCell (struct linkedListCell *p);
-/*@ spec freeLinkedListCell(pointer p);
-    requires take u = Block<struct linkedListCell>(p);
-    ensures true;
-@*/
-
-struct linkedList* LinkedList_empty ()
-/*@ ensures take ret = LinkedListPtr(return);
-            ret == Seq_Nil{};
+struct Node *empty()
+/*@ ensures take ret = LinkedList(return);
+    flattenOption(ret) == Seq_Nil{};
 @*/
 {
-  struct linkedList *p = mallocLinkedList();
-  p->front = 0;
-  p->back = 0;
-  p->length = 0;
-  /*@ unfold length(Seq_Nil{}); @*/
-  return p;
-}
-
-// // Given a linked list pointer, inserts a new node
-// // to the head of the list
-// void push (struct linkedList* l, int element)
-// /*@ requires (!is_null(l));
-//              take L1 = LinkedListPtr(l);
-//     ensures  take L2 = LinkedListPtr(l);
-//              L2 == Seq_Cons{head: element, tail: L1};
-//              length(L2) == length(L1) + 1u32;
-// @*/
-// {
-//     struct linkedListCell *newCell = mallocLinkedListCell();
-//     newCell->data = element;
-//     newCell->next = l->front;
-//     newCell->prev = 0;
-
-//     if (l->front != 0) {
-//         l->front->prev = newCell;
-//     }
-
-//     l->front = newCell;
-//     l->length = l->length + 1;
-// }
-
-
-/*@
-lemma append_lemma_ll (pointer front, pointer p)
-  requires
-      take L = LinkedListAux(front, p);
-      take P = Owned<struct linkedListCell>(p);
-  ensures
-      take NewL = LinkedListAux(front, P.next);
-      NewL == snoc(L, P.data);
-@*/
-
-/*@
-lemma snoc_facts (pointer front, pointer back, i32 x)
-  requires
-      take L = LinkedListAux(front, back);
-      take B = Owned<struct linkedListCell>(back);
-  ensures
-      take NewL = LinkedListAux(front, back);
-      take NewB = Owned<struct linkedListCell>(back);
-      L == NewL; B == NewB;
-      let S = snoc (Seq_Cons{head: x, tail: L}, B.data);
-      hd(S) == x;
-      tl(S) == snoc (L, B.data);
-@*/
-
-// Given a linked list pointer, inserts a new node
-// at the end of the list.
-void append (struct linkedList* l, int element)
-/*@ requires (!is_null(l));
-             take L1 = LinkedListPtr(l);
-    ensures  take L2 = LinkedListPtr(l);
-             L2 == snoc(L1, element);
-             length(L2) == length(L1) + 1u32;
-@*/
-{
-    struct linkedListCell *newCell = mallocLinkedListCell();
-    newCell->data = element;
-    newCell->next = 0;
-    newCell->prev = 0;
-
-    // empty list case
-    if (l->back == 0) {
-        /*@ assert(L1 == Seq_Nil{}); @*/
-        l->front = newCell;
-        l->back = newCell;
-        l->length = l->length + 1;
-        /*@ unfold length(Seq_Nil{}); @*/
-        /*@ unfold length(Seq_Cons {head: element, tail: Seq_Nil{}}); @*/
-        /*@ unfold snoc(L1, element); @*/
-        return;
-    } else {
-        struct linkedListCell *oldback = l->back;
-        // l->back->next = newCell;
-        l->back = newCell;
-        newCell->prev = oldback;
-        l->length = l->length + 1;
-        /*@ apply append_lemma_ll((*l).front, oldback); @*/
-        return;
-    }
+   struct Node *n = mallocNode();
+   n->data = 0;
+   n->prev = n;
+   n->next = n;
+   return n;
 }
