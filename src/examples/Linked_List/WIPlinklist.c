@@ -1,7 +1,8 @@
 #include "../list.h"
 #include "../list_length.c"
-#include "../list_snoc.h"
+// #include "../list_snoc.h"
 #include "../list_append.h"
+#include "../list_rev.h"
 
 struct Node {
   int data;  
@@ -11,65 +12,50 @@ struct Node {
 
 /*@
 datatype dblList {
-    dbl_list {datatype seq first, struct Node node, datatype seq rest}
-}
-
-datatype emptyList {
-    empty_list{}
+    opts {datatype dblListOption first, datatype dblListOption rest},
+    seqs {datatype seq f, struct Node n, datatype seq r}
 }
 
 datatype dblListOption {
-    Some {datatype dblList l},
-    None {datatype emptyList nil}
+    empty {},
+    nonEmpty {struct Node node, datatype seq tail}
 }
-
-function (struct Node) getNode(datatype dblList l) {
-    match l {
-        dbl_list {first: f, node: n, rest: r} => {
-            n
-        }
-    }
-}
-
 
 function (datatype seq) flatten(datatype dblList l) {
     match l { 
-        dbl_list {first: f, node: n, rest: r} => {
-            append(f, Seq_Cons{head: n.data, tail: r})
+        opts{ first: f, rest: r} => {
+            match f {
+                empty{} => { 
+                    match r {
+                        empty{} => {
+                            Seq_Nil{}
+                        }
+                        nonEmpty{node: n, tail: t} => {
+                            Seq_Cons{head: n.data, tail: t}
+                        }
+                    }
+                }
+                nonEmpty{node: n, tail: t} => { 
+                    match r {
+                        empty{} => {
+                            rev(Seq_Cons{head: n.data, tail: t})
+                        }
+                        nonEmpty{node: n2, tail: t2} => {
+                            append(rev(Seq_Cons{head: n.data, tail: t}), Seq_Cons{head: n2.data, tail: t2})
+                        }
+                    }
+                }
+            }
         }
-    }
+        seqs {f: f, n: n, r: r} => {
+            append(rev(f), Seq_Cons{head: n.data, tail: r})
+        } 
+    } 
 }
 
-function (datatype seq) flattenOption(datatype dblListOption l) {
-    match l { 
-        Some {l: l1} => {
-            flatten(l1)
-        }
-        None {nil: n} => {
-            Seq_Nil{}
-        }
-    }
-}
-
-function (datatype seq) getFirst(datatype dblList l) {
-    match l { 
-        dbl_list {first: f, node: n, rest: r} => {
-            f
-        }
-    }
-}
-
-function (datatype seq) getRest(datatype dblList l) {
-    match l { 
-        dbl_list {first: f, node: n, rest: r} => {
-            r
-        }
-    }
-}
-
-predicate (datatype dblListOption) LinkedList (pointer p) {
+predicate (datatype dblList) LinkedList (pointer p) {
     if (is_null(p)) {
-        return None{nil: empty_list{}};
+        return opts{first: empty{}, rest: empty{}};
     } else {
         take N = Owned<struct Node>(p);
         take ret = LinkedListHelper(p,N);
@@ -77,41 +63,61 @@ predicate (datatype dblListOption) LinkedList (pointer p) {
     }
 }
 
-predicate (datatype dblListOption) LinkedListHelper (pointer p, struct Node N) {
-    if (N.next == p && N.prev == p) {
-        return None{nil: empty_list{}};
+predicate (datatype dblList) LinkedListHelper (pointer p, struct Node N) {
+    if (ptr_eq(N.next,p) && ptr_eq(N.prev,p)) {
+        return opts{first: empty{}, rest: empty{}};
     } else {
-        // assert (is_null(N.next) || N.next.prev == N);
-        take first = OwnBackwards(N.prev);
-        // assert (is_null(N.prev) || N.prev.next == N);
-        take rest = OwnForwards(N.next);
-        // let nextNode = 
-        // return dbl_list{first: first, node: N, rest: rest};
-        return Some { l: dbl_list {first: first, node: N, rest: rest} };
-
+        take first = OwnBackwards(N.prev, p, N);
+        take rest = OwnForwards(N.next, p, N);
+        return opts{first: first, rest: rest};
     }
 }
 
+predicate (datatype dblListOption) OwnForwards(pointer p, pointer PrevPointer, struct Node PrevNode) {
+    if (is_null(p)) {
+        return empty{};
+    } else {
+        take N = Owned<struct Node>(p);
+        assert (ptr_eq(N.prev, PrevPointer));
+        assert(ptr_eq(PrevNode.next,p));
+        take rest = OwnForwardsAux(N.next, p, N);
+        return nonEmpty{node: N, tail: rest};
+    }
+}
 
-predicate (datatype seq) OwnForwards(pointer p) {
+predicate (datatype seq) OwnForwardsAux(pointer p, pointer PrevPointer, struct Node PrevNode) {
     if (is_null(p)) {
         return Seq_Nil{};
     } else {
         take N = Owned<struct Node>(p);
-        take rest = OwnForwards(N.next);
-        // assert (is_null(N.next) || (*(N.next)).prev == N);
+        assert (ptr_eq(N.prev, PrevPointer));
+        assert(ptr_eq(PrevNode.next,p));
+        take rest = OwnForwardsAux(N.next, p, N);
         return Seq_Cons{head: N.data, tail: rest};
     }
 }
 
-predicate (datatype seq) OwnBackwards(pointer p) {
+predicate (datatype dblListOption) OwnBackwards(pointer p, pointer NextPointer, struct Node NextNode) {
+    if (is_null(p)) {
+        return empty{};
+    } else {
+        take N = Owned<struct Node>(p);
+        assert (ptr_eq(N.next,NextPointer));
+        assert(ptr_eq(NextNode.prev,p));
+        take first = OwnBackwardsAux(N.prev, p, N);
+        return nonEmpty{node: N, tail: first};
+    }
+}
+
+predicate (datatype seq) OwnBackwardsAux(pointer p, pointer NextPointer, struct Node NextNode) {
     if (is_null(p)) {
         return Seq_Nil{};
     } else {
         take N = Owned<struct Node>(p);
-        // assert (is_null(N.prev) || N.prev.next == N);
-        take first = OwnBackwards(N.prev);
-        return snoc(first, N.data);
+        assert (ptr_eq(N.next,NextPointer));
+        assert(ptr_eq(NextNode.prev,p));
+        take first = OwnBackwardsAux(N.prev, p, N);
+        return Seq_Cons{head: N.data, tail: first};
     }
 }
 @*/
@@ -131,12 +137,14 @@ extern void freeNode (struct Node *p);
 
 struct Node *empty()
 /*@ ensures take ret = LinkedList(return);
-    flattenOption(ret) == Seq_Nil{};
+    // ret == dbl_list{first: Seq_Nil{}, rest: Seq_Nil{}};
+    flatten(ret) == Seq_Nil{};
 @*/
 {
    struct Node *n = mallocNode();
    n->data = 0;
    n->prev = n;
    n->next = n;
+//    /*@ unfold append(Seq_Nil{}, Seq_Nil{}); @*/
    return n;
 }
