@@ -238,3 +238,42 @@ struct Node *add_between_verbose(int element, struct Node *prevNode, struct Node
     // /*@ unfold append(snoc(first,prev.data), Seq_Cons{head: element, tail: Seq_Cons{head: next.data, tail: rest}}); @*/
     return newNode;
 }
+
+struct Node *add_between_WIP(int element, struct Node *prevNode, struct Node *nextNode)
+/*@ requires !is_null(prevNode) && !is_null(nextNode);
+             take prev = Owned<struct Node>(prevNode);
+             take next = Owned<struct Node>(nextNode);
+             take l = LinkedListAux(nextNode, next);
+
+             ptr_eq(prev.next, nextNode);
+             ptr_eq(next.prev, prevNode);
+
+    ensures  take ret = Owned<struct Node>(return);
+             take prev_ = Owned<struct Node>(prevNode);
+             take next_ = Owned<struct Node>(nextNode);
+             take l_ = LinkedListAux(nextNode, next);
+
+            ptr_eq(prev_.next, return);
+            ptr_eq(ret.prev, prevNode);
+            ptr_eq(ret.next, nextNode);
+            ptr_eq(next_.prev, return);
+            ptr_eq(prev_.prev, prev.prev);
+            ptr_eq(next_.next, next.next);
+
+            // needs something about relationship between l and l_
+            // flatten(l_) != Seq_Nil{};
+            // length = length + 1 ??
+@*/
+{
+    struct Node *newNode = mallocNode();
+
+    newNode->prev = prevNode;
+    newNode->data = element;
+    newNode->next = nextNode;
+
+
+    prevNode->next = newNode;
+    nextNode->prev = newNode;
+    // /*@ unfold append(snoc(first,prev.data), Seq_Cons{head: element, tail: Seq_Cons{head: next.data, tail: rest}}); @*/
+    return newNode;
+}
