@@ -21,6 +21,17 @@ datatype dblListOption {
     nonEmpty {struct Node node, datatype seq tail}
 }
 
+function (bool) is_empty(datatype dblListOption l) {
+    match l {
+        empty{} => {
+            true
+        }
+        nonEmpty{node: n, tail: t} => {
+            false
+        }
+    }
+}
+
 function  (struct Node) getNodeOption(dblListOption l) {
     match l {
         empty{} => {
@@ -128,6 +139,17 @@ function (datatype seq) flatten(datatype dblList l) {
             }
         } 
     } 
+}
+
+function (datatype seq) flattenOption(dblListOption l) {
+    match l {
+        empty{} => {
+            Seq_Nil{}
+        }
+        nonEmpty{node: n, tail: t} => {
+            Seq_Cons{head: n.data, tail: t}
+        }
+    }
 }
 
 predicate (datatype dblList) LinkedList (pointer p) {
@@ -405,35 +427,33 @@ int remove_helper(struct Node *node)
 
 int remove(struct Node *n)
 /*@ requires take del = Owned<struct Node>(n);
-             take first = OwnForwardsAlternate(del.next);
-             take rest = OwnBackwardsAlternate(del.prev);
+             take rest = OwnForwardsAlternate(del.next);
+             take first = OwnBackwardsAlternate(del.prev);
              !is_null(del.prev) || !is_null(del.next);
-    ensures  take first_ = OwnForwardsAlternate(del.next);
-             take rest_ = OwnBackwardsAlternate(del.prev);
-             rest == rest_;
-             first == first_;
+    ensures  take rest_ = OwnForwardsAlternate(del.next);
+             take first_ = OwnBackwardsAlternate(del.prev);
+             flattenOption(first) == flattenOption(first_);
+             flattenOption(rest) == flattenOption(rest_);
+             is_empty(first_) ? true : ptr_eq(getNodeOption(first_).next,del.next);
+             is_empty(rest_) ? true : ptr_eq(getNodeOption(rest_).prev,del.prev);
 @*/ 
 {
-    /*@ split_case(is_null(n)); @*/
-    /*@ split_case(is_null((*n).next)); @*/
-    /*@ split_case(is_null((*n).prev)); @*/
-
-
-    if (n->prev == 0) {
-        /*@ assert(is_null((*n).prev)); @*/
-        /*@ assert(!is_null((*n).next)); @*/
-
-        // n is the head
-        // n->next->prev = 0;
-    } else if (n->next == 0) {
-        /*@ assert(is_null((*n).next)); @*/
-        /*@ assert(!is_null((*n).prev)); @*/
-        // n is the tail
-    //    n->prev->next = 0;
+    if (n->prev == 0) {  // n is the head
+        /*@ split_case(is_null((*(*n).next).next)); @*/
+        n->next->prev = 0;
+    } else if (n->next == 0) { // n is the tail
+        /*@ split_case(is_null((*(*n).prev).prev)); @*/
+        n->prev->next = 0;
     } else {
-        // n->next->prev = 0;
-        // n->prev->next = 0;
+        /*@ split_case(is_null((*(*n).prev).prev)); @*/
+        /*@ split_case(is_null((*(*n).next).next)); @*/
+        struct Node *next = n->next;
+        struct Node *prev = n->prev;
+
+        n->next->prev = prev;
+        n->prev->next = next;
     }
+
     int temp = n->data;
     freeNode(n);
     return temp;
