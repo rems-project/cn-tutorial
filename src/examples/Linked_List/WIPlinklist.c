@@ -76,17 +76,6 @@ function (datatype dblListOption) getRest(dblList l) {
     }
 }
 
-// function (datatype seq) getFirstOption(dblListOption l) {
-//     match l {
-//         empty{} => {
-//             Seq_Nil{}
-//         }
-//         nonEmpty{node: n2, tail: t} => {
-//             t
-//         }
-//     }
-// }
-
 function (datatype seq) flatten(datatype dblList l) {
     match l { 
         FirstRest{ first: f, rest: r} => {
@@ -364,67 +353,6 @@ struct Node *add_between_verbose2(int element, struct Node *prevNode, struct Nod
     return newNode;
 }
 
-// struct Node *add_between_WIP(int element, struct Node *prevNode, struct Node *nextNode)
-// /*@ requires !is_null(prevNode) && !is_null(nextNode);
-//              take l = LinkedList(prevNode);
-//              let prev = getNode(l);
-//              let next = getNodeOption(getRest(l));
-             
-//              ptr_eq(prev.next, nextNode);
-//              ptr_eq(next.prev, prevNode);
-
-//     ensures  take ret = Owned<struct Node>(return);
-//              take prev_ = Owned<struct Node>(prevNode);
-//              take next_ = Owned<struct Node>(nextNode);
-//              take l_ = LinkedListAux(nextNode, next);
-
-//              ptr_eq(prev_.next, return);
-//              ptr_eq(ret.prev, prevNode);
-//              ptr_eq(ret.next, nextNode);
-//              ptr_eq(next_.prev, return);
-//              ptr_eq(prev_.prev, prev.prev);
-//              ptr_eq(next_.next, next.next);
-
-//             // flatten(l_) != Seq_Nil{};
-//             // length = length + 1 ??
-// @*/
-// {
-//     struct Node *newNode = mallocNode();
-
-//     newNode->prev = prevNode;
-//     newNode->data = element;
-//     newNode->next = nextNode;
-
-
-//     prevNode->next = newNode;
-//     nextNode->prev = newNode;
-
-//     return newNode;
-// }
-
-int remove_helper(struct Node *node)
-/*@ requires take del = Owned<struct Node>(node);
-             !is_null(del.prev) || !is_null(del.next);
-             take first = Owned<struct Node>(del.prev);
-             take rest = Owned<struct Node>(del.next);   
-             take l = LinkedList(del.next);
-        
-    ensures  take first_ = Owned<struct Node>(del.prev);
-             take rest_ = Owned<struct Node>(del.next);   
-             take l_ = LinkedList(del.next);
-@*/ 
-{
-    struct Node *prev = node->prev;
-    struct Node *next = node->next;
-
-    prev->next = next;
-    next->prev = prev;
-
-    int data = node->data;
-    freeNode(node);
-    return data;
-}
-
 int remove(struct Node *n)
 /*@ requires take del = Owned<struct Node>(n);
              take rest = OwnForwardsAlternate(del.next);
@@ -457,4 +385,119 @@ int remove(struct Node *n)
     int temp = n->data;
     freeNode(n);
     return temp;
+}
+
+// void append_dep(int element, struct Node *n)
+// /*@ requires !is_null(n);
+//              take tailNode = Owned<struct Node>(n);
+//              is_null(tailNode.next);
+//              take l = LinkedListAux(n, tailNode);
+//     ensures  take oldTail = Owned<struct Node>(n);
+//              take l_ = LinkedListAux(n, oldTail);
+//              !is_null(oldTail.next);
+//             //  l_ == dbl_list{first: getFirst(l), rest: snoc(getRest(l), element)};
+// @*/
+// {
+//     /*@ assert(!is_null(n)); @*/
+//     /*@ assert(!(ptr_eq((*n).next, n) && ptr_eq((*n).prev, n))); @*/
+//     /*@ split_case(ptr_eq((*n).next, n) && ptr_eq((*n).prev, n)); @*/
+//     // (ptr_eq(N.next,p) && ptr_eq(N.prev,p)) 
+//     struct Node *newNode = mallocNode();
+//     newNode->data = element;
+//     newNode->prev = n;
+//     newNode->next = 0;
+//     n->next = newNode;
+// }
+
+struct Node* append(int element, struct Node *n)
+/*@ requires !is_null(n);
+             take tailNode = Owned<struct Node>(n);
+             is_null(tailNode.next);
+             take l = OwnBackwards(tailNode.prev, n, tailNode);
+    ensures  take oldTail = Owned<struct Node>(n);
+             take newTail = Owned<struct Node>(return);
+             take l_ =  OwnBackwards(tailNode.prev, n, tailNode);
+             ptr_eq(oldTail.next, return);
+             is_null(newTail.next);
+             ptr_eq(newTail.prev, n);
+             l_ == l;
+@*/
+{
+    struct Node *newNode = mallocNode();
+    newNode->data = element;
+    newNode->prev = n;
+    newNode->next = 0;
+    n->next = newNode;
+
+    return newNode;
+}
+
+void append2(int element, struct Node *n)
+/*@ requires !is_null(n);
+             take tailNode = Owned<struct Node>(n);
+             is_null(tailNode.next);
+             take l = LinkedListAux(n, tailNode);
+    ensures  !is_null(n);
+             take oldTail = Owned<struct Node>(n);
+             take l_ =  LinkedListAux(n, oldTail);
+            //  ptr_eq(oldTail.next, return);
+            //  is_null(newTail.next);
+            //  ptr_eq(newTail.prev, n);
+            //  l_ == l;
+@*/
+{
+    /*@ split_case(ptr_eq((*n).next, n) && ptr_eq((*n).prev, n)); @*/
+    struct Node *newNode = mallocNode();
+    newNode->data = element;
+    newNode->prev = n;
+    newNode->next = 0;
+    n->next = newNode;
+
+    /*@ assert(ptr_eq((*n).next,newNode)); @*/
+    /*@ assert(ptr_eq((*newNode).prev,n)); @*/
+    return;
+}
+
+void add_helper(int element, struct Node *n)
+/*@ requires !is_null(n);
+             take node = Owned<struct Node>(n);
+             take l = LinkedListAux(n, node);
+    ensures  !is_null(n);
+             take node_ = Owned<struct Node>(n);
+             take l_ = LinkedListAux(n, node_);
+@*/
+{
+    if (n->next == 0) {
+        // append(element,n);
+    } else {
+        // struct Node *newNode = mallocNode();
+        // newNode->data = element;
+        // newNode->prev = n;
+        // newNode->next = n->next;
+        // n->next->prev = newNode;
+        // n->next = newNode;
+        return;
+    }
+}
+
+void add_WIP(int element, struct Node *n)
+/*@ requires !is_null(n);
+             take node = Owned<struct Node>(n);
+             take l = LinkedListAux(n, node);
+    ensures  !is_null(n);
+             take node_ = Owned<struct Node>(n);
+             take l_ = LinkedListAux(n, node_);
+@*/
+{
+    /*@ split_case(ptr_eq((*n).next, n) && ptr_eq((*n).prev, n)); @*/
+    struct Node *next = n->next;
+    if (next == n->prev && next == n) { // empty list case
+         n->data = element;
+         n->prev = 0;
+         n->next = 0;
+         return;
+    } else {
+        add_helper(element,n);
+        return;
+    }
 }
