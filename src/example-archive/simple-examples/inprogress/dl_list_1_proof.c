@@ -34,12 +34,42 @@ predicate (datatype seq) DLSeg(pointer i, pointer i_, pointer k, pointer k_)
 }
 @*/
 
-void dll_walk_fwd(struct dll_node *curr)
-/*@ trusted; @*/
+void dll_1step(struct dll_node *curr)
+/*@ 
+requires 
+  take D  = DLSeg(curr, NULL, NULL, NULL);
+  let head = curr;  
+ensures 
+  take D_ = DLSeg(head, NULL, NULL, NULL); 
+@*/
 {
+  if (curr != NULL) {
+    curr->val = 7; 
+  }
+}
+
+void dll_walk_fwd(struct dll_node *head)
+/*@ 
+requires 
+  take D  = DLSeg(head, NULL, NULL, NULL);
+ensures 
+  take D_ = DLSeg(head, NULL, NULL, NULL); 
+@*/
+{
+  struct dll_node *curr = head; 
+  struct dll_node *prev_curr = NULL; 
+
   while (curr != NULL) 
+  /*@ 
+  inv 
+    take Visited = DLSeg(head, NULL, curr, prev_curr); 
+    take Remaining = DLSeg(curr, prev_curr, NULL, NULL); 
+    {head}unchanged; 
+  @*/
   { 
     // printf("%d ", curr->val); 
+    prev_curr = curr; 
+    curr->val = 7; // Write an arbitrary value 
     curr = curr->next; 
   }
   return; 
