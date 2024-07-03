@@ -114,7 +114,7 @@ int main()
   dll_print_list(&n1, &n3);
 
   // Test dll_insert_ptr  
-  printf("Inserting node 5 before node 4... \n");
+  printf("Inserting node 5 before node 2... \n");
   dll_insert_ptr_left(&n2, &n5); 
   dll_print_list(&n1, &n3);
 
