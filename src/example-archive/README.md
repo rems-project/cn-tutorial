@@ -10,6 +10,7 @@ This directory contains examples for CN. Each subdirectory contains examples fro
 * `Rust` - C versions of Rust programs, with CN annotations that provide the same guarantees as the Rust type-checker.
 * `SAW` - Examples derived from the [Software Analysis Workbench (SAW)](https://saw.galois.com) repository and tutorial. 
 * `negative-examples` - Small examples that should always fail. 
+* `open-sut` - Examples inspired by the VERSE Open System Under Test (Open SUT).
 
 ## Organization  
 
