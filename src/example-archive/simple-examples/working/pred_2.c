@@ -1,5 +1,5 @@
 // Examples encoding control-flow for predicates. These are a contrived to work
-// around a CN parser issue 
+// around a CN parser issue. See https://github.com/rems-project/cerberus/issues/266 
 
 // Variant 1 - this works: 
 /*@ 
