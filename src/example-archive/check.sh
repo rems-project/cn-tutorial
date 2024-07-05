@@ -43,7 +43,7 @@ check_file() {
   local expected_exit_code=$2
 
   printf "[$file]... "
-  timeout 10 cn "$file" > /dev/null 2>&1
+  timeout 10 $CN "$file" > /dev/null 2>&1
   local result=$?
 
   if [ $result -eq $expected_exit_code ]; then
