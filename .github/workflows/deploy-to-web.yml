@@ -30,11 +30,14 @@ jobs:
       - name: Install AsciiDoctor
         run: gem install asciidoctor
 
-      - name: Clean and build the tutorial
-        run: |
-          rm -rf build/* 
-          make 
-          mv build/tutorial.html build/index.html  
+      - name: Clean the build directory 
+        run: rm -rf build/* 
+
+      - name: Build the tutorial 
+        run: make 
+
+      - name: Move the tutorial file 
+        run: mv build/tutorial.html build/index.html  
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
