@@ -12,7 +12,7 @@ subdirs=(
   "c-testsuite" 
   "dafny-tutorial" 
   "java_program_verification_challenges" 
-  "negative-examples"
+  "should-fail"
   "open-sut"
   "Rust" 
   "SAW" 
