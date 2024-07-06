@@ -23,7 +23,7 @@ FAILURE=0
 for subdir in "${subdirs[@]}"; do
   cd "$subdir" || continue
 
-  ../check.sh $CN 
+  ../check.sh "$CN" 
 
   if [ $? != 0 ]
   then 
