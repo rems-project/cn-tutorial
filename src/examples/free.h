@@ -1,5 +1,3 @@
-// free.h
-
 extern void freeInt (int *p);
 /*@ spec freeInt(pointer p);
     requires take v = Block<int>(p);

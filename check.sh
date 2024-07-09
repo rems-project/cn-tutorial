@@ -10,17 +10,24 @@ else
     CN=cn
 fi
 
-
 good=0
 bad=0
 
 for file in $SCRIPT_DIR/src/examples/*c;
 do
+    echo "Checking $file ..."
+    $CN $file 
+    retval=$?
     if [[ $file == *.broken.c ]]
     then
-        echo "(skipping $file)"
+        if [[ $retval -eq 1 ]]; 
+        then
+            good=$(($good+1))
+        else
+            bad=$(($bad+1))
+        fi
     else
-        if $CN $file
+        if [[ $retval -eq 0 ]]; 
         then
             good=$(($good+1))
         else
@@ -28,7 +35,6 @@ do
         fi
     fi
 done
-
 
 echo "----------------------------"
 echo "$good good, $bad bad"

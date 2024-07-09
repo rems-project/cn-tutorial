@@ -1,5 +1,3 @@
-/* liast_rev_lemmas.h */
-
 /*@
 lemma append_nil_r (datatype seq l1)
   requires true;

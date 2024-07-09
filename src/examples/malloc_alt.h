@@ -1,5 +1,3 @@
-// malloc.h
-
 extern int *mallocInt ();
 /*@ spec mallocInt()
     requires true

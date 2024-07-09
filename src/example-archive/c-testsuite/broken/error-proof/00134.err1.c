@@ -1,5 +1,6 @@
 int
 main(void)
+/*@ ensures return == 0i32; @*/
 {
 	long i;
 	unsigned long u;

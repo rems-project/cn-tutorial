@@ -6,6 +6,7 @@ struct T {
 
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	struct T v;
 	{ struct T { int z; }; }

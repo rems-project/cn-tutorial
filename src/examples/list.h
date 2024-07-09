@@ -1,11 +1,9 @@
-// list.h
-
 #ifndef _LIST_H
 #define _LIST_H
 
-#include "list1.h"
-#include "list2.h"
-#include "list3.h"
-#include "list4.h"
+#include "list_c_types.h"
+#include "list_cn_types.h"
+#include "list_hdtl.h"
+#include "list_constructors.h"
 
-#endif//_LIST_H
+#endif //_LIST_H

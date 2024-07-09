@@ -2,6 +2,7 @@ int arr[3] = {[2] = 2, [0] = 0, [1] = 1};
 
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	if(arr[0] != 0)
 		return 1;

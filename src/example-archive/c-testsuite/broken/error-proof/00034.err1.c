@@ -1,5 +1,8 @@
+// Currently unprovable: continue unsupported 
+
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	int x;
 	

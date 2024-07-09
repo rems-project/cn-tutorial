@@ -1,3 +1,5 @@
+// Unprovable: this is UB I think
+
 #define CAT(x,y) x ## y
 #define XCAT(x,y) CAT(x,y)
 #define FOO foo
@@ -5,6 +7,7 @@
 
 int
 main(void)
+/*@ ensures return == 0i32; @*/
 {
 	int foo, bar, foobar;
 

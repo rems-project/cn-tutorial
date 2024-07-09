@@ -3,6 +3,7 @@ struct S arr[2] = {[1] = {3, 4}, [0] = {1, 2}};
 
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	if(arr[0].a != 1)
 		return 1;

@@ -3,6 +3,7 @@ struct S2 { struct S1 s1; };
 
 int
 main()
+/*@ ensures return == 0i32; @*/
 {
 	struct S2 s2;
 	s2.s1.x = 1;
