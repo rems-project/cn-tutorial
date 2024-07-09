@@ -41,9 +41,18 @@ build/solutions/%: src/examples/%
 build/exercises.zip: $(EXERCISES)
 	cd build; zip -r exercises.zip exercises > /dev/null
 
-check:
-	@echo Check examples
+
+# Check that the examples all run correctly 
+
+check-archive: 
+	@echo Check archive examples
+	@$(MAKEFILE_DIR)/src/example-archive/check-all.sh
+
+check-tutorial:
+	@echo Check tutorial examples
 	@$(MAKEFILE_DIR)/check.sh
+
+check: check-tutorial check-archive 
 
 ##############################################################################
 # Tutorial document
