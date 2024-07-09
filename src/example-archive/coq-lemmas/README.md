@@ -1,6 +1,7 @@
 ## Examples
 
-CN examples using lemmas that can be extracted to Coq. The examples are split into:
+CN examples using lemmas that can be extracted to Coq. The examples
+are split into:
 
 - Trivial
 - Recursive
@@ -44,9 +45,11 @@ Module Type Lemma_Spec (P : Parameters).
 End Lemma_Spec.
 ```
 
-## Prooving the Coq Lemmas
+## Proving the Coq Lemmas
 
-To prove the lemmas, instantiate a new module with type `Lemma_Spec` containing each of parameters as lemmas and their proofs. For the example above, the proofs look like this
+To prove the lemmas, instantiate a new module with type `Lemma_Spec`
+containing each of parameters as lemmas and their proofs. For the
+example above, the proofs look like this
 
 ```
 
