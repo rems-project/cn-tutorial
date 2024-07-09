@@ -432,14 +432,16 @@ struct Node* append(int element, struct Node *n)
     return newNode;
 }
 
-void append2(int element, struct Node *n)
+struct Node* append3(int element, struct Node *n)
 /*@ requires !is_null(n);
              take tailNode = Owned<struct Node>(n);
              is_null(tailNode.next);
              take l = LinkedListAux(n, tailNode);
-    ensures  !is_null(n);
-             take oldTail = Owned<struct Node>(n);
-             take l_ =  LinkedListAux(n, oldTail);
+    ensures  take oldTail = Owned<struct Node>(n);
+             take l_ = LinkedListAux(n, oldTail);
+
+            //  take newTail = Owned<struct Node>(return);
+            //  take l_ =  OwnBackwards(tailNode.prev, n, tailNode);
             //  ptr_eq(oldTail.next, return);
             //  is_null(newTail.next);
             //  ptr_eq(newTail.prev, n);
@@ -447,57 +449,99 @@ void append2(int element, struct Node *n)
 @*/
 {
     /*@ split_case(ptr_eq((*n).next, n) && ptr_eq((*n).prev, n)); @*/
+    /*@ assert(!(ptr_eq((*n).next, n) && ptr_eq((*n).prev, n))); @*/
     struct Node *newNode = mallocNode();
+    /*@ assert(!ptr_eq(n, newNode));@*/
+
     newNode->data = element;
     newNode->prev = n;
     newNode->next = 0;
     n->next = newNode;
 
-    /*@ assert(ptr_eq((*n).next,newNode)); @*/
-    /*@ assert(ptr_eq((*newNode).prev,n)); @*/
-    return;
+    // /*@ assert(ptr_eq((*n).next,newNode)); @*/
+    /*@ split_case(is_null((*n).next)); @*/
+    /*@ assert(!ptr_eq(n, newNode));@*/
+    /*@ assert(!(ptr_eq((*n).next, n) && ptr_eq((*n).prev, n))); @*/
+
+    return newNode;
 }
 
-void add_helper(int element, struct Node *n)
-/*@ requires !is_null(n);
-             take node = Owned<struct Node>(n);
-             take l = LinkedListAux(n, node);
-    ensures  !is_null(n);
-             take node_ = Owned<struct Node>(n);
-             take l_ = LinkedListAux(n, node_);
-@*/
-{
-    if (n->next == 0) {
-        // append(element,n);
-    } else {
-        // struct Node *newNode = mallocNode();
-        // newNode->data = element;
-        // newNode->prev = n;
-        // newNode->next = n->next;
-        // n->next->prev = newNode;
-        // n->next = newNode;
-        return;
-    }
-}
 
-void add_WIP(int element, struct Node *n)
-/*@ requires !is_null(n);
-             take node = Owned<struct Node>(n);
-             take l = LinkedListAux(n, node);
-    ensures  !is_null(n);
-             take node_ = Owned<struct Node>(n);
-             take l_ = LinkedListAux(n, node_);
+
+// void append2(int element, struct Node *n)
+// /*@ requires !is_null(n);
+//              take tailNode = Owned<struct Node>(n);
+//              is_null(tailNode.next);
+//              take l = LinkedListAux(n, tailNode);
+//     ensures  !is_null(n);
+//              take oldTail = Owned<struct Node>(n);
+//              take l_ =  LinkedListAux(n, oldTail);
+//             //  ptr_eq(oldTail.next, return);
+//             //  is_null(newTail.next);
+//             //  ptr_eq(newTail.prev, n);
+//             //  l_ == l;
+// @*/
+// {
+//     /*@ split_case(ptr_eq((*n).next, n) && ptr_eq((*n).prev, n)); @*/
+//     struct Node *newNode = mallocNode();
+//     newNode->data = element;
+//     newNode->prev = n;
+//     newNode->next = 0;
+//     n->next = newNode;
+
+//     /*@ assert(ptr_eq((*n).next,newNode)); @*/
+//     /*@ assert(ptr_eq((*newNode).prev,n)); @*/
+//     return;
+// }
+
+// void add_helper(int element, struct Node *n)
+// /*@ requires !is_null(n);
+//              take node = Owned<struct Node>(n);
+//              take l = LinkedListAux(n, node);
+//     ensures  !is_null(n);
+//              take node_ = Owned<struct Node>(n);
+//              take l_ = LinkedListAux(n, node_);
+// @*/
+// {
+//     if (n->next == 0) {
+//         // append(element,n);
+//     } else {
+//         // struct Node *newNode = mallocNode();
+//         // newNode->data = element;
+//         // newNode->prev = n;
+//         // newNode->next = n->next;
+//         // n->next->prev = newNode;
+//         // n->next = newNode;
+//         return;
+//     }
+// }
+
+// void add_WIP(int element, struct Node *n)
+// /*@ requires !is_null(n);
+//              take node = Owned<struct Node>(n);
+//              take l = LinkedListAux(n, node);
+//     ensures  !is_null(n);
+//              take node_ = Owned<struct Node>(n);
+//              take l_ = LinkedListAux(n, node_);
+// @*/
+// {
+//     /*@ split_case(ptr_eq((*n).next, n) && ptr_eq((*n).prev, n)); @*/
+//     struct Node *next = n->next;
+//     if (next == n->prev && next == n) { // empty list case
+//          n->data = element;
+//          n->prev = 0;
+//          n->next = 0;
+//          return;
+//     } else {
+//         add_helper(element,n);
+//         return;
+//     }
+// }
+
+/*@ lemma ownedStuff(pointer x, pointer y)
+requires take x_ = Owned<struct Node>(x);
+         take y_ = Owned<struct Node>(y);
+ensures !ptr_eq(x,y);
+        !is_null(x);
+        !is_null(y);
 @*/
-{
-    /*@ split_case(ptr_eq((*n).next, n) && ptr_eq((*n).prev, n)); @*/
-    struct Node *next = n->next;
-    if (next == n->prev && next == n) { // empty list case
-         n->data = element;
-         n->prev = 0;
-         n->next = 0;
-         return;
-    } else {
-        add_helper(element,n);
-        return;
-    }
-}
