@@ -140,6 +140,49 @@ struct Node *singleton(int element)
    return n;
 }
 
+// Adds after the given node
+struct Node *add(int element, struct Node *n)
+/*@ requires take l = LinkedList(n);
+    ensures take l_ = LinkedList(return);
+            // take ret = LinkedList(return);
+            
+            // ret == dll{first: nodeSeq_Nil{}, node: struct Node{data: element, prev: prev, next: prev.next}, rest: nodeSeq_Cons{node: struct Node{data: prev.data, prev: prev.prev, next: return}, tail: nodeSeq_Nil{}}};
+@*/
+{
+    struct Node *newNode = mallocNode();
+    newNode->data = element;
+    newNode->prev = 0;
+    newNode->next = 0;
+    
+    // /*@ apply assert_not_equal(newNode, n); @*/
+    // /*@ assert (!ptr_eq(newNode, n)); @*/
+    // /*@ assert (!is_null(newNode)); @*/
+
+    // /*@ split_case(is_null(n)); @*/
+    if (n == 0) //empty list case
+    {
+        newNode->prev = 0;
+        newNode->next = 0;
+        return newNode;
+    } else { 
+        /*@ split_case(is_null((*n).next)); @*/
+        /*@ split_case(is_null((*n).prev)); @*/
+
+       
+        newNode->next = n->next;
+        newNode->prev = n;
+
+        if (n->next !=0) {
+            // /*@ assert( !is_null((*n).next)); @*/
+            /*@ split_case(is_null((*(*n).next).next)); @*/
+            n->next->prev = newNode;
+        }
+
+        n->next = newNode;
+        return newNode;
+    }
+}
+
 // Appends `second` to the end of `first`, where `first` is the tail of the first list and
 // `second` is the head of the second list.
 struct Node *append (struct Node *first, struct Node *second)
@@ -163,15 +206,3 @@ struct Node *append (struct Node *first, struct Node *second)
 }
 
 
-struct Node *test(int element, struct Node *n)
-/*@ requires take l = LinkedList(n);
-    ensures take l_ = LinkedList(n);
-@*/
-{
-    struct Node *newNode = mallocNode();
-    newNode->data = element;
-    newNode->prev = 0;
-    newNode->next = 0;
-    freeNode(newNode);
-    return n;
-}
