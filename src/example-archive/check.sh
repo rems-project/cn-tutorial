@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -x
 
 if [ -n "$1" ]
 then
@@ -9,13 +8,11 @@ else
     CN=cn
 fi
 
-
-
 process_files() {
   local dir=$1
   local pattern=$2
   local action=$3
-  local expected_exit_code=$4
+  local action_argument=$4
 
   if [ -d "$dir" ]; then
     # Array to hold files matching the pattern
@@ -26,7 +23,7 @@ process_files() {
       for file in "${files[@]}"; do
         # Ensure the file variable is not empty
         if [[ -n "$file" ]]; then
-          "$action" "$file" "$expected_exit_code"
+          "$action" "$file" "$action_argument"
         fi
       done
     else
@@ -38,6 +35,10 @@ process_files() {
 }
 
 failures=0
+
+# ====================
+# Check CN verification
+# ====================
 
 check_file() {
   local file=$1
@@ -82,7 +83,7 @@ check_coq_exports_end() {
     local FAILED=$1
     local MESSAGE=$2
     
-    if [[FAILED]]; then
+    if [[ $FAILED -ne 0 ]]; then
 	printf "\033[31mFAIL\033[0m (${MESSAGE})\n"
 	failures=$(( $failures + 1 ))
     else
@@ -158,8 +159,10 @@ check_coq_exports() {
 }
 
 printf "=========\nChecking Coq builds\n\n"
-check_coq_exports "coq/working/trivial-001.c" ${SUCCESS}
-check_coq_exports "coq/broken-export/recursive-001.c" ${FAIL_EXPORT}
+
+process_files "coq/working" "*.c"       check_coq_exports $SUCCESS
+process_files "coq/broken-build" "*.c"  check_coq_exports $FAIL_COQ_BUILD
+process_files "coq/broken-export" "*.c" check_coq_exports $FAIL_EXPORT
 
 
 if [[ "$failures" = 0 ]]
