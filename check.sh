@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+
 if [ -n "$1" ]
 then
     echo "using CN=$1 in $PWD"
@@ -12,7 +14,7 @@ good=0
 bad=0
 declare -a bad_tests
 
-for file in src/examples/*c;
+for file in $SCRIPT_DIR/src/examples/*c;
 do
     echo "Checking $file ..."
     $CN $file 

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash 
 
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+
 if [ -n "$1" ]
 then
     echo "check-all.sh: using CN=$1 in $PWD"
@@ -21,16 +23,14 @@ subdirs=(
 FAILURE=0 
 
 for subdir in "${subdirs[@]}"; do
-  cd "$subdir" || continue
+  cd "$SCRIPT_DIR/$subdir" || continue
 
-  ../check.sh "$CN" 
+  ../check.sh "$CN"
 
   if [ $? != 0 ]
   then 
     FAILURE=1
   fi 
-
-  cd ..
 done
 
 if [ $FAILURE -eq 0 ];
