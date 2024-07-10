@@ -1,3 +1,6 @@
-/**/coq/**/*-build
+/**/coq/**/*-build/*
+/**/coq/**/*-build/theories/*
 
-!/**/coq/**/*-build/theories/Proofs.v
+!**/coq/**/*-build/
+!**/coq/**/*-build/theories/
+!**/coq/**/*-build/theories/Proofs.v
