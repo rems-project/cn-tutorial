@@ -11,6 +11,7 @@ This directory contains examples for CN. Each subdirectory contains examples fro
 * `SAW` - Examples derived from the [Software Analysis Workbench (SAW)](https://saw.galois.com) repository and tutorial. 
 * `should-fail` - Small examples that should always fail. 
 * `open-sut` - Examples inspired by the VERSE Open System Under Test (Open SUT).
+* `coq-lemmas` - Examples with declared lemmas that can be exported to Coq for manual proofs.
 
 ## Organization  
 
