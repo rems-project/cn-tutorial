@@ -25,6 +25,11 @@ are categorized according to the following schema.
 * `<source>/broken/error-proof` - examples where CN fails with error 1,
   indicating the proof failed. 
 * `<source>/broken/error-timeout` - examples where CN times out after 60s. 
+* `<source>/coq/*` - examples that CN verifies without error and have lemmas that should be extracted. According to the following rules
+    * `<source>/coq/working` - Examples where Coq lemmas can be extracted and the Coq project can be built.
+    * `<source>/coq/broken-build` - Examples where Coq lemmas can be extracted, but the Coq build process fails.
+    * `<source>/coq/broken-export` - Examples where Coq extraction fails. These should still be verifiable with CN.
+* `<source>/coq/working` - examples that CN verifies without error. 
 * `<source>/inprogress` - unfinished examples. 
 
 ## Check script
