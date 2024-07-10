@@ -1,3 +1,2 @@
 build/*
 /.vscode/
-/src/example-archive/**/coq/**/*-build
