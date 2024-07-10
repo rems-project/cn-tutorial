@@ -7,12 +7,17 @@
 // #include "../list_snoc.h"
 #include "../list_append.h"
 #include "../list_rev.h"
-#include "./pointereq.c"
+// #include "./pointereq.c"
 
 struct Node {
   int data;  
   struct Node* prev;
   struct Node* next;
+};
+
+struct NodeandInt {
+  struct Node* node;
+  int data;
 };
 
 /*@
@@ -26,12 +31,58 @@ datatype nodeSeq {
     nodeSeq_Cons {struct Node node, datatype seq tail}
 }
 
-function (datatype nodeSeq) getRest(datatype dll l) {
+function (datatype nodeSeq) dllGetRest(datatype dll l) {
     match l {
         empty_dll {} => { nodeSeq_Nil {} }
         dll {first: _, node: _, rest: r} => { r }
     }
 }
+
+function (datatype nodeSeq) dllGetFirst(datatype dll l) {
+    match l {
+        empty_dll {} => { nodeSeq_Nil {} }
+        dll {first: f, node: _, rest: _} => { f }
+    }
+}
+
+function (struct Node) dllGetNode(datatype dll l) {
+    match l {
+        empty_dll {} => {  default<struct Node> }
+        dll {first: _, node: n, rest: _} => { n }
+    }
+}
+
+function (struct Node) nodeSeqHead(datatype nodeSeq l) {
+    match l {
+        nodeSeq_Nil {} => {  default<struct Node> }
+        nodeSeq_Cons {node: n, tail: _} => { n }
+    }
+}
+
+function (datatype seq) nodeSeqTail (datatype nodeSeq l) {
+    match l {
+        nodeSeq_Nil {} => {  Seq_Nil {} }
+        nodeSeq_Cons {node: _, tail: t} => { t }
+    }
+}
+
+function (datatype seq) flatten(datatype dll l) {
+    match l {
+        empty_dll {} => { Seq_Nil {} }
+        dll {first: f, node: n, rest: r} => { 
+            append (rev( Seq_Cons {head: nodeSeqHead(f).data, tail: nodeSeqTail(f)}), 
+            Seq_Cons {head: n.data, tail: Seq_Cons { head: nodeSeqHead(r).data, tail: nodeSeqTail(r)}})
+        }
+    }
+}
+
+function (datatype seq) nodeSeqtoSeq(datatype nodeSeq l) {
+    match l {
+        nodeSeq_Nil {} => { Seq_Nil {} }
+        nodeSeq_Cons {node: n, tail: t} => { Seq_Cons {head: n.data, tail: t } }
+    }
+}
+
 
 predicate (datatype dll) LinkedList (pointer p) {
     if (is_null(p)) {
@@ -143,22 +194,14 @@ struct Node *singleton(int element)
 // Adds after the given node
 struct Node *add(int element, struct Node *n)
 /*@ requires take l = LinkedList(n);
-    ensures take l_ = LinkedList(return);
-            // take ret = LinkedList(return);
-            
-            // ret == dll{first: nodeSeq_Nil{}, node: struct Node{data: element, prev: prev, next: prev.next}, rest: nodeSeq_Cons{node: struct Node{data: prev.data, prev: prev.prev, next: return}, tail: nodeSeq_Nil{}}};
+    ensures  take l_ = LinkedList(return);
 @*/
 {
     struct Node *newNode = mallocNode();
     newNode->data = element;
     newNode->prev = 0;
     newNode->next = 0;
-    
-    // /*@ apply assert_not_equal(newNode, n); @*/
-    // /*@ assert (!ptr_eq(newNode, n)); @*/
-    // /*@ assert (!is_null(newNode)); @*/
 
-    // /*@ split_case(is_null(n)); @*/
     if (n == 0) //empty list case
     {
         newNode->prev = 0;
@@ -173,13 +216,41 @@ struct Node *add(int element, struct Node *n)
         newNode->prev = n;
 
         if (n->next !=0) {
-            // /*@ assert( !is_null((*n).next)); @*/
             /*@ split_case(is_null((*(*n).next).next)); @*/
             n->next->prev = newNode;
         }
 
         n->next = newNode;
         return newNode;
+    }
+}
+
+// removes the given node from the list and returns another pointer 
+// to somewhere in the list, or a null pointer if the list is empty.
+// TODO: should also return an int from the deleted node.
+struct Node *remove(struct Node *n)
+/*@ requires take l = LinkedList(n);
+    ensures take l_ = LinkedList(return);
+@*/
+{
+    if (n == 0) { //empty list case
+        return n; //null pointer
+    } else { 
+        struct Node *temp = 0;
+        if (n->prev != 0) {
+            /*@ split_case(is_null((*(*n).prev).prev)); @*/
+
+            n->prev->next = n->next;
+            temp = n->prev;
+        }
+        if (n->next != 0) {
+            /*@ split_case(is_null((*(*n).next).next)); @*/
+            n->next->prev = n->prev;
+            temp = n->next;
+        }
+
+        freeNode(n);
+        return temp;
     }
 }
 
