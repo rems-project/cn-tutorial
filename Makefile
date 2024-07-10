@@ -1,4 +1,4 @@
-.PHONY: default check clean exercises
+.PHONY: default check-archive check-tutorial check clean exercises
 
 MAKEFILE_DIR:=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -42,6 +42,7 @@ build/exercises.zip: $(EXERCISES)
 	cd build; zip -r exercises.zip exercises > /dev/null
 
 
+##############################################################################
 # Check that the examples all run correctly 
 
 check-archive: 
