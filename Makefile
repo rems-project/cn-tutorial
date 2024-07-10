@@ -1,4 +1,6 @@
-.PHONY: default clean exercises 
+.PHONY: default check-archive check-tutorial check clean exercises
+
+MAKEFILE_DIR:=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 default: build exercises build/tutorial.html build/exercises.zip
 
@@ -38,6 +40,22 @@ build/solutions/%: src/examples/%
 
 build/exercises.zip: $(EXERCISES)
 	cd build; zip -r exercises.zip exercises > /dev/null
+
+
+##############################################################################
+# Check that the examples all run correctly 
+
+CN_PATH ?= cn 
+
+check-archive: 
+	@echo Check archive examples
+	@$(MAKEFILE_DIR)/src/example-archive/check-all.sh "$(CN_PATH)"
+
+check-tutorial:
+	@echo Check tutorial examples
+	@$(MAKEFILE_DIR)/check.sh "$(CN_PATH)"
+
+check: check-tutorial check-archive 
 
 ##############################################################################
 # Tutorial document
