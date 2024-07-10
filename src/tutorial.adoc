@@ -1209,103 +1209,25 @@ lemma before the `+return+` will be a bit more complicated.
 Note: Again, this has not been shown to be possible, but Dhruv
 believes it should be!
 
-=== Bridge Controller
+===  Runway
 
-The informal specifications for this example come from Dr. Bryan Parno at Carnegie-Mellon University.
+Suppose we have been tasked with writing a program that simulates a runway at an airport. This airport is very small, so it only has one runway that is used for both takeoffs and landings. We want to verify that the runway is always safe by implementing the following specifications into CN:
 
-Suppose we are writing a program that simulates a traffic light
-on a one way bridge and we want to verify that our traffic light always behaves
-"safely". We can do this by implementing the following specifications in CN:
+1. The runway has two modes: departure mode and arrival mode. Sometimes neither mode is active (for example, at the beginning and end of the day). However, the two nodes can never be active at the same time.
 
-    1. At each end of the bridge (end A and end B), there is a
-      traffic light that can be either red or green. The two lights
-      can never be green at the same time.
+2. There is always a waitlist of planes that need to land at the airport and planes that need to leave the airport at a given moment. These can be modeled with counters W_A for the number of planes waiting to arrive, and W_D for the number of planes waiting to depart.
 
-    2. At each end of the bridge, there is also a sensor that can
-      detect the number of cars currently waiting to cross. These
-      can be modeled with counters W_A and W_B for the two ends.
-
-    3. At any time, a car traveling from A to B is either waiting at
-      A or has passed across the bridge. During a given “clock tick,"
-      the following actions happen atomically:  The
-      lights change (if necessary) and one car from one end may cross, decrementing
-      the appropriate counter W_A or W_B. Time spent traveling across
-      the bridge is not modeled, and there is no need to keep track
-      of cars once they cross the bridge.
-
-    4. Once a car is waiting at one end to use the bridge, it continues
-      waiting until it crosses.
-// TODO: BCP: Where is this modeled?  (More generally, can you point out the place in the formal spec where each clause of the informal one is expressed?)
-
-    5. Both lights start out red, with no cars at either end.
-
-    6. If there is at least one car waiting at A and no cars at B, the
-      light at A turns green (and vice versa for end B).
-
-    7. If both lights are red and cars arrive simultaneously at both
-      ends, the light at A turns green first. If the light at A is
-      green and there are cars waiting at B, no more than 5 cars may
-      travel A to B from that time point. When either no more cars are
-      waiting at A or 5 cars have crossed from A to B, the light at A
-      turns red and the light at B turns green. If the light at A is
-      green and no cars are waiting at B, then the light at A may stay
-      green until a car arrives at B, from which time the 5-car limit
-      is imposed. (And vice versa for end B). In short, this means
-      that if any cars are waiting at one end of the bridge, and that
-      end has a red light, that light will turn green no more than 5
-      clock ticks later.
-// TODO: BCP: I don't see how the first sentence here is reflected in the model.
-
-To encode all this in CN, we first need a way to describe the state of
-the bridge at a given time. We can use a `+struct+` that includes
-fields for the two lights at the bridge, the sensors `W_A` and `W_B`
-described in specification clause (2), and a `cross_counter` to keep
-track of how many cars have crossed at a certain light as described in
-clause (7).
-
-Although the traffic lights have type `int`, we can assign values to red and green
-and then define them as constants to make them more readable. 
+3. At any time, a plane is either waiting to arrive, waiting to depart, or on the runway. Let’s say it takes 5 minutes for a plane to arrive or depart. During these 5 minutes, no other plane may arrive or depart. Once the plane has finished arriving or departing, the corresponding counter (W_A or W_D) is decremented. There is no need to keep track of planes once they have arrived or departed. (TODO: describe runway counter)
 
 
-include_example(exercises/bridge/state.h)
+4. Once a plane is waiting to arrive or depart, it continues waiting until it has arrived or departed.
 
+5. The airport starts the day with both arrival and departure modes inactive.
 
-We also need to specify what makes a state "valid". This is the main place we can formalize the informal specifications above. Try thinking about what this might look like before looking at the code below.
+6. If there is at least one plane waiting to depart and no cars waiting to arrive, then the runway is set to departure mode (and vice versa for arrivals).
 
-include_example(exercises/bridge/valid_state.h)
-
-Let's walk through the specifications in `valid_state`:
-
-  * The first two lines ensure that both traffic lights in our model behave as intended: they can only be 1 or 2, because a traffic light can only be red or green.
-
-  * The third line says that either Light A or Light B must be red. This goes to the specification that they cannot be green at the same time.
-
-  * The fourth line says that the number of cars waiting at either side must be greater than or equal to zero. This makes sense: we can't have a negative number of cars!
-
-  * The fifth line says that the cross counter must be between 0 and 5. This will help with specification (7) that no car will wait longer than five clock ticks. However, when we implement our `tick` function, we will need to ensure that we only increment the cross counter if there is a car waiting at the other side!
-// TODO: BCP: I find this encoding of the "at most five" constraint a bit hard to understand.  Could there be another way to express it?  (I feel like, in general, the model is missing the concept of "time".)
-
-  * The last line refers to the state of the bridge at initialization. It is another way of saying that if Light A and Light B are both red, then the cross counter must be zero because the lights are only both red at the very beginning. Since there is not an easy encoding for implication in CN, we use the fact that `P => Q` is equivalent to `Q or ~P`.
-
-
-Next, we need a way to represent if cars are approaching the light at either side. We can create another `struct` to represent this. `A` will be 1 if a car is approaching side A, and 0 otherwise. The same can be said about light B.
-
-\\ TODO: BCP: Could there be cars approaching both sides?  More than one on each side?
-
-include_example(exercises/bridge/next_car.h)
-
-
-Now that we have the tools to reason about the state of the bridge formally, let's start writing some functions.
-
-First, let's look at an initialization function, and increment functions for our two sensors. Step through these yourself, and make sure you understand the reasoning behind each specification.
-
-include_example(exercises/bridge/funcs1.h)
-
-*Exercise*: Now try adding your own specifications to the following functions. Make sure that you specify a valid state as a pre and post condition for every function. If you get stuck, the solution is in the solutions folder.
-
-include_example(exercises/bridge/funcs2.c)
-
-*Exercise*: For extra practice, try coming up with different specifications or variations for this exercise and implementing them yourself!
+7. If both modes of the runway are inactive and planes become ready to depart and arrive simultaneously, the runway will activate arrival mode first. If the runway is in arrival mode and there are planes waiting to depart, no more than 3 planes may arrive from that time point. When either no more planes are waiting to arrive or 3 planes have arrived, the runway switches to departure mode. If the runway is on arrival mode and no planes are waiting to depart, then the runway may stay in arrival mode until a plane is ready to depart, from which time the 3-plane limit is imposed (and vice versa for departures).
+Put simply, if any planes are waiting for a mode that is inactive, that mode will become active no more than 3 PLANES later. 
 
 // ======================================================================
 
