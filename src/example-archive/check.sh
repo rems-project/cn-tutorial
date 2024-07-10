@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 
 if [ -n "$1" ]
 then
@@ -54,11 +55,112 @@ check_file() {
   fi
 }
 
-process_files "working" "*.c" check_file 0
+process_files "working" "*.c"               check_file 0
 process_files "broken/error-cerberus" "*.c" check_file 2
-process_files "broken/error-crash" "*.c" check_file 125
-process_files "broken/error-proof" "*.c" check_file 1
-process_files "broken/error-timeout" "*.c" check_file 124
+process_files "broken/error-crash" "*.c"    check_file 125
+process_files "broken/error-proof" "*.c"    check_file 1
+process_files "broken/error-timeout" "*.c"  check_file 124
+process_files "coq/broken-build" "*.c"      check_file 0
+process_files "coq/broken-export" "*.c"     check_file 0
+process_files "coq/working" "*.c"           check_file 0
+
+# ====================
+# Check Coq Exports
+# ====================
+
+
+# We allow several types of failure that can be intended
+readonly SUCCESS=0
+readonly FAIL_EXPORT=1
+readonly FAIL_COQ_BUILD=2
+
+
+check_coq_exports_end() {
+    ## Call this funciton at the end of a coq export check. It will
+    ## print the right message and return to the original directory
+    ## with popd. It will also increse the failure count if necessary.
+    local FAILED=$1
+    local MESSAGE=$2
+    
+    if [[FAILED]]; then
+	printf "\033[31mFAIL\033[0m (${MESSAGE})\n"
+	failures=$(( $failures + 1 ))
+    else
+	printf "\033[32mPASS\033[0m\n"
+    fi
+	
+    # Return to the directory where the parent function was called
+    popd > /dev/null
+}
+          
+check_coq_exports() {
+    local FILE=$1
+    local FAIL_MODE=$2
+    local PROTOTYPE_BUILD_DIR="coq-build"
+    local EXPORTED_LEMMAS="ExportedLemmas.v"
+    local result=0 #^track if the build completed as much as expected
+    
+    printf "[$FILE]... "
+    
+    # Make a copy of the build directory but only if it doesn't
+    # already exists
+    local BUILD_DIR="${FILE%.*}-build"
+
+    # Copy the build directory, and/or missing/new files
+    rsync -a "${PROTOTYPE_BUILD_DIR}/" "$BUILD_DIR"
+    
+    # Export the CN lemmas
+    cn "--lemmata=${BUILD_DIR}/theories/${EXPORTED_LEMMAS}" $FILE > /dev/null 2>&1
+    # Check the result is as expected
+    local cn_result=$?
+    if [[ $cn_result -ne 0 && $FAIL_MODE -eq $FAIL_EXPORT ]]; then
+	# The export is expected to fail and there is nothing else to
+	# be done. Return successfully.
+	check_coq_exports_end ${result} ""
+	return ${result}
+    elif [[ $cn_result -eq 0 && $FAIL_MODE -ne $FAIL_EXPORT ]]; then
+	: # Export succeeded, as expected, continue the build
+    else
+	# Otherwise fail
+        result=1
+	check_coq_exports_end ${result} "Unexpected return code during export: $cn_result"
+	return ${result}
+    fi
+
+    # The rest of the commands must be performed in the build directory 
+    pushd "$BUILD_DIR" > /dev/null
+    
+    # Create the Coq Makefile
+    # (We don't expect this to fail)
+    coq_makefile -f _CoqProject -o Makefile.coq > /dev/null
+
+    # Build the Coq files
+    make -f Makefile.coq > /dev/null
+    # Check the result is as expected
+    local coq_result=$?
+    if [[ $coq_result -ne 0 && $FAIL_MODE -eq $FAIL_COQ_BUILD ]]; then
+	# The coq build is expected to fail and there is nothing else to
+	# be done. Return successfully.
+	check_coq_exports_end ${result} ""
+	return ${result}
+    elif [[ $coq_result -eq 0 && $FAIL_MODE -ne $FAIL_COQ_BUILD ]]; then
+	: # Export succeeded, as expected
+    else
+        result=1
+	check_coq_exports_end ${result} "Unexpected return code during coq build: $coq_result"
+	return ${result}
+    fi
+
+    # At this point everythink built successfully.
+    check_coq_exports_end ${result} ""
+    return ${result}
+    
+}
+
+printf "=========\nChecking Coq builds\n\n"
+check_coq_exports "coq/working/trivial-001.c" ${SUCCESS}
+check_coq_exports "coq/broken-export/recursive-001.c" ${FAIL_EXPORT}
+
 
 if [[ "$failures" = 0 ]]
 then
