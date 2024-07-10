@@ -95,7 +95,7 @@ check_coq_exports_end() {
 check_coq_exports() {
     local FILE=$1
     local FAIL_MODE=$2
-    local PROTOTYPE_BUILD_DIR="coq-build"
+    local PROTOTYPE_BUILD_DIR="../coq-build"
     local EXPORTED_LEMMAS="ExportedLemmas.v"
     local result=0 #^track if the build completed as much as expected
     
