@@ -6,6 +6,8 @@ are split into:
 - Trivial
 - Recursive (Not yet handled by the export)
 
+See README in parent directory for directory organization details.
+
 ## Batch build
 
 To export and build lemmas for all examples just run
