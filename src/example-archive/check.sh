@@ -56,6 +56,7 @@ check_file() {
   fi
 }
 
+printf "== Check CN verification \n"
 process_files "working" "*.c"               check_file 0
 process_files "broken/error-cerberus" "*.c" check_file 2
 process_files "broken/error-crash" "*.c"    check_file 125
@@ -89,9 +90,6 @@ check_coq_exports_end() {
     else
 	printf "\033[32mPASS\033[0m\n"
     fi
-	
-    # Return to the directory where the parent function was called
-    popd > /dev/null
 }
           
 check_coq_exports() {
@@ -136,30 +134,31 @@ check_coq_exports() {
     coq_makefile -f _CoqProject -o Makefile.coq > /dev/null
 
     # Build the Coq files
-    make -f Makefile.coq > /dev/null
+    make -f Makefile.coq > /dev/null  2>&1
     # Check the result is as expected
     local coq_result=$?
     if [[ $coq_result -ne 0 && $FAIL_MODE -eq $FAIL_COQ_BUILD ]]; then
 	# The coq build is expected to fail and there is nothing else to
 	# be done. Return successfully.
 	check_coq_exports_end ${result} ""
-	return ${result}
     elif [[ $coq_result -eq 0 && $FAIL_MODE -ne $FAIL_COQ_BUILD ]]; then
-	: # Export succeeded, as expected
+	# Export succeeded, as expected
+        check_coq_exports_end ${result} ""
     else
         result=1
 	check_coq_exports_end ${result} "Unexpected return code during coq build: $coq_result"
-	return ${result}
     fi
 
     # At this point everythink built successfully.
-    check_coq_exports_end ${result} ""
-    return ${result}
-    
+
+    # Return to the directory where the script was called (from the
+    # build directory)
+    popd > /dev/null
+
+    return ${result}    
 }
 
-printf "=========\nChecking Coq builds\n\n"
-
+printf "== Check lemma export\n"
 process_files "coq/working" "*.c"       check_coq_exports $SUCCESS
 process_files "coq/broken-build" "*.c"  check_coq_exports $FAIL_COQ_BUILD
 process_files "coq/broken-export" "*.c" check_coq_exports $FAIL_EXPORT
