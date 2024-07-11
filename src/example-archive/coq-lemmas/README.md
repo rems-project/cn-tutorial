@@ -16,6 +16,7 @@ install Coq](download).
 ## Batch build
 
 To export and build lemmas for all examples just run
+
 `../check.sh`. 
 
 For each file in the `coq` folder, the script first
@@ -34,9 +35,10 @@ From this folder, to export lemmas from example `path/to/example.c`, do the foll
 
 1. Create a copy of the build folder with 
 
-	`rsync -a ../coq-build path/to/example-build`
+	`rsync -a ../coq-build/ path/to/example-build`
 	
-	This copies a template build folder that conveniently contains a
+	(note trailing `/` after the first directory). This
+   copies a template build folder that conveniently contains a
    `_CoqProject` file and the CN coq library `CN_Lib.v`. If the folder
    already excists, `rsync` just updates the files.
 2. Extract the lemmas with 
