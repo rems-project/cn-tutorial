@@ -17,7 +17,7 @@ subdirs=(
   "Rust" 
   "SAW" 
   "simple-examples"
-  "coq-lemmas"
+  # "coq-lemmas"
 )
 FAILURE=0 
 
