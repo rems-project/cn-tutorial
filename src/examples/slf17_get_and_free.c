@@ -1,23 +1,19 @@
-// TODO - REVISIT
+#ifndef CN_UTILS
+void *cn_malloc(unsigned long long);
+void cn_free_sized(void*, unsigned long long);
+#endif
 
 #include <limits.h>
 
 // #include "free.h"
-
-void freeInt (int *p)
-/*@ requires take v = Block<int>(p);
-    ensures true;
-@*/
-{
-}
 
 void freeUnsignedInt (unsigned int *p)
 /*@ requires take v = Block<unsigned int>(p);
     ensures true;
 @*/
 {
+    cn_free_sized(p, sizeof(unsigned int));
 }
-
 
 unsigned int get_and_free (unsigned int *p)
 /*@ requires take v1_ = Owned(p);
@@ -31,7 +27,8 @@ unsigned int get_and_free (unsigned int *p)
 int main() 
 /*@ trusted; @*/
 {
-    unsigned int x = 5;
-    unsigned int res = get_and_free(&x); // obviously wrong
-    /*@ assert (x == 5u32); @*/
+    unsigned int *x = cn_malloc(sizeof(int));
+    *x = 5;
+    unsigned int res = get_and_free(x);
+    /*@ assert (res == 5u32); @*/
 }
