@@ -27,46 +27,46 @@ To provide proofs or test individual examples, see below.
 
 ## Testing individual examples
 
-From this folder, to export lemmas from example `path/to/example.c`, do the following:
+From this folder, to export lemmas from example `path/to/EXAMPLENAME.c`, do the following:
 
 0. (optional) Check CN verification, without exporting lemmas, with
 
-   `cn path/to/example.c`
+  `cn path/to/EXAMPLENAME.c`
 
 1. Create a copy of the build folder with 
 
-	`rsync -a ../coq-build/ path/to/example-build`
-	
-	(note trailing `/` after the first directory). This
-   copies a template build folder that conveniently contains a
-   `_CoqProject` file and the CN coq library `CN_Lib.v`. If the folder
-   already excists, `rsync` just updates the files.
+  `rsync -a ../coq-build/ path/to/EXAMPLENAME-build`
+  
+  (note trailing `/` after the first directory). This
+  copies a template build folder that conveniently contains a
+  `_CoqProject` file and the CN coq library `CN_Lib.v`. If the folder
+  already exists, `rsync` just updates the files.
 2. Extract the lemmas with 
-   
-   `cn --lemmata=path/to/example-build/theories/ExportedLemmas.v path/to/example.c`
-   
-   This should create a new file
-   `path/to/example-build/theories/ExportedLemmas.v` with all the
-   exported types, definitions and lemmas from the file
-   `path/to/example.c`.
+  
+  `cn --lemmata=path/to/EXAMPLENAME-build/theories/ExportedLemmas.v path/to/EXAMPLENAME.c`
+  
+  This should create a new file
+  `path/to/EXAMPLENAME-build/theories/ExportedLemmas.v` with all the
+  exported types, definitions and lemmas from the file
+  `path/to/EXAMPLENAME.c`.
 3. Go to the build directory with 
 
-	`pushd path/to/example-build`
-	
-	This will also store your current location to return later.
+  `pushd path/to/EXAMPLENAME-build`
+  
+  This will also store your current location to return later.
 4. Create or update the Coq Makefile with 
 
-	`coq_makefile -f _CoqProject -o Makefile.coq`
-	
+  `coq_makefile -f _CoqProject -o Makefile.coq`
+  
 5. Build the Coq files with 
 
-	`make -f Makefile.coq`
-	
-	This should create `*.vo` files for every `*.v` file in the
-   `theories` directory.
+  `make -f Makefile.coq`
+  
+  This should create `*.vo` files for every `*.v` file in the
+  `theories` directory.
 6. Return to your starting folder with 
 
-	`popd`
+  `popd`
 
 To add proofs, after running the steps above, create a file `Proofs.v`
 in the `theories` folder, next to the generated
