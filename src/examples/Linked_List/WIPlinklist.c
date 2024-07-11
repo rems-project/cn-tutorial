@@ -70,8 +70,28 @@ function (datatype seq) flatten(datatype dll l) {
     match l {
         empty_dll {} => { Seq_Nil {} }
         dll {first: f, node: n, rest: r} => { 
-            append (rev( Seq_Cons {head: nodeSeqHead(f).data, tail: nodeSeqTail(f)}), 
-            Seq_Cons {head: n.data, tail: Seq_Cons { head: nodeSeqHead(r).data, tail: nodeSeqTail(r)}})
+            match f {
+                nodeSeq_Nil {} => {
+                    match r {
+                        nodeSeq_Nil {} => { 
+                            Seq_Cons {head: n.data, tail: Seq_Nil {}} 
+                        }
+                        nodeSeq_Cons {node: nextNode, tail: t} => {  
+                            Seq_Cons {head: n.data, tail: Seq_Cons{ head: nextNode.data, tail: t}}
+                        }
+                    }
+                }
+                nodeSeq_Cons {node: prevNode, tail: t} => { 
+                    match r {
+                        nodeSeq_Nil {} => { 
+                            rev(Seq_Cons {head: n.data, tail: Seq_Cons {head: prevNode.data, tail: t}})
+                        }
+                        nodeSeq_Cons {node: nextNode, tail: t2} => {  
+                            append(rev(Seq_Cons {head: prevNode.data, tail: t2}), Seq_Cons {head: n.data, tail: Seq_Cons{ head: nextNode.data, tail: t2}})
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -179,6 +199,19 @@ extern void freeNode (struct Node *p);
     ensures true;
 @*/
 
+extern struct NodeandInt *mallocNodeandInt();
+/*@ spec mallocNodeandInt();
+    requires true;
+    ensures take u = Block<struct NodeandInt>(return);
+            !ptr_eq(return,NULL);
+@*/ 
+
+extern void freeNodeandInt (struct NodeandInt *p);
+/*@ spec freeNodeandInt(pointer p);
+    requires take u = Block<struct NodeandInt>(p);
+    ensures true;
+@*/
+
 struct Node *singleton(int element)
 /*@ ensures take ret = LinkedList(return);
         ret == dll{first: nodeSeq_Nil{}, node: struct Node{data: element, prev: NULL, next: NULL}, rest: nodeSeq_Nil{}};
@@ -225,34 +258,6 @@ struct Node *add(int element, struct Node *n)
     }
 }
 
-// removes the given node from the list and returns another pointer 
-// to somewhere in the list, or a null pointer if the list is empty.
-// TODO: should also return an int from the deleted node.
-struct Node *remove(struct Node *n)
-/*@ requires take l = LinkedList(n);
-    ensures take l_ = LinkedList(return);
-@*/
-{
-    if (n == 0) { //empty list case
-        return n; //null pointer
-    } else { 
-        struct Node *temp = 0;
-        if (n->prev != 0) {
-            /*@ split_case(is_null((*(*n).prev).prev)); @*/
-
-            n->prev->next = n->next;
-            temp = n->prev;
-        }
-        if (n->next != 0) {
-            /*@ split_case(is_null((*(*n).next).next)); @*/
-            n->next->prev = n->prev;
-            temp = n->next;
-        }
-
-        freeNode(n);
-        return temp;
-    }
-}
 
 // Appends `second` to the end of `first`, where `first` is the tail of the first list and
 // `second` is the head of the second list.
@@ -276,4 +281,54 @@ struct Node *append (struct Node *first, struct Node *second)
     return first;
 }
 
+// removes the given node from the list and returns another pointer 
+// to somewhere in the list, or a null pointer if the list is empty.
+// TODO: should also return an int from the deleted node.
+struct NodeandInt *remove(struct Node *n)
+/*@ requires !is_null(n);
+             take del = Owned<struct Node>(n);
+             take first = OwnBackwards(del.prev, n, del);
+             take rest = OwnForwards(del.next, n, del);
+    ensures  take ret = Owned<struct NodeandInt>(return);
+             take l = LinkedList(ret.node);
+             let first_ = dllGetFirst(l);
+             let rest_ = dllGetRest(l);
+             let node = dllGetNode(l);
+             nodeSeqtoSeq(first_ )== nodeSeqtoSeq(first) || nodeSeqtoSeq(rest_) == nodeSeqtoSeq(rest);
+             !is_null(ret.node) implies (nodeSeqtoSeq(first_ ) == nodeSeqtoSeq(first) implies nodeSeqtoSeq(rest) == Seq_Cons{head: node.data, tail: nodeSeqtoSeq(rest_)});
 
+             !is_null(ret.node) implies (nodeSeqtoSeq(rest_ ) == nodeSeqtoSeq(rest) implies nodeSeqtoSeq(first) == Seq_Cons{head: node.data, tail: nodeSeqtoSeq(first_)});
+
+             nodeSeqtoSeq(first) == Seq_Cons{head: node.data, tail: nodeSeqtoSeq(first_)} || nodeSeqtoSeq(rest) == Seq_Cons{head: node.data, tail: nodeSeqtoSeq(rest_)} || (nodeSeqtoSeq(first) == Seq_Nil{} && nodeSeqtoSeq(rest) == Seq_Nil{});
+
+            //  flatten(l) == append(rev(nodeSeqtoSeq(first)), nodeSeqtoSeq(rest));
+
+@*/
+{
+    if (n == 0) { //empty list case
+        struct NodeandInt *pair = mallocNodeandInt();
+        pair->node = 0;  //null pointer
+        pair->data = 0;
+        return pair;
+    } else { 
+        struct Node *temp = 0;
+        if (n->prev != 0) {
+            /*@ split_case(is_null((*(*n).prev).prev)); @*/
+
+            n->prev->next = n->next;
+            temp = n->prev;
+        }
+        if (n->next != 0) {
+            /*@ split_case(is_null((*(*n).next).next)); @*/
+            n->next->prev = n->prev;
+            temp = n->next;
+        }
+
+        struct NodeandInt *pair = mallocNodeandInt();
+        pair->node = temp;
+        pair->data = n->data;
+
+        freeNode(n);       
+        return pair;
+    }
+}
