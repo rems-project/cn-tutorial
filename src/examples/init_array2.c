@@ -25,7 +25,7 @@ void init_array2 (char *p, unsigned int n)
 }
 
 int main()
-/*@ trusted; *@*/
+/*@ trusted; @*/
 {
     char a[3] = { 0, 1, 2 };
 
