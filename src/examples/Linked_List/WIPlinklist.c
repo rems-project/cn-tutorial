@@ -225,9 +225,26 @@ struct Node *singleton(int element)
 }
 
 // Adds after the given node
+// TODO: fix correctness checks
 struct Node *add(int element, struct Node *n)
 /*@ requires take l = LinkedList(n);
+             let node = dllGetNode(l);
+             let first = dllGetFirst(l);
+             let rest = dllGetRest(l);
     ensures  take l_ = LinkedList(return);
+             let first_ = dllGetFirst(l_);
+             let rest_ = dllGetRest(l_);
+             let newNode = dllGetNode(l_);
+
+             ptr_eq(newNode.prev,n);
+             let node_ = nodeSeqHead(first_);
+             !is_null(n) implies ptr_eq(node_.next, return);
+             !is_null(n) implies ptr_eq(newNode.next, node.next);
+             !is_null(return);
+
+
+             !is_null(n) implies nodeSeqtoSeq(first_) == Seq_Cons { head: node.data, tail: nodeSeqtoSeq(first)}; 
+             nodeSeqtoSeq(rest) == nodeSeqtoSeq(rest_);
 @*/
 {
     struct Node *newNode = mallocNode();
@@ -283,7 +300,6 @@ struct Node *append (struct Node *first, struct Node *second)
 
 // removes the given node from the list and returns another pointer 
 // to somewhere in the list, or a null pointer if the list is empty.
-// TODO: should also return an int from the deleted node.
 struct NodeandInt *remove(struct Node *n)
 /*@ requires !is_null(n);
              take del = Owned<struct Node>(n);
