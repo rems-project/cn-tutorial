@@ -278,6 +278,7 @@ struct Node *add(int element, struct Node *n)
 
 // Appends `second` to the end of `first`, where `first` is the tail of the first list and
 // `second` is the head of the second list.
+// TODO: fix so that any nodes can be passed in, not just head and tail
 struct Node *append (struct Node *first, struct Node *second)
 /*@ requires take n1 = Owned<struct Node>(first);
              take n2 = Owned<struct Node>(second);
@@ -346,5 +347,84 @@ struct NodeandInt *remove(struct Node *n)
 
         freeNode(n);       
         return pair;
+    }
+}
+
+struct Node *findHeadAux(struct Node *n)
+/*@ requires !is_null(n);
+             take node = Owned<struct Node>(n);
+             take l = OwnBackwards(node.prev, n, node);
+    ensures take node_ = Owned<struct Node>(n);
+            take l_ = OwnBackwards(node_.prev, n, node_);
+            node == node_;
+            l == l_;
+@*/
+{
+    /*@ split_case(is_null(n)); @*/
+    /*@ split_case(is_null((*n).prev)); @*/
+    if (n->prev == 0)
+    {
+        return n;
+    } else {
+        /*@ split_case(is_null((*(*n).prev).prev)); @*/
+        return findHeadAux(n->prev);
+    }
+}
+
+// Takes any node in the list and returns the head of the list
+// TODO: correctness check
+struct Node *findHead(struct Node *n)
+/*@ requires take l = LinkedList(n);
+    ensures  take l_ = LinkedList(n);
+             l == l_;
+@*/
+{
+   /*@ split_case(is_null(n)); @*/
+    if (n == 0)
+    {
+        return 0;
+    } else {
+        /*@ split_case(is_null((*n).prev)); @*/
+        return findHeadAux(n);
+    }
+}
+
+
+struct Node *findTailAux(struct Node *n)
+/*@ requires !is_null(n);
+             take node = Owned<struct Node>(n);
+             take l = OwnForwards(node.next, n, node);
+    ensures take node_ = Owned<struct Node>(n);
+            take l_ = OwnForwards(node_.next, n, node_);
+            node == node_;
+            l == l_;
+@*/
+{
+    /*@ split_case(is_null(n)); @*/
+    /*@ split_case(is_null((*n).next)); @*/
+    if (n->next == 0)
+    {
+        return n;
+    } else {
+        /*@ split_case(is_null((*(*n).next).next)); @*/
+        return findTailAux(n->next);
+    }
+}
+
+// Takes any node in the list and returns the tail of the list
+// TODO: correctness check
+struct Node *findTail(struct Node *n)
+/*@ requires take l = LinkedList(n);
+    ensures  take l_ = LinkedList(n);
+             l == l_;
+@*/
+{
+   /*@ split_case(is_null(n)); @*/
+    if (n == 0)
+    {
+        return 0;
+    } else {
+        /*@ split_case(is_null((*n).next)); @*/
+        return findTailAux(n);
     }
 }
