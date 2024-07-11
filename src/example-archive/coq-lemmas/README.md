@@ -8,6 +8,11 @@ are split into:
 
 See README in parent directory for directory organization details.
 
+## Tools needed
+
+To build the generated Coq lemmas, you will need to [download and
+install Coq](download).
+
 ## Batch build
 
 To export and build lemmas for all examples just run
@@ -29,11 +34,11 @@ From this folder, to export lemmas from example `path/to/example.c`, do the foll
 
 1. Create a copy of the build folder with 
 
-	`rsync -a ../coq-build
-   
-   path/to/example-build`. This copies a template build folder that
-   conveniently contains a `_CoqProject` file and the CN coq library
-   `CN_Lib.v`. If the folder already excists, `rsync` just updates the files.
+	`rsync -a ../coq-build path/to/example-build`
+	
+	This copies a template build folder that conveniently contains a
+   `_CoqProject` file and the CN coq library `CN_Lib.v`. If the folder
+   already excists, `rsync` just updates the files.
 2. Extract the lemmas with 
    
    `cn --lemmata=path/to/example-build/theories/ExportedLemmas.v path/to/example.c`
@@ -65,9 +70,9 @@ To add proofs, after running the steps above, create a file `Proofs.v`
 in the `theories` folder, next to the generated
 `ExportedLemmas.v`. The file must contain instances of the module
 types defined in `ExportedLemmas.v`: `Parameters`, `Defs`, and
-`Lemma_Spec` module type (see below for more details).
+`Lemma_Spec` module type.
 
-Your file will look something like this:
+Your `theories/Proofs.v` file will look something like this:
 
 ```
 Require Import ZArith Bool.
