@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 #include "queue_headers.h"
 
 /*@
@@ -69,3 +71,7 @@ int IntQueue_pop (struct int_queue *q)
   return x;
 }
 
+int main()
+/*@ trusted; @*/
+{
+}

@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 #include "queue_headers.h" 
 #include "queue_push_lemma.h" 
 
@@ -21,4 +23,9 @@ void IntQueue_push (int x, struct int_queue *q)
     /*@ apply push_lemma (q->front, oldback); @*/
     return;
   }
+}
+
+int main()
+/*@ trusted; @*/
+{
 }

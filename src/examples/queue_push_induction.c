@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 #include "queue_headers.h" 
 
 void push_induction(struct int_queueCell* front
@@ -46,4 +48,9 @@ void IntQueue_push (int x, struct int_queue *q)
     push_induction(q->front, oldback, c);
     return;
   }
+}
+
+int main()
+/*@ trusted; @*/
+{
 }

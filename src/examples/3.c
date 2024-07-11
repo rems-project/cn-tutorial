@@ -7,3 +7,11 @@ void zero (int *p)
 {
   *p = 0;
 }
+
+int main()
+/*@ trusted; @*/
+{
+    int x = 4;
+    zero(&x);
+    /*@ assert (x == 0i32); @*/
+}

@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 #include "queue_headers.h"
 
 int IntQueue_pop (struct int_queue *q)
@@ -15,4 +17,9 @@ int IntQueue_pop (struct int_queue *q)
     freeIntQueueCell(h);
     return x;
   }
+}
+
+int main()
+/*@ trusted; @*/
+{
 }

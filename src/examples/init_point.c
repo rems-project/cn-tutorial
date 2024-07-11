@@ -18,3 +18,13 @@ void init_point(struct point *p)
   zero(&p->x);
   zero(&p->y);
 }
+
+int main()
+/*@ trusted; @*/
+{
+    struct point p;
+    init_point(&p);
+    /*@ assert (p.x == 0i32 && p.y == 0i32); @*/
+
+
+}

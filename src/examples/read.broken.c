@@ -3,3 +3,12 @@ int read (int *p)
 {
   return *p;
 }
+
+int main()
+/*@ trusted; @*/
+{
+    int x = 5;
+    int res = read(&x);
+    /*@ assert (res == 5i32); @*/
+    /*@ assert (x == 5i32) ;@*/
+}

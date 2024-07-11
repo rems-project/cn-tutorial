@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 #include "queue_headers.h" 
 
 void IntQueue_push (int x, struct int_queue *q)
@@ -15,4 +17,9 @@ void IntQueue_push (int x, struct int_queue *q)
     q->back = c;
     return;
   }
+}
+
+int main()
+/*@ trusted; @*/
+{
 }

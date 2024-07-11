@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 #include "queue_headers.h"
 #include "queue_pop_lemma.h"
 
@@ -25,4 +27,9 @@ int IntQueue_pop (struct int_queue *q)
     freeIntQueueCell(h);
     return x;
   }
+}
+
+int main()
+/*@ trusted; @*/
+{
 }

@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 /* list_length.c */
 
 #include "list.h"
@@ -37,4 +39,9 @@ unsigned int IntList_length (struct int_list *xs)
 /* --END-- */
     return 1 + IntList_length (xs->tail);
   }
+}
+
+int main()
+/*@ trusted; @*/
+{
 }

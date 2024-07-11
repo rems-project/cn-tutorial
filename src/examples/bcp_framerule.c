@@ -20,3 +20,13 @@ void incr_first_frame (unsigned int *p, unsigned int *q)
 {
   incr_first(p, q);
 }
+
+int main()
+/*@ trusted; @*/
+{
+    unsigned int x = 4;
+    unsigned int y = 6;
+    incr_first_frame(&x, &y);
+    /*@ assert (x == 5u32); @*/
+    /*@ assert (y == 6u32); @*/
+}

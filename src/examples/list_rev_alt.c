@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 #include "list.h"
 #include "list_append.h"
 #include "list_rev.h"
@@ -30,4 +32,9 @@ struct int_list* IntList_rev_loop(struct int_list *xs)
     /*@ unfold rev(L2); @*/
     /*@ apply append_cons_r (rev (tl(L2)), hd(L2), L1); @*/
   }
+}
+
+int main()
+/*@ trusted; @*/
+{
 }

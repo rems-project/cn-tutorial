@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 #include "list.h"
 
 struct int_list* IntList_copy (struct int_list *xs)
@@ -14,4 +16,10 @@ struct int_list* IntList_copy (struct int_list *xs)
     struct int_list *new_tail = IntList_copy(xs->tail);
     return IntList_cons(xs->head, new_tail);
   }
+}
+
+int main()
+/*@ trusted; @*/
+{
+
 }

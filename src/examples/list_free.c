@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 #include "list.h"
 
 void IntList_free_list(struct int_list* xs)
@@ -12,3 +14,8 @@ void IntList_free_list(struct int_list* xs)
   }
 }
 /* --END-- */
+
+int main()
+/*@ trusted; @*/
+{
+}

@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 #include "list.h"
 #include "list_append.h"
 #include "list_rev.h"
@@ -29,4 +31,9 @@ struct int_list* IntList_rev(struct int_list* xs)
 {
   /*@ apply append_nil_r(rev(L1)); @*/
   return IntList_rev_aux (0, xs);
+}
+
+int main()
+/*@ trusted; @*/
+{
 }

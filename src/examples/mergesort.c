@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 #include "list.h"
 
 /*@
@@ -130,4 +132,9 @@ struct int_list* mergesort(struct int_list *xs)
       return merge(p.fst, p.snd);
     }
   }
+}
+
+int main()
+/*@ trusted; @*/
+{
 }

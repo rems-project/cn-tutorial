@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 #include "queue_headers.h"
 
 // Step 1: Understand the state we have upon lemma entry accurately.
@@ -103,3 +105,8 @@ ensures
     popped == hd(Q.before);
 
 @*/
+
+int main()
+/*@ trusted; @*/
+{
+}

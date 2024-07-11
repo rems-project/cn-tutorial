@@ -20,3 +20,15 @@ unsigned int array_read_two (unsigned int *p, int n, int i, int j)
   unsigned int tmp2 = p[j];
   return (tmp1 + tmp2);
 }
+
+int main()
+/*@ trusted; @*/
+{
+    unsigned int a[5] = { 2, 3, 5, 7, 11 };
+
+    unsigned int res = array_read_two(a, 5, 3, 2);
+    /*@ assert (res == 12u32); @*/
+
+    res = array_read_two(a, 5, 0, 4);
+    /*@ assert (res == 13u32); @*/
+}
