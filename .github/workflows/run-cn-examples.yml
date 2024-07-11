@@ -61,8 +61,8 @@ jobs:
 
     - name: Install Cerberus
       run: |
-        opam switch ${{ matrix.version }}
-        eval $(opam env --switch=${{ matrix.version }})
+        opam switch with_coq
+        eval $(opam env --switch=with_coq)
         opam pin --yes --no-action add cerberus-lib .
         opam pin --yes --no-action add cerberus .
         opam install --yes cerberus
