@@ -1,17 +1,22 @@
-## Examples
+# Coq Examples
 
 CN examples using lemmas that can be extracted to Coq. The examples
 are split into:
 
-- Trivial
-- Recursive (Not yet handled by the export)
+- Trivial - named `trivial-*.c`
+- Recursive - named `recursive-*.c` _(export for these examples is not supported by CN yet)_
+
+Some examples are accompanied by Coq proofs of the lemmas extracted from CN. These are stored as follows: 
+
+- Originating C file: `coq/working/EXAMPLENAME.c`
+- Coq proof: `coq/working/EXAMPLENAME-build/Proof.v` 
 
 See README in parent directory for directory organization details.
 
 ## Tools needed
 
 To build the generated Coq lemmas, you will need to [download and
-install Coq](download).
+install Coq](https://coq.inria.fr/download).
 
 ## Batch build
 
