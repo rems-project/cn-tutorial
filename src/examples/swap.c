@@ -13,3 +13,18 @@ void swap (unsigned int *p, unsigned int *q)
   *p = n;
   *q = m;
 }
+
+int main()
+/*@ trusted; @*/
+{
+    unsigned int x = 5;
+    unsigned int y = 11;
+    swap(&x, &y);
+    /*@ assert (y == 5u32); @*/
+    /*@ assert (x == 11u32); @*/
+
+    // uncomment for failure
+    // swap(&x, &x);
+    // swap(&y, &x);
+}
+

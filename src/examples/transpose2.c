@@ -25,3 +25,12 @@ void transpose2 (struct upoint *p)
   swap(&p->x, &p->y);
 }
 /* --END-- */
+
+int main()
+/*@ trusted; @*/
+{
+    struct upoint p = {.x = 3, .y = 4};
+    transpose2(&p);
+    /*@ assert (p.x == 4u32); @*/
+    /*@ assert (p.y == 3u32); @*/
+}

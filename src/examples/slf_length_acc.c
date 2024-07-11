@@ -1,3 +1,5 @@
+// TODO - REVISIT
+
 #include "list.h"
 #include "ref.h"
 #include "free.h"
@@ -44,4 +46,9 @@ unsigned int IntList_length_acc (struct int_list *xs)
   unsigned int x = *p;
   freeUnsignedInt(p);
   return x;
+}
+
+int main()
+/*@ trusted; @*/
+{
 }

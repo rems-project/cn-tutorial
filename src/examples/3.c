@@ -11,7 +11,7 @@ void zero (int *p)
 int main()
 /*@ trusted; @*/
 {
-    int x = 4;
+    int x;
     zero(&x);
     /*@ assert (x == 0i32); @*/
 }

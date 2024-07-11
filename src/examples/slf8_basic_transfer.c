@@ -15,3 +15,13 @@ void transfer (unsigned int *p, unsigned int *q)
   *p = s;
   *q = 0;
 }
+
+int main()
+/*@ trusted; @*/
+{
+    unsigned int x = 5;
+    unsigned int y = 11;
+    transfer(&x, &y);
+    /*@ assert(y == 0u32); @*/
+    /*@ assert(x == 16u32); @*/
+}

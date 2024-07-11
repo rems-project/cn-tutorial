@@ -1,4 +1,15 @@
-#include "malloc.h"
+// TODO - REVISIT
+
+// #include "malloc.h"
+
+unsigned int *mallocUnsignedInt ()
+/*@ requires true;
+    ensures take v = Block<unsigned int>(return);
+@*/
+{
+   return 0; 
+}
+
 
 unsigned int *ref_greater_abstract (unsigned int *p)
 /* --BEGIN-- */
@@ -14,4 +25,12 @@ unsigned int *ref_greater_abstract (unsigned int *p)
   unsigned int* q = mallocUnsignedInt();
   *q = *p + 1;
   return q;
+}
+
+int main()
+{
+    unsigned int x = 5;
+    unsigned int *q = ref_greater_abstract(&x);
+    /*@ assert(!ptr_eq(&x, q)); @*/
+    /*@ assert(*q == x + 1u32); @*/
 }

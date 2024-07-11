@@ -1,3 +1,5 @@
+#include <limits.h>
+
 void inplace_double (int *p)
 /* --BEGIN-- */
 /*@ requires take n_ = Owned<int>(p);
@@ -11,4 +13,15 @@ void inplace_double (int *p)
   int n = *p;
   int m = n + n;
   *p = m;
+}
+
+int main()
+{
+    int x = 50000;
+    inplace_double(&x);
+    /*@ assert (x == 100000i32); @*/
+
+    // uncomment for failure
+    // x = INT_MAX / 2 + 1;
+    // inplace_double(&x);
 }

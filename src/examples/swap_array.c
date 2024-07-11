@@ -1,3 +1,4 @@
+// TODO - REVISIT
 void swap_array (int *p, int n, int i, int j)
 /* --BEGIN-- */
 /*@ requires take a1 = each(i32 k; 0i32 <= k && k < n) { Owned<int>(array_shift<int>(p,k)) };
@@ -18,4 +19,19 @@ void swap_array (int *p, int n, int i, int j)
 /* --END-- */
   p[i] = p[j];
   p[j] = tmp;
+}
+
+int main()
+/*@ trusted; @*/
+{
+    int a[3] = { 0, 1, 2 };
+
+    swap_array(a, 3, 0, 2);
+    int *first = a;
+    int *third = a + 2;
+    /*@ assert (*third == 0i32); @*/
+    /*@ assert (*first == 2i32); @*/
+
+    // uncomment for failure
+    // swap_array(a, 3, 1, 1);
 }

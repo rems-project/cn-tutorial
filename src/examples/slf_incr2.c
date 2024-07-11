@@ -44,3 +44,17 @@ void call_both_better (unsigned int *p, unsigned int *q)
   incr2(p, q);
   incr2(p, p);
 }
+
+int main()
+/*@ trusted; @*/
+{
+    unsigned int x = 5;
+    unsigned int y = 11;
+    call_both_better(&x, &y);
+    /*@ assert(x == 8u32); @*/
+    /*@ assert(y == 12u32); @*/
+
+    // uncomment for assertion failure
+    // call_both_better(&y,&y);
+    // call_both_better(&x, &x);
+}

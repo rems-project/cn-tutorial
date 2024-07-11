@@ -10,3 +10,11 @@ void incr (unsigned int *p)
   unsigned int m = n+1;
   *p = m;
 }
+
+int main()
+/*@ trusted; @*/
+{
+    unsigned int x = 5;
+    incr(&x);
+    /*@ assert (x == 6u32); @*/
+}

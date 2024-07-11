@@ -1,4 +1,16 @@
-#include "slf10_basic_ref.c"
+// TODO - REVISIT
+
+#include <limits.h>
+
+// #include "slf10_basic_ref.c"
+
+unsigned int *refUnsignedInt (unsigned int v)
+/*@ ensures take vr = Owned(return);
+            vr == v;
+@*/
+{
+    return 0;
+}
 
 unsigned int *ref_greater (unsigned int *p)
 /* --BEGIN-- */
@@ -13,4 +25,12 @@ unsigned int *ref_greater (unsigned int *p)
   unsigned int n = *p;
   unsigned int m = n+1;
   return refUnsignedInt(m);
+}
+
+int main()
+{
+    unsigned int x = UINT_MAX;
+    unsigned int *p = ref_greater(&x);
+    /*@ assert (!ptr_eq(p, &x)); @*/
+    /*@ assert (*p == 0u32);  @*/
 }

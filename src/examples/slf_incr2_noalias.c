@@ -15,3 +15,15 @@ void incr2a (unsigned int *p, unsigned int *q)
   *q = m;
 }
 
+int main()
+{
+    unsigned int x = 5;
+    unsigned int y = 11;
+    incr2a(&x, &y);
+    /*@ assert (x == 6u32); @*/
+    /*@ assert (y == 12u32); @*/
+
+    // uncomment for failure
+    // incr2a(&x,&x);
+    // incr2a(&y,&y);
+}

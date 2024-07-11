@@ -1,3 +1,5 @@
+#include <limits.h>
+
 int quadruple (int n)
 /* --BEGIN-- */
 /*@ requires let n_ = (i64) n;
@@ -8,4 +10,15 @@ int quadruple (int n)
 {
   int m = n + n;
   return m + m;
+}
+
+int main()
+{
+    int x = 50000;
+    int res = quadruple(x);
+    /*@ assert (res == 200000i32); @*/
+
+    // uncomment for failure
+    // x = INT_MAX / 4 + 1;
+    // res = quadruple(x);
 }

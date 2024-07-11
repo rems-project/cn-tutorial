@@ -9,3 +9,11 @@ void incr (int *p)
   int m = n+1;
   *p = m;
 }
+
+int main()
+/*@ trusted; @*/
+{
+    int x = 5;
+    incr(&x);
+    /*@ assert (x == 6i32); @*/
+}

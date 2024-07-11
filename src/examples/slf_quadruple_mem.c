@@ -1,3 +1,7 @@
+// TODO - REVISIT
+
+#include <limits.h>
+
 int quadruple_mem (int *p)
 /* --BEGIN-- */
 /*@ requires take n = Owned<int>(p);
@@ -11,4 +15,13 @@ int quadruple_mem (int *p)
 {
   int m = *p + *p;
   return m + m;
+}
+
+int main()
+/*@ trusted; @*/
+{
+
+    int x = INT_MAX / 4;
+    quadruple_mem(&x);
+    /*@ assert (x == MAXi32()); @*/
 }

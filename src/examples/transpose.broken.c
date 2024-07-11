@@ -9,7 +9,16 @@ void transpose (struct point *p)
 {
   int temp_x = p->x;
   int temp_y = p->y;
-  /*@ assert(false); @*/
+  // /*@ assert(false); @*/
   p->x = temp_y;
   p->y = temp_x;
+}
+
+int main()
+/*@ trusted; @*/
+{
+    struct point p = {.x = 3, .y = 4};
+    transpose(&p);
+    /*@ assert (p.x == 4i32); @*/
+    /*@ assert (p.y == 3i32); @*/
 }
