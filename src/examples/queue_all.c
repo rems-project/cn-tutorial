@@ -1,5 +1,12 @@
+#ifndef CN_UTILS
+#include <string.h>
+void *cn_malloc(size_t);
+#endif
 #include <stdlib.h>
-
+void cn_free_sized(void* p, size_t s)
+{
+    free(p);
+}
 /* ############################# CN  ############################# */
 
 /*@
@@ -26,6 +33,17 @@ function (datatype seq) tl (datatype seq xs) {
     }
     Seq_Cons {head : _, tail : tail} => {
       tail
+    }
+  }
+}
+
+function [rec] (datatype seq) rev(datatype seq xs) {
+  match xs {
+    Seq_Nil {} => {
+      Seq_Nil{}
+    }
+    Seq_Cons {head: x, tail: zs}  => {
+      snoc(rev(zs), x)
     }
   }
 }
@@ -99,7 +117,7 @@ struct int_queue *mallocIntQueue()
             !ptr_eq(return,NULL);
 @*/
 {
-    return malloc(sizeof(struct int_queue));
+    return cn_malloc(sizeof(struct int_queue));
 }
 
 void freeIntQueue (struct int_queue *p)
@@ -108,7 +126,7 @@ void freeIntQueue (struct int_queue *p)
     ensures true;
 @*/
 {
-    free(p);
+    cn_free_sized(p, sizeof(struct int_queue));
 }
 
 struct int_queueCell *mallocIntQueueCell()
@@ -118,7 +136,7 @@ struct int_queueCell *mallocIntQueueCell()
             !is_null(return);
 @*/
 {
-    return malloc(sizeof(struct int_queueCell));
+    return cn_malloc(sizeof(struct int_queueCell));
 }
 
 void freeIntQueueCell (struct int_queueCell *p)
@@ -127,7 +145,7 @@ void freeIntQueueCell (struct int_queueCell *p)
     ensures true;
 @*/
 {
-    free(p);
+    cn_free_sized(p, sizeof(struct int_queueCell));
 }
 
 /* ############################# EMP ############################# */
@@ -305,6 +323,30 @@ void IntQueue_push_induction (int x, struct int_queue *q)
   }
 }
 
+void assert_23(struct int_queue *q)
+/*@ trusted;
+    requires take before = IntQueuePtr(q);
+    ensures take after = IntQueuePtr(q);
+            before == after;
+            before == Seq_Cons { head: 3i32, tail: Seq_Cons { head: 2i32, tail: Seq_Nil{} } };
+@*/
+{
+}
+
+void assert_1234(struct int_queue *q)
+/*@ trusted;
+    requires take before = IntQueuePtr(q);
+    ensures take after = IntQueuePtr(q);
+            before == after;
+            before ==         Seq_Cons { head: 1i32
+                      , tail: Seq_Cons { head: 2i32
+                      , tail: Seq_Cons { head: 3i32
+                      , tail: Seq_Cons { head: 4i32
+                      , tail: Seq_Nil{} }}}};
+@*/
+{
+}
+
 /* ############################ MAIN ############################# */
 int main()
 /*@ trusted; @*/
@@ -321,6 +363,8 @@ int main()
 
     IntQueue_push(3, queue);
     IntQueue_push_induction(2, queue);
+    
+    assert_23(queue);
 
     x = IntQueue_pop(queue); 
     /*@ assert (x == 3i32); @*/
@@ -332,6 +376,8 @@ int main()
     IntQueue_push_induction(3, queue);
     IntQueue_push(4, queue);
     
+    assert_1234(queue);
+
     IntQueue_pop(queue);
     IntQueue_pop(queue);
     x = IntQueue_pop(queue);
