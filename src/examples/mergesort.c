@@ -150,7 +150,7 @@ struct int_list_pair {
   struct int_list* snd;
 };
 
-struct int_list_pair split(struct int_list *xs)
+struct int_list_pair IntList_split(struct int_list *xs)
 /*@ requires take Xs = IntList(xs); @*/
 /*@ ensures take Ys = IntList(return.fst); @*/
 /*@ ensures take Zs = IntList(return.snd); @*/
@@ -168,7 +168,7 @@ struct int_list_pair split(struct int_list *xs)
       return r;
     } else {
       /*@ unfold split(Xs); @*/
-      struct int_list_pair p = split(cdr->tail);
+      struct int_list_pair p = IntList_split(cdr->tail);
       xs->tail = p.fst;
       cdr->tail = p.snd;
       struct int_list_pair r = {.fst = xs, .snd = cdr};
@@ -177,7 +177,7 @@ struct int_list_pair split(struct int_list *xs)
   }
 }
 
-struct int_list* merge(struct int_list *xs, struct int_list *ys)
+struct int_list* IntList_merge(struct int_list *xs, struct int_list *ys)
 /*@ requires take Xs = IntList(xs); @*/
 /*@ requires take Ys = IntList(ys); @*/
 /*@ ensures take Zs = IntList(return); @*/
@@ -194,11 +194,11 @@ struct int_list* merge(struct int_list *xs, struct int_list *ys)
     } else {
       /*@ unfold merge(Xs, Ys); @*/
       if (xs->head < ys->head) {
-        struct int_list *zs = merge(xs->tail, ys);
+        struct int_list *zs = IntList_merge(xs->tail, ys);
         xs->tail = zs;
         return xs;
       } else {
-        struct int_list *zs = merge(xs, ys->tail);
+        struct int_list *zs = IntList_merge(xs, ys->tail);
         ys->tail = zs;
         return ys;
       }
@@ -206,7 +206,7 @@ struct int_list* merge(struct int_list *xs, struct int_list *ys)
   }
 }
 
-struct int_list* mergesort(struct int_list *xs)
+struct int_list* IntList_mergesort(struct int_list *xs)
 /*@ requires take Xs = IntList(xs); @*/
 /*@ ensures take Ys = IntList(return); @*/
 /*@ ensures Ys == mergesort(Xs); @*/
@@ -221,10 +221,10 @@ struct int_list* mergesort(struct int_list *xs)
       return xs;
     } else {
       /*@ unfold mergesort(Xs); @*/
-      struct int_list_pair p = split(xs);
-      p.fst = mergesort(p.fst);
-      p.snd = mergesort(p.snd);
-      return merge(p.fst, p.snd);
+      struct int_list_pair p = IntList_split(xs);
+      p.fst = IntList_mergesort(p.fst);
+      p.snd = IntList_mergesort(p.snd);
+      return IntList_merge(p.fst, p.snd);
     }
   }
 }
