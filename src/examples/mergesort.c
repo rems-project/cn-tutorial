@@ -1,7 +1,3 @@
-// TODO - REVISIT - no underscored typedef string found
-// Generating C files from CN-annotated source... cn: internal error, uncaught exception:
-//     Failure("no underscored typedef string found")
-
 #ifndef CN_UTILS
 void *cn_malloc(unsigned long);
 void cn_free_sized(void* p, unsigned long s);
@@ -98,19 +94,26 @@ struct int_list* IntList_cons(int h, struct int_list* t)
 
 
 /*@
-function [rec] ({datatype seq fst, datatype seq snd}) split(datatype seq xs)
+datatype SplitDT {
+   Pair { datatype seq fst, datatype seq snd }
+}
+
+function [rec] (datatype SplitDT) split(datatype seq xs)
 {
   match xs {
     Seq_Nil {} => {
-      {fst: Seq_Nil{}, snd: Seq_Nil{}}
+      Pair {fst: Seq_Nil{}, snd: Seq_Nil{}}
     }
     Seq_Cons {head: h1, tail: Seq_Nil{}} => {
-      {fst: Seq_Nil{}, snd: xs}
+      Pair {fst: Seq_Nil{}, snd: xs}
     }
     Seq_Cons {head: h1, tail: Seq_Cons {head : h2, tail : tl2 }} => {
-      let P = split(tl2);
-      {fst: Seq_Cons { head: h1, tail: P.fst},
-       snd: Seq_Cons { head: h2, tail: P.snd}}
+    match (split(tl2)) {
+        Pair { fst : fst , snd : snd } => { Pair {
+            fst: Seq_Cons { head: h1, tail: fst},
+            snd: Seq_Cons { head: h2, tail: snd}
+        } }
+      }
     }
   }
 }
@@ -136,10 +139,13 @@ function [rec] (datatype seq) mergesort(datatype seq xs) {
       Seq_Nil{} => { xs }
       Seq_Cons{head: x, tail: Seq_Nil{}} => { xs }
       Seq_Cons{head: x, tail: Seq_Cons{head: y, tail: zs}} => {
-        let P = split(xs);
-        let L1 = mergesort(P.fst);
-        let L2 = mergesort(P.snd);
-        merge(L1, L2)
+        match (split(xs)) {
+        Pair { fst : fst , snd : snd } => {
+            let L1 = mergesort(fst);
+            let L2 = mergesort(snd);
+            merge(L1, L2)
+          }
+        }
       }
     }
 }
@@ -154,7 +160,7 @@ struct int_list_pair IntList_split(struct int_list *xs)
 /*@ requires take Xs = IntList(xs); @*/
 /*@ ensures take Ys = IntList(return.fst); @*/
 /*@ ensures take Zs = IntList(return.snd); @*/
-/*@ ensures {fst: Ys, snd: Zs} == split(Xs); @*/
+/*@ ensures Pair {fst: Ys, snd: Zs} == split(Xs); @*/
 {
   if (xs == 0) {
     /*@ unfold split(Xs); @*/

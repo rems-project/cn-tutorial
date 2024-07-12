@@ -5,7 +5,7 @@ void cn_free_sized(void* p, unsigned long s);
 
 void freeUnsignedInt(unsigned int *p)
 /*@ trusted;
-  requires take v = Block<int>(p);
+  requires take v = Block<unsigned int>(p);
   ensures true; @*/
 {
     cn_free_sized(p, sizeof(int));
@@ -282,137 +282,147 @@ struct int_list* IntList_rev(struct int_list* xs)
   return IntList_rev_aux (0, xs);
 }
 
-// /*@
-// function [rec] ({datatype seq fst, datatype seq snd}) split(datatype seq xs)
-// {
-//   match xs {
-//     Seq_Nil {} => {
-//       {fst: Seq_Nil{}, snd: Seq_Nil{}}
-//     }
-//     Seq_Cons {head: h1, tail: Seq_Nil{}} => {
-//       {fst: Seq_Nil{}, snd: xs}
-//     }
-//     Seq_Cons {head: h1, tail: Seq_Cons {head : h2, tail : tl2 }} => {
-//       let P = split(tl2);
-//       {fst: Seq_Cons { head: h1, tail: P.fst},
-//        snd: Seq_Cons { head: h2, tail: P.snd}}
-//     }
-//   }
-// }
-// 
-// function [rec] (datatype seq) merge(datatype seq xs, datatype seq ys) {
-//   match xs {
-//       Seq_Nil {} => { ys }
-//       Seq_Cons {head: x, tail: xs1} => {
-//         match ys {
-//           Seq_Nil {} => { xs }
-//           Seq_Cons{ head: y, tail: ys1} => {
-//             (x < y) ?
-//               (Seq_Cons{ head: x, tail: merge(xs1, ys) })
-//             : (Seq_Cons{ head: y, tail: merge(xs, ys1) })
-//           }
-//         }
-//       }
-//   }
-// }
-// 
-// function [rec] (datatype seq) mergesort(datatype seq xs) {
-//   match xs {
-//       Seq_Nil{} => { xs }
-//       Seq_Cons{head: x, tail: Seq_Nil{}} => { xs }
-//       Seq_Cons{head: x, tail: Seq_Cons{head: y, tail: zs}} => {
-//         let P = split(xs);
-//         let L1 = mergesort(P.fst);
-//         let L2 = mergesort(P.snd);
-//         merge(L1, L2)
-//       }
-//     }
-// }
-// @*/
-// 
-// struct int_list_pair {
-//   struct int_list* fst;
-//   struct int_list* snd;
-// };
-// 
-// struct int_list_pair IntList_split(struct int_list *xs)
-// /*@ requires take Xs = IntList(xs); @*/
-// /*@ ensures take Ys = IntList(return.fst); @*/
-// /*@ ensures take Zs = IntList(return.snd); @*/
-// /*@ ensures {fst: Ys, snd: Zs} == split(Xs); @*/
-// {
-//   if (xs == 0) {
-//     /*@ unfold split(Xs); @*/
-//     struct int_list_pair r = {.fst = 0, .snd = 0};
-//     return r;
-//   } else {
-//     struct int_list *cdr = xs -> tail;
-//     if (cdr == 0) {
-//       /*@ unfold split(Xs); @*/
-//       struct int_list_pair r = {.fst = 0, .snd = xs};
-//       return r;
-//     } else {
-//       /*@ unfold split(Xs); @*/
-//       struct int_list_pair p = IntList_split(cdr->tail);
-//       xs->tail = p.fst;
-//       cdr->tail = p.snd;
-//       struct int_list_pair r = {.fst = xs, .snd = cdr};
-//       return r;
-//     }
-//   }
-// }
-// 
-// struct int_list* IntList_merge(struct int_list *xs, struct int_list *ys)
-// /*@ requires take Xs = IntList(xs); @*/
-// /*@ requires take Ys = IntList(ys); @*/
-// /*@ ensures take Zs = IntList(return); @*/
-// /*@ ensures Zs == merge(Xs, Ys); @*/
-// {
-//   if (xs == 0) {
-//     /*@ unfold merge(Xs, Ys); @*/
-//     return ys;
-//   } else {
-//     /*@ unfold merge(Xs, Ys); @*/
-//     if (ys == 0) {
-//       /*@ unfold merge(Xs, Ys); @*/
-//       return xs;
-//     } else {
-//       /*@ unfold merge(Xs, Ys); @*/
-//       if (xs->head < ys->head) {
-//         struct int_list *zs = IntList_merge(xs->tail, ys);
-//         xs->tail = zs;
-//         return xs;
-//       } else {
-//         struct int_list *zs = IntList_merge(xs, ys->tail);
-//         ys->tail = zs;
-//         return ys;
-//       }
-//     }
-//   }
-// }
-// 
-// struct int_list* IntList_mergesort(struct int_list *xs)
-// /*@ requires take Xs = IntList(xs); @*/
-// /*@ ensures take Ys = IntList(return); @*/
-// /*@ ensures Ys == mergesort(Xs); @*/
-// {
-//   if (xs == 0) {
-//     /*@ unfold mergesort(Xs); @*/
-//     return xs;
-//   } else {
-//     struct int_list *tail = xs->tail;
-//     if (tail == 0) {
-//       /*@ unfold mergesort(Xs); @*/
-//       return xs;
-//     } else {
-//       /*@ unfold mergesort(Xs); @*/
-//       struct int_list_pair p = IntList_split(xs);
-//       p.fst = IntList_mergesort(p.fst);
-//       p.snd = IntList_mergesort(p.snd);
-//       return IntList_merge(p.fst, p.snd);
-//     }
-//   }
-// }
+/*@
+datatype SplitDT { 
+   Pair { datatype seq fst, datatype seq snd }
+}
+
+function [rec] (datatype SplitDT) split(datatype seq xs)
+{
+  match xs {
+    Seq_Nil {} => {
+      Pair {fst: Seq_Nil{}, snd: Seq_Nil{}}
+    }
+    Seq_Cons {head: h1, tail: Seq_Nil{}} => {
+      Pair {fst: Seq_Nil{}, snd: xs}
+    }
+    Seq_Cons {head: h1, tail: Seq_Cons {head : h2, tail : tl2 }} => {
+    match (split(tl2)) {
+        Pair { fst : fst , snd : snd } => { Pair {
+            fst: Seq_Cons { head: h1, tail: fst},
+            snd: Seq_Cons { head: h2, tail: snd}
+        } }
+      }
+    }
+  }
+}
+
+function [rec] (datatype seq) merge(datatype seq xs, datatype seq ys) {
+  match xs {
+      Seq_Nil {} => { ys }
+      Seq_Cons {head: x, tail: xs1} => {
+        match ys {
+          Seq_Nil {} => { xs }
+          Seq_Cons{ head: y, tail: ys1} => {
+            (x < y) ?
+              (Seq_Cons{ head: x, tail: merge(xs1, ys) })
+            : (Seq_Cons{ head: y, tail: merge(xs, ys1) })
+          }
+        }
+      }
+  }
+}
+
+function [rec] (datatype seq) mergesort(datatype seq xs) {
+  match xs {
+      Seq_Nil{} => { xs }
+      Seq_Cons{head: x, tail: Seq_Nil{}} => { xs }
+      Seq_Cons{head: x, tail: Seq_Cons{head: y, tail: zs}} => {
+        match (split(xs)) {
+        Pair { fst : fst , snd : snd } => {
+            let L1 = mergesort(fst);
+            let L2 = mergesort(snd);
+            merge(L1, L2)
+          }
+        }
+      }
+    }
+}
+@*/
+
+struct int_list_pair {
+  struct int_list* fst;
+  struct int_list* snd;
+};
+
+struct int_list_pair IntList_split(struct int_list *xs)
+/*@ requires take Xs = IntList(xs); @*/
+/*@ ensures take Ys = IntList(return.fst); @*/
+/*@ ensures take Zs = IntList(return.snd); @*/
+/*@ ensures Pair {fst: Ys, snd: Zs} == split(Xs); @*/
+{
+  if (xs == 0) {
+    /*@ unfold split(Xs); @*/
+    struct int_list_pair r = {.fst = 0, .snd = 0};
+    return r;
+  } else {
+    struct int_list *cdr = xs -> tail;
+    if (cdr == 0) {
+      /*@ unfold split(Xs); @*/
+      struct int_list_pair r = {.fst = 0, .snd = xs};
+      return r;
+    } else {
+      /*@ unfold split(Xs); @*/
+      struct int_list_pair p = IntList_split(cdr->tail);
+      xs->tail = p.fst;
+      cdr->tail = p.snd;
+      struct int_list_pair r = {.fst = xs, .snd = cdr};
+      return r;
+    }
+  }
+}
+
+struct int_list* IntList_merge(struct int_list *xs, struct int_list *ys)
+/*@ requires take Xs = IntList(xs); @*/
+/*@ requires take Ys = IntList(ys); @*/
+/*@ ensures take Zs = IntList(return); @*/
+/*@ ensures Zs == merge(Xs, Ys); @*/
+{
+  if (xs == 0) {
+    /*@ unfold merge(Xs, Ys); @*/
+    return ys;
+  } else {
+    /*@ unfold merge(Xs, Ys); @*/
+    if (ys == 0) {
+      /*@ unfold merge(Xs, Ys); @*/
+      return xs;
+    } else {
+      /*@ unfold merge(Xs, Ys); @*/
+      if (xs->head < ys->head) {
+        struct int_list *zs = IntList_merge(xs->tail, ys);
+        xs->tail = zs;
+        return xs;
+      } else {
+        struct int_list *zs = IntList_merge(xs, ys->tail);
+        ys->tail = zs;
+        return ys;
+      }
+    }
+  }
+}
+
+struct int_list* IntList_mergesort(struct int_list *xs)
+/*@ requires take Xs = IntList(xs); @*/
+/*@ ensures take Ys = IntList(return); @*/
+/*@ ensures Ys == mergesort(Xs); @*/
+{
+  if (xs == 0) {
+    /*@ unfold mergesort(Xs); @*/
+    return xs;
+  } else {
+    struct int_list *tail = xs->tail;
+    if (tail == 0) {
+      /*@ unfold mergesort(Xs); @*/
+      return xs;
+    } else {
+      /*@ unfold mergesort(Xs); @*/
+      struct int_list_pair p = IntList_split(xs);
+      p.fst = IntList_mergesort(p.fst);
+      p.snd = IntList_mergesort(p.snd);
+      return IntList_merge(p.fst, p.snd);
+    }
+  }
+}
 
 
 unsigned int *mallocUnsignedInt()
@@ -447,6 +457,21 @@ void IntList_length_acc_aux (struct int_list *xs, unsigned int *p)
     *p = *p + 1;
     IntList_length_acc_aux (xs->tail, p);
   }
+}
+
+void assert_12357(struct int_list *xs)
+/*@ trusted;
+    requires take L1 = IntList(xs);
+                L1 ==       Seq_Cons {
+                    head: 1i32 , tail: Seq_Cons {
+                    head: 2i32 , tail: Seq_Cons {
+                    head: 3i32 , tail: Seq_Cons {
+                    head: 5i32 , tail: Seq_Cons {
+                    head: 7i32 , tail: Seq_Nil {} }}}}};
+    ensures take L1_ = IntList(xs);
+            L1 == L1_;
+@*/
+{
 }
 
 unsigned int IntList_length_acc (struct int_list *xs)
@@ -485,7 +510,9 @@ int main()
     len = IntList_length(rev_rev);
     /*@ assert (len == 5u32); @*/
 
-    // struct int_list *merged = IntList_mergesort(list);
+    struct int_list *merged = IntList_mergesort(list);
+    assert_12357(merged);
+
     unsigned int acc =IntList_length_acc(list);
     /*@ assert (acc == 5u32); @*/
 
