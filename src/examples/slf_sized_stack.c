@@ -147,34 +147,57 @@ struct sized_stack {
 };
 
 /*@
-type_synonym sizeAndData = {u32 s, datatype seq d}
 
-predicate (sizeAndData) SizedStack(pointer p) {
+datatype SizeAndData {
+    SD { u32 s, datatype seq d }
+}
+
+function (u32) get_size(datatype SizeAndData sd) {
+    match sd {
+        SD { s: s, d: _} => {
+            s 
+         }
+    }
+}
+
+function (datatype seq) get_data(datatype SizeAndData sd) {
+    match sd {
+        SD { s: _, d: d} => {
+            d 
+         }
+    }
+}
+
+predicate (datatype SizeAndData) SizedStack(pointer p) {
     take S = Owned<struct sized_stack>(p);
     let s = S.size;
     take d = IntList(S.data);
     assert(s == length(d));
-    return { s: s, d: d };
+    return SD { s: s, d: d };
 }
 @*/
 
-extern struct sized_stack *malloc_sized_stack ();
-/*@
-spec malloc_sized_stack();
+struct sized_stack *malloc_sized_stack ()
+/*@ trusted;
      requires true;
      ensures take u = Block<struct sized_stack>(return);
 @*/
+{
+    return cn_malloc(sizeof(struct sized_stack));
+}
 
-extern void *free_sized_stack (struct sized_stack *p);
-/*@
-spec free_sized_stack(pointer p);
+void *free_sized_stack (struct sized_stack *p)
+/*@ trusted;
      requires take u = Block<struct sized_stack>(p);
      ensures true;
 @*/
+{
+    cn_free_sized(p, sizeof(struct sized_stack));
+}
 
 struct sized_stack* create()
 /*@ ensures take S = SizedStack(return);
-            S.s == 0u32;
+            get_size(S) == 0u32;
 @*/
 {
   struct sized_stack *p = malloc_sized_stack();
@@ -190,7 +213,7 @@ unsigned int sizeOf (struct sized_stack *p)
 /*@ requires take S = SizedStack(p);
     ensures take S_ = SizedStack(p);
             S_ == S;
-            return == S.s;
+            return == get_size(S);
 @*/
 /* ---END--- */
 {
@@ -202,7 +225,7 @@ void push (struct sized_stack *p, int x)
 /* ---BEGIN--- */
 /*@ requires take S = SizedStack(p);
     ensures take S_ = SizedStack(p);
-            S_.d == Seq_Cons {head:x, tail:S.d};
+            get_data(S_) == Seq_Cons {head:x, tail:get_data(S)};
 @*/
 /* ---END--- */
 {
@@ -210,7 +233,7 @@ void push (struct sized_stack *p, int x)
   p->size++;
   p->data = data;
 /* ---BEGIN--- */
-  /*@ unfold length (Seq_Cons {head: x, tail: S.d}); @*/
+  /*@ unfold length (Seq_Cons {head: x, tail: get_data(S)}); @*/
 /* ---END--- */
 }
 
@@ -218,9 +241,9 @@ int pop (struct sized_stack *p)
 /* FILL IN HERE */
 /* ---BEGIN--- */
 /*@ requires take S = SizedStack(p);
-             S.s > 0u32;
+             get_size(S) > 0u32;
     ensures  take S_ = SizedStack(p);
-             S_.d == tl(S.d);
+             get_data(S_) == tl(get_data(S));
 @*/
 /* ---END--- */
 {
@@ -232,7 +255,7 @@ int pop (struct sized_stack *p)
     p->data = tail;
     p->size--;
 /* ---BEGIN--- */
-    /*@ unfold length(S.d); @*/
+    /*@ unfold length(get_data(S)); @*/
 /* ---END--- */
     return head;
   }
@@ -241,14 +264,14 @@ int pop (struct sized_stack *p)
 
 int top (struct sized_stack *p)
 /*@ requires take S = SizedStack(p);
-             S.s > 0u32;
+             get_size(S) > 0u32;
     ensures  take S_ = SizedStack(p);
              S_ == S;
-             return == hd(S.d);
+             return == hd(get_data(S));
 @*/
 {
-  /*@ unfold length(S.d); @*/
-  // from S.s > 0u32 it follows that the 'else' branch is impossible
+  /*@ unfold length(get_data(S)); @*/
+  // from get_size(S) > 0u32 it follows that the 'else' branch is impossible
   if (p->data != 0) {
     return (p->data)->head;
   }
@@ -258,7 +281,43 @@ int top (struct sized_stack *p)
   }
 }
 
+void assert_321(struct sized_stack *p)
+/*@ trusted;
+    requires take S = SizedStack(p);
+            get_data(S) == Seq_Cons {head: 3i32, tail: Seq_Cons{head:2i32,tail:Seq_Cons{head:1i32,tail: Seq_Nil{}}}};
+            get_size(S) == 3u32;
+    ensures take S2 = SizedStack(p);
+            S == S2;
+@*/
+{
+}
+
+void assert_empty(struct sized_stack *p)
+/*@ trusted;
+    requires take S = SizedStack(p);
+            get_data(S) == Seq_Nil{};
+            get_size(S) == 0u32;
+    ensures take S2 = SizedStack(p);
+            S == S2;
+@*/
+{
+}
+
 int main()
 /*@ trusted; @*/
 {
+    struct sized_stack *s = create();
+    push(s, 1); 
+    push(s, 2); 
+    push(s, 3); 
+    
+    int t = top(s);
+    /*@ assert (t == 3i32); @*/
+    assert_321(s);
+
+    t = pop(s);
+    t = pop(s);
+    /*@ assert (t == 2i32); @*/
+    t = pop(s);
+    /*@ assert(t == 1i32); @*/
 }
