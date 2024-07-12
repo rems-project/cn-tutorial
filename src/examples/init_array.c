@@ -1,14 +1,11 @@
-// TODO - REVISIT - i's not matching
-// Generating C files from CN-annotated source... cn: internal error, uncaught exception:
-//     Failure("Not of correct form (unlikely case - i's not matching)")
-
-
 void init_array (char *p, unsigned int n)
-/*@ requires take a1 = each(u32 i; i < n) { Owned<char>( array_shift<char>(p, i)) };
-    ensures  take a2 = each(u32 i; i < n) { Owned<char>( array_shift<char>(p, i)) };
+/*@ requires take a1 = each(u32 i; 0u32 <= i && i < n) { Owned<char>( array_shift<char>(p, i)) };
+    ensures  take a2 = each(u32 i; 0u32 <= i && i < n) { Owned<char>( array_shift<char>(p, i)) };
 @*/
 {
-  unsigned int j = 0;
+  unsigned int j;
+  j = 0;
+
   while (j < n)
 /* --BEGIN-- */
   /*@ inv take ai = each(u32 i; i < n) { Owned<char>( array_shift<char>(p, i)) };
