@@ -116,14 +116,13 @@ struct int_queue *mallocIntQueue()
     return cn_malloc(sizeof(struct int_queue));
 }
 
-int freeIntQueue (struct int_queue *p)
+void freeIntQueue (struct int_queue *p)
 /*@ trusted;
     requires take u = Block<struct int_queue>(p);
     ensures true;
 @*/
 {
     cn_free_sized(p, sizeof(struct int_queue));
-    return 0;
 }
 
 struct int_queueCell *mallocIntQueueCell()
@@ -136,14 +135,13 @@ struct int_queueCell *mallocIntQueueCell()
     return cn_malloc(sizeof(struct int_queueCell));
 }
 
-int freeIntQueueCell (struct int_queueCell *p)
+void freeIntQueueCell (struct int_queueCell *p)
 /*@ trusted;
     requires take u = Block<struct int_queueCell>(p);
     ensures true;
 @*/
 {
     cn_free_sized(p, sizeof(struct int_queueCell));
-    return 0;
 }
 
 /* ############################# EMP ############################# */
@@ -233,7 +231,7 @@ int IntQueue_pop (struct int_queue *q)
 
 /* ############################ PUSH1 ############################ */
 
-int push_lemma (struct int_queueCell *front, struct int_queueCell *p)
+void push_lemma (struct int_queueCell *front, struct int_queueCell *p)
 /*@
   trusted;
   requires
@@ -246,7 +244,7 @@ int push_lemma (struct int_queueCell *front, struct int_queueCell *p)
 {
 }
 
-int IntQueue_push (int x, struct int_queue *q)
+void IntQueue_push (int x, struct int_queue *q)
 /*@ requires take before = IntQueuePtr(q);
     ensures take after = IntQueuePtr(q);
             after == snoc (before, x);
@@ -258,14 +256,14 @@ int IntQueue_push (int x, struct int_queue *q)
   if (q->back == 0) {
     q->front = c;
     q->back = c;
-    return 0;
+    return;
   } else {
     struct int_queueCell *oldback = q->back;
     q->back->next = c;
     q->back = c;
     push_lemma(q->front, oldback);
     // /*@ apply push_lemma ((*q).front, oldback); @*/
-    return 0;
+    return;
   }
 }
 
@@ -279,7 +277,7 @@ ensures
     !ptr_eq(x, y);
 @*/
 
-int push_induction(struct int_queueCell* front, struct int_queueCell* p)
+void push_induction(struct int_queueCell* front, struct int_queueCell* p)
 /*@
   requires
       take Q = IntQueueAux(front, p);
@@ -293,17 +291,17 @@ int push_induction(struct int_queueCell* front, struct int_queueCell* p)
 {
     if (front == p) {
         /*@ unfold snoc(Q, P.first); @*/
-        return 0;
+        return;
     } else {
         // Should be derived automatically
         /*@ apply assert_not_equal((*front).next, (*p).next); @*/
         push_induction(front->next, p);
         /*@ unfold snoc(Q, P.first); @*/
-        return 0;
+        return;
     }
 }
 
-int IntQueue_push_induction (int x, struct int_queue *q)
+void IntQueue_push_induction (int x, struct int_queue *q)
 /*@ requires take before = IntQueuePtr(q);
     ensures take after = IntQueuePtr(q);
             after == snoc (before, x);
@@ -316,17 +314,17 @@ int IntQueue_push_induction (int x, struct int_queue *q)
   if (q->back == 0) {
     q->front = c;
     q->back = c;
-    return 0;
+    return;
   } else {
     struct int_queueCell *oldback = q->back;
     q->back->next = c;
     q->back = c;
     push_induction(q->front, oldback);
-    return 0;
+    return;
   }
 }
 
-int assert_23(struct int_queue *q)
+void assert_23(struct int_queue *q)
 /*@ trusted;
     requires take before = IntQueuePtr(q);
     ensures take after = IntQueuePtr(q);
@@ -334,10 +332,10 @@ int assert_23(struct int_queue *q)
             before == Seq_Cons { head: 3i32, tail: Seq_Cons { head: 2i32, tail: Seq_Nil{} } };
 @*/
 {
-    return 0;
+    return;
 }
 
-int assert_1234(struct int_queue *q)
+void assert_1234(struct int_queue *q)
 /*@ trusted;
     requires take before = IntQueuePtr(q);
     ensures take after = IntQueuePtr(q);
@@ -349,7 +347,7 @@ int assert_1234(struct int_queue *q)
                       , tail: Seq_Nil{} }}}};
 @*/
 {
-    return 0;
+    return;
 }
 
 /* ############################ MAIN ############################# */
