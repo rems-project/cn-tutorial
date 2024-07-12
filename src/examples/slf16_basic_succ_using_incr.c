@@ -1,14 +1,17 @@
-// TODO - REVISIT
+// #include <limits.h>
+// Generating C files from CN-annotated source... cn: internal error, uncaught exception:
+//     End_of_file
 
-#include <limits.h>
+#ifndef CN_UTILS
+void *cn_malloc(unsigned long);
+void cn_free_sized(void* p, unsigned long s);
+#endif
 
-// #include "free.h"
-
-void freeInt (int *p)
-/*@ requires take v = Block<int>(p);
-    ensures true;
-@*/
+unsigned int *mallocUnsignedInt()
+/*@ trusted;
+    ensures take v = Block<unsigned int>(return); !is_null(return); @*/
 {
+    return cn_malloc(sizeof(unsigned int));
 }
 
 void freeUnsignedInt (unsigned int *p)
@@ -16,27 +19,19 @@ void freeUnsignedInt (unsigned int *p)
     ensures true;
 @*/
 {
+    cn_free_sized(p, sizeof(int));
 }
 
 // #include "ref.h"
 
 unsigned int *refUnsignedInt (unsigned int v)
-/*@ requires true;
-    ensures take vr = Owned(return);
+/*@ ensures take vr = Owned(return);
             vr == v;
 @*/
 {
-    return 0;
-}
-
-
-int *refInt (int v)
-/*@ requires true;
-    ensures take vr = Owned(return);
-            vr == v;
-@*/
-{
-    return 0;
+    unsigned int *res = mallocUnsignedInt();
+    *res = v;
+    return res;
 }
 
 // #include "slf0_basic_incr.c"
@@ -67,7 +62,7 @@ unsigned int succ_using_incr (unsigned int n)
 int main()
 /*@ trusted; @*/
 {
-    unsigned int n = UINT_MAX;
+    unsigned int n = 100;
     unsigned int res = succ_using_incr(n);
-    /*@ assert (res == 0u32); @*/
+    /*@ assert (res == 101u32); @*/
 }

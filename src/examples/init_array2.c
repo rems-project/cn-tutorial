@@ -1,4 +1,6 @@
-// TODO - REVISIT
+// TODO - REVISIT - i's not matching
+// Generating C files from CN-annotated source... cn: internal error, uncaught exception:
+//     Failure("Not of correct form (unlikely case - i's not matching)")
 
 void init_array2 (char *p, unsigned int n)
 /*@ requires take a1 = each(u32 i; i < n) { Block<char>( array_shift<char>(p, i)) };

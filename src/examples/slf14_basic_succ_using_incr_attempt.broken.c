@@ -1,6 +1,18 @@
-// TODO - REVISIT
+// #include <limits.h>
+// Generating C files from CN-annotated source... cn: internal error, uncaught exception:
+//     End_of_file
 
-#include <limits.h>
+#ifndef CN_UTILS
+void *cn_malloc(unsigned long);
+void cn_free_sized(void* p, unsigned long s);
+#endif
+
+unsigned int *mallocUnsignedInt()
+/*@ trusted;
+    ensures take v = Block<unsigned int>(return); !is_null(return); @*/
+{
+    return cn_malloc(sizeof(unsigned int));
+}
 
 // #include "slf0_basic_incr.c"
 
@@ -24,9 +36,10 @@ unsigned int *refUnsignedInt (unsigned int v)
             vr == v;
 @*/
 {
-    return 0;
+    unsigned int *res = mallocUnsignedInt();
+    *res = v;
+    return res;
 }
-
 
 unsigned int succ_using_incr_attempt(unsigned int n)
 /* --BEGIN-- */
@@ -42,7 +55,8 @@ unsigned int succ_using_incr_attempt(unsigned int n)
 int main()
 /*@ trusted; @*/
 {
-    unsigned int x = INT_MAX;
+    unsigned int x = 100;
+    // leaks!
     unsigned int res = succ_using_incr_attempt(x);
-    /*@ assert (res == 0u32); @*/
+    /*@ assert (res == 101u32); @*/
 }

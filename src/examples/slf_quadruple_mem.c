@@ -1,6 +1,6 @@
-// TODO - REVISIT
-
-#include <limits.h>
+// #include <limits.h>
+// Generating C files from CN-annotated source... cn: internal error, uncaught exception:
+//     End_of_file
 
 int quadruple_mem (int *p)
 /* --BEGIN-- */
@@ -21,7 +21,8 @@ int main()
 /*@ trusted; @*/
 {
 
-    int x = INT_MAX / 4;
-    quadruple_mem(&x);
-    /*@ assert (x == MAXi32()); @*/
+    int x = 20;
+    int res = quadruple_mem(&x);
+    /*@ assert (x == 20i32); @*/
+    /*@ assert (res == 80i32); @*/
 }

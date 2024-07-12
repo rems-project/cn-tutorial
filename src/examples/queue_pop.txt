@@ -1,5 +1,3 @@
-// TODO - REVISIT
-
 #include "queue_headers.h"
 #include "queue_pop_lemma.h"
 

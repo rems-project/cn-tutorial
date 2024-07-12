@@ -1,4 +1,7 @@
-// TODO - REVISIT
+// TODO - REVISIT - nested map set
+// swap_array-exec.c:98:47: error: invalid use of void expression
+//    98 |   cn_assert(cn_map_equality(a2_cn, cn_map_set(cn_map_set(a1_cn, cast_cn_bits_i32_to_cn_integer(i_cn), (cn_bits_i32*) cn_map_get_cn_bits_i32(a1_cn, cast_cn_bits_i32_to_cn_integer(j_cn))), cast_cn_bits_i32_to_cn_integer(j_cn), (cn_bits_i32*) cn_map_get_cn_bits_i32(a1_cn, cast_cn_bits_i32_to_cn_integer(i_cn))), cn_bits_i32_equality));
+//       |                                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void swap_array (int *p, int n, int i, int j)
 /* --BEGIN-- */
 /*@ requires take a1 = each(i32 k; 0i32 <= k && k < n) { Owned<int>(array_shift<int>(p,k)) };

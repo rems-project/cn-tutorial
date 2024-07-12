@@ -1,11 +1,23 @@
-// TODO - REVISIT
+#ifndef CN_UTILS
+void *cn_malloc(unsigned long);
+void cn_free_sized(void* p, unsigned long s);
+#endif
+
+unsigned int *mallocUnsignedInt()
+/*@ trusted;
+    ensures take v = Block<unsigned int>(return); !is_null(return); @*/
+{
+    return cn_malloc(sizeof(unsigned int));
+}
 
 unsigned int *refUnsignedInt (unsigned int v)
 /*@ ensures take vr = Owned(return);
             vr == v;
 @*/
 {
-    return 0;
+    unsigned int *res = mallocUnsignedInt();
+    *res = v;
+    return res;
 }
 
 int main()

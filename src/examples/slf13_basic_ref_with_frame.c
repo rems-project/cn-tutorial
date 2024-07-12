@@ -1,15 +1,27 @@
-// TODO - REVISIT
+// #include <limits.h>
+// Generating C files from CN-annotated source... cn: internal error, uncaught exception:
+//     End_of_file
 
-#include <limits.h>
+#ifndef CN_UTILS
+void *cn_malloc(unsigned long);
+void cn_free_sized(void* p, unsigned long s);
+#endif
 
-// #include "slf10_basic_ref.c"
+unsigned int *mallocUnsignedInt()
+/*@ trusted;
+    ensures take v = Block<unsigned int>(return); !is_null(return); @*/
+{
+    return cn_malloc(sizeof(unsigned int));
+}
 
 unsigned int *refUnsignedInt (unsigned int v)
 /*@ ensures take vr = Owned(return);
             vr == v;
 @*/
 {
-    return 0;
+    unsigned int *res = mallocUnsignedInt();
+    *res = v;
+    return res;
 }
 
 unsigned int *triple_ref_with_frame(unsigned int *p_, unsigned int v)
@@ -36,6 +48,6 @@ int main()
     /*@ assert (v == 5u32); @*/
     /*@ assert (w == 6u32); @*/
     /*@ assert (!ptr_eq(q, p)); @*/
-    /*@ assert (*q == 6u32); @*/
+    /*@ assert (*q == 5u32); @*/
 
 }

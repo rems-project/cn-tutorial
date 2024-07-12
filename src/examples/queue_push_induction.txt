@@ -1,5 +1,3 @@
-// TODO - REVISIT
-
 #include "queue_headers.h" 
 
 void push_induction(struct int_queueCell* front
