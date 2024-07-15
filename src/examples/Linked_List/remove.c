@@ -25,16 +25,16 @@ struct node_and_int *remove(struct node *n)
              take First = Own_Backwards(del.prev, n, del);
              take Rest = Own_Forwards(del.next, n, del);
     ensures  take ret = Owned<struct node_and_int>(return);
-             take L = LinkedList(ret.node);
-             let First_ = Dll_First(L);
-             let Rest_ = Dll_Rest(L);
-             let node = Dll_Node(L);
-             Seq_Node_to_Seq(First_ )== Seq_Node_to_Seq(First) || Seq_Node_to_Seq(Rest_) == Seq_Node_to_Seq(Rest);
-             !is_null(ret.node) implies (Seq_Node_to_Seq(First_ ) == Seq_Node_to_Seq(First) implies Seq_Node_to_Seq(Rest) == Seq_Cons{head: node.data, tail: Seq_Node_to_Seq(Rest_)});
+             take L = Owned_Dll(ret.node);
+             let First_ = Left(L);
+             let Rest_ = Right(L);
+             let node = Node(L);
+             First_ == First || Rest_ == Rest;
+             !is_null(ret.node) implies (First_ == First implies Rest == Seq_Cons{head: node.data, tail: Rest_});
 
-             !is_null(ret.node) implies (Seq_Node_to_Seq(Rest_ ) == Seq_Node_to_Seq(Rest) implies Seq_Node_to_Seq(First) == Seq_Cons{head: node.data, tail: Seq_Node_to_Seq(First_)});
+             !is_null(ret.node) implies (Rest_  == Rest implies First == Seq_Cons{head: node.data, tail: First_});
 
-             Seq_Node_to_Seq(First) == Seq_Cons{head: node.data, tail: Seq_Node_to_Seq(First_)} || Seq_Node_to_Seq(Rest) == Seq_Cons{head: node.data, tail: Seq_Node_to_Seq(Rest_)} || (Seq_Node_to_Seq(First) == Seq_Nil{} && Seq_Node_to_Seq(Rest) == Seq_Nil{});
+             First == Seq_Cons{head: node.data, tail: First_} || Rest == Seq_Cons{head: node.data, tail: Rest_} || (First == Seq_Nil{} && Rest == Seq_Nil{});
 
             //  flatten(l) == append(rev(nodeSeqtoSeq(first)), nodeSeqtoSeq(rest));
 

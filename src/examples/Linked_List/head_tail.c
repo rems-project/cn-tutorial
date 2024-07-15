@@ -28,8 +28,8 @@ struct node *find_head_aux(struct node *n)
 // Takes any node in the list and returns the head of the list
 // TODO: correctness check
 struct node *find_head(struct node *n)
-/*@ requires take L = LinkedList(n);
-    ensures  take L_ = LinkedList(n);
+/*@ requires take L = Owned_Dll(n);
+    ensures  take L_ = Owned_Dll(n);
              L == L_;
 @*/
 {
@@ -68,8 +68,8 @@ struct node *find_tail_aux(struct node *n)
 // Takes any node in the list and returns the tail of the list
 // TODO: correctness check
 struct node *findTail(struct node *n)
-/*@ requires take L = LinkedList(n);
-    ensures  take L_ = LinkedList(n);
+/*@ requires take L = Owned_Dll(n);
+    ensures  take L_ = Owned_Dll(n);
              L == L_;
 @*/
 {
