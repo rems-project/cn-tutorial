@@ -157,27 +157,7 @@ predicate (datatype seq) Own_Backwards_Aux(pointer p, pointer next_pointer, stru
         return Seq_Cons{head: n.data, tail: First};
     }
 }
-
-// predicate (datatype nodeSeq) OwnForwardsAlternate(pointer p) {
-//     if (is_null(p)) {
-//         return nodeSeq_Nil{};
-//     } else {
-//         take N = Owned<struct Node>(p);
-//         take rest = OwnForwardsAux(N.next, p, N);
-//         return nodeSeq_Cons{node: N, tail: rest};
-//     }
-// }
-
-// predicate (datatype nodeSeq) OwnBackwardsAlternate(pointer p) {
-//     if (is_null(p)) {
-//         return nodeSeq_Nil{};
-//     } else {
-//         take N = Owned<struct Node>(p);
-//         take first = OwnBackwardsAux(N.prev, p, N);
-//         return nodeSeq_Cons{node: N, tail: first};
-//     }
-// }
-// @*/
+@*/
 
 extern struct node *malloc_node();
 /*@ spec malloc_node();
