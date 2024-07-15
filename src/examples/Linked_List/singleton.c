@@ -1,8 +1,8 @@
 #include "./headers.h"
 
 struct node *singleton(int element)
-/*@ ensures take Ret = LinkedList(return);
-        Ret == Dll{first: Seq_Node_Nil{}, n: struct node{data: element, prev: NULL, next: NULL}, rest: Seq_Node_Nil{}};
+/*@ ensures take Ret = Owned_Dll(return);
+        Ret == Dll{left: Seq_Nil{}, n: struct node{data: element, prev: NULL, next: NULL}, right: Seq_Nil{}};
 @*/
 {
    struct node *n = malloc_node();
