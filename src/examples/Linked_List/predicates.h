@@ -1,5 +1,5 @@
 /*@
-predicate (datatype Dll) Owned_Dll (pointer p) {
+predicate (datatype Dll) Dll_at (pointer p) {
     if (is_null(p)) {
         return Empty_Dll{};
     } else {
