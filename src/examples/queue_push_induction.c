@@ -1,33 +1,27 @@
 #include "queue_headers.h" 
 
-/*@
-lemma assert_not_equal(pointer x, pointer y)
-requires
-    true;
-ensures
-    !ptr_eq(x, y);
-@*/
-
-void push_induction(struct int_queueCell* front, struct int_queueCell* p)
+void push_induction(struct int_queueCell* front
+        , struct int_queueCell* second_last
+        , struct int_queueCell* last)
 /*@
   requires
-      take Q = IntQueueAux(front, p);
-      take P = Owned(p);
-      !ptr_eq(front, P.next);
-      !is_null(P.next);
+      take Q = IntQueueAux(front, second_last);
+      take Second_last = Owned(second_last);
+      ptr_eq(Second_last.next, last);
+      take Last = Owned(last);
   ensures
-      take NewQ = IntQueueAux(front, P.next);
-      NewQ == snoc(Q, P.first);
+      take NewQ = IntQueueAux(front, last);
+      take Last2 = Owned(last);
+      NewQ == snoc(Q, Second_last.first);
+      Last == Last2;
 @*/
 {
-    if (front == p) {
-        /*@ unfold snoc(Q, P.first); @*/
+    if (front == second_last) {
+        /*@ unfold snoc(Q, Second_last.first); @*/
         return;
     } else {
-        // Should be derived automatically
-        /*@ apply assert_not_equal((*front).next, (*p).next); @*/
-        push_induction(front->next, p);
-        /*@ unfold snoc(Q, P.first); @*/
+        push_induction(front->next, second_last, last);
+        /*@ unfold snoc(Q, Second_last.first); @*/
         return;
     }
 }
@@ -39,7 +33,6 @@ void IntQueue_push (int x, struct int_queue *q)
 @*/
 {
   struct int_queueCell *c = mallocIntQueueCell();
-  /*@ apply assert_not_equal((*q).front, c); @*/
   c->first = x;
   c->next = 0;
   if (q->back == 0) {
@@ -50,7 +43,7 @@ void IntQueue_push (int x, struct int_queue *q)
     struct int_queueCell *oldback = q->back;
     q->back->next = c;
     q->back = c;
-    push_induction(q->front, oldback);
+    push_induction(q->front, oldback, c);
     return;
   }
 }
