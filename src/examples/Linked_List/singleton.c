@@ -1,7 +1,7 @@
 #include "./headers.h"
 
 struct node *singleton(int element)
-/*@ ensures take Ret = Owned_Dll(return);
+/*@ ensures take Ret = Dll_at(return);
         Ret == Dll{left: Seq_Nil{}, n: struct node{data: element, prev: NULL, next: NULL}, right: Seq_Nil{}};
 @*/
 {
