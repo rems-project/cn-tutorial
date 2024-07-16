@@ -715,15 +715,6 @@ in the pre- and postconditions that captures both cases together:
 
 include_example(exercises/slf_incr2.c)
 
-**Note**: At the moment, CN does not derive pointer disjointness
-constraints from resources: from simultaneous ownership of the
-resources `+Owned(p)+` and `+Owned(q)+` CN does not automatically
-learn `+(p != q)+`, even though that’s clearly implied. This was
-turned off for performance reasons at some point, but once
-performance is back to normal again it should come back.  In the mean
-time, we have to add `+(p != q)+` as an additional precondition to
-`+call_both+`.
-
 == Allocating and Deallocating Memory
 
 At the moment, CN does not understand the `+malloc+` and `+free+`
