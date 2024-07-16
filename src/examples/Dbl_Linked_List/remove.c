@@ -4,18 +4,18 @@
 // to somewhere in the list, or a null pointer if the list is empty.
 struct node_and_int *remove(struct node *n)
 /*@ requires !is_null(n);
-             take before = Dll_at(n);
-             let del = Node(before);
+             take Before = Dll_at(n);
+             let del = Node(Before);
     ensures  take ret = Owned<struct node_and_int>(return);
-             take after = Dll_at(ret.node);
-             (is_null(del.prev) && is_null(del.next)) ? after == Empty_Dll{}
-                 : (!is_null(del.next) ? after == Dll{left: Left(before), curr: Node(after), right: tl(Right(before))}
-                     : after == Dll{left: tl(Left(before)), curr: Node(after), right: Right(before)});
+             take After = Dll_at(ret.node);
+             (is_null(del.prev) && is_null(del.next)) ? After == Empty_Dll{}
+                 : (!is_null(del.next) ? After == Dll{left: Left(Before), curr: Node(After), right: tl(Right(Before))}
+                     : After == Dll{left: tl(Left(Before)), curr: Node(After), right: Right(Before)});
 @*/
 {
     if (n == 0) { //empty list case
         struct node_and_int *pair = malloc_node_and_int();
-        pair->node = 0;  //null pointer
+        pair->node = 0; 
         pair->data = 0;
         return pair;
     } else { 
