@@ -2,11 +2,11 @@
 
 // Adds after the given node and returns a pointer to the new node
 struct node *add(int element, struct node *n)
-/*@ requires take L = Dll_at(n);
-    ensures  take L_ = Dll_at(return);
-             let new_node = Node(L_);
-             is_null(n) ? L_ == Dll { left: Seq_Nil{}, curr: new_node, right: Seq_Nil{}}
-                        : L_ == Dll { left: Seq_Cons{head: Node(L).data, tail: Left(L)}, curr: new_node, right: Right(L)};
+/*@ requires take Before = Dll_at(n);
+    ensures  take After = Dll_at(return);
+
+             is_null(n) ? After == Dll { left: Seq_Nil{}, curr: Node(After), right: Seq_Nil{}}
+                        : After == Dll { left: Seq_Cons{head: Node(Before).data, tail: Left(Before)}, curr: Node(After), right: Right(Before)};
 @*/
 {
     struct node *new_node = malloc_node();
@@ -20,10 +20,8 @@ struct node *add(int element, struct node *n)
         new_node->next = 0;
         return new_node;
     } else { 
-        /*@ split_case(is_null((*n).next)); @*/
         /*@ split_case(is_null((*n).prev)); @*/
 
-       
         new_node->next = n->next;
         new_node->prev = n;
 
