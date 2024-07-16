@@ -2,7 +2,7 @@
 
 struct node *singleton(int element)
 /*@ ensures take Ret = Dll_at(return);
-        Ret == Dll{left: Seq_Nil{}, n: struct node{data: element, prev: NULL, next: NULL}, right: Seq_Nil{}};
+        Ret == Dll{left: Seq_Nil{}, curr: struct node{data: element, prev: NULL, next: NULL}, right: Seq_Nil{}};
 @*/
 {
    struct node *n = malloc_node();

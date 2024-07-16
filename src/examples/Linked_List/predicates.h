@@ -6,7 +6,7 @@ predicate (datatype Dll) Dll_at (pointer p) {
         take n = Owned<struct node>(p);
         take Left = Own_Backwards(n.prev, p, n);
         take Right = Own_Forwards(n.next, p, n);
-        return Dll{left: Left, n: n, right: Right};
+        return Dll{left: Left, curr: n, right: Right};
     }
 }
 

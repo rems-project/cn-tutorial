@@ -9,8 +9,8 @@ struct node_and_int *remove(struct node *n)
     ensures  take ret = Owned<struct node_and_int>(return);
              take after = Dll_at(ret.node);
              (is_null(del.prev) && is_null(del.next)) ? after == Empty_Dll{}
-                 : (!is_null(del.next) ? after == Dll{left: Left(before), n: Node(after), right: tl(Right(before))}
-                     : after == Dll{left: tl(Left(before)), n: Node(after), right: Right(before)});
+                 : (!is_null(del.next) ? after == Dll{left: Left(before), curr: Node(after), right: tl(Right(before))}
+                     : after == Dll{left: tl(Left(before)), curr: Node(after), right: Right(before)});
 @*/
 {
     if (n == 0) { //empty list case
