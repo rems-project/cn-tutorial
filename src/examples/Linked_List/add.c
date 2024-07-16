@@ -8,8 +8,8 @@ struct node *add(int element, struct node *n)
              let Right = Right(L);
     ensures  take L_ = Dll_at(return);
              let new_node = Node(L_);
-             is_null(n) ? L_ == Dll { left: Seq_Nil{}, n: new_node, right: Seq_Nil{}}
-                        : L_ == Dll { left: Seq_Cons{head: n_node.data, tail: Left}, n: new_node, right: Right};
+             is_null(n) ? L_ == Dll { left: Seq_Nil{}, curr: new_node, right: Seq_Nil{}}
+                        : L_ == Dll { left: Seq_Cons{head: n_node.data, tail: Left}, curr: new_node, right: Right};
 @*/
 {
     struct node *new_node = malloc_node();
