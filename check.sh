@@ -12,6 +12,7 @@ fi
 
 good=0
 bad=0
+declare -a bad_tests
 
 for file in $SCRIPT_DIR/src/examples/*c;
 do
@@ -20,10 +21,11 @@ do
     retval=$?
     if [[ $file == *.broken.c ]]
     then
-        if [[ $retval -eq 1 ]]; 
+        if [[ $retval -ne 0 ]]; 
         then
             good=$(($good+1))
         else
+            bad_tests[$bad]=$file
             bad=$(($bad+1))
         fi
     else
@@ -31,6 +33,7 @@ do
         then
             good=$(($good+1))
         else
+            bad_tests[$bad]=$file
             bad=$(($bad+1))
         fi
     fi
@@ -45,6 +48,10 @@ if [[ "$bad" = 0 ]]
 then
   exit 0
 else
+  echo "Failed tests:"
+  for file in ${bad_tests[@]}; do
+    echo $file
+  done
   exit 1
 fi
 
