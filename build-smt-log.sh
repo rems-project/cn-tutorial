@@ -9,7 +9,7 @@ then
     echo "using CN=$1 in $PWD"
     CN="$1"
 else
-    CN="cn"
+    CN="cn verify"
 fi
 
 # Generate a list of recently-changed files 
@@ -28,6 +28,7 @@ TEMP_DIR=$(realpath "$(mktemp -d ./tmp.XXXXXX)")
 # Create a log file listing the locations of SMT logs 
 DATE_STRING=$(date +"%Y-%m-%d_%H-%M-%S")
 echo "# Log date: $DATE_STRING" >> "$TEMP_DIR/manifest.md"
+echo "# $(cn --version)" >> "$TEMP_DIR/manifest.md"
 echo "" >> "$TEMP_DIR/manifest.md"
 
 ROOT_DIR=$(pwd)
@@ -42,17 +43,19 @@ for FILEPATH in $FILTERED_FILES; do
 
     cd $DIR 
     # Run CN on the target file 
-    $CN "$FILE" --solver-type=cvc5 --solver-logging="$LOG_DIR"
+    $CN "$FILE" --solver-type=cvc5 --solver-logging="$LOG_DIR"  1>&2
     cp "$FILE" "$LOG_DIR"
     cd "$ROOT_DIR"
 
     # Record the file in the manifest 
-    echo "$FILEPATH-log/" >> "$TEMP_DIR/manifest.md"
+    echo "$FILEPATH-log/" >> "$TEMP_DIR/manifest.md" 
   fi 
 done 
 
 # Create a zip file of the SMT logs 
 cd "$TEMP_DIR"
-zip -r "$ROOT_DIR/SMT-log-$DATE_STRING.zip" * 
+zip -r "$ROOT_DIR/SMT-log-$DATE_STRING.zip" *  1>&2 
 
 rm -r "$TEMP_DIR"
+
+echo "$ROOT_DIR/SMT-log-$DATE_STRING.zip"
