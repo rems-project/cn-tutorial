@@ -28,7 +28,7 @@ jobs:
           ruby-version: '2.7' 
 
       - name: Install AsciiDoctor
-        run: gem install asciidoctor
+        run: gem install asciidoctor pygments.rb
 
       - name: Clean the build directory 
         run: rm -rf build/* 
