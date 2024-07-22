@@ -7,7 +7,7 @@ then
     echo "using CN=$1 in $PWD"
     CN="$1"
 else
-    CN=cn
+    CN=cn verify
 fi
 
 good=0
