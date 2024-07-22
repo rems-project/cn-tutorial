@@ -26,7 +26,6 @@ int linear_search(int *a, int length, int key)
         each (i32 j; 0i32 <= j && j < idx) {IndexPre[j] != key}; @*/
   {
     /*@ extract Owned<int>, idx; @*/
-    /*@ instantiate good<int>, idx;  @*/
     if (*(a + idx) == key)
     {
       return idx;
