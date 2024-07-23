@@ -73,6 +73,7 @@ predicate (datatype seq) Own_Forwards(pointer p, pointer prev_pointer, struct no
     if (ptr_eq(p,b)) {
         assert(ptr_eq(Back.prev, prev_pointer));
         assert(ptr_eq(prev_node.next, b));
+        assert(ptr_eq(p,b));
         return Seq_Nil{};
     } else {
         take n = Owned<struct node>(p);
@@ -80,7 +81,9 @@ predicate (datatype seq) Own_Forwards(pointer p, pointer prev_pointer, struct no
         assert(ptr_eq(prev_node.next, p));
         assert(!is_null(n.next));
         assert(!is_null(n.prev));
+        assert(!ptr_eq(p,b));
         take Rest = Own_Forwards(n.next, p, n, b, Back);
+        assert(!(Seq_Cons{head: n.data, tail: Rest} == Seq_Nil{}));
         return Seq_Cons{head: n.data, tail: Rest};
     }
 }
