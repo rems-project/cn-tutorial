@@ -60,9 +60,11 @@ check: check-tutorial check-archive
 ##############################################################################
 # Tutorial document
 
-build/tutorial.adoc: src/tutorial.adoc
+build/tutorial.adoc build/style.css build/asciidoctor.css: src/tutorial.adoc
 	@echo Create build/tutorial.adoc
 	@sed -E 's/include_example\((.+)\)/.link:\1[\1]\n[source,c]\n----\ninclude::\1\[\]\n----/g' $< > $@
+	@cp src/style.css build
+	@cp src/asciidoctor.css build
 
 build/images: src/images
 	cp -r $< $@
