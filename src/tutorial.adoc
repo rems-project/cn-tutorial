@@ -1143,10 +1143,10 @@ as part of the rest (so that the new `+back+` cell can now be treated
 specially).
 
 One interesting technicality is worth noting: After the assignment
-`+q->back = c+` we can no longer prove `+IntQueueFB((*q).front,
+`+q->back = c+` we can no longer prove `+IntQueueFB(q->front,
 oldback)+`, but we don't care, since we want to prove
-`+IntQueueFB((*q).front, (*q).back)+`. However, crucially,
-`+IntQueueAux((*q).front, oldback)+` is still true.
+`+IntQueueFB(q->front, q->back)+`. However, crucially,
+`+IntQueueAux(q->front, oldback)+` is still true.
 
 // ======================================================================
 
@@ -1165,7 +1165,7 @@ include_example(exercises/queue_pop.c)
 
 There are three annotations to explain.  Let's consider them in order.
 
-First, the `+split_case+` on `+is_null((*q).front)+` is needed to tell
+First, the `+split_case+` on `+is_null(q->front)+` is needed to tell
 CN which of the branches of the `+if+` at the beginning of the
 `+IntQueueFB+` predicate it can "unpack".  (`+IntQueuePtr+` can be
 unpacked immediately because it is unconditional, but `+IntQueueFB+`
@@ -1354,7 +1354,7 @@ and the right part of the list is the same as before.
 Now, let's look at the annotations in the function body.
 CN can figure out the empty list case for itself, but it needs some help with the non-empty list case. The
 `split_case` on `is_null((\*n).prev)` tells CN to unpack the `Own_Backwards` predicate. Without this annotation,
-CN cannot reason that we didn't lose the left half of the list before we return, and will claim we are missing a resource for returning. The `split_case` on `is_null((*(*n).next).next)` is similar, but for unpacking the `Own_Forwards` predicate. Note that we 
+CN cannot reason that we didn't lose the left half of the list before we return, and will claim we are missing a resource for returning. The `split_case` on `is_null(n->next->next)` is similar, but for unpacking the `Own_Forwards` predicate. Note that we 
 have to go one more node forward to make sure that everything past `n->next` is still owned at the end of the function.
 
 
@@ -1484,9 +1484,6 @@ Further exercises:
 
 Misc things to do:
   - replace 0 with NULL in specs
-
-  - why do we have to write (*(*q).front).next instead of
-    q->front->next in CN expressions?  (Answer: not implemented yet!)
 
   - naming issues
         - rename == to ptr_eq everywhere in specs

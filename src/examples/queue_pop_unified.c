@@ -58,9 +58,9 @@ int IntQueue_pop (struct int_queue *q)
             return == hd(before);
 @*/
 {
-  /*@ split_case is_null((*q).front); @*/
+  /*@ split_case is_null(q->front); @*/
   struct int_queueCell* h = q->front;
-  /*@ split_case ptr_eq(h,(*q).back); @*/
+  /*@ split_case ptr_eq(h, q->back); @*/
   int x = h->first;
   q->front = h->next;
   freeIntQueueCell(h);
