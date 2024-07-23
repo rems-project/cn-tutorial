@@ -101,3 +101,44 @@ void own_fwd_eq_bwd_lemma(struct node *front, struct node *back)
         }
     }
 }
+
+void own_bwd_eq_fwd_lemma(struct node *front, struct node *back)
+/*@ requires
+            !ptr_eq(front, back);
+
+            take B = Owned<struct node>(back);
+            !is_null(B.prev);
+            
+            take F = Owned<struct node>(front);
+            !is_null(F.next);
+            is_null(F.prev);
+
+            take Bwd = Own_Backwards(B.prev, back, B, front, F);
+
+            ptr_eq(B.prev, front) implies Bwd == Seq_Nil{};
+            Bwd == Seq_Nil{} implies ptr_eq(B.prev, front);
+       
+    ensures
+            take B2 = Owned<struct node>(back);
+            B == B2;
+            take F2 = Owned<struct node>(front);
+            F == F2;
+            take Fwd = Own_Forwards(F.next, front, F, back, B);
+            rev(Bwd) == Fwd;
+@*/
+{
+    /*@ unfold rev(Seq_Nil{}); @*/
+    if (back->prev == 0) {
+        return;
+    } else {
+        if (back->prev == front) {
+            return;
+        } else {
+            /*@ split_case(ptr_eq(back->prev->prev, front)); @*/
+            own_bwd_eq_fwd_lemma(front, back->prev);
+            own_forwards_append_lemma(front, back->prev, back);
+            /*@ unfold rev(Bwd); @*/
+            return;
+        }
+    }
+}
