@@ -9,7 +9,7 @@ int IntQueue_pop (struct int_queue *q)
             return == hd(before);
 @*/
 {
-  /*@ split_case is_null((*q).front); @*/
+  /*@ split_case is_null(q->front); @*/
   struct int_queueCell* h = q->front;
   if (h == q->back) {
     int x = h->first;
@@ -20,7 +20,7 @@ int IntQueue_pop (struct int_queue *q)
     return x;
   } else {
     int x = h->first;
-    /*@ apply snoc_facts((*h).next, (*q).back, x); @*/
+    /*@ apply snoc_facts(h->next, q->back, x); @*/
     q->front = h->next;
     freeIntQueueCell(h);
     return x;
