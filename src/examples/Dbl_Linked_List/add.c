@@ -20,12 +20,12 @@ struct node *add(int element, struct node *n)
         new_node->next = 0;
         return new_node;
     } else { 
-        /*@ split_case(is_null((*n).prev)); @*/
+        /*@ split_case(is_null(n->prev)); @*/
         new_node->next = n->next;
         new_node->prev = n;
 
         if (n->next !=0) {
-            /*@ split_case(is_null((*(*n).next).next)); @*/
+            /*@ split_case(is_null(n->next->next)); @*/
             n->next->prev = new_node;
         }
 

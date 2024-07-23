@@ -153,7 +153,7 @@ This tells us to look at snoc, which turns out to be very wrong!
       c->first = x;
       c->next = 0;
       if (q->tail == 0) {
-        /*@ split_case (*q).head == NULL; @*/
+        /*@ split_case q->head == NULL; @*/
         /*@ apply snac_nil(x); @*/
         q->head = c;
         q->tail = c;

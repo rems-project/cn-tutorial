@@ -18,7 +18,7 @@ void IntQueue_push (int x, struct int_queue *q)
     struct int_queueCell *oldback = q->back;
     q->back->next = c;
     q->back = c;
-    /*@ apply push_lemma ((*q).front, oldback); @*/
+    /*@ apply push_lemma (q->front, oldback); @*/
     return;
   }
 }
