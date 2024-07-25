@@ -175,3 +175,103 @@ void own_bwd_eq_fwd_lemma(struct node *front, struct node *back)
         }
     }
 }
+
+void FB_Forwards_eq_backwards(struct node *front, struct node *back)
+/*@ requires
+        (is_null(front) && is_null(back)) || (!is_null(front) && !is_null(back));
+        take Q_Fwd = FB_Forwards(front, back);
+    ensures
+        take Q_Bwd = FB_Backwards(front, back);
+        rev(Q_Fwd) == Q_Bwd;
+@*/
+{
+    /*@ unfold rev(Seq_Nil{}); @*/
+    if (front == 0) {
+        return;
+    } else {
+        if (front == back) {
+            /*@ unfold rev(Seq_Cons{head: back->data, tail: Seq_Nil{}}); @*/
+            /*@ unfold snoc(Seq_Nil{}, back->data); @*/
+            return;
+        } else {
+            if (front->next == back)
+            {
+                /*@ unfold rev(Seq_Cons{head: back->data, tail: Seq_Nil{}}); @*/
+                /*@ unfold snoc(Seq_Nil{}, back->data); @*/
+                /*@ unfold rev(Q_Fwd); @*/
+                /*@ unfold snoc(Seq_Nil{}, front->data); @*/
+                /*@ unfold snoc(Seq_Cons{head: back->data, tail: Seq_Nil{}}, front->data); @*/
+                    
+                return;
+            }
+            else {
+                own_fwd_eq_bwd_lemma(front, back);
+                return;
+            }
+        }
+    }
+}
+
+void FB_Backwards_eq_Forwards(struct node *front, struct node *back)
+/*@ requires
+        (is_null(front) && is_null(back)) || (!is_null(front) && !is_null(back));
+        take Q_Bwd = FB_Backwards(front, back);
+    ensures
+        take Q_Fwd = FB_Forwards(front, back);
+        rev(Q_Bwd) == Q_Fwd;
+@*/
+{
+    /*@ unfold rev(Seq_Nil{}); @*/
+    if (back == 0) {
+        return;
+    } else {
+        if (front == back) {
+            /*@ unfold rev(Seq_Cons{head: front->data, tail: Seq_Nil{}}); @*/
+            /*@ unfold snoc(Seq_Nil{}, front->data); @*/
+            return;
+        } else {
+            if (back->prev == front)
+            {
+                /*@ unfold rev(Seq_Cons{head: front->data, tail: Seq_Nil{}}); @*/
+                /*@ unfold snoc(Seq_Nil{}, front->data); @*/
+                /*@ unfold rev(Q_Bwd); @*/
+                /*@ unfold snoc(Seq_Nil{}, back->data); @*/
+                /*@ unfold snoc(Seq_Cons{head: front->data, tail: Seq_Nil{}}, back->data); @*/
+                    
+                return;
+            }
+            else {
+                own_bwd_eq_fwd_lemma(front, back);
+                return;
+            }
+        }
+    }
+}
+
+void Dbl_Queue_Forwards_eq_backwards(struct dbl_queue *q)
+/*@ requires take Q_Fwd = Dbl_Queue_Forwards(q);
+    ensures take Q_Bwd = Dbl_Queue_Backwards(q);
+            rev(Q_Fwd) == Q_Bwd;
+@*/
+{
+    /*@ unfold rev(Seq_Nil{}); @*/
+    if (q == 0) {
+        return;
+    } else {
+        FB_Forwards_eq_backwards(q->front, q->back);
+    }
+}
+
+void Dbl_Queue_Backwards_eq_Forwards(struct dbl_queue *q)
+/*@ requires take Q_Bwd = Dbl_Queue_Backwards(q);
+    ensures take Q_Fwd = Dbl_Queue_Forwards(q);
+            rev(Q_Bwd) == Q_Fwd;
+@*/
+{
+    /*@ unfold rev(Seq_Nil{}); @*/
+    if (q == 0) {
+        return;
+    } else {
+        FB_Backwards_eq_Forwards(q->front, q->back);
+    }
+}
