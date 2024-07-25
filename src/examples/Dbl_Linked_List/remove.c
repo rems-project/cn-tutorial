@@ -17,12 +17,12 @@ struct node_and_int *remove(struct node *n)
 {
     struct node *temp = 0;
     if (n->prev != 0) {
-        /*@ split_case(is_null(n->prev->prev); @*/
+        /*@ split_case(is_null(n->prev->prev)); @*/
         n->prev->next = n->next;
         temp = n->prev;
     }
     if (n->next != 0) {
-        /*@ split_case(is_null(n->next->next); @*/
+        /*@ split_case(is_null(n->next->next)); @*/
         n->next->prev = n->prev;
         temp = n->next;
     }
