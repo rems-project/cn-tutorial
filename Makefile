@@ -31,7 +31,7 @@ build/solutions/%: src/examples/%
 	@if [ `which cn` ]; then \
 	  if [[ "$<" = *".c"* ]]; then \
 	    if [[ "$<" != *"broken"* ]]; then \
-	       echo cn $< && cn $<; \
+	       echo cn $< && cn verify $<; \
 	    fi; \
 	  fi \
 	fi
