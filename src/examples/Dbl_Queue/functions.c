@@ -26,8 +26,10 @@ extern void free_node (struct node *p);
 @*/
 
 struct dbl_queue *empty_dbl_queue()
-/*@ ensures take ret = Dbl_Queue_Forwards(return);
-            ret == Seq_Nil{};
+/*@ ensures 
+        !is_null(return);
+        take ret = Dbl_Queue_Forwards(return);
+        ret == Seq_Nil{};
 @*/
 {
   struct dbl_queue *q = malloc_dbl_queue();
