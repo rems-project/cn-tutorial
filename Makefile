@@ -19,6 +19,8 @@ SRC_EXAMPLES=$(shell find src/examples -type f)
 SOLUTIONS=$(patsubst src/examples/%, build/solutions/%, $(SRC_EXAMPLES))
 EXERCISES=$(patsubst src/examples/%, build/exercises/%, $(SRC_EXAMPLES))
 
+CN=cn verify
+
 exercises: $(EXERCISES) $(SOLUTIONS)
 
 build/exercises/%: src/examples/%
@@ -31,7 +33,7 @@ build/solutions/%: src/examples/%
 	@if [ `which cn` ]; then \
 	  if [[ "$<" = *".c"* ]]; then \
 	    if [[ "$<" != *"broken"* ]]; then \
-	       echo cn $< && cn verify $<; \
+	       echo $(CN) $< && $(CN) $<; \
 	    fi; \
 	  fi \
 	fi
