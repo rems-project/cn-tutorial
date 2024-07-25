@@ -52,11 +52,13 @@ predicate (datatype seq) FB_Forwards (pointer front, pointer back) {
             assert (is_null(F.prev));
             return Seq_Cons {head: F.data, tail: Seq_Nil{}};
         } else {
-            take B = Owned<struct node>(back);
+            take B = Owned<struct node>(back); //idea: own LAST
             assert (is_null(B.next));
             take F = Owned<struct node>(front);
             assert(is_null(F.prev));
             take Rest = Own_Forwards(F.next, front, F, back, B);
+            assert(ptr_eq(F.next, back) implies Rest == Seq_Nil{});
+            assert(Rest == Seq_Nil{} implies ptr_eq(F.next, back));
             return Seq_Cons{ head: F.data, tail: snoc(Rest, B.data)};
         }
     }
@@ -128,6 +130,8 @@ predicate (datatype seq) FB_Backwards (pointer front, pointer back) {
             take F = Owned<struct node>(front);
             assert(is_null(F.prev));
             take Rest = Own_Backwards(B.prev, back, B, front, F);
+            assert(ptr_eq(B.prev, front) implies Rest == Seq_Nil{});
+            assert(Rest == Seq_Nil{} implies ptr_eq(B.prev, front));
             return Seq_Cons{ head: B.data, tail: snoc(Rest, F.data)};
         }
     }
