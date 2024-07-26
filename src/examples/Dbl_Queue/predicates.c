@@ -20,9 +20,9 @@ struct node {
 // asserts that the front and back pointers are either
 // both null or both point to a node. It then takes 
 // ownership of the nodes in the list in the forwards
-// direction through a call to FB_Forwards. It returns 
+// direction through a call to Own_Front_Back_Fwds. It returns 
 // a sequence of integers representing the data in the queue.
-predicate (datatype seq) Dbl_Queue_Forwards (pointer l) {
+predicate (datatype seq) Dbl_Queue_Fwd_At (pointer l) {
     if (is_null(l)) {
         return Seq_Nil{};
     }
@@ -30,18 +30,18 @@ predicate (datatype seq) Dbl_Queue_Forwards (pointer l) {
         take L = Owned<struct dbl_queue>(l);
         assert (   (is_null(L.front)  && is_null(L.back)) 
                 || (!is_null(L.front) && !is_null(L.back)));
-        take inner = FB_Forwards(L.front, L.back);
+        take inner = Own_Front_Back_Fwds(L.front, L.back);
         return inner;
     }
 }
 
 
 // This predicate owns the front and back nodes in the queue, and then
-// takes calls Own_Forwards to take ownership of the rest of the nodes
+// takes calls Own_Inner_Fwds to take ownership of the rest of the nodes
 // in the queue. It asserts that the front node has a null prev pointer
 // and that the back node has a null next pointer. It then returns a
 // sequence of integers representing the data in the queue.
-predicate (datatype seq) FB_Forwards (pointer front, pointer back) {
+predicate (datatype seq) Own_Front_Back_Fwds (pointer front, pointer back) {
     if (is_null(front)) {
         return Seq_Nil{};
     } else {
@@ -58,7 +58,7 @@ predicate (datatype seq) FB_Forwards (pointer front, pointer back) {
             assert(is_null(F.prev));
             assert(!is_null(F.next));
             assert(!is_null(B.prev));
-            take Rest = Own_Forwards(F.next, front, F, back, B);
+            take Rest = Own_Inner_Fwds(F.next, front, F, back, B);
             return Seq_Cons{ head: F.data, tail: Rest};
         }
     }
@@ -69,9 +69,9 @@ predicate (datatype seq) FB_Forwards (pointer front, pointer back) {
 // also asserts that any node owned in this predicate is not the front
 // or the back node. It calls itself recursively, walking forwards until
 // it reaches the last node in the list, which was already owned in the 
-// `FB_Forwards` predicate. The base case puts the back node into the sequence,
+// `Own_Front_Back_Fwds` predicate. The base case puts the back node into the sequence,
 // in order to avoid a call to `snoc`. This helps avoid future calls to `unfold`.
-predicate (datatype seq) Own_Forwards(pointer p, pointer prev_pointer, struct node prev_node, pointer b, struct node Back) {
+predicate (datatype seq) Own_Inner_Fwds(pointer p, pointer prev_pointer, struct node prev_node, pointer b, struct node Back) {
     if (ptr_eq(p,b)) {
         assert(ptr_eq(Back.prev, prev_pointer));
          assert(ptr_eq(prev_node.next, p));
@@ -82,7 +82,7 @@ predicate (datatype seq) Own_Forwards(pointer p, pointer prev_pointer, struct no
         assert(ptr_eq(prev_node.next, p));
         assert(!is_null(n.next));
         assert(!is_null(n.prev));
-        take Rest = Own_Forwards(n.next, p, n, b, Back);
+        take Rest = Own_Inner_Fwds(n.next, p, n, b, Back);
         return Seq_Cons{head: n.data, tail: Rest};
     }
 }
@@ -91,10 +91,10 @@ predicate (datatype seq) Own_Forwards(pointer p, pointer prev_pointer, struct no
 // asserts that the front and back pointers are either
 // both null or both point to a node. It then takes 
 // ownership of the nodes in the list in the backwards
-// direction through a call to FB_Backwards. It returns 
+// direction through a call to Own_Front_Back_Bwds. It returns 
 // a sequence of integers representing the data in the queue
-// BACKWARDS. It returns the reverse of a call to Dbl_Queue_Forwards.
-predicate (datatype seq) Dbl_Queue_Backwards (pointer l) {
+// BACKWARDS. It returns the reverse of a call to Dbl_Queue_Fwd_At.
+predicate (datatype seq) Dbl_Queue_Bwd_At (pointer l) {
     if (is_null(l)) {
         return Seq_Nil{};
     }
@@ -102,17 +102,17 @@ predicate (datatype seq) Dbl_Queue_Backwards (pointer l) {
         take L = Owned<struct dbl_queue>(l);
         assert (   (is_null(L.front)  && is_null(L.back)) 
                 || (!is_null(L.front) && !is_null(L.back)));
-        take inner = FB_Backwards(L.front, L.back);
+        take inner = Own_Front_Back_Bwds(L.front, L.back);
         return inner;
     }
 }
 
 // This predicate owns the front and back nodes in the queue, and then
-// takes calls Own_Backwards to take ownership of the rest of the nodes
+// takes calls Own_Inner_Bwds to take ownership of the rest of the nodes
 // in the queue. It asserts that the front node has a null prev pointer
 // and that the back node has a null next pointer. It then returns a
 // sequence of integers representing the data in the queue BACKWARDS.
-predicate (datatype seq) FB_Backwards (pointer front, pointer back) {
+predicate (datatype seq) Own_Front_Back_Bwds (pointer front, pointer back) {
     if (is_null(front)) {
         return Seq_Nil{};
     } else {
@@ -128,7 +128,7 @@ predicate (datatype seq) FB_Backwards (pointer front, pointer back) {
             assert(is_null(F.prev));
             assert(!is_null(F.next));
             assert(!is_null(B.prev));
-            take Rest = Own_Backwards(B.prev, back, B, front, F);
+            take Rest = Own_Inner_Bwds(B.prev, back, B, front, F);
             return Seq_Cons{ head: B.data, tail: Rest};
         }
     }
@@ -139,10 +139,10 @@ predicate (datatype seq) FB_Backwards (pointer front, pointer back) {
 // also asserts that any node owned in this predicate is not the front
 // or the back node. It calls itself recursively, walking backwards until
 // it reaches the first node in the list, which was already owned in the 
-// `FB_Backwards` predicate. The base case puts the front node into the sequence,
+// `Own_Front_Back_Bwds` predicate. The base case puts the front node into the sequence,
 // in order to avoid a call to `snoc`. This helps avoid future calls to `unfold`.
 // Note that the front is put in the back because this sequence is backwards.
-predicate (datatype seq) Own_Backwards(pointer p, pointer next_pointer, struct node next_node, pointer f, struct node Front) {
+predicate (datatype seq) Own_Inner_Bwds(pointer p, pointer next_pointer, struct node next_node, pointer f, struct node Front) {
     if (ptr_eq(p,f)) {
         assert(ptr_eq(Front.next, next_pointer));
         assert(ptr_eq(next_node.prev, p));
@@ -153,7 +153,7 @@ predicate (datatype seq) Own_Backwards(pointer p, pointer next_pointer, struct n
         assert(ptr_eq(next_node.prev, p));
         assert(!is_null(n.next));
         assert(!is_null(n.prev));
-        take Rest = Own_Backwards(n.prev, p, n, f, Front);
+        take Rest = Own_Inner_Bwds(n.prev, p, n, f, Front);
         return Seq_Cons{head: n.data, tail: Rest};
     }
 }

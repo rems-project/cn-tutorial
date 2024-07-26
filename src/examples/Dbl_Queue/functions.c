@@ -28,7 +28,7 @@ extern void free_node (struct node *p);
 struct dbl_queue *empty_dbl_queue()
 /*@ ensures 
         !is_null(return);
-        take ret = Dbl_Queue_Forwards(return);
+        take ret = Dbl_Queue_Fwd_At(return);
         ret == Seq_Nil{};
 @*/
 {
@@ -42,8 +42,8 @@ struct dbl_queue *empty_dbl_queue()
 // to the front of the list
 void push_front (struct dbl_queue* q, int element)
 /*@ requires (!is_null(q));
-             take Before = Dbl_Queue_Forwards(q);
-    ensures  take After = Dbl_Queue_Forwards(q);
+             take Before = Dbl_Queue_Fwd_At(q);
+    ensures  take After = Dbl_Queue_Fwd_At(q);
              After == Seq_Cons{head: element, tail: Before};
 @*/
 {
@@ -68,9 +68,9 @@ void push_front (struct dbl_queue* q, int element)
 
 int pop_front (struct dbl_queue* q)
 /*@ requires (!is_null(q));
-             take Before = Dbl_Queue_Forwards(q);
+             take Before = Dbl_Queue_Fwd_At(q);
              Before != Seq_Nil{};
-    ensures  take After = Dbl_Queue_Forwards(q);
+    ensures  take After = Dbl_Queue_Fwd_At(q);
              After == tl(Before);
              hd(Before) == return;
 @*/
@@ -102,8 +102,8 @@ int pop_front (struct dbl_queue* q)
 // to the back of the list
 void push_back (struct dbl_queue* q, int element)
 /*@ requires (!is_null(q));
-             take Before = Dbl_Queue_Backwards(q);
-    ensures  take After = Dbl_Queue_Backwards(q);
+             take Before = Dbl_Queue_Bwd_At(q);
+    ensures  take After = Dbl_Queue_Bwd_At(q);
              After == Seq_Cons{head: element, tail: Before};
             //  Before == snoc(After, element); // reverse???
 @*/
@@ -130,9 +130,9 @@ void push_back (struct dbl_queue* q, int element)
 
 int pop_back (struct dbl_queue* q)
 /*@ requires (!is_null(q));
-             take Before = Dbl_Queue_Backwards(q);
+             take Before = Dbl_Queue_Bwd_At(q);
              Before != Seq_Nil{};
-    ensures  take After = Dbl_Queue_Backwards(q);
+    ensures  take After = Dbl_Queue_Bwd_At(q);
              After == tl(Before);
              hd(Before) == return;
 @*/
