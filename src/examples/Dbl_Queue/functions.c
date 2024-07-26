@@ -75,32 +75,26 @@ int pop_front (struct dbl_queue* q)
              hd(Before) == return;
 @*/
 {
-    if (q->front == 0){
-        // impossible case from preconditions
-        return 0;
+    /*@ split_case(is_null(q->back)); @*/
+    /*@ assert(!is_null(q->front)); @*/
+
+    if (q->front == q->back) { // singleton list case
+        int data = q->front->data;
+        free_node(q->front);
+        q->front = 0;
+        q->back = 0;
+        return data;
+
     } else {
-    // /*@ split_case is_null((*q).front); @*/
-    // /*@ apply empty_queue_seq_nil(q); @*/
-    // /*@ assert(Before != Seq_Nil{} implies !is_null((*q).front); @*/
-    // /*@ assert(!is_null((*q).front)); @*/
-        if (q->front == q->back) { // singleton list case
-            int data = q->front->data;
-            free_node(q->front);
-            q->front = 0;
-            q->back = 0;
-            return data;
+        /*@ split_case(ptr_eq((*(*q).front).next, (*q).back)); @*/
+        struct node *front = q->front;
+        int data = front->data;
+        front->next->prev = 0;
+        q->front = front->next;
+        free_node(front);
 
-        } else {
-            /*@ split_case(ptr_eq((*(*q).front).next, (*q).back)); @*/
-            struct node *front = q->front;
-            int data = front->data;
-            front->next->prev = 0;
-            q->front = front->next;
-            free_node(front);
-
-            /*@ split_case(ptr_eq((*(*q).front).next, (*q).back)); @*/
-            return data;
-        }
+        /*@ split_case(ptr_eq((*(*q).front).next, (*q).back)); @*/
+        return data;
     }
 }
 
@@ -143,27 +137,25 @@ int pop_back (struct dbl_queue* q)
              hd(Before) == return;
 @*/
 {
-    if (q->front == 0){
-        // impossible case from preconditions
-        return 0;
+    /*@ split_case(is_null(q->back)); @*/
+    /*@ assert(!is_null(q->front)); @*/
+
+    if (q->front == q->back) { // singleton list case
+        int data = q->back->data;
+        free_node(q->back);
+        q->front = 0;
+        q->back = 0;
+        return data;
+
     } else {
-        if (q->front == q->back) { // singleton list case
-            int data = q->back->data;
-            free_node(q->back);
-            q->front = 0;
-            q->back = 0;
-            return data;
+        /*@ split_case(ptr_eq((*(*q).back).prev, (*q).front)); @*/
+        struct node *back = q->back;
+        int data = back->data;
+        back->prev->next = 0;
+        q->back = back->prev;
+        free_node(back);
 
-        } else {
-            /*@ split_case(ptr_eq((*(*q).back).prev, (*q).front)); @*/
-            struct node *back = q->back;
-            int data = back->data;
-            back->prev->next = 0;
-            q->back = back->prev;
-            free_node(back);
-
-            /*@ split_case(ptr_eq((*(*q).back).prev, (*q).front)); @*/
-            return data;
-        }
+        /*@ split_case(ptr_eq((*(*q).back).prev, (*q).front)); @*/
+        return data;
     }
 }
