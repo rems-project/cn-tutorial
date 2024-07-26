@@ -21,7 +21,7 @@ int main()
     /*@ assert(q->back->data == 1i32); @*/
 
 
-    Dbl_Queue_Forwards_eq_backwards(q);
+    Dbl_Queue_Fwd_At_eq_Bwd_lemma(q);
     /*@ split_case(is_null(q)); @*/
     /*@ split_case(is_null(q->front)); @*/
     /*@ split_case(is_null(q->back)); @*/
@@ -43,7 +43,7 @@ int main()
     // /*@ assert(q->front->data == 1i32); @*/
     // /*@ assert(q->back->data == 2i32); @*/
 
-    Dbl_Queue_Backwards_eq_Forwards(q);
+    Dbl_Queue_Bwd_At_eq_Fwd_lemma(q);
     push_front(q, 3);
 
    
@@ -75,7 +75,7 @@ int main()
     /*@ assert(q->front->data == 3i32); @*/
     /*@ assert(q->back->data == 2i32); @*/
 
-    Dbl_Queue_Forwards_eq_backwards(q);
+    Dbl_Queue_Fwd_At_eq_Bwd_lemma(q);
     /*@ split_case(is_null(q)); @*/
     /*@ split_case(is_null(q->front)); @*/
     /*@ split_case(is_null(q->back)); @*/
