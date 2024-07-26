@@ -1,6 +1,6 @@
 #ifndef CN_UTILS
-void *cn_malloc(unsigned long long);
-void cn_free_sized(void*, unsigned long long);
+void *cn_malloc(unsigned long);
+void cn_free_sized(void*, unsigned long);
 #endif
 
 #include <limits.h>
