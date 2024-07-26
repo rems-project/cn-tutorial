@@ -1,5 +1,3 @@
-#include <limits.h>
-
 int abs_mem (int *p)
 /* --BEGIN-- */
 /*@ requires take x = Owned<int>(p);
@@ -18,21 +16,17 @@ int abs_mem (int *p)
     return -x;
   }
 }
-
 int main()
 /*@ trusted; @*/
 {
-    int i = INT_MAX;
+    int i = 0x7fffffff;
     int x = abs_mem(&i);
     /*@ assert (x == MAXi32()); @*/
-
-    i = INT_MIN+1;
+    i = (-0x7fffffff - 1)+1;
     int y = abs_mem(&i);
     /*@ assert (y == MAXi32()); @*/
-
     i = 0;
     int z = abs_mem(&i);
     /*@ assert (z == 0i32); @*/
-
     // int bad = abs_mem(0);
 }

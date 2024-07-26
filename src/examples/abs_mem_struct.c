@@ -1,5 +1,3 @@
-#include <limits.h>
-
 int abs_mem (int *p)
 /* --BEGIN-- */
 /*@ requires take x = Owned<int>(p);
@@ -18,15 +16,10 @@ int abs_mem (int *p)
     return -x;
   }
 }
-
-
-
 struct tuple {
   int x;
   int y;
 };
-
-
 int abs_y (struct tuple *p)
 /*@ requires take s = Owned(p);
              MINi32() < s.y;
@@ -37,24 +30,18 @@ int abs_y (struct tuple *p)
 {
   return abs_mem(&p->y);
 }
-
-
 int main()
 /*@ trusted; @*/
 {
     struct tuple t = { .x = 0 };
-
-    t.y = INT_MAX;
+    t.y = 0x7fffffff;
     int x = abs_y(&t);
     /*@ assert (x == MAXi32() && t == { y : MAXi32(), ..t}); @*/
-
-    t.y = INT_MIN+1;
+    t.y = (-0x7fffffff - 1)+1;
     int y = abs_y(&t);
     /*@ assert (y == MAXi32() && t == { y : MINi32() + 1i32, ..t}); @*/
-
     t.y = 0;
     int z = abs_y(&t);
     /*@ assert (z == 0i32 && t == { y : 0i32, ..t}); @*/
-
     // int bad = abs_y(0);
 }

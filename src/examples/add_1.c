@@ -1,4 +1,3 @@
-#include <limits.h>
 int add(int x, int y)
 /* --BEGIN-- */
 /*@ requires let sum = (i64) x + (i64) y;
@@ -9,13 +8,11 @@ int add(int x, int y)
 {
   return x+y;
 }
-
 int main()
 /*@ trusted; @*/
 {
-    int x = add(INT_MAX-1, 1);
+    int x = add(0x7fffffff -1, 1);
     /*@ assert (x == MAXi32()); @*/
-
-    int y = add(INT_MIN+1, -1);
+    int y = add((-0x7fffffff - 1)+1, -1);
     /*@ assert (y == MINi32()); @*/
 }

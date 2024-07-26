@@ -1,5 +1,3 @@
-#include <limits.h>
-
 void incr (int *p)
 /* --BEGIN-- */
 /*@ requires take v1 = Owned<int>(p);
@@ -11,11 +9,10 @@ void incr (int *p)
 {
   *p = *p+1;
 }
-
 int main()
 /*@ trusted; @*/
 {
-    int x = INT_MAX-1;
+    int x = 0x7fffffff -1;
     incr(&x);
     /*@ assert (x == MAXi32()); @*/
 }

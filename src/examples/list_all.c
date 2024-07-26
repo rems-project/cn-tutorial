@@ -488,6 +488,49 @@ unsigned int IntList_length_acc (struct int_list *xs)
   return x;
 }
 
+struct int_list* IntList_append(struct int_list* xs, struct int_list* ys)
+/*@ requires take L1 = IntList(xs); @*/
+/*@ requires take L2 = IntList(ys); @*/
+/*@ ensures take L3 = IntList(return); @*/
+/*@ ensures L3 == append(L1, L2); @*/
+{
+  if (xs == 0) {
+    /*@ unfold append(L1, L2); @*/
+    return ys;
+  } else {
+    /*@ unfold append(L1, L2); @*/
+    struct int_list *new_tail = IntList_append(xs->tail, ys);
+    xs->tail = new_tail;
+    return xs;
+  }
+}
+
+struct int_list* IntList_append2 (struct int_list *xs, struct int_list *ys)
+/* --BEGIN-- */
+/*@ requires take L1 = IntList(xs); @*/
+/*@ requires take L2 = IntList(ys); @*/
+/*@ ensures take L1_ = IntList(xs); @*/
+/*@ ensures take L2_ = IntList(ys); @*/
+/*@ ensures take L3 = IntList(return); @*/
+/*@ ensures L3 == append(L1, L2); @*/
+/*@ ensures L1 == L1_; @*/
+/*@ ensures L2 == L2_; @*/
+/* --END-- */
+{
+  if (xs == 0) {
+/* --BEGIN-- */
+    /*@ unfold append(L1, L2); @*/
+/* --END-- */
+    return IntList_copy(ys);
+  } else {
+/* --BEGIN-- */
+    /*@ unfold append(L1, L2); @*/
+/* --END-- */
+    struct int_list *new_tail = IntList_append2(xs->tail, ys);
+    return IntList_cons(xs->head, new_tail);
+  }
+}
+
 int main()
 /*@ trusted; @*/
 {
@@ -517,4 +560,17 @@ int main()
     /*@ assert (acc == 5u32); @*/
 
     IntList_free_list(rev_rev);
+
+    struct int_list num3 = { .head = 3, .tail = 0 };
+    struct int_list num2 = { .head = 2, .tail = &num3 };
+    struct int_list num1 = { .head = 1, .tail = &num2 };
+
+    struct int_list ys = { .head = 4, .tail = 0 };
+
+    struct int_list *res = IntList_append2(&num1, &ys);
+
+    struct int_list *res1 = IntList_append(0, &ys);
+
+    struct int_list *res2 = IntList_append(&num1, &ys);
+
 }
