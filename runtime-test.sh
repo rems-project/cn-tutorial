@@ -10,6 +10,7 @@ SUCCESS=$(find src/examples -name '*.c' \
     ! -name "read.broken.c" \
     ! -name slf14_basic_succ_using_incr_attempt.broken.c)
 
+# https://github.com/rems-project/cerberus/issues/444
 BUGGY=("src/examples/abs_mem_struct.c")
 
 SHOULD_FAIL=("src/examples/read.broken.c" "src/examples/slf14_basic_succ_using_incr_attempt.broken.c")

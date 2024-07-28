@@ -31,7 +31,6 @@ int abs_y (struct tuple *p)
   return abs_mem(&p->y);
 }
 int main()
-/*@ trusted; @*/
 {
     struct tuple t = { .x = 0 };
     t.y = 0x7fffffff;
