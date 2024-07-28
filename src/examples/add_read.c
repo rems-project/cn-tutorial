@@ -16,7 +16,7 @@ int main()
 /*@ trusted; @*/
 {
     unsigned int x = 5;
-    unsigned int y  = 7;
+    unsigned int y = 7;
 
     unsigned int res = add(&x, &y);
     /*@ assert (x == 5u32); @*/

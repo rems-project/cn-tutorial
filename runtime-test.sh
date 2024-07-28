@@ -7,11 +7,10 @@ SCRIPT_OPT="-oq"
 
 SUCCESS=$(find src/examples -name '*.c' \
     ! -name abs_mem_struct.c \
-    ! -name add_read.c \
     ! -name "read.broken.c" \
     ! -name slf14_basic_succ_using_incr_attempt.broken.c)
 
-BUGGY=("src/examples/abs_mem_struct.c" "src/examples/add_read.c")
+BUGGY=("src/examples/abs_mem_struct.c")
 
 SHOULD_FAIL=("src/examples/read.broken.c" "src/examples/slf14_basic_succ_using_incr_attempt.broken.c")
 
