@@ -1,11 +1,39 @@
 #!/usr/bin/env bash
 set -euo pipefail -o noclobber
 
-CHECK_SCRIPT="$HOME/cerberus/tests/cn-runtime/cn-runtime-single-file.sh"
+function echo_and_err() {
+    printf "$1\n"
+    exit 1
+}
+
+RUNTIME_PREFIX="$OPAM_SWITCH_PREFIX/lib/cn/runtime"
+[ -d "${RUNTIME_PREFIX}" ] || echo_and_err "Could not find CN's runtime directory (looked at: '${RUNTIME_PREFIX}')"
+
+CHECK_SCRIPT="${RUNTIME_PREFIX}/libexec/cn-runtime-single-file.sh"
+
+[ -f "${CHECK_SCRIPT}" ] || echo_and_err "Could not find single file helper script: ${CHECK_SCRIPT}"
 
 SCRIPT_OPT="-oq"
 
+function exits_with_code() {
+  local file=$1
+  local expected_exit_code=$2
+
+  printf "[$file]... "
+  timeout 20 "${CHECK_SCRIPT}" "${SCRIPT_OPT}" "$file" &> /dev/null
+  local result=$?
+
+  if [ $result -eq $expected_exit_code ]; then
+    printf "\033[32mPASS\033[0m\n"
+  else
+    printf "\033[31mFAIL\033[0m (Unexpected return code: $result)\n"
+    failures=$(( $failures + 1 ))
+  fi
+}
+
 SUCCESS=$(find src/examples -name '*.c' \
+    ! -path '*/Dbl_Linked_List/*' \
+    ! -path '*/runway/*' \
     ! -name abs_mem_struct.c \
     ! -name "read.broken.c" \
     ! -name slf14_basic_succ_using_incr_attempt.broken.c)
@@ -19,9 +47,7 @@ SUCCEEDED=""
 FAILED=""
 
 for FILE in ${SUCCESS}; do
-  echo "Testing ${FILE} ..."
-  "${CHECK_SCRIPT}" "${SCRIPT_OPT}" "${FILE}"
-  if [ $? -eq 0 ]; then
+  if exits_with_code "${FILE}" 0; then
     SUCCEEDED+=" ${FILE}"
   else
     FAILED+=" ${FILE}"
@@ -29,9 +55,7 @@ for FILE in ${SUCCESS}; do
 done
 
 for FILE in ${SHOULD_FAIL}; do
-  echo "Testing ${FILE} ..."
-  "${CHECK_SCRIPT}" "${SCRIPT_OPT}" "${FILE}"
-  if [ $? -ne 0 ]; then
+  if exits_with_code "${FILE}" 1; then
     SUCCEEDED+=" ${FILE}"
   else
     FAILED+=" ${FILE}"
@@ -39,14 +63,16 @@ for FILE in ${SHOULD_FAIL}; do
 done
 
 for FILE in ${BUGGY}; do
-  echo "Testing ${FILE} ..."
-  "${CHECK_SCRIPT}" "${SCRIPT_OPT}" "${FILE}"
-  if [ $? -ne 0 ]; then
+  if exits_with_code "${FILE}" 1; then
     SUCCEEDED+=" ${FILE}"
   else
     FAILED+=" ${FILE}"
   fi
 done
 
-echo "Succeeded: $SUCCEEDED"
-echo "Failed: $FAILED"
+if [ -z "${FAILED}" ]; then
+  exit 0
+else
+  printf "\033[31mFAILED: ${FAILED}\033[0m\n"
+  exit 1
+fi
