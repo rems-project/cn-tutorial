@@ -1,4 +1,4 @@
-#include "./predicates.c"
+// #include "./predicates.c"
 
 void Own_Inner_fwds_append_lemma(struct node *front, struct node *second_last, struct node *last)
 /*@
