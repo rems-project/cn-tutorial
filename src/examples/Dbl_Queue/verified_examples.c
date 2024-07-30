@@ -1,5 +1,6 @@
-#include "./functions.c"
-#include "./lemmas.c"
+#include "headers.h"
+#include "./functions.h"
+#include "./lemmas.h"
 
 void ex_front()
 {
