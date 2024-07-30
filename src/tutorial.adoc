@@ -1520,7 +1520,7 @@ Note that once again, we include any information we usually get from the predica
 
 *Exercise*: Explore what would happen if we tried to only use the forwards predicates for the backwards operations. Can you get this to work? Why or why not?
 
-If you get stuck, full verfied solutions can be found in `functions.h`, `lemmas..h`, and `verified_examples.c`.
+If you get stuck, full verified solutions can be found in `functions.h`, `lemmas.h`, and `verified_examples.c`.
 
 === The Runway
 
