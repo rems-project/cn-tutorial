@@ -1,10 +1,10 @@
 unsigned int add (unsigned int *p, unsigned int *q)
-/*@ requires take m = Owned<unsigned int>(p);
-             take n = Owned<unsigned int>(q);
-    ensures take m2 = Owned<unsigned int>(p);
-            take n2 = Owned<unsigned int>(q);
-            m == m2 && n == n2;
-            return == m + n;
+/*@ requires take P = Owned<unsigned int>(p);
+             take Q = Owned<unsigned int>(q);
+    ensures take P_post = Owned<unsigned int>(p);
+            take Q_post = Owned<unsigned int>(q);
+            P == P_post && Q == Q_post;
+            return == P + Q;
 @*/
 {
   unsigned int m = *p;
