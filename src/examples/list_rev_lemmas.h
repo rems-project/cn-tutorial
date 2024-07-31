@@ -1,10 +1,10 @@
 /*@
-lemma append_nil_r (datatype seq l1)
+lemma Append_Nil_R__Seq_Int (datatype Seq_Int L1)
   requires true;
-  ensures append(l1, Seq_Nil {}) == l1;
+  ensures Append__Seq_Int(L1, Nil__Seq_Int{}) == L1;
 
-lemma append_cons_r (datatype seq l1, i32 x, datatype seq l2)
+lemma Append_Cons_R__Seq_Int (datatype Seq_Int L1, i32 X, datatype Seq_Int L2)
   requires true;
-  ensures append(l1, Seq_Cons {head: x, tail: l2})
-          == append(snoc(l1, x), l2);
+  ensures Append__Seq_Int(L1, Cons__Seq_Int {Head: X, Tail: L2})
+          == Append__Seq_Int(Snoc__Seq_Int(L1, X), L2);
 @*/

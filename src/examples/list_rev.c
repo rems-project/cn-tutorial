@@ -3,30 +3,30 @@
 #include "list_rev.h"
 #include "list_rev_lemmas.h"
 
-struct int_list* IntList_rev_aux(struct int_list* xs, struct int_list* ys)
-/*@ requires take L1 = IntList(xs); @*/
-/*@ requires take L2 = IntList(ys); @*/
-/*@ ensures take R = IntList(return); @*/
-/*@ ensures R == append(rev(L2), L1); @*/
+struct list_int* rev_aux__list_int(struct list_int* xs, struct list_int* ys)
+/*@ requires take L1 = Linked_List_Int(xs); @*/
+/*@ requires take L2 = Linked_List_Int(ys); @*/
+/*@ ensures take R = Linked_List_Int(return); @*/
+/*@ ensures R == Append__Seq_Int(Rev__Seq_Int(L2), L1); @*/
 {
   if (ys == 0) {
-    /*@ unfold rev(L2); @*/
-    /*@ unfold append(Seq_Nil {},L1); @*/
+    /*@ unfold Rev__Seq_Int(L2); @*/
+    /*@ unfold Append__Seq_Int(Nil__Seq_Int{}, L1); @*/
     return xs;
   } else {
-    /*@ unfold rev(L2); @*/
-    /*@ apply append_cons_r(rev(tl(L2)), hd(L2), L1); @*/
-    struct int_list *tmp = ys->tail;
+    /*@ unfold Rev__Seq_Int(L2); @*/
+    /*@ apply Append_Cons_R__Seq_Int(Rev__Seq_Int(Tl(L2)), Hd(L2), L1); @*/
+    struct list_int *tmp = ys->tail;
     ys->tail = xs;
-    return IntList_rev_aux(ys, tmp);
+    return rev_aux__list_int(ys, tmp);
   }
 }
 
-struct int_list* IntList_rev(struct int_list* xs)
-/*@ requires take L1 = IntList(xs); @*/
-/*@ ensures take L1_rev = IntList(return); @*/
-/*@ ensures L1_rev == rev(L1); @*/
+struct list_int* rev__list_int(struct list_int* xs)
+/*@ requires take L1 = Linked_List_Int(xs); @*/
+/*@ ensures take L1_Rev = Linked_List_Int(return); @*/
+/*@ ensures L1_Rev == Rev__Seq_Int(L1); @*/
 {
-  /*@ apply append_nil_r(rev(L1)); @*/
-  return IntList_rev_aux (0, xs);
+  /*@ apply Append_Nil_R__Seq_Int(Rev__Seq_Int(L1)); @*/
+  return rev_aux__list_int (0, xs);
 }

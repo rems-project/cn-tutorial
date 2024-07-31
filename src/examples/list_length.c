@@ -1,40 +1,40 @@
 /* list_length.c */
-
+// TODO: u32 to U32
 #include "list.h"
 
 /* --BEGIN-- */
 /*@
-function [rec] (u32) length(datatype seq xs) {
-  match xs {
-    Seq_Nil {} => {
+function [rec] (u32) Length__Seq_Int(datatype Seq_Int Xs) {
+  match Xs {
+    Nil__Seq_Int {} => {
       0u32
     }
-    Seq_Cons {head : h, tail : zs}  => {
-      1u32 + length(zs)
+    Cons__Seq_Int {Head : H, Tail : Zs}  => {
+      1u32 + Length__Seq_Int(Zs)
     }
   }
 }
 @*/
 
 /* --END-- */
-unsigned int IntList_length (struct int_list *xs)
+unsigned int length__list_int (struct list_int *xs)
 /* --BEGIN-- */
-/*@ requires take L1 = IntList(xs);
-    ensures take L1_ = IntList(xs);
+/*@ requires take L1 = Linked_List_Int(xs);
+    ensures take L1_ = Linked_List_Int(xs);
             L1 == L1_;
-            return == length(L1);
+            return == Length__Seq_Int(L1);
 @*/
 /* --END-- */
 {
   if (xs == 0) {
 /* --BEGIN-- */
-    /*@ unfold length(L1); @*/
+    /*@ unfold Length__Seq_Int(L1); @*/
 /* --END-- */
     return 0;
   } else {
 /* --BEGIN-- */
-    /*@ unfold length(L1); @*/
+    /*@ unfold Length__Seq_Int(L1); @*/
 /* --END-- */
-    return 1 + IntList_length (xs->tail);
+    return 1 + length__list_int(xs->tail);
   }
 }

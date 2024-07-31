@@ -1,17 +1,17 @@
 #include "list.h"
 
-struct int_list* IntList_copy (struct int_list *xs)
-/*@ requires take L1 = IntList(xs);
-    ensures take L1_ = IntList(xs);
-            take L2 = IntList(return);
+struct list_int* list_int_copy (struct list_int *xs)
+/*@ requires take L1 = Linked_List_Int(xs);
+    ensures take L1_ = Linked_List_Int(xs);
+            take L2 = Linked_List_Int(return);
             L1 == L1_;
             L1 == L2;
 @*/
 {
   if (xs == 0) {
-    return IntList_nil();
+    return nil__list_int();
   } else {
-    struct int_list *new_tail = IntList_copy(xs->tail);
-    return IntList_cons(xs->head, new_tail);
+    struct list_int *new_tail = list_int_copy(xs->tail);
+    return cons__list_int(xs->head, new_tail);
   }
 }

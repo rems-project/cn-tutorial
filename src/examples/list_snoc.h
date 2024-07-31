@@ -1,11 +1,12 @@
+// TODO: change i32 to I32
 /*@
-function [rec] (datatype seq) snoc(datatype seq xs, i32 y) {
-  match xs {
-    Seq_Nil {} => {
-      Seq_Cons {head: y, tail: Seq_Nil{}}
+function [rec] (datatype Seq_Int) Snoc__Seq_Int(datatype Seq_Int Xs, i32 Y) {
+  match Xs {
+    Nil__Seq_Int {} => {
+      Cons__Seq_Int {Head: Y, Tail: Nil__Seq_Int{}}
     }
-    Seq_Cons {head: x, tail: zs}  => {
-      Seq_Cons{head: x, tail: snoc (zs, y)}
+    Cons__Seq_Int {Head: X, Tail: Zs}  => {
+      Cons__Seq_Int{Head: X, Tail: Snoc__Seq_Int (Zs, Y)}
     }
   }
 }

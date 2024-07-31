@@ -1,16 +1,23 @@
+// TODO i32 to I32
+// TODO is_null Is_Null() or Is_null()
+// TODO: show people List_Int and List_Int_At and ask
+// what people like better for predicate name.
+// or Linked_List_Int?
+
+// maybe keep seq? Since it goes with many different data structures. 
 /*@
-datatype seq {
-  Seq_Nil {},
-  Seq_Cons {i32 head, datatype seq tail}
+datatype Seq_Int {
+  Nil__Seq_Int {},
+  Cons__Seq_Int {i32 Head, datatype Seq_Int Tail}
 }
 
-predicate (datatype seq) IntList(pointer p) {
+predicate (datatype Seq_Int) Linked_List_Int(pointer p) {
   if (is_null(p)) {
-    return Seq_Nil{};
+    return Nil__Seq_Int{};
   } else {
-    take H = Owned<struct int_list>(p);
-    take tl = IntList(H.tail);
-    return (Seq_Cons { head: H.head, tail: tl });
+    take h = Owned<struct list_int>(p);
+    take Tl = Linked_List_Int(h.tail);
+    return (Cons__Seq_Int { Head: h.head, Tail: Tl });
   }
 }
 @*/

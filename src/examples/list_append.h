@@ -1,13 +1,13 @@
 // append.h
 
 /*@
-function [rec] (datatype seq) append(datatype seq xs, datatype seq ys) {
-  match xs {
-    Seq_Nil {} => {
-      ys
+function [rec] (datatype Seq_Int) Append__Seq_Int(datatype Seq_Int Xs, datatype Seq_Int Ys) {
+  match Xs {
+    Nil__Seq_Int {} => {
+      Ys
     }
-    Seq_Cons {head : h, tail : zs}  => {
-      Seq_Cons {head: h, tail: append(zs, ys)}
+    Cons__Seq_Int {Head : H, Tail : Zs}  => {
+      Cons__Seq_Int {Head: H, Tail: Append__Seq_Int(Zs, Ys)}
     }
   }
 }

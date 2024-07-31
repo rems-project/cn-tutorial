@@ -1,22 +1,22 @@
 /*@
-function (i32) hd (datatype seq xs) {
-  match xs {
-    Seq_Nil {} => {
+function (i32) Hd (datatype Seq_Int Xs) {
+  match Xs {
+    Nil__Seq_Int {} => {
       0i32
     }
-    Seq_Cons {head : h, tail : _} => {
-      h
+    Cons__Seq_Int {Head : H, Tail : _} => {
+      H
     }
   }
 }
 
-function (datatype seq) tl (datatype seq xs) {
-  match xs {
-    Seq_Nil {} => {
-      Seq_Nil {}
+function (datatype Seq_Int) Tl (datatype Seq_Int Xs) {
+  match Xs {
+    Nil__Seq_Int {} => {
+      Nil__Seq_Int{}
     }
-    Seq_Cons {head : _, tail : tail} => {
-      tail
+    Cons__Seq_Int {Head : _, Tail : T} => {
+      T
     }
   }
 }

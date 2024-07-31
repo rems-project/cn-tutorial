@@ -1,14 +1,14 @@
 #include "list.h"
 
-void IntList_free_list(struct int_list* xs)
+void free_rec_list_int(struct list_int* xs)
 // You fill in the rest...
 /* --BEGIN-- */
-/*@ requires take L1 = IntList(xs); @*/
+/*@ requires take L1 = Linked_List_Int(xs); @*/
 {
   if (xs == 0) {
   } else {
-    IntList_free_list(xs->tail);
-    freeIntList(xs);
+    free_rec_list_int(xs->tail);
+    free_list_int(xs);
   }
 }
 /* --END-- */
