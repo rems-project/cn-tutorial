@@ -4,37 +4,37 @@
 
 /* --BEGIN-- */
 /*@
-function [rec] (u32) Length__Seq_Int(datatype Seq_Int Xs) {
-  match Xs {
+function [rec] (u32) Length__Seq_Int(datatype Seq_Int L) {
+  match L {
     Nil__Seq_Int {} => {
       0u32
     }
-    Cons__Seq_Int {Head : H, Tail : Zs}  => {
-      1u32 + Length__Seq_Int(Zs)
+    Cons__Seq_Int {Head : H, Tail : T}  => {
+      1u32 + Length__Seq_Int(T)
     }
   }
 }
 @*/
 
 /* --END-- */
-unsigned int length__list_int (struct list_int *xs)
+unsigned int length__list_int (struct list_int *l)
 /* --BEGIN-- */
-/*@ requires take L1 = Linked_List_Int(xs);
-    ensures take L1_ = Linked_List_Int(xs);
-            L1 == L1_;
-            return == Length__Seq_Int(L1);
+/*@ requires take L = Linked_List_Int(l);
+    ensures take L_ = Linked_List_Int(l);
+            L == L_;
+            return == Length__Seq_Int(L);
 @*/
 /* --END-- */
 {
-  if (xs == 0) {
+  if (l == 0) {
 /* --BEGIN-- */
-    /*@ unfold Length__Seq_Int(L1); @*/
+    /*@ unfold Length__Seq_Int(L); @*/
 /* --END-- */
     return 0;
   } else {
 /* --BEGIN-- */
-    /*@ unfold Length__Seq_Int(L1); @*/
+    /*@ unfold Length__Seq_Int(L); @*/
 /* --END-- */
-    return 1 + length__list_int(xs->tail);
+    return 1 + length__list_int(l->tail);
   }
 }

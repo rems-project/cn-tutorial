@@ -7,9 +7,9 @@ struct list_int* nil__list_int()
 }
 
 struct list_int* cons__list_int(int h, struct list_int* t)
-/*@ requires take L = Linked_List_Int(t);
+/*@ requires take T = Linked_List_Int(t);
     ensures take Ret = Linked_List_Int(return);
-            Ret == Cons__Seq_Int{ Head: h, Tail: L};
+            Ret == Cons__Seq_Int{ Head: h, Tail: T};
  @*/
 {
   struct list_int *p = malloc_list_int();

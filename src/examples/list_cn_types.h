@@ -1,10 +1,14 @@
 // TODO i32 to I32
-// TODO is_null Is_Null() or Is_null()
+// TODO is_null to Is_Null() or Is_null()
 // TODO: show people List_Int and List_Int_At and ask
-// what people like better for predicate name.
-// or Linked_List_Int?
+//       which is better for predicate name.
+//       (But perhaps Linked_List_Int is clearest?)
+// TODO: Rename this file Seq.h
 
-// maybe keep seq? Since it goes with many different data structures. 
+// We've kept Seq for the type of abstract sequences, since many
+// different concrete data structures are representations of abstract
+// lists.
+
 /*@
 datatype Seq_Int {
   Nil__Seq_Int {},

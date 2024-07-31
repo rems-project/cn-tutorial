@@ -1,6 +1,6 @@
 /*@
-function (i32) Hd (datatype Seq_Int Xs) {
-  match Xs {
+function (i32) Hd (datatype Seq_Int L) {
+  match L {
     Nil__Seq_Int {} => {
       0i32
     }
@@ -10,8 +10,8 @@ function (i32) Hd (datatype Seq_Int Xs) {
   }
 }
 
-function (datatype Seq_Int) Tl (datatype Seq_Int Xs) {
-  match Xs {
+function (datatype Seq_Int) Tl (datatype Seq_Int L) {
+  match L {
     Nil__Seq_Int {} => {
       Nil__Seq_Int{}
     }
