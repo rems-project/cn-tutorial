@@ -1,13 +1,13 @@
 #include "list_snoc.h"
 
 /*@
-function [rec] (datatype seq) rev(datatype seq xs) {
-  match xs {
-    Seq_Nil {} => {
-      Seq_Nil {}
+function [rec] (datatype Seq_Int) Rev__Seq_Int(datatype Seq_Int Xs) {
+  match Xs {
+    Nil__Seq_Int {} => {
+      Nil__Seq_Int {}
     }
-    Seq_Cons {head : h, tail : zs}  => {
-      snoc (rev(zs), h)
+    Cons__Seq_Int {Head : H, Tail : Zs}  => {
+      Snoc__Seq_Int (Rev__Seq_Int(Zs), H)
     }
   }
 }
