@@ -1,5 +1,3 @@
-// TODO i32 to I32
-// TODO is_null to Is_Null() or Is_null()
 // TODO: show people List_Int and List_Int_At and ask
 //       which is better for predicate name.
 //       (But perhaps Linked_List_Int is clearest?)

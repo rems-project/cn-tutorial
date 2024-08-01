@@ -46,7 +46,8 @@ Rules:
 
 Questions / concerns / ideas:
     - Should CN-level identifiers be `Uppercase_initial` or
-      `Uppercase_Consistently_Throughout`?
+      `Uppercase_Consistently_Throughout`?  I [BCP] find the latter a
+      bit lighter.
     - Convention for naming predicates?
           - One suggestion is the suffix `_at` to represent the
             assertion that there is an object at that address. For
@@ -55,7 +56,7 @@ Questions / concerns / ideas:
           - Maybe adding `_Aux` to the original predicate name
             (e.g. `Queue_U32_at_Aux`).
     - Does capitalization convention apply to function names?
-      Ex. list_int_copy() vs List_Int_Copy(). list_int is in C so it
+      Ex. `list_int_copy()` vs `List_Int_Copy()`. The list_int is in C so it
       should be lowercase, but is that true for the name of a function
       that affects it?
           - (BCP: Don't understand this one?)
@@ -66,10 +67,10 @@ Questions / concerns / ideas:
       `free_int_list_rec`.
 
 Notes:
-    - This proposal will require changing some built-ins if we really
+    - This proposal will also require changing some built-ins if we really
       take it seriously
           - `i32` to `I32`, `u64` to `U64`
-          - `is_null` to `Is_null` (or `Is_Null`?)
+          - `is_null` to `Is_null` (or `Is_Null`)
 
 ## Text conventions
 
