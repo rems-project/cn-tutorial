@@ -31,6 +31,9 @@ convention -- do `ls src/examples/list*` to check it out.
   `Uppercase_Consistently_Throughout`?  
   
   I [BCP] find the former a bit lighter.
+  I [Liz] find the latter to be more consistent. If `List_int` is the 
+  identifier and `Rev_list_int` is the function, then `list_int` is 
+  lowercase in the function even though it is usually capital.
 
 - Should predicates that extract some structure from the heap be named
   the same as the structure they extract.  I.e., should the result
@@ -110,6 +113,8 @@ We need some consistent way of distinguishing "C-level" things from
 3. _CN-level_ vs. _C-level_
 
 I think I [BCP] like the third best.  What about you?
+I [Liz] think all of these are good options, but think the first one
+communicates reality the most.
 
 # Loose ends
 
@@ -123,5 +128,4 @@ TODO: Tidy them!
   these conventions. It feels like it should be `free_int_list`,
   but that’s also the new name of the free function for individual
   list cells (opposite of `malloc`). Current solution is
-  `free_int_list_rec`.
-
+  `free_int_list_rec` or `free_rec_int_list`.
