@@ -3,7 +3,6 @@
 // TODO: show people List_Int and List_Int_At and ask
 //       which is better for predicate name.
 //       (But perhaps Linked_List_Int is clearest?)
-// TODO: Rename this file Seq.h
 
 // We've kept Seq for the type of abstract sequences, since many
 // different concrete data structures are representations of abstract
