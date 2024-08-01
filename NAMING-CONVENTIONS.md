@@ -7,8 +7,12 @@ agree on some conventions that we like, do one painful global rename
 to change everything in the tutorial (at least) to use them, and then
 stick to them for new stuff we write.
 
-Here's our (Benjamin and Liz's) best shot at a good set of
-conventions, based on past discussions:
+This document describes our (Benjamin and Liz's) best shot at a good
+set of conventions, based on past discussions.
+
+All the list-related files in src/examples have been converted to this
+convention -- do `ls src/examples/{list*,Seq*}` to check it out.
+
 
 ## Code conventions
 
