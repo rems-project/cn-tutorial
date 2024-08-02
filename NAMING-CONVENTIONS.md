@@ -3,7 +3,7 @@ CN Naming Conventions
 
 This document describes our (Benjamin and Liz's) best shot at a good
 set of conventions for naming identifiers in CN, based on numerous
-discussions.
+discussions and worked examples.
 
 All the list-related files in src/examples have been converted to this
 convention -- do `ls src/examples/list*` to check it out.
@@ -28,12 +28,13 @@ convention -- do `ls src/examples/list*` to check it out.
 ## Questions:
 
 - Should CN-level identifiers be `Uppercase_initial` or
-  `Uppercase_Consistently_Throughout`?  
-  
-  I [BCP] find the former a bit lighter.
-  I [Liz] find the latter to be more consistent. If `List_int` is the 
-  identifier and `Rev_list_int` is the function, then `list_int` is 
-  lowercase in the function even though it is usually capital.
+  `Uppercase_Consistently_Throughout`?
+
+  BCP find the former a bit lighter.  Liz finds the latter to be more
+  consistent. If `List_int` is the identifier and `Rev_list_int` is
+  the function, then `list_int` is lowercase in the function even
+  though it is usually capital.  (BCP admits this is a fair point.)
+  What do others think?
 
 - Should predicates that extract some structure from the heap be named
   the same as the structure they extract.  I.e., should the result
@@ -72,15 +73,15 @@ We propose a compromise:
       - `list__int` / `list__uint`
       - `append__int` / `append__uint`
       - `List__I32` / `List__U32`
-      - `Cons__I32` / `Cons__U32` 
+      - `Cons__I32` / `Cons__U32`
       - etc.
 
 2. However, if, in a given project, a set of "morally polymorphic"
    type definitions and library functions is only used at one
    monomorphic instance (e.g., if some codebase only ever needs lists
    of 32-bit signed ints), then the `__int` or `__I32` annotations are
-   omitted.  
-   
+   omitted.
+
    This convention should be used in the CN tutorial, for example.
 
    TODO: Right now, the tutorial uses option (1).  It was this
@@ -112,20 +113,26 @@ We need some consistent way of distinguishing "C-level" things from
 
 3. _CN-level_ vs. _C-level_
 
-I think I [BCP] like the third best.  What about you?
-I [Liz] think all of these are good options, but think the first one
-communicates reality the most.
+BCP thinks he likes the third best. Liz thinks all of these are good
+options, but the first one communicates reality the most.  What about
+you?
 
 # Loose ends
 
-TODO: Tidy them!
+- Do we need a convention for auxiliary predicates?
+    - E.g., maybe adding `_Aux` to the original predicate name
+      (e.g. `Queue_Aux` for the recursive predicate that walks down
+      the list of queue nodes to gather them into a list once a
+      top-level `Queue` or `Queue_at` predicate has dealt with the
+      non-recursive part of the structure).
 
-- Convention for auxiliary predicates?
-      - Maybe adding `_Aux` to the original predicate name
-        (e.g. `Queue_U32_at_Aux`).
-
-- The existing function `IntList_free_list` is hard to rename with
-  these conventions. It feels like it should be `free_int_list`,
-  but that’s also the new name of the free function for individual
-  list cells (opposite of `malloc`). Current solution is
-  `free_int_list_rec` or `free_rec_int_list`.
+- The current function `IntList_free_list` is hard to rename with
+  these conventions. It feels like it should be `free__int_list`, but
+  that’s also the new name of the free function for individual list
+  cells (opposite of `malloc`). Current solution is
+  `free_rec__int_list`.
+    - BCP wonders if this issue is specific to malloc and free.  If
+      so, maybe we can make some special convention like
+      `free__int_list_node` for the single-node operation (even though
+      what it returns is an `int_list`, noit an `int_list_node`),
+      leaving `free__int_list` for the recursive one?
