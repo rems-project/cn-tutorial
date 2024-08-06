@@ -38,3 +38,7 @@ body > .sourceCode {
   background-color: hsl(44, 7%, 96%);
 }
 
+.quoteblock.abstract p {
+  font-style: normal;
+  text-align: left;
+}
