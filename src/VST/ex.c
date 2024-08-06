@@ -10,7 +10,6 @@ ensures
 @*/
 {
     char c = s[0];
-    /*@ split_case c == 0u8; @*/
     /*@ assert (c != 0u8 || sIn == Strf_E { } ); @*/
 }
 

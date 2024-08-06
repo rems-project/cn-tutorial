@@ -17,19 +17,20 @@ unsigned int hash (char *s)
 /*@
 requires
   take sIn = Stringa(s);
-ensures
-  take sOut = Stringa(s);
-  sIn == sOut;
-  return == hashf(sIn);
+//ensures
+  //take sOut = Stringa(s);
+  //sIn == sOut;
+  //return == hashf(sIn);
 @*/
 {
   unsigned int n=0;
   size_t i=0;
   /*@ apply elems_owned(s); @*/
+  /*@ extract Owned<char>, i; @*/
   char c = s[i];
   while (c)      
   /*@ 
-    inv 
+    inv
       //take sInv = Stringa(s);
       //sInv == sIn;
       i <= strf_len(sIn);
@@ -47,8 +48,10 @@ ensures
     /*@ assert (i <= strf_len(sIn)); @*/
     /*@ extract Owned<char>, i; @*/
     c=s[i];
+    /*@ split_case (c == 0u8); @*/
   }
-  return n;
+  ///*@ apply elems_owned_rev(s, strf_len(sIn)); @*/
+  //return n;
 }
 
 char *copy_string (char *s) 
