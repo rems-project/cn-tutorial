@@ -43,6 +43,9 @@ build/solutions/%: src/examples/%
 build/exercises.zip: $(EXERCISES)
 	cd build; zip -r exercises.zip exercises > /dev/null
 
+WORKING=src/examples/list_*.c
+WORKING_AUX=$(patsubst src/examples/%, build/solutions/%, $(WORKING))
+temp: $(WORKING_AUX) build build/tutorial.html 
 
 ##############################################################################
 # Check that the examples all run correctly 
