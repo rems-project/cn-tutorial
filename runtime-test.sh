@@ -38,12 +38,11 @@ SUCCESS=$(find src/examples -name '*.c' \
     ! -path '*/Dbl_Linked_List/*' \
     ! -path '*/runway/*' \
     ! -path '*/runtime-extras/*.broken.c' \
-    ! -name abs_mem_struct.c \
     ! -name "read.broken.c" \
     ! -name slf14_basic_succ_using_incr_attempt.broken.c)
 
 # https://github.com/rems-project/cerberus/issues/444
-BUGGY=("src/examples/abs_mem_struct.c")
+BUGGY=("src/examples/swap_array.c src/examples/runtime-extras/swap_array.c")
 
 SHOULD_FAIL=$(find src/examples/runtime-extras -name '*.broken.c')
 SHOULD_FAIL+=("src/examples/read.broken.c" "src/examples/slf14_basic_succ_using_incr_attempt.broken.c")

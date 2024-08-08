@@ -323,15 +323,15 @@ function [rec] (datatype seq) merge(datatype seq xs, datatype seq ys) {
   }
 }
 
-function [rec] (datatype seq) mergesort(datatype seq xs) {
+function [rec] (datatype seq) cn_mergesort(datatype seq xs) {
   match xs {
       Seq_Nil{} => { xs }
       Seq_Cons{head: x, tail: Seq_Nil{}} => { xs }
       Seq_Cons{head: x, tail: Seq_Cons{head: y, tail: zs}} => {
         match (split(xs)) {
         Pair { fst : fst , snd : snd } => {
-            let L1 = mergesort(fst);
-            let L2 = mergesort(snd);
+            let L1 = cn_mergesort(fst);
+            let L2 = cn_mergesort(snd);
             merge(L1, L2)
           }
         }
@@ -404,18 +404,18 @@ struct int_list* IntList_merge(struct int_list *xs, struct int_list *ys)
 struct int_list* IntList_mergesort(struct int_list *xs)
 /*@ requires take Xs = IntList(xs); @*/
 /*@ ensures take Ys = IntList(return); @*/
-/*@ ensures Ys == mergesort(Xs); @*/
+/*@ ensures Ys == cn_mergesort(Xs); @*/
 {
   if (xs == 0) {
-    /*@ unfold mergesort(Xs); @*/
+    /*@ unfold cn_mergesort(Xs); @*/
     return xs;
   } else {
     struct int_list *tail = xs->tail;
     if (tail == 0) {
-      /*@ unfold mergesort(Xs); @*/
+      /*@ unfold cn_mergesort(Xs); @*/
       return xs;
     } else {
-      /*@ unfold mergesort(Xs); @*/
+      /*@ unfold cn_mergesort(Xs); @*/
       struct int_list_pair p = IntList_split(xs);
       p.fst = IntList_mergesort(p.fst);
       p.snd = IntList_mergesort(p.snd);
