@@ -3,7 +3,7 @@
 #include "list_rev.h"
 #include "list_rev_lemmas.h"
 
-struct list_int* rev_aux__list_int(struct list_int* l1, struct list_int* l2)
+struct sllist* rev_aux__sllist(struct sllist* l1, struct sllist* l2)
 /*@ requires take L1 = Linked_List_Int(l1); @*/
 /*@ requires take L2 = Linked_List_Int(l2); @*/
 /*@ ensures take R = Linked_List_Int(return); @*/
@@ -16,17 +16,17 @@ struct list_int* rev_aux__list_int(struct list_int* l1, struct list_int* l2)
   } else {
     /*@ unfold Rev__Seq_Int(L2); @*/
     /*@ apply Append_Cons_R__Seq_Int(Rev__Seq_Int(Tl(L2)), Hd(L2), L1); @*/
-    struct list_int *tmp = l2->tail;
+    struct sllist *tmp = l2->tail;
     l2->tail = l1;
-    return rev_aux__list_int(l2, tmp);
+    return rev_aux__sllist(l2, tmp);
   }
 }
 
-struct list_int* rev__list_int(struct list_int* l1)
+struct sllist* rev__sllist(struct sllist* l1)
 /*@ requires take L1 = Linked_List_Int(l1); @*/
 /*@ ensures take L1_Rev = Linked_List_Int(return); @*/
 /*@ ensures L1_Rev == Rev__Seq_Int(L1); @*/
 {
   /*@ apply Append_Nil_R__Seq_Int(Rev__Seq_Int(L1)); @*/
-  return rev_aux__list_int (0, l1);
+  return rev_aux__sllist (0, l1);
 }

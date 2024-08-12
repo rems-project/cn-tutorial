@@ -16,7 +16,7 @@ predicate (datatype Seq_Int) Linked_List_Int(pointer p) {
   if (is_null(p)) {
     return Nil__Seq_Int{};
   } else {
-    take h = Owned<struct list_int>(p);
+    take h = Owned<struct sllist>(p);
     take Tl = Linked_List_Int(h.tail);
     return (Cons__Seq_Int { Head: h.head, Tail: Tl });
   }

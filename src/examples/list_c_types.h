@@ -1,17 +1,17 @@
-struct list_int {
+struct sllist {
   int head;
-  struct list_int* tail;
+  struct sllist* tail;
 };
 
-extern struct list_int *malloc_list_int();
-/*@ spec malloc_list_int();
+extern struct sllist *malloc_sllist();
+/*@ spec malloc_sllist();
     requires true;
-    ensures take u = Block<struct list_int>(return);
+    ensures take u = Block<struct sllist>(return);
 @*/
 
-extern void free_list_int (struct list_int *p);
-/*@ spec free_list_int(pointer p);
-    requires take u = Block<struct list_int>(p);
+extern void free_sllist (struct sllist *p);
+/*@ spec free_sllist(pointer p);
+    requires take u = Block<struct sllist>(p);
     ensures true;
 @*/
 

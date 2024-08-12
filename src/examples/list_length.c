@@ -17,7 +17,7 @@ function [rec] (u32) Length__Seq_Int(datatype Seq_Int L) {
 @*/
 
 /* --END-- */
-unsigned int length__list_int (struct list_int *l)
+unsigned int length__sllist (struct sllist *l)
 /* --BEGIN-- */
 /*@ requires take L = Linked_List_Int(l);
     ensures take L_ = Linked_List_Int(l);
@@ -35,6 +35,6 @@ unsigned int length__list_int (struct list_int *l)
 /* --BEGIN-- */
     /*@ unfold Length__Seq_Int(L); @*/
 /* --END-- */
-    return 1 + length__list_int(l->tail);
+    return 1 + length__sllist(l->tail);
   }
 }

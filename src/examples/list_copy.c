@@ -1,6 +1,6 @@
 #include "list.h"
 
-struct list_int* list_int_copy (struct list_int *l)
+struct sllist* sllist_copy (struct sllist *l)
 /*@ requires take L = Linked_List_Int(l);
     ensures take L_ = Linked_List_Int(l);
             take Ret = Linked_List_Int(return);
@@ -9,9 +9,9 @@ struct list_int* list_int_copy (struct list_int *l)
 @*/
 {
   if (l == 0) {
-    return nil__list_int();
+    return nil__sllist();
   } else {
-    struct list_int *new_tail = list_int_copy(l->tail);
-    return cons__list_int(l->head, new_tail);
+    struct sllist *new_tail = sllist_copy(l->tail);
+    return cons__sllist(l->head, new_tail);
   }
 }
