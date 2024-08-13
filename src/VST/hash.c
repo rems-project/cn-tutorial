@@ -2,25 +2,14 @@
 #include "hashtable.c"
 #include "util.c"
 
-// extern unsigned int hash (char *s);
-// /*@
-// spec hash (pointer s);
-// requires
-//   take sIn = Stringa(s);
-// ensures
-//   take sOut = Stringa(s);
-//   sIn == sOut;
-//   return == hashf(sIn);
-// @*/
-
 unsigned int hash (char *s)
 /*@
 requires
   take sIn = Stringa(s);
-//ensures
-  //take sOut = Stringa(s);
-  //sIn == sOut;
-  //return == hashf(sIn);
+ensures
+  take sOut = Stringa(s);
+  sIn == sOut;
+  return == hashf(sIn);
 @*/
 {
   unsigned int n=0;
