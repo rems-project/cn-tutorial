@@ -89,6 +89,19 @@ extern int strcmp(char * str1, char * str2);
       (return == 0i32) ? str1In == str2In : str1In != str2In;
 @*/
 
+extern int strcat(char * str1, char * str2);
+/*@ spec strcmp(pointer str1, pointer str2);
+    requires 
+      take str1In = Stringa(str1);
+      take str2In = Stringa(str2);
+      // TODO: requirement about buffer lengths
+    ensures
+      take str1Out = Stringa(str1);
+      take str2Out = Stringa(str2);
+      str1Out = strf_concat(str1In, str2In);
+      str2Out = str2In;
+@*/
+
 
 
 

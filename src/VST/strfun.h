@@ -7,12 +7,30 @@ datatype strf {
   Strf_NE { u8 head, datatype strf tail }
 }
 
+@*/
+
+
+
+
+
+/* COMMON STRING FUNCTIONS */
+/*@
+
 function [rec] (u64) strf_len(strf s) {
   match s {
     Strf_E {} => { 0u64 }
     Strf_NE { head : h , tail : tl } => { 1u64 + strf_len(tl) }
   }
 } 
+
+function [rec] (datatype strf) strf_concat(strf s1, strf s2) {
+  match s1 {
+    Strf_E {} => { s2 }
+    Strf_NE { head : h , tail : tl } => { 
+      Strf_NE { head : h, tail : strf_concat(tl, s2) } 
+    }
+  }
+}
 
 @*/
 
