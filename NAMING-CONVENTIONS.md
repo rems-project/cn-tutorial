@@ -127,7 +127,7 @@ the first case.
       top-level `Queue` or `Queue_at` predicate has dealt with the
       non-recursive part of the structure).
 
-- The current function `IntList_free_list` is hard to rename with
+- The current function `IntList_free__list` is hard to rename with
   these conventions. It feels like it should be `free__int_list`, but
   that’s also the new name of the free function for individual list
   cells (opposite of `malloc`). Current solution is

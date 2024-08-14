@@ -18,16 +18,16 @@ predicate (sizeAndData) SizedStack(pointer p) {
 }
 @*/
 
-extern struct sized_stack *malloc_sized_stack ();
+extern struct sized_stack *malloc__sized_stack ();
 /*@
-spec malloc_sized_stack();
+spec malloc__sized_stack();
      requires true;
      ensures take u = Block<struct sized_stack>(return);
 @*/
 
-extern void *free_sized_stack (struct sized_stack *p);
+extern void *free__sized_stack (struct sized_stack *p);
 /*@
-spec free_sized_stack(pointer p);
+spec free__sized_stack(pointer p);
      requires take u = Block<struct sized_stack>(p);
      ensures true;
 @*/
@@ -37,7 +37,7 @@ struct sized_stack* create()
             S.s == 0u32;
 @*/
 {
-  struct sized_stack *p = malloc_sized_stack();
+  struct sized_stack *p = malloc__sized_stack();
   p->size = 0;
   p->data = 0;
   /*@ unfold length(Seq_Nil {}); @*/

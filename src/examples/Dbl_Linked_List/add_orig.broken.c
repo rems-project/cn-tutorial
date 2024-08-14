@@ -3,7 +3,7 @@
 // Adds after the given node and returns a pointer to the new node
 struct node *add(int element, struct node *n)
 {
-    struct node *new_node = malloc_node();
+    struct node *new_node = malloc__node();
     new_node->data = element;
     new_node->prev = 0;
     new_node->next = 0;

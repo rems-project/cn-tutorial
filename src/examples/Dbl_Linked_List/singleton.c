@@ -5,7 +5,7 @@ struct node *singleton(int element)
         Ret == Dll{left: Seq_Nil{}, curr: struct node{data: element, prev: NULL, next: NULL}, right: Seq_Nil{}};
 @*/
 {
-   struct node *n = malloc_node();
+   struct node *n = malloc__node();
    n->data = element;
    n->prev = 0;
    n->next = 0;

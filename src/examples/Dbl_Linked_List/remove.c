@@ -27,10 +27,10 @@ struct node_and_int *remove(struct node *n)
         temp = n->next;
     }
 
-    struct node_and_int *pair = malloc_node_and_int();
+    struct node_and_int *pair = malloc__node_and_int();
     pair->node = temp;
     pair->data = n->data;
 
-    free_node(n);       
+    free__node(n);       
     return pair;
 }

@@ -9,7 +9,7 @@ struct node *add(int element, struct node *n)
                         : After == Dll { left: Seq_Cons{head: Node(Before).data, tail: Left(Before)}, curr: Node(After), right: Right(Before)};
 @*/
 {
-    struct node *new_node = malloc_node();
+    struct node *new_node = malloc__node();
     new_node->data = element;
     new_node->prev = 0;
     new_node->next = 0;

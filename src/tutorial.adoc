@@ -1270,7 +1270,7 @@ include_example(exercises/Dbl_Linked_List/getters.h)
 We also must include some boilerplate code for allocation and 
 deallocation.
 
-include_example(exercises/Dbl_Linked_List/malloc_free.h)
+include_example(exercises/Dbl_Linked_List/malloc__free.h)
 
 And we compile all of these files into a single header file.
 

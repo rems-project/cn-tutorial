@@ -1,14 +1,14 @@
 #include "list.h"
 
-void free_rec_sllist(struct sllist* l)
+void free__rec_sllist(struct sllist* l)
 // You fill in the rest...
 /* --BEGIN-- */
-/*@ requires take L = Linked_List_Int(l); @*/
+/*@ requires take L = SLList(l); @*/
 {
   if (l == 0) {
   } else {
-    free_rec_sllist(l->tail);
-    free_sllist(l);
+    free__rec_sllist(l->tail);
+    free__sllist(l);
   }
 }
 /* --END-- */

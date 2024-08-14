@@ -1,21 +1,21 @@
 /*@
-function (i32) Hd (datatype Seq_Int L) {
+function (i32) Hd (datatype List L) {
   match L {
-    Nil__Seq_Int {} => {
+    Nil {} => {
       0i32
     }
-    Cons__Seq_Int {Head : H, Tail : _} => {
+    Cons {Head : H, Tail : _} => {
       H
     }
   }
 }
 
-function (datatype Seq_Int) Tl (datatype Seq_Int L) {
+function (datatype List) Tl (datatype List L) {
   match L {
-    Nil__Seq_Int {} => {
-      Nil__Seq_Int{}
+    Nil {} => {
+      Nil{}
     }
-    Cons__Seq_Int {Head : _, Tail : T} => {
+    Cons {Head : _, Tail : T} => {
       T
     }
   }

@@ -1,24 +1,20 @@
-// TODO: show people List_Int and List_Int_At and ask
-//       which is better for predicate name.
-//       (But perhaps Linked_List_Int is clearest?)
-
 // We've kept Seq for the type of abstract sequences, since many
 // different concrete data structures are representations of abstract
 // lists.
 
 /*@
-datatype Seq_Int {
-  Nil__Seq_Int {},
-  Cons__Seq_Int {i32 Head, datatype Seq_Int Tail}
+datatype List {
+  Nil {},
+  Cons {i32 Head, datatype List Tail}
 }
 
-predicate (datatype Seq_Int) Linked_List_Int(pointer p) {
+predicate (datatype List) SLList(pointer p) {
   if (is_null(p)) {
-    return Nil__Seq_Int{};
+    return Nil{};
   } else {
     take h = Owned<struct sllist>(p);
-    take Tl = Linked_List_Int(h.tail);
-    return (Cons__Seq_Int { Head: h.head, Tail: Tl });
+    take Tl = SLList(h.tail);
+    return (Cons { Head: h.head, Tail: Tl });
   }
 }
 @*/

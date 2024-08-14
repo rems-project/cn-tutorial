@@ -1,13 +1,13 @@
 #include "list_snoc.h"
 
 /*@
-function [rec] (datatype Seq_Int) Rev__Seq_Int(datatype Seq_Int L) {
+function [rec] (datatype List) RevList(datatype List L) {
   match L {
-    Nil__Seq_Int {} => {
-      Nil__Seq_Int {}
+    Nil {} => {
+      Nil {}
     }
-    Cons__Seq_Int {Head : H, Tail : T}  => {
-      Snoc__Seq_Int (Rev__Seq_Int(T), H)
+    Cons {Head : H, Tail : T}  => {
+      SnocList (RevList(T), H)
     }
   }
 }
