@@ -15,12 +15,12 @@ struct sllist* rev_loop(struct sllist *l)
   while(1)
   /*@ inv take Last = SLList(last);
           take Cur = SLList(cur);
-          AppendList(RevList(Cur), Last) == RevList(L);
+          Append(RevList(Cur), Last) == RevList(L);
   @*/
   {
     if (cur == 0) {
       /*@ unfold RevList(Nil{}); @*/
-      /*@ unfold AppendList(Nil{}, Last); @*/
+      /*@ unfold Append(Nil{}, Last); @*/
       return last;
     }
     struct sllist *tmp = cur->tail;

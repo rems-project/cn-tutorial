@@ -12,16 +12,16 @@ void push_induction(struct int_queueCell* front
   ensures
       take NewQ = IntQueueAux(front, last);
       take Last2 = Owned(last);
-      NewQ == snoc(Q, Second_last.first);
+      NewQ == Snoc(Q, Second_last.first);
       Last == Last2;
 @*/
 {
     if (front == second_last) {
-        /*@ unfold snoc(Q, Second_last.first); @*/
+        /*@ unfold Snoc(Q, Second_last.first); @*/
         return;
     } else {
         push_induction(front->next, second_last, last);
-        /*@ unfold snoc(Q, Second_last.first); @*/
+        /*@ unfold Snoc(Q, Second_last.first); @*/
         return;
     }
 }
@@ -29,7 +29,7 @@ void push_induction(struct int_queueCell* front
 void IntQueue_push (int x, struct int_queue *q)
 /*@ requires take before = IntQueuePtr(q);
     ensures take after = IntQueuePtr(q);
-            after == snoc (before, x);
+            after == Snoc (before, x);
 @*/
 {
   struct int_queueCell *c = mallocIntQueueCell();

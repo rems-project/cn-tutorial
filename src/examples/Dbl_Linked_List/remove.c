@@ -11,8 +11,8 @@ struct node_and_int *remove(struct node *n)
              take After = Dll_at(ret.node);
              ret.data == del.data;
              (is_null(del.prev) && is_null(del.next)) ? After == Empty_Dll{}
-                 : (!is_null(del.next) ? After == Dll{left: Left(Before), curr: Node(After), right: tl(Right(Before))}
-                     : After == Dll{left: tl(Left(Before)), curr: Node(After), right: Right(Before)});
+                 : (!is_null(del.next) ? After == Dll{left: Left(Before), curr: Node(After), right: Tl(Right(Before))}
+                     : After == Dll{left: Tl(Left(Before)), curr: Node(After), right: Right(Before)});
 @*/
 {
     struct node *temp = 0;

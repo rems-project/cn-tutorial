@@ -7,11 +7,11 @@ struct sllist* rev_aux(struct sllist* l1, struct sllist* l2)
 /*@ requires take L1 = SLList(l1); @*/
 /*@ requires take L2 = SLList(l2); @*/
 /*@ ensures take R = SLList(return); @*/
-/*@ ensures R == AppendList(RevList(L2), L1); @*/
+/*@ ensures R == Append(RevList(L2), L1); @*/
 {
   if (l2 == 0) {
     /*@ unfold RevList(L2); @*/
-    /*@ unfold AppendList(Nil{}, L1); @*/
+    /*@ unfold Append(Nil{}, L1); @*/
     return l1;
   } else {
     /*@ unfold RevList(L2); @*/

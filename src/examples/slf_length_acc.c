@@ -8,14 +8,14 @@ function [rec] (u32) length(datatype List xs) {
     Nil {} => {
       0u32
     }
-    Cons {Head : h, tail : zs}  => {
+    Cons {Head: h, Tail: zs}  => {
       1u32 + length(zs)
     }
   }
 }
 @*/
 
-void IntList_length_acc_aux (struct int_list *xs, unsigned int *p)
+void IntList_length_acc_aux (struct sllist *xs, unsigned int *p)
 /*@ requires take L1 = SLList(xs);
              take n = Owned<unsigned int>(p);
     ensures take L1_ = SLList(xs);
@@ -32,7 +32,7 @@ void IntList_length_acc_aux (struct int_list *xs, unsigned int *p)
   }
 }
 
-unsigned int IntList_length_acc (struct int_list *xs)
+unsigned int IntList_length_acc (struct sllist *xs)
 /*@ requires take L1 = SLList(xs);
     ensures take L1_ = SLList(xs);
             L1 == L1_;

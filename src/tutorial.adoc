@@ -1270,7 +1270,7 @@ include_example(exercises/Dbl_Linked_List/getters.h)
 We also must include some boilerplate code for allocation and 
 deallocation.
 
-include_example(exercises/Dbl_Linked_List/malloc__free.h)
+include_example(exercises/Dbl_Linked_List/malloc_free.h)
 
 And we compile all of these files into a single header file.
 
@@ -1448,7 +1448,7 @@ Misc things to do:
   - naming issues
         - rename == to ptr_eq everywhere in specs
         - rename list to List in filenames.  or go more radical and rename List to cnlist
-        - consider renaming SLList to just List (and int_list to just list,
+        - consider renaming SLList to just List (and sllist to just list,
           etc.) everywhere (since we are only dealing with one kind of list
           in the tutorial, the extra pedantry is not getting us much; and
           this simplification would avoid trying to fix conventions that all

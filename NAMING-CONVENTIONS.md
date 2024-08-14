@@ -128,12 +128,12 @@ the first case.
       non-recursive part of the structure).
 
 - The current function `IntList_free__list` is hard to rename with
-  these conventions. It feels like it should be `free__int_list`, but
+  these conventions. It feels like it should be `free__sllist`, but
   that’s also the new name of the free function for individual list
   cells (opposite of `malloc`). Current solution is
-  `free_rec__int_list`.
+  `free_rec__sllist`.
     - BCP wonders if this issue is specific to malloc and free.  If
       so, maybe we can make some special convention like
-      `free__int_list_node` for the single-node operation (even though
-      what it returns is an `int_list`, noit an `int_list_node`),
-      leaving `free__int_list` for the recursive one?
+      `free__sllist_node` for the single-node operation (even though
+      what it returns is an `sllist`, noit an `sllist_node`),
+      leaving `free__sllist` for the recursive one?

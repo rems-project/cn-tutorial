@@ -5,5 +5,5 @@ lemma push_lemma (pointer front, pointer p)
       take P = Owned<struct int_queueCell>(p);
   ensures
       take NewQ = IntQueueAux(front, P.next);
-      NewQ == snoc(Q, P.first);
+      NewQ == Snoc(Q, P.first);
 @*/

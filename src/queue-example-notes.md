@@ -133,7 +133,7 @@ This tells us to look at snoc, which turns out to be very wrong!
         Nil {} => {
           Nil {}
         }
-        Cons {Head : h, tail : zs}  => {
+        Cons {Head : h, Tail : zs}  => {
           snoc (rev(zs), h)
         }
       }

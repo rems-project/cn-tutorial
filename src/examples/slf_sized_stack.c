@@ -3,7 +3,7 @@
 
 struct sized_stack {
   unsigned int size;
-  struct int_list* data;
+  struct sllist* data;
 };
 
 /*@
@@ -40,7 +40,7 @@ struct sized_stack* create()
   struct sized_stack *p = malloc__sized_stack();
   p->size = 0;
   p->data = 0;
-  /*@ unfold length(Nil {}); @*/
+  /*@ unfold Length(Nil {}); @*/
   return p;
 }
 
@@ -66,11 +66,11 @@ void push (struct sized_stack *p, int x)
 @*/
 /* ---END--- */
 {
-  struct int_list *data = slcons(x, p->data);
+  struct sllist *data = slcons(x, p->data);
   p->size++;
   p->data = data;
 /* ---BEGIN--- */
-  /*@ unfold length (Cons {Head: x, Tail: S.d}); @*/
+  /*@ unfold Length (Cons {Head: x, Tail: S.d}); @*/
 /* ---END--- */
 }
 
@@ -80,19 +80,19 @@ int pop (struct sized_stack *p)
 /*@ requires take S = SizedStack(p);
              S.s > 0u32;
     ensures  take S_ = SizedStack(p);
-             S_.d == tl(S.d);
+             S_.d == Tl(S.d);
 @*/
 /* ---END--- */
 {
-  struct int_list *data = p->data;
+  struct sllist *data = p->data;
   if (data != 0) {
     int head = data->head;
-    struct int_list *tail = data->tail;
-    freeIntList(data);
+    struct sllist *tail = data->tail;
+    free__sllist(data);
     p->data = tail;
     p->size--;
 /* ---BEGIN--- */
-    /*@ unfold length(S.d); @*/
+    /*@ unfold Length(S.d); @*/
 /* ---END--- */
     return head;
   }
@@ -104,10 +104,10 @@ int top (struct sized_stack *p)
              S.s > 0u32;
     ensures  take S_ = SizedStack(p);
              S_ == S;
-             return == hd(S.d);
+             return == Hd(S.d);
 @*/
 {
-  /*@ unfold length(S.d); @*/ 
+  /*@ unfold Length(S.d); @*/ 
   // from S.s > 0u32 it follows that the 'else' branch is impossible
   if (p->data != 0) {
     return (p->data)->head;

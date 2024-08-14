@@ -1,7 +1,7 @@
 #include "list.h"
 #include "list_append.h"
 
-struct int_list* IntList_copy (struct int_list *xs)
+struct sllist* IntList_copy (struct sllist *xs)
 /*@ requires take L1 = SLList(xs);
     ensures take L1_ = SLList(xs);
             take L2 = SLList(return);
@@ -10,35 +10,35 @@ struct int_list* IntList_copy (struct int_list *xs)
 @*/
 {
   if (xs == 0) {
-    return IntList_nil();
+    return slnil();
   } else {
-    struct int_list *new_tail = IntList_copy(xs->tail);
-    return IntList_cons(xs->head, new_tail);
+    struct sllist *new_tail = IntList_copy(xs->tail);
+    return slcons(xs->head, new_tail);
   }
 }
 
-struct int_list* IntList_append2 (struct int_list *xs, struct int_list *ys)
+struct sllist* IntList_append2 (struct sllist *xs, struct sllist *ys)
 /* --BEGIN-- */
 /*@ requires take L1 = SLList(xs); @*/
 /*@ requires take L2 = SLList(ys); @*/
 /*@ ensures take L1_ = SLList(xs); @*/
 /*@ ensures take L2_ = SLList(ys); @*/
 /*@ ensures take L3 = SLList(return); @*/
-/*@ ensures L3 == append(L1, L2); @*/
+/*@ ensures L3 == Append(L1, L2); @*/
 /*@ ensures L1 == L1_; @*/
 /*@ ensures L2 == L2_; @*/
 /* --END-- */
 {
   if (xs == 0) {
 /* --BEGIN-- */
-    /*@ unfold append(L1, L2); @*/
+    /*@ unfold Append(L1, L2); @*/
 /* --END-- */
     return IntList_copy(ys);
   } else {
 /* --BEGIN-- */
-    /*@ unfold append(L1, L2); @*/
+    /*@ unfold Append(L1, L2); @*/
 /* --END-- */
-    struct int_list *new_tail = IntList_append2(xs->tail, ys);
-    return IntList_cons(xs->head, new_tail);
+    struct sllist *new_tail = IntList_append2(xs->tail, ys);
+    return slcons(xs->head, new_tail);
   }
 }

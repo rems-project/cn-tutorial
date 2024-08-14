@@ -10,7 +10,7 @@ function [rec] ({datatype List fst, datatype List snd}) split(datatype List xs)
     Cons {Head: h1, Tail: Nil{}} => {
       {fst: Nil{}, snd: xs}
     }
-    Cons {Head: h1, Tail: Cons {Head : h2, tail : tl2 }} => {
+    Cons {Head: h1, Tail: Cons {Head : h2, Tail : tl2 }} => {
       let P = split(tl2);
       {fst: Cons { Head: h1, Tail: P.fst},
        snd: Cons { Head: h2, Tail: P.snd}}
@@ -48,12 +48,12 @@ function [rec] (datatype List) mergesort(datatype List xs) {
 }
 @*/
 
-struct int_list_pair {
-  struct int_list* fst;
-  struct int_list* snd;
+struct sllist_pair {
+  struct sllist* fst;
+  struct sllist* snd;
 };
 
-struct int_list_pair split(struct int_list *xs)
+struct sllist_pair split(struct sllist *xs)
 /*@ requires take Xs = SLList(xs); @*/
 /*@ ensures take Ys = SLList(return.fst); @*/
 /*@ ensures take Zs = SLList(return.snd); @*/
@@ -61,26 +61,26 @@ struct int_list_pair split(struct int_list *xs)
 {
   if (xs == 0) {
     /*@ unfold split(Xs); @*/
-    struct int_list_pair r = {.fst = 0, .snd = 0};
+    struct sllist_pair r = {.fst = 0, .snd = 0};
     return r;
   } else {
-    struct int_list *cdr = xs -> tail;
+    struct sllist *cdr = xs -> tail;
     if (cdr == 0) {
       /*@ unfold split(Xs); @*/
-      struct int_list_pair r = {.fst = 0, .snd = xs};
+      struct sllist_pair r = {.fst = 0, .snd = xs};
       return r;
     } else {
       /*@ unfold split(Xs); @*/
-      struct int_list_pair p = split(cdr->tail);
+      struct sllist_pair p = split(cdr->tail);
       xs->tail = p.fst;
       cdr->tail = p.snd;
-      struct int_list_pair r = {.fst = xs, .snd = cdr};
+      struct sllist_pair r = {.fst = xs, .snd = cdr};
       return r;
     }
   }
 }
 
-struct int_list* merge(struct int_list *xs, struct int_list *ys)
+struct sllist* merge(struct sllist *xs, struct sllist *ys)
 /*@ requires take Xs = SLList(xs); @*/
 /*@ requires take Ys = SLList(ys); @*/
 /*@ ensures take Zs = SLList(return); @*/
@@ -97,11 +97,11 @@ struct int_list* merge(struct int_list *xs, struct int_list *ys)
     } else {
       /*@ unfold merge(Xs, Ys); @*/
       if (xs->head < ys->head) {
-        struct int_list *zs = merge(xs->tail, ys);
+        struct sllist *zs = merge(xs->tail, ys);
         xs->tail = zs;
         return xs;
       } else {
-        struct int_list *zs = merge(xs, ys->tail);
+        struct sllist *zs = merge(xs, ys->tail);
         ys->tail = zs;
         return ys;
       }
@@ -109,7 +109,7 @@ struct int_list* merge(struct int_list *xs, struct int_list *ys)
   }
 }
 
-struct int_list* mergesort(struct int_list *xs)
+struct sllist* mergesort(struct sllist *xs)
 /*@ requires take Xs = SLList(xs); @*/
 /*@ ensures take Ys = SLList(return); @*/
 /*@ ensures Ys == mergesort(Xs); @*/
@@ -118,13 +118,13 @@ struct int_list* mergesort(struct int_list *xs)
     /*@ unfold mergesort(Xs); @*/
     return xs;
   } else {
-    struct int_list *tail = xs->tail;
+    struct sllist *tail = xs->tail;
     if (tail == 0) {
       /*@ unfold mergesort(Xs); @*/
       return xs;
     } else {
       /*@ unfold mergesort(Xs); @*/
-      struct int_list_pair p = split(xs);
+      struct sllist_pair p = split(xs);
       p.fst = mergesort(p.fst);
       p.snd = mergesort(p.snd);
       return merge(p.fst, p.snd);

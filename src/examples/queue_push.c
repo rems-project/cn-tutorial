@@ -4,7 +4,7 @@
 void IntQueue_push (int x, struct int_queue *q)
 /*@ requires take before = IntQueuePtr(q);
     ensures take after = IntQueuePtr(q);
-            after == snoc (before, x);
+            after == Snoc (before, x);
 @*/
 {
   struct int_queueCell *c = mallocIntQueueCell();

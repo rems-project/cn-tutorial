@@ -8,14 +8,14 @@
 predicate (datatype List) Pre(pointer front, pointer back, i32 popped, datatype List before) {
   if (is_null(front)) {
     let after = Nil{};
-    assert (before == snoc(Nil{}, popped));
+    assert (before == Snoc(Nil{}, popped));
     return after;
   } else {
     take B = Owned<struct int_queueCell>(back);
     assert (is_null(B.next));
     take L = IntQueueAux (front, back);
-    assert (before == snoc(Cons {Head: popped, Tail: L}, B.first));
-    let after = snoc(L, B.first);
+    assert (before == Snoc(Cons {Head: popped, Tail: L}, B.first));
+    let after = Snoc(L, B.first);
     return after;
   }
 }
@@ -34,19 +34,19 @@ ensures
 
 predicate (datatype List) Post(pointer front, pointer back, i32 popped, datatype List before) {
   if (is_null(front)) {
-    assert (before == snoc(Nil{}, popped));
+    assert (before == Snoc(Nil{}, popped));
     let after = Nil{};
-    assert (after == tl(before));
-    assert (popped == hd(before));
+    assert (after == Tl(before));
+    assert (popped == Hd(before));
     return after;
   } else {
     take B = Owned<struct int_queueCell>(back);
     assert (is_null(B.next));
     take L = IntQueueAux (front, back);
-    assert (before == snoc(Cons {Head: popped, Tail: L}, B.first));
-    let after = snoc(L, B.first);
-    assert (after == tl(before));
-    assert (popped == hd(before));
+    assert (before == Snoc(Cons {Head: popped, Tail: L}, B.first));
+    let after = Snoc(L, B.first);
+    assert (after == Tl(before));
+    assert (popped == Hd(before));
     return after;
   }
 }
@@ -69,12 +69,12 @@ type_synonym result = { datatype List after, datatype List before }
 
 predicate (result) Queue_pop_lemma(pointer front, pointer back, i32 popped) {
   if (is_null(front)) {
-    return { after: Nil{}, before: snoc(Nil{}, popped) };
+    return { after: Nil{}, before: Snoc(Nil{}, popped) };
   } else {
     take B = Owned<struct int_queueCell>(back);
     assert (is_null(B.next));
     take L = IntQueueAux (front, back);
-    return { after: snoc(L, B.first), before: snoc(Cons {Head: popped, Tail: L}, B.first) };
+    return { after: Snoc(L, B.first), before: Snoc(Cons {Head: popped, Tail: L}, B.first) };
   }
 }
 
@@ -85,8 +85,8 @@ requires
 ensures
     take NewQ = Queue_pop_lemma(front, back, popped);
     Q == NewQ;
-    Q.after == tl(Q.before);
-    popped == hd(Q.before);
+    Q.after == Tl(Q.before);
+    popped == Hd(Q.before);
 @*/
 
 // Step 4 (optional): Remove the sanity checking from the pre-condition.
@@ -99,7 +99,7 @@ requires
 ensures
     take NewQ = Queue_pop_lemma(front, back, popped);
     Q == NewQ;
-    Q.after == tl(Q.before);
-    popped == hd(Q.before);
+    Q.after == Tl(Q.before);
+    popped == Hd(Q.before);
 
 @*/

@@ -5,8 +5,8 @@ int IntQueue_pop (struct int_queue *q)
 /*@ requires take before = IntQueuePtr(q);
              before != Nil{};
     ensures take after = IntQueuePtr(q);
-            after == tl(before);
-            return == hd(before);
+            after == Tl(before);
+            return == Hd(before);
 @*/
 {
   /*@ split_case is_null(q->front); @*/
@@ -16,7 +16,7 @@ int IntQueue_pop (struct int_queue *q)
     freeIntQueueCell(h);
     q->front = 0;
     q->back = 0;
-    /*@ unfold snoc(Nil{}, x); @*/
+    /*@ unfold Snoc(Nil{}, x); @*/
     return x;
   } else {
     int x = h->first;
