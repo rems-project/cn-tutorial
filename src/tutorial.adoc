@@ -747,7 +747,7 @@ to define a CN "predicate" that describes *mathematical* list
 structures, as one would do in ML, Haskell, or Coq.  (We call them
 "sequences" here to avoid overloading the word "list".)
 
-Intuitively, the `+IntList+` predicate walks over a pointer structure
+Intuitively, the `+SLList+` predicate walks over a pointer structure
 in the C heap and extracts an `+Owned+` version of the mathematical
 list that it represents.
 
@@ -759,7 +759,7 @@ syntax):
 
 include_example(exercises/list_hdtl.h)
 
-We use the `+IntList+` predicate to specify functions returning the
+We use the `+SLList+` predicate to specify functions returning the
 empty list and the cons of a number and a list.
 
 include_example(exercises/list_constructors.h)
@@ -961,7 +961,7 @@ element, which is the first in a linked list of `+int_queueCell+`s,
 the other pointing directly to the last cell in this list.  If the
 queue is empty, both pointers are NULL.
 
-Abstractly, a queue just represents a list, so we can reuse the `+seq+`
+Abstractly, a queue just represents a list, so we can reuse the `+List+`
 type from the list examples earlier in the tutorial.
 
 include_example(exercises/queue_cn_types_1.h)
@@ -1135,7 +1135,7 @@ cannot.)
 The guard/condition for `+IntQueueFB+` is `+is_null(front)+`, which is
 why we need to do a `+split_case+` on this value. On one branch of the
 `+split_case+`, we have a contradiction: the fact that `+before ==
-Seq_Nil{}+` (from `+IntQueueFB+`) conflicts with `+before != Seq_Nil+`
+Nil{}+` (from `+IntQueueFB+`) conflicts with `+before != Nil+`
 from the precondition, so that case is immediate.  On the other
 branch, CN now knows that the queue is non-empty as required and type
 checking proceeds.
@@ -1228,7 +1228,7 @@ track of the front or back, but rather we take any node in the list
 and have a sequence to the left and to the right of that node. The `left` 
 and `right` are from the point of view of the node itself, so `left` 
 is kept in reverse order. Additionally, similarly to in the 
-`Imperative Queues` example, we can reuse the `+seq+` type.
+`Imperative Queues` example, we can reuse the `+List+` type.
 
 include_example(exercises/Dbl_Linked_List/cn_types.h)
 
@@ -1301,8 +1301,8 @@ include_example(exercises/Dbl_Linked_List/add.c)
 First, let's look at the pre and post conditions. The `requires` 
 clause is straightforward. We need to own the list centered around 
 the node that `n` points to. `Before` is a `Dll`
-that is either empty, or it has a seq to the left,
-the current node that `n` points to, and a seq to the right.
+that is either empty, or it has a List to the left,
+the current node that `n` points to, and a List to the right.
 This corresponds to the state of the list when it is passed in.
 
 In the ensures clause, we again establish ownership of the list, but this time it is centered around the added node. This means that `After` is a `Dll` structure similar to `Before`, except that the node `curr` is 
@@ -1447,15 +1447,15 @@ Misc things to do:
 
   - naming issues
         - rename == to ptr_eq everywhere in specs
-        - rename list to seq in filenames.  or go more radical and rename seq to cnlist
-        - consider renaming IntList to just List (and int_list to just list,
+        - rename list to List in filenames.  or go more radical and rename List to cnlist
+        - consider renaming SLList to just List (and int_list to just list,
           etc.) everywhere (since we are only dealing with one kind of list
           in the tutorial, the extra pedantry is not getting us much; and
           this simplification would avoid trying to fix conventions that all
           CN code should use everywhere...)
-       - related: the name Seq_Cons is awkward for several reasons:
+       - related: the name Cons is awkward for several reasons:
            - long / verbose (nothing to do about that, I guess)
-           - Seq is capitalized, but it means seq
+           - Seq is capitalized, but it means List
            - most important part is buried in the middle
            - What are the established C conventions here??
 

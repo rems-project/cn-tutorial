@@ -1,8 +1,8 @@
 2# Notes
 
-- Bad definition of snoc (same as rev). How to spot? Look at constraint context, specifically snoc(listQ, x) == match listQ {Seq\_Nil {} => {Seq\_Nil {}}Seq\_Cons {head: h, tail: zs} => {snoc(rev(zs), h)}}. Other big clue: applying lemma snoc_nil results in an inconsistent context. This is really nasty because snoc(Seq_Nil{}, x) ends up reducing to itself.
+- Bad definition of snoc (same as rev). How to spot? Look at constraint context, specifically snoc(listQ, x) == match listQ {Seq\_Nil {} => {Seq\_Nil {}}Seq\_Cons {Head: h, Tail: zs} => {snoc(rev(zs), h)}}. Other big clue: applying lemma snoc_nil results in an inconsistent context. This is really nasty because snoc(Nil{}, x) ends up reducing to itself.
 
-- Code used q->tail == 0 but predicate was testing q->head. Can adjust predicate, code, or use a split_case.
+- Code used q->tail == 0 but predicate was testing q->Head. Can adjust predicate, code, or use a split_case.
 
 - Under-constrained counter-examples are something to be aware of (though the inconsitency came because of the definition of snoc here rather than l here).
 
@@ -22,37 +22,37 @@ More notes:
 
 Here's the predicate for queues:
 
-    predicate (datatype seq) IntQueue(pointer q) {
+    predicate (datatype List) IntQueue(pointer q) {
       take H = Owned<struct int_queue>(q);
       take Q = IntQueue1(q,H);
       return Q;
     }
 
-    predicate (datatype seq) IntQueue1(pointer dummy, struct int_queue H) {
-      if (is_null(H.head)) {
+    predicate (datatype List) IntQueue1(pointer dummy, struct int_queue H) {
+      if (is_null(H.Head)) {
         assert (is_null(H.tail));
-        return (Seq_Nil{});
+        return (Nil{});
       } else {
         assert (!is_null(H.tail));
-        take Q = IntQueueAux (H.head, H.tail);
+        take Q = IntQueueAux (H.Head, H.tail);
         return Q;
       }
     }
 
-    predicate (datatype seq) IntQueueAux(pointer h, pointer t) {
+    predicate (datatype List) IntQueueAux(pointer h, pointer t) {
       take C = Owned<struct int_queueCell>(h);
       take L = IntQueueAux1(h, C, t);
       return L;
     }
 
-    predicate (datatype seq) IntQueueAux1
+    predicate (datatype List) IntQueueAux1
                                (pointer h, struct int_queueCell C, pointer t) {
       if (is_null(C.next)) {
         assert (h == t);
-        return (Seq_Cons{head: C.first, tail: Seq_Nil{}});
+        return (Cons{Head: C.first, Tail: Nil{}});
       } else {
         take TL = IntQueueAux(C.next, t);
-        return (Seq_Cons { head: C.first, tail: TL });
+        return (Cons { Head: C.first, Tail: TL });
       }
     }
 
@@ -80,11 +80,11 @@ This fails because there are not enough annotations in the body of push.
 
 Confusingly, the HTML error report gives this as the unproven constraint
 
-    Seq_Cons {head: x, tail: Seq_Nil {}} == snoc(l, x)
+    Cons {Head: x, Tail: Nil {}} == snoc(l, x)
 
 while the list of Terms shows that
 
-    Seq_Cons {head: x, tail: Seq_Nil {}} == snoc(l, x)
+    Cons {Head: x, Tail: Nil {}} == snoc(l, x)
 
 has value false!
 
@@ -111,7 +111,7 @@ not, so even to look "one level deep" we need an unfold.)
 
 Once we've unfolded, we get some more hints:
 
-  - Look at the value of l in Terms: Seq_Cons {head: 0i32, tail: Seq_Nil {}}
+  - Look at the value of l in Terms: Cons {Head: 0i32, Tail: Nil {}}
   - But we are in the empty queue case, so this seems fishy.
   - Now, in the constraints, we see   l == unpack_IntQueue1.Q
   - Then look at the resources and see that unpack_IntQueue1.Q has not
@@ -119,7 +119,7 @@ Once we've unfolded, we get some more hints:
         IntQueue1(q, unpack_IntQueue1.H)(unpack_IntQueue1.Q)
   - This means that CN did not have enough information to decide which
     way the conditional at the beginning of IntQueue1 is going to go.
-  - But the condition is testing H.head, while the conditional in the
+  - But the condition is testing H.Head, while the conditional in the
     code is testing the tail field!
   - We could get around this mismatch by adjusting the condition
     itself, or by adjusting the predicate.  E.g., we could change the
@@ -128,12 +128,12 @@ Once we've unfolded, we get some more hints:
 
 This tells us to look at snoc, which turns out to be very wrong!
 
-    function [rec] (datatype seq) snoc(datatype seq xs, i32 y) {
+    function [rec] (datatype List) snoc(datatype List xs, i32 y) {
       match xs {
-        Seq_Nil {} => {
-          Seq_Nil {}
+        Nil {} => {
+          Nil {}
         }
-        Seq_Cons {head : h, tail : zs}  => {
+        Cons {Head : h, tail : zs}  => {
           snoc (rev(zs), h)
         }
       }
@@ -189,32 +189,32 @@ Instead, we need to rearrange IntQueue and friends so that we take
 ownership of the very last cell in the list at the very beginning,
 instead of at the very end.
 
-    predicate (datatype seq) IntQueue(pointer q) {
+    predicate (datatype List) IntQueue(pointer q) {
       take H = Owned<struct int_queue>(q);
       take Q = IntQueue1(q,H);
       return Q;
     }
 
-    predicate (datatype seq) IntQueue1(pointer dummy, struct int_queue H) {
-      if (is_null(H.head)) {
+    predicate (datatype List) IntQueue1(pointer dummy, struct int_queue H) {
+      if (is_null(H.Head)) {
         assert (is_null(H.tail));
-        return (Seq_Nil{});
+        return (Nil{});
       } else {
         assert (!is_null(H.tail));
         take T = Owned<struct int_queueCell>(H.tail);
         assert (is_null(T.next));
-        take Q = IntQueueAux (H.head, H.tail, T.first);
+        take Q = IntQueueAux (H.Head, H.tail, T.first);
         return Q;
       }
     }
 
-    predicate (datatype seq) IntQueueAux (pointer h, pointer t, i32 lastVal) {
+    predicate (datatype List) IntQueueAux (pointer h, pointer t, i32 lastVal) {
       if (h == t) {
-        return (Seq_Cons{head: lastVal, tail: Seq_Nil{}});
+        return (Cons{Head: lastVal, Tail: Nil{}});
       } else {
         take C = Owned<struct int_queueCell>(h);
         take TL = IntQueueAux(C.next, t, lastVal);
-        return (Seq_Cons { head: C.first, tail: TL });
+        return (Cons { Head: C.first, Tail: TL });
       }
     }
 

@@ -7,13 +7,13 @@ struct sized_stack {
 };
 
 /*@
-type_synonym sizeAndData = {u32 s, datatype seq d}
+type_synonym sizeAndData = {u32 s, datatype List d}
 
 predicate (sizeAndData) SizedStack(pointer p) {
     take S = Owned<struct sized_stack>(p);
     let s = S.size;
-    take d = IntList(S.data);
-    assert(s == length(d));
+    take d = SLList(S.data);
+    assert(s == Length(d));
     return { s: s, d: d };
 }
 @*/
@@ -40,7 +40,7 @@ struct sized_stack* create()
   struct sized_stack *p = malloc__sized_stack();
   p->size = 0;
   p->data = 0;
-  /*@ unfold length(Seq_Nil {}); @*/
+  /*@ unfold length(Nil {}); @*/
   return p;
 }
 
@@ -62,15 +62,15 @@ void push (struct sized_stack *p, int x)
 /* ---BEGIN--- */
 /*@ requires take S = SizedStack(p);
     ensures take S_ = SizedStack(p);
-            S_.d == Seq_Cons {head:x, tail:S.d};
+            S_.d == Cons {Head:x, Tail:S.d};
 @*/
 /* ---END--- */
 {
-  struct int_list *data = IntList_cons(x, p->data);
+  struct int_list *data = slcons(x, p->data);
   p->size++;
   p->data = data;
 /* ---BEGIN--- */
-  /*@ unfold length (Seq_Cons {head: x, tail: S.d}); @*/
+  /*@ unfold length (Cons {Head: x, Tail: S.d}); @*/
 /* ---END--- */
 }
 

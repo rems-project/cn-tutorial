@@ -3,12 +3,12 @@
 #include "free.h"
 
 /*@
-function [rec] (u32) length(datatype seq xs) {
+function [rec] (u32) length(datatype List xs) {
   match xs {
-    Seq_Nil {} => {
+    Nil {} => {
       0u32
     }
-    Seq_Cons {head : h, tail : zs}  => {
+    Cons {Head : h, tail : zs}  => {
       1u32 + length(zs)
     }
   }
@@ -16,9 +16,9 @@ function [rec] (u32) length(datatype seq xs) {
 @*/
 
 void IntList_length_acc_aux (struct int_list *xs, unsigned int *p)
-/*@ requires take L1 = IntList(xs);
+/*@ requires take L1 = SLList(xs);
              take n = Owned<unsigned int>(p);
-    ensures take L1_ = IntList(xs);
+    ensures take L1_ = SLList(xs);
             take n_ = Owned<unsigned int>(p);
             L1 == L1_;
             n_ == n + length(L1);
@@ -33,8 +33,8 @@ void IntList_length_acc_aux (struct int_list *xs, unsigned int *p)
 }
 
 unsigned int IntList_length_acc (struct int_list *xs)
-/*@ requires take L1 = IntList(xs);
-    ensures take L1_ = IntList(xs);
+/*@ requires take L1 = SLList(xs);
+    ensures take L1_ = SLList(xs);
             L1 == L1_;
             return == length(L1);
 @*/

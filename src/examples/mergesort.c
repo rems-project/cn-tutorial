@@ -1,44 +1,44 @@
 #include "list.h"
 
 /*@
-function [rec] ({datatype seq fst, datatype seq snd}) split(datatype seq xs)
+function [rec] ({datatype List fst, datatype List snd}) split(datatype List xs)
 {
   match xs {
-    Seq_Nil {} => {
-      {fst: Seq_Nil{}, snd: Seq_Nil{}}
+    Nil {} => {
+      {fst: Nil{}, snd: Nil{}}
     }
-    Seq_Cons {head: h1, tail: Seq_Nil{}} => {
-      {fst: Seq_Nil{}, snd: xs}
+    Cons {Head: h1, Tail: Nil{}} => {
+      {fst: Nil{}, snd: xs}
     }
-    Seq_Cons {head: h1, tail: Seq_Cons {head : h2, tail : tl2 }} => {
+    Cons {Head: h1, Tail: Cons {Head : h2, tail : tl2 }} => {
       let P = split(tl2);
-      {fst: Seq_Cons { head: h1, tail: P.fst},
-       snd: Seq_Cons { head: h2, tail: P.snd}}
+      {fst: Cons { Head: h1, Tail: P.fst},
+       snd: Cons { Head: h2, Tail: P.snd}}
     }
   }
 }
 
-function [rec] (datatype seq) merge(datatype seq xs, datatype seq ys) {
+function [rec] (datatype List) merge(datatype List xs, datatype List ys) {
   match xs {
-      Seq_Nil {} => { ys }
-      Seq_Cons {head: x, tail: xs1} => {
+      Nil {} => { ys }
+      Cons {Head: x, Tail: xs1} => {
         match ys {
-          Seq_Nil {} => { xs }
-          Seq_Cons{ head: y, tail: ys1} => {
+          Nil {} => { xs }
+          Cons{ Head: y, Tail: ys1} => {
             (x < y) ?
-              (Seq_Cons{ head: x, tail: merge(xs1, ys) })
-            : (Seq_Cons{ head: y, tail: merge(xs, ys1) })
+              (Cons{ Head: x, Tail: merge(xs1, ys) })
+            : (Cons{ Head: y, Tail: merge(xs, ys1) })
           }
         }
       }
   }
 }
 
-function [rec] (datatype seq) mergesort(datatype seq xs) {
+function [rec] (datatype List) mergesort(datatype List xs) {
   match xs {
-      Seq_Nil{} => { xs }
-      Seq_Cons{head: x, tail: Seq_Nil{}} => { xs }
-      Seq_Cons{head: x, tail: Seq_Cons{head: y, tail: zs}} => {
+      Nil{} => { xs }
+      Cons{Head: x, Tail: Nil{}} => { xs }
+      Cons{Head: x, Tail: Cons{Head: y, Tail: zs}} => {
         let P = split(xs);
         let L1 = mergesort(P.fst);
         let L2 = mergesort(P.snd);
@@ -54,9 +54,9 @@ struct int_list_pair {
 };
 
 struct int_list_pair split(struct int_list *xs)
-/*@ requires take Xs = IntList(xs); @*/
-/*@ ensures take Ys = IntList(return.fst); @*/
-/*@ ensures take Zs = IntList(return.snd); @*/
+/*@ requires take Xs = SLList(xs); @*/
+/*@ ensures take Ys = SLList(return.fst); @*/
+/*@ ensures take Zs = SLList(return.snd); @*/
 /*@ ensures {fst: Ys, snd: Zs} == split(Xs); @*/
 {
   if (xs == 0) {
@@ -81,9 +81,9 @@ struct int_list_pair split(struct int_list *xs)
 }
 
 struct int_list* merge(struct int_list *xs, struct int_list *ys)
-/*@ requires take Xs = IntList(xs); @*/
-/*@ requires take Ys = IntList(ys); @*/
-/*@ ensures take Zs = IntList(return); @*/
+/*@ requires take Xs = SLList(xs); @*/
+/*@ requires take Ys = SLList(ys); @*/
+/*@ ensures take Zs = SLList(return); @*/
 /*@ ensures Zs == merge(Xs, Ys); @*/
 {
   if (xs == 0) {
@@ -110,8 +110,8 @@ struct int_list* merge(struct int_list *xs, struct int_list *ys)
 }
 
 struct int_list* mergesort(struct int_list *xs)
-/*@ requires take Xs = IntList(xs); @*/
-/*@ ensures take Ys = IntList(return); @*/
+/*@ requires take Xs = SLList(xs); @*/
+/*@ ensures take Ys = SLList(return); @*/
 /*@ ensures Ys == mergesort(Xs); @*/
 {
   if (xs == 0) {

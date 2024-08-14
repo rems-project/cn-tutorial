@@ -1,6 +1,6 @@
 /*@
 datatype Dll {
     Empty_Dll {},
-    Dll {datatype seq left, struct node curr, datatype seq right}
+    Dll {datatype List left, struct node curr, datatype List right}
 }
 @*/

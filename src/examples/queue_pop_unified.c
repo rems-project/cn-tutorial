@@ -1,16 +1,16 @@
 #include "queue_headers.h"
 
 /*@
-type_synonym result = { datatype seq after, datatype seq before }
+type_synonym result = { datatype List after, datatype List before }
 
 predicate (result) Queue_pop_lemma(pointer front, pointer back, i32 popped) {
   if (is_null(front)) {
-    return { after: Seq_Nil{}, before: snoc(Seq_Nil{}, popped) };
+    return { after: Nil{}, before: Snoc(Nil{}, popped) };
   } else {
     take B = Owned<struct int_queueCell>(back);
     assert (is_null(B.next));
     take L = IntQueueAux (front, back);
-    return { after: snoc(L, B.first), before: snoc(Seq_Cons {head: popped, tail: L}, B.first) };
+    return { after: Snoc(L, B.first), before: Snoc(Cons {Head: popped, Tail: L}, B.first) };
   }
 }
 @*/
@@ -24,12 +24,12 @@ ensures
     take NewQ = IntQueueAux(front, back);
     take NewB = Owned<struct int_queueCell>(back);
     Q == NewQ; B == NewB;
-    let L = snoc (Seq_Cons{head: x, tail: Q}, B.first);
-    hd(L) == x;
-    tl(L) == snoc (Q, B.first);
+    let L = Snoc (Cons{Head: x, Tail: Q}, B.first);
+    Hd(L) == x;
+    Tl(L) == Snoc (Q, B.first);
 @*/
 {
-    /*@ unfold snoc (Seq_Cons{head: x, tail: Q}, B.first); @*/
+    /*@ unfold Snoc (Cons{Head: x, Tail: Q}, B.first); @*/
 }
 
 void snoc_fact_unified(struct int_queueCell *front, struct int_queueCell *back, int x)
@@ -39,12 +39,12 @@ requires
 ensures
       take NewAB = Queue_pop_lemma(front, back, x);
       AB == NewAB;
-      AB.after == tl(AB.before);
-      x == hd(AB.before);
+      AB.after == Tl(AB.before);
+      x == Hd(AB.before);
 @*/
 {
     if (!front) {
-        /*@ unfold snoc(Seq_Nil{}, x); @*/
+        /*@ unfold Snoc(Nil{}, x); @*/
     } else {
         snoc_fact(front, back, x);
     }
@@ -52,10 +52,10 @@ ensures
 
 int IntQueue_pop (struct int_queue *q)
 /*@ requires take before = IntQueuePtr(q);
-             before != Seq_Nil{};
+             before != Nil{};
     ensures take after = IntQueuePtr(q);
-            after == tl(before);
-            return == hd(before);
+            after == Tl(before);
+            return == Hd(before);
 @*/
 {
   /*@ split_case is_null(q->front); @*/

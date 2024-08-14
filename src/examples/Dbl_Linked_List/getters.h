@@ -1,14 +1,14 @@
 /*@
-function (datatype seq) Right (datatype Dll L) {
+function (datatype List) Right (datatype Dll L) {
     match L {
-        Empty_Dll {} => { Seq_Nil{} }
+        Empty_Dll {} => { Nil{} }
         Dll {left: _, curr: _, right: r} => { r }
     }
 }
 
-function (datatype seq) Left (datatype Dll L) {
+function (datatype List) Left (datatype Dll L) {
     match L {
-        Empty_Dll {} => { Seq_Nil {} }
+        Empty_Dll {} => { Nil {} }
         Dll {left: l, curr: _, right: _} => { l }
     }
 }

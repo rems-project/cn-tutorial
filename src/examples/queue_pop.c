@@ -3,7 +3,7 @@
 
 int IntQueue_pop (struct int_queue *q)
 /*@ requires take before = IntQueuePtr(q);
-             before != Seq_Nil{};
+             before != Nil{};
     ensures take after = IntQueuePtr(q);
             after == tl(before);
             return == hd(before);
@@ -16,7 +16,7 @@ int IntQueue_pop (struct int_queue *q)
     freeIntQueueCell(h);
     q->front = 0;
     q->back = 0;
-    /*@ unfold snoc(Seq_Nil{}, x); @*/
+    /*@ unfold snoc(Nil{}, x); @*/
     return x;
   } else {
     int x = h->first;

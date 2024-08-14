@@ -7,7 +7,7 @@ function [rec] (u32) Length(datatype List L) {
     Nil {} => {
       0u32
     }
-    Cons {Head: H, Tail: T}  => {
+    Cons {Head: H, Tail : T}  => {
       1u32 + Length(T)
     }
   }

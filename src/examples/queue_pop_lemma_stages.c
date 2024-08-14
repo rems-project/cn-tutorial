@@ -5,22 +5,22 @@
 
 /*@
 
-predicate (datatype seq) Pre(pointer front, pointer back, i32 popped, datatype seq before) {
+predicate (datatype List) Pre(pointer front, pointer back, i32 popped, datatype List before) {
   if (is_null(front)) {
-    let after = Seq_Nil{};
-    assert (before == snoc(Seq_Nil{}, popped));
+    let after = Nil{};
+    assert (before == snoc(Nil{}, popped));
     return after;
   } else {
     take B = Owned<struct int_queueCell>(back);
     assert (is_null(B.next));
     take L = IntQueueAux (front, back);
-    assert (before == snoc(Seq_Cons {head: popped, tail: L}, B.first));
+    assert (before == snoc(Cons {Head: popped, Tail: L}, B.first));
     let after = snoc(L, B.first);
     return after;
   }
 }
 
-lemma lemma1(pointer front, pointer back, i32 popped, datatype seq before)
+lemma lemma1(pointer front, pointer back, i32 popped, datatype List before)
 requires
     take Q = Pre(front, back, popped, before);
 ensures
@@ -32,10 +32,10 @@ ensures
 
 /*@
 
-predicate (datatype seq) Post(pointer front, pointer back, i32 popped, datatype seq before) {
+predicate (datatype List) Post(pointer front, pointer back, i32 popped, datatype List before) {
   if (is_null(front)) {
-    assert (before == snoc(Seq_Nil{}, popped));
-    let after = Seq_Nil{};
+    assert (before == snoc(Nil{}, popped));
+    let after = Nil{};
     assert (after == tl(before));
     assert (popped == hd(before));
     return after;
@@ -43,7 +43,7 @@ predicate (datatype seq) Post(pointer front, pointer back, i32 popped, datatype 
     take B = Owned<struct int_queueCell>(back);
     assert (is_null(B.next));
     take L = IntQueueAux (front, back);
-    assert (before == snoc(Seq_Cons {head: popped, tail: L}, B.first));
+    assert (before == snoc(Cons {Head: popped, Tail: L}, B.first));
     let after = snoc(L, B.first);
     assert (after == tl(before));
     assert (popped == hd(before));
@@ -51,7 +51,7 @@ predicate (datatype seq) Post(pointer front, pointer back, i32 popped, datatype 
   }
 }
 
-lemma lemma2(pointer front, pointer back, i32 popped, datatype seq before)
+lemma lemma2(pointer front, pointer back, i32 popped, datatype List before)
 requires
     take Q = Pre(front, back, popped, before);
 ensures
@@ -65,20 +65,20 @@ ensures
 
 /*@
 
-type_synonym result = { datatype seq after, datatype seq before }
+type_synonym result = { datatype List after, datatype List before }
 
 predicate (result) Queue_pop_lemma(pointer front, pointer back, i32 popped) {
   if (is_null(front)) {
-    return { after: Seq_Nil{}, before: snoc(Seq_Nil{}, popped) };
+    return { after: Nil{}, before: snoc(Nil{}, popped) };
   } else {
     take B = Owned<struct int_queueCell>(back);
     assert (is_null(B.next));
     take L = IntQueueAux (front, back);
-    return { after: snoc(L, B.first), before: snoc(Seq_Cons {head: popped, tail: L}, B.first) };
+    return { after: snoc(L, B.first), before: snoc(Cons {Head: popped, Tail: L}, B.first) };
   }
 }
 
-lemma lemma3(pointer front, pointer back, i32 popped, datatype seq before)
+lemma lemma3(pointer front, pointer back, i32 popped, datatype List before)
 requires
     take Q = Queue_pop_lemma(front, back, popped);
     before == Q.before;

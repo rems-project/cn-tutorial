@@ -3,7 +3,7 @@
 struct int_queue* IntQueue_empty ()
 /* --BEGIN-- */
 /*@ ensures take ret = IntQueuePtr(return);
-            ret == Seq_Nil{};
+            ret == Nil{};
 @*/
 /* --END-- */
 {

@@ -2,9 +2,9 @@
 #include "list_append.h"
 
 struct int_list* IntList_append(struct int_list* xs, struct int_list* ys)
-/*@ requires take L1 = IntList(xs); @*/
-/*@ requires take L2 = IntList(ys); @*/
-/*@ ensures take L3 = IntList(return); @*/
+/*@ requires take L1 = SLList(xs); @*/
+/*@ requires take L2 = SLList(ys); @*/
+/*@ ensures take L3 = SLList(return); @*/
 /*@ ensures L3 == append(L1, L2); @*/
 {
   if (xs == 0) {

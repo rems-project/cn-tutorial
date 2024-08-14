@@ -1,5 +1,5 @@
 /*@
-predicate (datatype seq) IntQueuePtr (pointer q) {
+predicate (datatype List) IntQueuePtr (pointer q) {
   take Q = Owned<struct int_queue>(q);
   assert (   (is_null(Q.front)  && is_null(Q.back)) 
           || (!is_null(Q.front) && !is_null(Q.back)));

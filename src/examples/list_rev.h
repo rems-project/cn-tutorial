@@ -7,7 +7,7 @@ function [rec] (datatype List) RevList(datatype List L) {
       Nil {}
     }
     Cons {Head : H, Tail : T}  => {
-      SnocList (RevList(T), H)
+      Snoc (RevList(T), H)
     }
   }
 }

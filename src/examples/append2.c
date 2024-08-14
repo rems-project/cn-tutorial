@@ -2,9 +2,9 @@
 #include "list_append.h"
 
 struct int_list* IntList_copy (struct int_list *xs)
-/*@ requires take L1 = IntList(xs);
-    ensures take L1_ = IntList(xs);
-            take L2 = IntList(return);
+/*@ requires take L1 = SLList(xs);
+    ensures take L1_ = SLList(xs);
+            take L2 = SLList(return);
             L1 == L1_;
             L1 == L2;
 @*/
@@ -19,11 +19,11 @@ struct int_list* IntList_copy (struct int_list *xs)
 
 struct int_list* IntList_append2 (struct int_list *xs, struct int_list *ys)
 /* --BEGIN-- */
-/*@ requires take L1 = IntList(xs); @*/
-/*@ requires take L2 = IntList(ys); @*/
-/*@ ensures take L1_ = IntList(xs); @*/
-/*@ ensures take L2_ = IntList(ys); @*/
-/*@ ensures take L3 = IntList(return); @*/
+/*@ requires take L1 = SLList(xs); @*/
+/*@ requires take L2 = SLList(ys); @*/
+/*@ ensures take L1_ = SLList(xs); @*/
+/*@ ensures take L2_ = SLList(ys); @*/
+/*@ ensures take L3 = SLList(return); @*/
 /*@ ensures L3 == append(L1, L2); @*/
 /*@ ensures L1 == L1_; @*/
 /*@ ensures L2 == L2_; @*/

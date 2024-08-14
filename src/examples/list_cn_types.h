@@ -1,7 +1,3 @@
-// We've kept Seq for the type of abstract sequences, since many
-// different concrete data structures are representations of abstract
-// lists.
-
 /*@
 datatype List {
   Nil {},
@@ -12,9 +8,9 @@ predicate (datatype List) SLList(pointer p) {
   if (is_null(p)) {
     return Nil{};
   } else {
-    take h = Owned<struct sllist>(p);
-    take Tl = SLList(h.tail);
-    return (Cons { Head: h.head, Tail: Tl });
+    take H = Owned<struct sllist>(p);
+    take Tl = SLList(H.tail);
+    return (Cons { Head: H.head, Tail: Tl });
   }
 }
 @*/

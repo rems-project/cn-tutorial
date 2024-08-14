@@ -5,8 +5,8 @@ struct node *add(int element, struct node *n)
 /*@ requires take Before = Dll_at(n);
     ensures  take After = Dll_at(return);
 
-             is_null(n) ? After == Dll { left: Seq_Nil{}, curr: Node(After), right: Seq_Nil{}}
-                        : After == Dll { left: Seq_Cons{head: Node(Before).data, tail: Left(Before)}, curr: Node(After), right: Right(Before)};
+             is_null(n) ? After == Dll { left: Nil{}, curr: Node(After), right: Nil{}}
+                        : After == Dll { left: Cons{Head: Node(Before).data, Tail: Left(Before)}, curr: Node(After), right: Right(Before)};
 @*/
 {
     struct node *new_node = malloc__node();
