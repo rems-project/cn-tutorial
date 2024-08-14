@@ -3,6 +3,7 @@
 MAKEFILE_DIR:=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 default: build exercises build/tutorial.html build/exercises.zip
+all: default
 
 clean:
 	rm -rf build TAGS
