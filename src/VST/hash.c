@@ -6,27 +6,23 @@ unsigned int hash (char *s)
 /*@
 requires
   take sIn = Stringa(s);
+  strf_len(sIn) + 1u64 <= 18446744073709551615u64; 
 ensures
   take sOut = Stringa(s);
   sIn == sOut;
-  return == hashf(sIn);
+  //return == hashf(sIn);
 @*/
 {
   unsigned int n=0;
   size_t i=0;
-  /*@ apply elems_owned(s); @*/
-  /*@ extract Owned<char>, i; @*/
   char c = s[i];
   while (c)      
   /*@ 
     inv
-      //take sInv = Stringa(s);
-      //sInv == sIn;
+      take soFar = Str_Seg_Back(s, i);
+      take rest = Stringa(array_shift<char>(s, i + 1u64));
+      seg_strf_concat(soFar, rest) == sIn;
       i <= strf_len(sIn);
-      take sInv = each(u64 j; j <= strf_len(sIn)) { Owned<char>(array_shift<char>(s, j)) };
-      each (u64 j; j < strf_len(sIn)) { sInv[j] != 0u8 };
-      sInv[strf_len(sIn)] == 0u8;
-      c == sInv[i];
       c == 0u8 || i < strf_len(sIn);
   @*/
   {
@@ -34,13 +30,10 @@ ensures
     /*@ assert (i < strf_len(sIn)); @*/
     n = n*65599u+(unsigned)c;
     i++;
-    /*@ assert (i <= strf_len(sIn)); @*/
-    /*@ extract Owned<char>, i; @*/
     c=s[i];
     /*@ split_case (c == 0u8); @*/
   }
-  ///*@ apply elems_owned_rev(s, strf_len(sIn)); @*/
-  //return n;
+  return n;
 }
 
 char *copy_string (char *s) 

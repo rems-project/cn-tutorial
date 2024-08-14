@@ -1,4 +1,4 @@
-#include "strarray.c"
+#include "string.c"
 
 struct cell {
   char * key;
