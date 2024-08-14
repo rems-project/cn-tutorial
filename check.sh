@@ -5,7 +5,7 @@ SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 if [ -n "$1" ]
 then
     echo "using CN=$1 in $PWD"
-    CN="$1"
+    CN="$1 verify"
 else
     CN=cn verify
 fi
