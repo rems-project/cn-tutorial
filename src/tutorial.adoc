@@ -10,11 +10,13 @@ By Christopher Pulte and Benjamin C. Pierce, with contributions from Elizabeth A
 
 [abstract]
 --
-CN is a type system for verifying C code, focusing especially on low-level systems code. Compared to the normal C type system, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes _safely_ — does not raise C undefined behaviour — and _correctly_ — according to strong user-defined specifications. 
-// 
-This tutorial introduces CN along a series of examples, starting with basic usage of CN on simple arithmetic functions and slowly moving towards more elaborate separation logic specifications of data structures. 
+CN is an extension of the C programming language for verifying the correctness of C code, especially on low-level systems code. Compared to standard C, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes _safely_ — does not raise C undefined behaviour — and _correctly_ — satisfying to strong, user-defined specifications. 
+This tutorial introduces CN through a series of examples, starting with basic usage of CN on simple arithmetic functions and slowly moving towards more elaborate separation logic specifications of data structures. 
 
-CN was first described in https://dl.acm.org/doi/10.1145/3571194[CN: Verifying Systems C Code with Separation-Logic Refinement Types] by Christopher Pulte, Dhruv C. Makwana, Thomas Sewell, Kayvan Memarian, Peter Sewell, Neel Krishnaswami.
+This tutorial is a work in progress -- your suggestions are greatly appreciated!
+
+**Origins.**
+CN was first described in https://dl.acm.org/doi/10.1145/3571194[CN: Verifying Systems C Code with Separation-Logic Refinement Types] by Christopher Pulte, Dhruv C. Makwana, Thomas Sewell, Kayvan Memarian, Peter Sewell, and Neel Krishnaswami.
 //
 To accurately handle the complex semantics of C, CN builds on the https://github.com/rems-project/cerberus/[Cerberus semantics for C].
 //
@@ -23,8 +25,6 @@ https://softwarefoundations.cis.upenn.edu[Separation Logic
 Foundations] textbook, and one of the case studies is based on an
 extended exercise due to Bryan Parno.
 
-This tutorial is a work in progress -- your suggestions are greatly appreciated!
-
 **Acknowledgment of Support and Disclaimer.**
 This material is based upon work supported by the Air Force Research Laboratory (AFRL) and Defense Advanced Research Projects Agencies (DARPA) under Contract No. FA8750-24-C-B044, a European Research Council (ERC) Advanced Grant “ELVER” under the European Union’s Horizon 2020 research and innovation programme (grant agreement no. 789108), and additional funding from Google.  The opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the Air Force Research Laboratory (AFRL).
 
@@ -32,46 +32,42 @@ This material is based upon work supported by the Air Force Research Laboratory 
 
 == Installing CN
 
-To fetch and install CN, check the Cerberus repository at https://github.com/rems-project/cerberus and follow the instructions in https://github.com/rems-project/cerberus/blob/master/backend/cn/README.md[backend/cn/README.md].
+To fetch and install CN, visit the Cerberus repository at https://github.com/rems-project/cerberus and follow the instructions in https://github.com/rems-project/cerberus/blob/master/backend/cn/README.md[backend/cn/README.md].
 
-Once completed, type `+cn --help+` in your terminal to ensure CN is installed and found by your system. This should print the list of available options CN can be executed with.
+Once the installation is completed, type `+cn --help+` in your terminal to ensure CN is installed and found by your system. This should print the list of available options CN can be executed with.
 
-To apply CN to a C file, run `+cn CFILE+`.
+To apply CN to a C file, run `+cn verify CFILE+`.
 
-== Source files for the exercises and examples
+== Source files
 
-The source files can be downloaded from link:exercises.zip[here].
+The source files for all the exercises and examples below can be downloaded
+from link:exercises.zip[here].
 
-== Basic usage
+== Basics
 
 === First example
 
-For a first example, let’s look at a simple arithmetic function: `+add+`, shown below, takes two `+int+` arguments, `+x+` and `+y+`, and returns their sum.
+The simple arithmetic function: `+add+` shown below takes two `+int+` arguments, `+x+` and `+y+`, and returns their sum.
 
-// TODO: BCP: We should probably adopt the convention that all the files in
-// the exercises directory have a comment at the top giving their name.
-// (We could actually auto-generate those header comments when we process
-// /src/examples into build/exercises, to avoid having to maintain them
-// and possibly get them wrong...)
 include_example(exercises/add_0.c)
 
 Running CN on the example produces an error message:
 
 ....
-cn exercises/add_0.c
+cn verify exercises/add_0.c
 [1/1]: add
 exercises/add_0.c:3:10: error: Undefined behaviour
   return x+y;
          ~^~
 an exceptional condition occurs during the evaluation of an expression (§6.5#5)
-Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_393431.html
+Consider the state in /var/folders/_v/ndl32rvc8ph0000gn/T/state_393431.html
 ....
 
-CN rejects the program because it has _C undefined behaviour_, meaning it is not safe to execute. CN points to the relevant source location, the addition `+x+y+`, and paragraph §6.5#5 of the C language standard that specifies the undefined behaviour. It also puts a link to an HTML file with more details on the error to help in diagnosing the problem.
+CN rejects the program because it has _undefined behaviour_ according to the C standard, meaning it is not safe to execute. CN points to the relevant source location, the addition `+x+y+`, and paragraph §6.5#5 of the standard, which specifies the undefined behaviour. It also includes a link to an HTML file with more details on the error to help in diagnosing the problem.
 
 Inspecting this HTML report (as we do in a moment) gives us possible example values for `+x+` and `+y+` that cause the undefined behaviour and hint at the problem: for very large values for `+x+` and `+y+`, such as `+1073741825+` and `+1073741824+`, the sum of `+x+` and `+y+` can exceed the representable range of a C `+int+` value: `+1073741825 + 1073741824 = 2^31+1+`, so their sum is larger than the maximal `+int+` value, `+2^31-1+`.
 
-Here `+x+` and `+y+` are _signed integers_, and in C, signed integer _overflow_ is undefined behaviour (UB). Hence, `+add+` is only safe to execute for smaller values. Similarly, _large negative_ values of `+x+` and `+y+` can cause signed integer _underflow_, also UB in C. We therefore need to rule out too large values for `+x+` and `+y+`, both positive and negative, which we do by writing a CN function specification.
+Here `+x+` and `+y+` are _signed integers_, and in C, signed integer _overflow_ is undefined behaviour (UB). Hence, `+add+` is only safe to execute for smaller values. Similarly, _large negative_ values of `+x+` and `+y+` can cause signed integer _underflow_, also UB in C. We therefore need to rule out too-large values for `+x+` and `+y+`, both positive and negative, which we do by writing a CN function specification.
 
 === First function specification
 
@@ -91,20 +87,25 @@ In detail:
 
 * `+let sum = (i64) x + (i64) y+` is a let-binding, which defines `+sum+` as the value `+(i64) x + (i64) y+` in the remainder of the function specification.
 
-* Instead of C syntax, CN uses Rust-like syntax for integer types, such as `+u32+` for 32-bit unsigned integers and `+i64+` for signed 64-bit integers to make their sizes unambiguous. Here, `+x+` and `+y+`, of C-type `+int+`, have CN type `+i32+`.
+* Instead of C syntax, CN uses Rust-like syntax for integer types, such as `+u32+` for 32-bit unsigned integers and `+i64+` for signed 64-bit integers, to make their sizes unambiguous. Here, `+x+` and `+y+`, of C-type `+int+`, have CN type `+i32+`.
 // TODO: BCP: I understand this reasoning, but I wonder whether it introduces more confusion than it avoids -- it means there are two ways of writing everything, and people have to remember whether the particular thing they are writing right now is C or CN...
+// TODO: BCP: Hopefully we are moving toward unifying these notations anyway?
 
 * To define `+sum+` we cast `+x+` and `+y+` to the larger `+i64+` type, using syntax `+(i64)+`, which is large enough to hold the sum of any two `+i32+` values.
 
-* Finally, we require this sum to be in-between the minimal and maximal `+int+` value. Integer constants, such as `+-2147483648i64+`, must specifiy their CN type (`+i64+`).
+* Finally, we require this sum to be between the minimal and maximal `+int+` values. Integer constants, such as `+-2147483648i64+`, must specifiy their CN type (`+i64+`).
+// TODO: BCP: We should use the new ' syntax (or whatever it turned out to be) for numeric constants
 
-Running CN on the annotated program passes without errors. This means with our specified precondition, `+add+` is safe to execute.
+Running CN on the annotated program passes without errors. This means that, with our specified precondition, `+add+` is safe to execute.
 
-We may, however, wish to be more precise. So far the specification gives no information to callers of `+add+` about its output. To also specify the return values we add a postcondition, using the `+ensures+` keyword.
+We may, however, wish to be more precise. So far, the specification gives no information to callers of `+add+` about its output. To describe its return value we add a postcondition to the specification using the `+ensures+` keyword.
 
 include_example(solutions/add_1.c)
 
-Here we use the keyword `+return+`, only available in function postconditions, to refer to the return value, and equate it to `+sum+` as defined in the preconditions, cast back to `+i32+` type: `+add+` returns the sum of `+x+` and `+y+`.
+Here we use the keyword `+return+`, which is only available in function
+postconditions, to refer to the return value, and we equate it to `+sum+`
+as defined in the precondition, cast back to `+i32+` type: that is, `+add+`
+returns the sum of `+x+` and `+y+`.
 
 Running CN confirms that this postcondition also holds.
 
@@ -112,24 +113,42 @@ One final refinement of this example.  CN defines constant functions `MINi32`, `
 
 include_example(solutions/add_2.c)
 
-Two things to note:
-   * These are constant _functions_, so they require a following `()`.
-   * The type of `MINi32()` is `i32`, so if we want to use it as a 64-bit constant
-     we need to add the explicit coercion `(i64)`.
+Two things to note: (1) These are constant _functions_, so they
+require a following `()`.  And (2) The type of `MINi32()` is `i32`, so
+if we want to use it as a 64-bit constant we need to add the explicit
+coercion `(i64)`.
 
 === Error reports
 
-In the original example CN reported a type error due to C undefined behaviour. While that example was perhaps simple enough to guess the problem and solution, this can become quite challenging as program and specification complexity increases. Diagnosing type errors is therefore an important part of using CN. CN tries to help with that by producing detailed error information, in the form of an HTML error report.
+In the original example, CN reported a type error due to C undefined
+behaviour. While that example was perhaps simple enough to guess the
+problem and solution, this can become quite challenging as program and
+specification complexity increases. Diagnosing errors is
+therefore an important part of using CN. CN tries to help with this by
+producing detailed error information, in the form of an HTML error
+report.
 
-Let’s return to the type error from earlier (`+add+` without precondition) and take a closer look at this report. The report comprises two sections.
+Let’s return to the type error from earlier -- `+add+` without
+precondition -- and take a closer look at this report. It
+comprises two sections:
 
-// TODO: BCP: It looks different now!
+// TODO: BCP: It looks quite different now!
 .*CN error report*
 image::images/0.error.png[*CN error report*]
 
-*Path.* The first section, "`Path to error`", contains information about the control-flow path leading to the error.
+*Path to error.* The first section contains information about the
+control-flow path leading to the error.
 
-When type checking a C function, CN checks each possible control-flow path through the program individually. If CN detects UB or a violation of user-defined specifications, CN reports the problematic control-flow path, as a nested structure of statements: paths are split into sections, which group together statements between high-level control-flow positions (e.g. function entry, the start of a loop, the invocation of a `+continue+`, `+break+`, or `+return+` statement, etc.); within each section, statements are listed by source code location; finally, per statement, CN lists the typechecked sub-expressions, and the memory accesses and function calls within these.
+When checking a C function, CN examines each possible control-flow
+path individually. If it detects UB or a violation of user-defined
+specifications, CN reports the problematic control-flow path as a
+nested structure of statements: the path is split into sections that
+group together statements between high-level control-flow positions
+(e.g. function entry, the start of a loop, the invocation of a
+`+continue+`, `+break+`, or `+return+` statement, etc.); within each
+section, statements are listed by source code location; finally, per
+statement, CN lists the typechecked sub-expressions, and the memory
+accesses and function calls within these.
 
 In our example, there is only one possible control-flow path: entering the function body (section "`function body`") and executing the block from lines 2 to 4, followed by the return statement at line 3. The entry for the latter contains the sequence of sub-expressions in the return statement, including reads of the variables `+x+` and `+y+`.
 
@@ -354,6 +373,7 @@ include_example(exercises/add_read.c)
 This time we use C’s `+unsigned int+` type. In C, over- and underflow of unsigned integers is not undefined behaviour, so we do not need any special preconditions to rule this out. Instead, when an arithmetic operation at unsigned type goes outside the representable range, the value "`wraps around`".
 
 The CN variables `+m+` and `+n+` (resp. `+m2+` and `+n2+`) for the pointee values of `+p+` and `+q+` before (resp. after) the execution of `+add+` have CN basetype `+u32+`, so unsigned 32-bit integers, matching the C `+unsigned int+` type. Like C’s unsigned integer arithmetic, CN unsigned int values wrap around when exceeding the value range of the type.
+// TODO: BCP: I propose that we uniformly use i32 integers everywhere in the tutorial (just mentioning in the bullet list below that there are other integer types, and using i64 for calculations that may overflow).  Forgetting which integer type I was using was a common (and silly) failure mode when I was first working through the tutorial.
 
 Hence, the postcondition `+return == m+n+` holds also when the sum of `+m+` and `+n+` is greater than the maximal `+unsigned int+` value.
 
