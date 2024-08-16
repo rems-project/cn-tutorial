@@ -262,7 +262,7 @@ For the read `+*p+` to be safe, ownership of a resource is missing: a resource `
 
 === The Owned resource type
 
-// TODO: BCP: Perhaps this is a good time for one last discussion of the keyword "Owned", which I have never found very helpful: the resource itself isn't owned -- it's a description of something that *can* be owned.  (It's "take" that does the owning.)  Moreover, "Owned" and "Block" are badly non-parallel, both grammatically and semantically.
+// TODO: BCP: Perhaps this is a good time for one last discussion of the keyword "Owned", which I have never found very helpful: the resource itself isn't owned -- it's a description of something that *can* be owned.  (It's "take" that does the owning.)  Moreover, "Owned" and "Block" are badly non-parallel, both grammatically and semantically.  I suggest "Resource" instead of "Owned".  (We can keep "Block" -- it's not too bad, IMO.)
 
 Given a C-type `+T+` and pointer `+p+`, the resource `+Owned<T>(p)+` asserts ownership of a memory cell at location `+p+` of the size of C-type `+T+`. It is CN’s equivalent of a points-to assertion in separation logic (indexed by C-types `+T+`).
 
@@ -278,33 +278,40 @@ This specification means that:
 
 === Resource outputs
 
-However, a caller of `+read+` may also wish to know that `+read+` actually returns the correct value, the pointee of `+p+`, and also that it does not change memory at location `+p+`. To phrase both we need a way to refer to the pointee of `+p+`.
+A caller of `+read+` may also wish to know that `+read+` actually returns the correct value, the pointee of `+p+`, and also that it does not change memory at location `+p+`. To phrase both we need a way to refer to the pointee of `+p+`.
 
-In CN resources have _outputs_. Each resource outputs the information that can be derived from ownership of the resource. What information is returned is specific to the type of resource. A resource `+Owned<T>(p)+` (for some C-type `+T+`) outputs the _pointee value_ of `+p+`, since that can be derived from the resource ownership: assume you have a pointer `+p+` and the associated ownership, then this uniquely determines the pointee value of `+p+`.
+// TODO: BCP: The idea that "resources have outputs" is very mind-boggling to many new users, *especially* folks with some separation logic background.  Needs to be explained very carefully.  Also, there's some semantic muddle in the terminology: Is a resource (1) a thing in the heap, (2) a thing in the heap that one is currently holding, or (3) the act of holding a thing in the heap?  These are definitely not at all the same thing, but our language at different points suggests all three!  To me, (1) is the natural sense of the word "resource"; (2) is somewhat awkward, and (3) is extremely awkward.
 
-CN uses the `+take+`-notation seen in the example above to refer to the output of a resource, introducing a new name binding for the output. The precondition `+take v1 = Owned<int>(p)+` from the precondition does two things: (1) it assert ownership of resource `+Owned<int>(p)+`, and (2) it binds the name `+v1+` to the resource output, here the pointee value of `+p+` at the start of the function. Similarly, the postcondition introduces the name `+v2+` for the pointee value on function return.
+In CN, resources have _outputs_. Each resource outputs the information that can be derived from ownership of the resource. What information is returned is specific to the type of resource. A resource `+Owned<T>(p)+` (for some C-type `+T+`) outputs the _pointee value_ of `+p+`, since that can be derived from the resource ownership: assume you have a pointer `+p+` and the associated ownership, then this uniquely determines the pointee value of `+p+`.
+// TODO: BCP: ... in a given heap!  (The real problem here is that "and the associated ownership" is pretty vague.)
 
-That means we can use the resource outputs from the pre- and postcondition to strengthen the specification of `+read+` as planned. We add two new postconditions: we specify
+CN uses the `+take+`-notation seen in the example above to bind the output of a resource to a new name. The precondition `+take v1 = Owned<int>(p)+` does two things: (1) it assert ownership of resource `+Owned<int>(p)+`, and (2) it binds the name `+v1+` to the resource output, here the pointee value of `+p+` at the start of the function. Similarly, the postcondition introduces the name `+v2+` for the pointee value on function return.
+
+// TODO: BCP: But, as we've discussed, the word "take" in the postcondition is quitre confusing: What it's doing is precisely the *opposite* of "taking" the resournce, not taking it but giving it back!!  It would be much better if we could choose a more neutral word that doesn't imply either taking or giving.  E.g. "resource".
+
+
+That means we can use the resource outputs from the pre- and postcondition to strengthen the specification of `+read+` as planned. We add two new postconditions specifying
 
 . that `+read+` returns `+v1+` (the initial pointee value of `+p+`), and
 . that the pointee values `+v1+` and `+v2+` before and after execution of `+read+` (respectively) are the same.
 
-include_example(solutions/read2.c)
+include_example(exercises/read2.c)
 
-*Aside.* In standard separation logic the equivalent specification for `+read+` could have been phrased as follows (where `+return+` binds the return value in the postcondition):
+*Aside.* In standard separation logic, the equivalent specification for `+read+` could have been phrased as follows (where `+\return+` binds the return value in the postcondition):
 
 ....
 ∀p.
-∀v1. { p ↦ v1 }
-     read(p)
-     { return. ∃v2. (p ↦ v2) /\ return = v1 /\ v1 = v2 }
+  ∀v1.
+    { p ↦ v1 }
+    read(p)
+    { \return. ∃v2. (p ↦ v2) /\ return = v1 /\ v1 = v2 }
 ....
 
-CN’s `+take+` notation is just alternative syntax for quantification over the values of resources, but a useful one: the `+take+` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
+CN’s `+take+` notation is just an alternative syntax for quantification over the values of resources, but a useful one: the `+take+` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
 
 === Exercises
 
-*Quadruple*. Specify the function `+quadruple_mem+`, that is similar to the earlier `+quadruple+` function, except that the input is passed as an `+int+` pointer. Write a specification that takes ownership of this pointer on entry and returns this ownership on exit, leaving the pointee value unchanged.
+*Quadruple*. Specify the function `+quadruple_mem+`, which is similar to the earlier `+quadruple+` function, except that the input is passed as an `+int+` pointer. Write a specification that takes ownership of this pointer on entry and returns this ownership on exit, leaving the pointee value unchanged.
 
 include_example(exercises/slf_quadruple_mem.c)
 
