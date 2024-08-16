@@ -85,13 +85,13 @@ In detail:
 
 * In function specifications, the names of the function arguments, here `+x+` and `+y+`, refer to their _initial values_. (Function arguments are mutable in C.)
 
-* `+let sum = (i64) x + (i64) y+` is a let-binding, which defines `+sum+` as the value `+(i64) x + (i64) y+` in the remainder of the function specification.
+* `+let Sum = (i64) x + (i64) y+` is a let-binding, which defines `+Sum+` as the value `+(i64) x + (i64) y+` in the remainder of the function specification.
 
 * Instead of C syntax, CN uses Rust-like syntax for integer types, such as `+u32+` for 32-bit unsigned integers and `+i64+` for signed 64-bit integers, to make their sizes unambiguous. Here, `+x+` and `+y+`, of C-type `+int+`, have CN type `+i32+`.
 // TODO: BCP: I understand this reasoning, but I wonder whether it introduces more confusion than it avoids -- it means there are two ways of writing everything, and people have to remember whether the particular thing they are writing right now is C or CN...
 // TODO: BCP: Hopefully we are moving toward unifying these notations anyway?
 
-* To define `+sum+` we cast `+x+` and `+y+` to the larger `+i64+` type, using syntax `+(i64)+`, which is large enough to hold the sum of any two `+i32+` values.
+* To define `+Sum+` we cast `+x+` and `+y+` to the larger `+i64+` type, using syntax `+(i64)+`, which is large enough to hold the sum of any two `+i32+` values.
 
 * Finally, we require this sum to be between the minimal and maximal `+int+` values. Integer constants, such as `+-2147483648i64+`, must specifiy their CN type (`+i64+`).
 // TODO: BCP: We should use the new ' syntax (or whatever it turned out to be) for numeric constants
@@ -103,7 +103,7 @@ We may, however, wish to be more precise. So far, the specification gives no inf
 include_example(solutions/add_1.c)
 
 Here we use the keyword `+return+`, which is only available in function
-postconditions, to refer to the return value, and we equate it to `+sum+`
+postconditions, to refer to the return value, and we equate it to `+Sum+`
 as defined in the precondition, cast back to `+i32+` type: that is, `+add+`
 returns the sum of `+x+` and `+y+`.
 
@@ -219,8 +219,8 @@ As in the first example, we need to ensure that `+n+1+` does not overflow and `+
 include_example(solutions/slf1_basic_example_let.signed.c)
 // TODO: BCP: WHy n_+n_ in some places and n*2i32 in others?
 
-We encode these expectations using a similar style of precondition as in the first example. We first define `+n_+` as `+n+` cast to type `+i64+` — i.e. a type large enough to hold `+n+1+`, `+n-1+`, and `+a+b+` for any possible `+i32+` value for `+n+`. Then we specify that decrementing `+n_+` does not go below the minimal `+int+` value, that incrementing `+n_+` does not go above the maximal value, and that `+n+` doubled is also in range. These preconditions together guarantee safe execution.
-// TODO: BCP: How about renaming n_ to n64?
+We encode these expectations using a similar style of precondition as in the first example. We first define `+N+` as `+n+` cast to type `+i64+` — i.e. a type large enough to hold `+n+1+`, `+n-1+`, and `+a+b+` for any possible `+i32+` value for `+n+`. Then we specify that decrementing `+N+` does not go below the minimal `+int+` value, that incrementing `+N+` does not go above the maximal value, and that `+n+` doubled is also in range. These preconditions together guarantee safe execution.
+// TODO: BCP: How about renaming N to n64?
 
 To capture the functional behaviour, the postcondition specifies that `+return+` is twice the value of `+n+`.
 
@@ -330,7 +330,7 @@ include_example(exercises/read.broken.c)
 CN rejects this program with the following message:
 
 ....
-cn build/exercises/read.broken.c
+cn verify exercises/read.broken.c
 [1/1]: read
 build/exercises/read.broken.c:4:3: error: Left-over unused resource 'Owned<signed int>(p)(v1)'
   return *p;
@@ -338,37 +338,65 @@ build/exercises/read.broken.c:4:3: error: Left-over unused resource 'Owned<signe
 Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_17eb4a.html
 ....
 
-CN has typechecked the function, verified that it is safe to execute under the precondition (given ownership `+Owned<int>(p)+`), and that the function (vacuously) satisfies its postcondition. But, following the check of the postcondition it finds that not all resources have been "`used up`".
+CN has typechecked the function and verified (1) that it is safe to
+execute under the precondition (given ownership `+Owned<int>(p)+`) 
+and (2) that the function (vacuously) satisfies its postcondition. But
+following the check of the postcondition it finds that not all
+resources have been "`used up`".
 
-Given the above specification, `+read+` leaks memory: it takes ownership, does not return it, but also does not deallocate the owned memory or otherwise dispose of it. In CN this is a type error.
+Indeed, given the above specification, `+read+` leaks memory: it takes ownership, does not return it, but also does not deallocate the owned memory or otherwise dispose of it. In CN this is a type error.
 
-CN’s resource types are _linear_ (as opposed to affine). This means not only that resources cannot be duplicated, but also that resources cannot simply be dropped or "`forgotten`". Every resource passed into a function has to either be used up by it, by returning it or passing it to another function that consumes it, or destroyed, by deallocating the owned area of memory (as we shall see later).
+CN’s resource types are _linear_. This means not only that resources cannot be duplicated, but also that resources cannot simply be dropped or "`forgotten`". Every resource passed into a function has to be either _returned_ to the caller or else _destroyed_ by deallocating the owned area of memory (as we shall see later).
 
-CN’s motivation for linear tracking of resources is its focus on low-level systems software. CN checks C programs, in which, unlike higher-level garbage-collected languages, memory is managed manually, and memory leaks are typically very undesirable.
-
-As a consequence, function specifications have to do precise "`book-keeping`" of their resource footprint, and, in particular, return any unused resources back to the caller.
+CN’s motivation for linear tracking of resources is its focus on
+low-level systems software in which memory is managed manually; in
+this context, memory leaks are typically very undesirable.  As a
+consequence, function specifications have to do precise bookkeeping of
+their resource footprint and, in particular, return any unused
+resources back to the caller.
 
 === The Block resource type
 
-Aside from the `+Owned+` resource seen so far, CN has another built-in resource type: `+Block+`. Given a C-type `+T+` and pointer `+p+`, `+Block<T>(p)+` asserts the same ownership as `+Owned<T>(p)+` — so ownership of a memory cell at `+p+` the size of type `+T+` — but in contrast to `+Owned+`, `+Block+` memory is not necessarily initialised.
+Aside from the `+Owned+` resources seen so far, CN has another
+built-in resource type called `+Block+`. Given a C-type `+T+` and
+pointer `+p+`, `+Block<T>(p)+` asserts the same ownership as
+`+Owned<T>(p)+` — ownership of a memory cell at `+p+` the size of
+type `+T+` — but, in contrast to `+Owned+`, `+Block+` memory is not
+assumed to be initialised.
 
 CN uses this distinction to prevent reads from uninitialised memory:
 
-* A read at C-type `+T+` and pointer `+p+` requires a resource `+Owned<T>(p)+`, i.e., ownership of _initialised_ memory at the right C-type. The load returns the `+Owned+` resource unchanged.
+* A read at C-type `+T+` and pointer `+p+` requires a resource
+  `+Owned<T>(p)+`, i.e., ownership of _initialised_ memory at the
+  right C-type. The load returns the `+Owned+` resource unchanged.
 
-* A write at C-type `+T+` and pointer `+p+` needs only a `+Block<T>(p)+` (so, unlike reads, writes to uninitialised memory are fine). The write consumes ownership of the `+Block+` resource (it destroys it) and returns a new resource `+Owned<T>(p)+` with the value written as the output. This means the resource returned from a write records the fact that this memory cell is now initialised and can be read from.
+* A write at C-type `+T+` and pointer `+p+` needs only a
+  `+Block<T>(p)+` (so, unlike reads, writes to uninitialised memory
+  are fine). The write consumes ownership of the `+Block+` resource
+  (it destroys it) and returns a new resource `+Owned<T>(p)+` with the
+  value written as the output. This means the resource returned from a
+  write records the fact that this memory cell is now initialised and
+  can be read from.
+// TODO: BCP: Not sure I understand "returns a new resource `+Owned<T>(p)+` with the value written as the output" -- perhaps in part because I don't understand what the output of a resource means when the resource is not in the context o a take expression.
 
-Since `+Owned+` carries the same ownership as `+Block+`, just with the additional information that the `+Owned+` memory is initalised, a resource `+Owned<T>(p)+` is "`at least as good`" as `+Block<T>(p)+` — an `+Owned<T>(p)+` resource can be used whenever `+Block<T>(p)+` is needed. For instance CN’s type checking of a write to `+p+` requires a `+Block<T>(p)+`, but if an `+Owned<T>(p)+` resource is what is available, this can be used just the same. This allows an already-initialised memory cell to be over-written again.
+Since `+Owned+` carries the same ownership as `+Block+`, just with the
+additional information that the `+Owned+` memory is initalised, a
+resource `+Owned<T>(p)+` is "`at least as good`" as `+Block<T>(p)+` —
+an `+Owned<T>(p)+` resource can be used whenever `+Block<T>(p)+` is
+needed. For instance CN’s type checking of a write to `+p+` requires a
+`+Block<T>(p)+`, but if an `+Owned<T>(p)+` resource is what is
+available, this can be used just the same. This allows an
+already-initialised memory cell to be over-written again.
 
-Unlike `+Owned+`, whose output is the pointee value, `+Block+` has no meaningful output: its output is `+void+`/`+unit+`.
+Unlike `+Owned+`, whose output is the pointee value, `+Block+` has no meaningful output.
 
 === Write example
 
-Let’s explore resources and their outputs in another example. The C function `+incr+` takes an `+int+` pointer `+p+` and increments the pointee value.
+Let’s explore resources and their outputs in another example. The C function `+incr+` takes an `+int+` pointer `+p+` and increments the value in the memory cell that it poinbts to.
 
-include_example(solutions/slf0_basic_incr.signed.c)
+include_example(examples/slf0_basic_incr.signed.c)
 
-In the precondition we assert ownership of resource `+Owned<int>(p)+`, binding its output/pointee value to `+v1+`, and use `+v1+` to specify that `+p+` must point to a sufficiently small value at the start of the function not to overflow when incremented. The postcondition asserts ownership of `+p+` with output `+v2+`, as before, and uses this to express that the value `+p+` points to is incremented by `+incr+`: `+v2 == v1+1i32+`.
+In the precondition we assert ownership of resource `+Owned<int>(p)+`, binding its output/pointee value to `+v1+`, and use `+v1+` to specify that `+p+` must point to a sufficiently small value at the start of the function so as not to overflow when incremented. The postcondition asserts ownership of `+p+` with output `+v2+`, as before, and uses this to express that the value `+p+` points to is incremented by `+incr+`: `+v2 == v1+1i32+`.
 
 If we incorrectly tweaked this specification and used `+Block<int>(p)+` instead of `+Owned<int>(p)+` in the precondition, as below, then CN would reject the program.
 
@@ -384,13 +412,22 @@ Resource needed: Owned<signed int>(p)
 Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_5da0f3.html
 ....
 
-The `+Owned<int>(p)+` resource required for reading is missing, since, as per precondition, only `+Block<int>(p)+` is available. Checking the linked HTML file confirms this. Here the section "`Available resources`" lists all resource ownership at the point of the failure:
+The `+Owned<int>(p)+` resource required for reading is missing, since, per the precondition, only `+Block<int>(p)+` is available. Checking the linked HTML file confirms this. Here the section "`Available resources`" lists all resource ownership at the point of the failure:
 
-* `+Block<signed int>(p)(u)+`, so ownership of uninitialised memory at location `+p+`; the output is a `+void+`/`+unit+` value `+u+` (specified in the second pair of parentheses)
+* `+Block<signed int>(p)(u)+`, i.e., ownership of uninitialised memory
+  at location `+p+`; the output is a `+void+`/`+unit+` value `+u+`
+  (specified in the second pair of parentheses)
 
-* `+Owned<signed int*>(&ARG0)(p)+`, the ownership of (initialised) memory at location `+&ARG0+`, so the memory location where the first function argument is stored; its output is the pointer `+p+` (not to be confused with the pointee of `+p+`); and finally
+* `+Owned<signed int*>(&ARG0)(p)+`, the ownership of (initialised)
+  memory at location `+&ARG0+`, i.e., the memory location where the
+  first function argument is stored; its output is the pointer `+p+`
+  (not to be confused with the pointee of `+p+`); and finally
 
-* `+__CN_Alloc(&ARG0)(void)+` is a resource that records allocation information for location `+&ARG0+`; this is related to CN’s memory-object semantics, which we ignore for the moment.
+* `+__CN_Alloc(&ARG0)(void)+` is a resource that records allocation
+  information for location `+&ARG0+`; this is related to CN’s
+  memory-object semantics, which we ignore for the moment.
+
+// TODO: BCP: These bullet points are all a bit mysterious and maybe TMI.  More generally, we should double check that this is actually the information displayed in the current HTML output...
 
 === Exercises
 
@@ -404,9 +441,16 @@ include_example(exercises/slf3_basic_inplace_double.c)
 
 === Multiple owned pointers
 
-When functions manipulate multiple pointers, we can assert their ownership just like before. However (as in standard separation logic) pointer ownership is unique, so simultaneous ownership of `+Owned+` or `+Block+` resources for two pointers requires these pointers to be disjoint.
+When functions manipulate multiple pointers, we can assert their
+ownership just like before. However (as in standard separation logic)
+pointer ownership is unique -- that is, simultaneously owning
+`+Owned+` or `+Block+` resources for two pointers implies that these
+pointers are disjoint.
 
-The following example shows the use of two `+Owned+` resources for accessing two different pointers: function `+add+` reads two `+int+` values in memory, at locations `+p+` and `+q+`, and returns their sum.
+The following example shows the use of two `+Owned+` resources for
+accessing two different pointers by a function `+add+`, which reads
+two `+int+` values in memory, at locations `+p+` and `+q+`, and
+returns their sum.
 
 include_example(exercises/add_read.c)
 
@@ -550,7 +594,7 @@ On exit the array ownership is returned again.
 This specification, in principle, should ensure that the access `+p[i]+` is safe. However, running CN on the example produces an error: CN is unable to find the required ownership for reading `+p[i]+`.
 
 ....
-cn build/solutions/array_load.broken.c
+cn verify solutions/array_load.broken.c
 [1/1]: read
 build/solutions/array_load.broken.c:5:10: error: Missing resource for reading
   return p[i];
@@ -814,6 +858,8 @@ To begin with, here is a C definition for linked list cells, together
 with allocation and deallocation functions:
 
 include_example(exercises/list_c_types.h)
+
+// TODO: BCP: Per discussion with Christopher, Cassia, and Daniel, the word "predicate" is quite confusing for newcomers (in logic, predicates do not return things!).  A more neutral word might make for significantly easier onboarding.
 
 To write specifications for C functions that manipulate lists, we need
 to define a CN "predicate" that describes *mathematical* list
