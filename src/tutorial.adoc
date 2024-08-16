@@ -152,29 +152,56 @@ accesses and function calls within these.
 
 In our example, there is only one possible control-flow path: entering the function body (section "`function body`") and executing the block from lines 2 to 4, followed by the return statement at line 3. The entry for the latter contains the sequence of sub-expressions in the return statement, including reads of the variables `+x+` and `+y+`.
 
-In C, local variables in a function, including its arguments, are mutable and their address can be taken and passed as a value. CN therefore represents local variables as memory allocations that are manipulated using memory reads and writes. Here, type checking the return statement includes checking memory reads for `+x+` and `+y+`, at their locations `+&ARG0+` and `+&ARG1+`. The path report lists these reads and their return values: the read at `+&ARG0+` returns `+x+` (that is, the value of `+x+` originally passed to `+add+`); the read at `+&ARG1+` returns `+y+`. Alongside this symbolic information, CN displays concrete values:
+In C, local variables in a function, including its arguments, are
+mutable,  their addresses can be taken and passed as values. CN
+therefore represents local variables as memory allocations that are
+manipulated using memory reads and writes. Here, type checking the
+return statement includes checking memory reads for `+x+` and `+y+`,
+at their locations `+&ARG0+` and `+&ARG1+`. The path report lists
+these reads and their return values: the read at `+&ARG0+` returns
+`+x+` (that is, the value of `+x+` originally passed to `+add+`); the
+read at `+&ARG1+` returns `+y+`. Alongside this symbolic information,
+CN displays concrete values:
+// TODO: BCP: WHere do we see that ARG0 and ARG1 have something to do with x and y?
 
 * `+1073741825i32 /* 0x40000001 */+` for x (the first value is the decimal representation, the second, in `+/*...*/+` comments, the hex equivalent) and
 
 * `+1073741824i32 /* 0x40000000 */+` for `+y+`.
 
 For now, ignore the pointer values `+{@0; 4}+` for `+x+` and `+{@0; 0}+` for `+y+`.
+// TODO: BCP: Where are these things discussed?  Anywhere?  (When) are they useful?
 
-These concrete values are part of a _counterexample_: a concrete valuation of variables and pointers in the program that that leads to the error. (The exact values may vary on your machine, depending on the version of Z3 installed on your system.)
+These concrete values are part of a _counterexample_: a concrete
+valuation of variables and pointers in the program that that leads to
+the error. (The exact values may vary on your machine, depending on
+the SMT solver -- i.e., the particular version of Z3, CVC5, or
+whatever installed on your system.)
 
 *Proof context.* The second section, below the error trace, lists the proof context CN has reached along this control-flow path.
 
 "`Available resources`" lists the owned resources, as discussed in later sections.
 
 "`Variables`" lists counterexample values for program variables and pointers. In addition to `+x+` and `+y+`, assigned the same values as above, this includes values for their memory locations `+&ARG0+` and `+&ARG1+`, function pointers in scope, and the `+__cn_alloc_history+`, all of which we ignore for now.
+// TODO: BCP: Again, where are these things discussed?  Should they be?
 
-Finally, "`Constraints`" records all logical facts CN has learned along the path. This includes user-specified assumptions from preconditions or loop invariants, value ranges inferred from the C-types of variables, and facts learned during the type checking of the statements. Here (`+add+` without precondition) the only constraints are some contraints inferred from C-types in the code.
+Finally, "`Constraints`" records all logical facts CN has learned along the path. This includes user-specified assumptions from preconditions or loop invariants, value ranges inferred from the C-types of variables, and facts learned during the type checking of the statements. Here -- when checking `+add+` without precondition -- the only constraints are those inferred from C-types in the code:
 
-* For instance, `+good<signed int>(x)+` says that the initial value of `+x+` is a "`good`" `+signed int+` value (i.e. in range). Here `+signed int+` is the same type as `+int+`, CN just makes the sign explicit. For integer types `+T+`, `+good<T>+` requires the value to be in range of type `+T+`; for pointer types `+T+` it also requires the pointer to be aligned. For structs and arrays this extends in the obvious way to struct members or array cells.
+* For instance, `+good<signed int>(x)+` says that the initial value of
+`+x+` is a "`good`" `+signed int+` value (i.e. in range). Here
+`+signed int+` is the same type as `+int+`, CN just makes the sign
+explicit. 
+// TODO: BCP: Yikes!  This seems potentially cxonfusing
+For an integer type `+T+`, the type `+good<T>+` requires the value to
+be in range of type `+T+`; for pointer types `+T+`, it also requires
+the pointer to be aligned. For structs and arrays, this extends in the
+obvious way to struct members or array cells.
+// TODO: BCP: Is this information actually ever usefulful?  Is it currently suppressed?  
 
 * `+repr<T>+` requires representability (not alignment) at type `+T+`, so `+repr<signed int*>(&ARGO)+`, for instance, records that the pointer to `+x+` is representable at C-type `+signed int*+`;
 
 * `+aligned(&ARGO, 4u64)+`, moreover, states that it is 4-byte aligned.
+
+// TODO: BCP: Some of the above (especially the bit at the end) feels like TMI for many/most users, especially at this point in the tutorial.  
 
 === Another arithmetic example
 
@@ -187,15 +214,17 @@ include_example(exercises/slf1_basic_example_let.signed.c)
 
 We would like to verify this is safe, and that `+doubled+` returns twice the value of `+n+`. Running CN on `+doubled+` leads to a type error: the increment of `+a+` has undefined behaviour.
 
-As in the first example, we need to ensure that `+n+1+` does not overflow and `+n-1+` does not underflow. Similarly also `+a+b+` has to be representable at `+int+` type.
+As in the first example, we need to ensure that `+n+1+` does not overflow and `+n-1+` does not underflow. Similarly `+a+b+` has to be representable at `+int+` type.
 
 include_example(solutions/slf1_basic_example_let.signed.c)
+// TODO: BCP: WHy n_+n_ in some places and n*2i32 in others?
 
-We can specify these using a similar style of precondition as in the first example. We first define `+n_+` as `+n+` cast to type `+i64+` — i.e. a type large enough to hold `+n+1+`, `+n-1+` and `+a+b+` for any possible `+i32+` value for `+n+`. Then we specify that decrementing `+n_+` does not go below the minimal `+int+` value, that incrementing `+n_+` does not go above the maximal value, and that `+n+` doubled is also in range. These preconditions together guarantee safe execution.
+We encode these expectations using a similar style of precondition as in the first example. We first define `+n_+` as `+n+` cast to type `+i64+` — i.e. a type large enough to hold `+n+1+`, `+n-1+`, and `+a+b+` for any possible `+i32+` value for `+n+`. Then we specify that decrementing `+n_+` does not go below the minimal `+int+` value, that incrementing `+n_+` does not go above the maximal value, and that `+n+` doubled is also in range. These preconditions together guarantee safe execution.
+// TODO: BCP: How about renaming n_ to n64?
 
 To capture the functional behaviour, the postcondition specifies that `+return+` is twice the value of `+n+`.
 
-=== Exercise
+=== Exercises
 
 *Quadruple.* Specify the precondition needed to ensure safety of the C function `+quadruple+`, and a postcondition that describes its return value.
 
