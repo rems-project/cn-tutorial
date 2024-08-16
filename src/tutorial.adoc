@@ -238,6 +238,8 @@ include_example(exercises/abs.c)
 
 So far we’ve only considered example functions manipulating integer values. Verification becomes more interesting and challenging when _pointers_ are involved, because the safety of memory accesses via pointers has to be verified.
 
+// TODO: BCP: As a non-expert coming to CN, I was (and to some extent still am) consistently confused by the terminology of "resource TYPES" -- they do not look like types, and I just think of them as resources.  I think we could save other readers some confusion by reserving the word "type" for C-types and juset talking about "resources" for CN-level things.
+
 CN uses _separation logic resource types_ and the concept of _ownership_ to reason about memory accesses. A resource is the permission to access a region of memory. Unlike logical constraints, resource ownership is _unique_, meaning resources cannot be duplicated.
 
 Let’s look at a simple example. The function `+read+` takes an `+int+` pointer `+p+` and returns the pointee value.
@@ -247,7 +249,7 @@ include_example(exercises/read.c)
 Running CN on this example produces the following error:
 
 ....
-cn exercises/read.c
+cn verify exercises/read.c
 [1/1]: read
 exercises/read.c:3:10: error: Missing resource for reading
   return *p;
@@ -260,13 +262,15 @@ For the read `+*p+` to be safe, ownership of a resource is missing: a resource `
 
 === The Owned resource type
 
+// TODO: BCP: Perhaps this is a good time for one last discussion of the keyword "Owned", which I have never found very helpful: the resource itself isn't owned -- it's a description of something that *can* be owned.  (It's "take" that does the owning.)  Moreover, "Owned" and "Block" are badly non-parallel, both grammatically and semantically.
+
 Given a C-type `+T+` and pointer `+p+`, the resource `+Owned<T>(p)+` asserts ownership of a memory cell at location `+p+` of the size of C-type `+T+`. It is CN’s equivalent of a points-to assertion in separation logic (indexed by C-types `+T+`).
 
-In this example we can ensure the safe execution of `+read+` by adding a precondition that requires ownership of `+Owned<int>(p)+`, as shown below. For now ignore the notation `+take ... = Owned<int>(p)+`. Since `+read+` maintains this ownership, we also add a corresponding postcondition, whereby `+read+` returns ownership of `+p+` after it is finished executing, in the form of another `+Owned<int>(p)+` resource.
+In this example we can ensure the safe execution of `+read+` by adding a precondition that requires ownership of `+Owned<int>(p)+`, as shown below. For now ignore the notation `+take ... = Owned<int>(p)+`. Since reading the pointer does not disturb its value, we also add a corresponding postcondition, whereby `+read+` returns ownership of `+p+` after it is finished executing, in the form of another `+Owned<int>(p)+` resource.
 
 include_example(solutions/read.c)
 
-This specifications means that
+This specification means that:
 
 * any function calling `+read+` has to be able to provide a resource `+Owned<int>(p)+` to pass into `+read+`, and
 
