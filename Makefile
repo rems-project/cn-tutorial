@@ -19,7 +19,7 @@ SRC_EXAMPLES=$(shell find src/examples -type f)
 SOLUTIONS=$(patsubst src/examples/%, build/solutions/%, $(SRC_EXAMPLES))
 EXERCISES=$(patsubst src/examples/%, build/exercises/%, $(SRC_EXAMPLES))
 
-CN=cn verify
+CN="cn verify"
 
 exercises: $(EXERCISES) $(SOLUTIONS)
 
@@ -47,15 +47,15 @@ build/exercises.zip: $(EXERCISES)
 ##############################################################################
 # Check that the examples all run correctly 
 
-CN_PATH ?= cn 
+CN_PATH?="cn verify"
 
 check-archive: 
 	@echo Check archive examples
-	@$(MAKEFILE_DIR)/src/example-archive/check-all.sh "$(CN_PATH)"
+	@$(MAKEFILE_DIR)/src/example-archive/check-all.sh $(CN_PATH)
 
 check-tutorial:
 	@echo Check tutorial examples
-	@$(MAKEFILE_DIR)/check.sh "$(CN_PATH)"
+	@$(MAKEFILE_DIR)/check.sh $(CN_PATH)
 
 check: check-tutorial check-archive 
 
