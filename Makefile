@@ -19,7 +19,7 @@ SRC_EXAMPLES=$(shell find src/examples -type f)
 SOLUTIONS=$(patsubst src/examples/%, build/solutions/%, $(SRC_EXAMPLES))
 EXERCISES=$(patsubst src/examples/%, build/exercises/%, $(SRC_EXAMPLES))
 
-CN="cn verify"
+CN=cn verify
 
 exercises: $(EXERCISES) $(SOLUTIONS)
 
