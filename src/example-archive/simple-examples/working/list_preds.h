@@ -52,7 +52,7 @@ function [rec] (datatype seq) append(datatype seq xs, datatype seq ys) {
 @*/
 
 // /*@
-// function [rec] (bool) fold_eq(datatype seq xs, i32 test) {
+// function [rec] (boolean) fold_eq(datatype seq xs, i32 test) {
 //   match xs {
 //     Seq_Nil {} => {
 //       true 
