@@ -47,15 +47,15 @@ build/exercises.zip: $(EXERCISES)
 ##############################################################################
 # Check that the examples all run correctly 
 
-CN_PATH?="cn verify"
+CN_PATH?=cn verify
 
 check-archive: 
 	@echo Check archive examples
-	@$(MAKEFILE_DIR)/src/example-archive/check-all.sh $(CN_PATH)
+	@$(MAKEFILE_DIR)/src/example-archive/check-all.sh "$(CN_PATH)"
 
 check-tutorial:
 	@echo Check tutorial examples
-	@$(MAKEFILE_DIR)/check.sh $(CN_PATH)
+	@$(MAKEFILE_DIR)/check.sh "$(CN_PATH)"
 
 check: check-tutorial check-archive 
 
