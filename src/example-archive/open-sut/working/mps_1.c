@@ -19,7 +19,7 @@ typedef uint8_t w2;
 typedef uint8_t w8;
 
 /*@
-  function (bool) P_Coincidence_2_4(bool a, bool b, bool c, bool d) {
+  function (boolean) P_Coincidence_2_4(boolean a, boolean b, boolean c, boolean d) {
     (a&&b) || ((a||b) && (c||d)) || (c&&d)
   }
 
