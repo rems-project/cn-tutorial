@@ -1,18 +1,18 @@
-void zero (int *p) 
-/*@ requires take u = Block<int>(p);
-    ensures take v = Owned<int>(p);
-            v == 0i32; @*/
+void zero (int *coord) 
+/*@ requires take Coord = Block<int>(coord);
+    ensures take Coord_post = Owned<int>(coord);
+            Coord_post == 0i32; @*/
 {
-  *p = 0;
+  *coord = 0;
 }
 
 struct point { int x; int y; };
 
 void init_point(struct point *p) 
-/*@ requires take s = Block<struct point>(p);
-    ensures take s2 = Owned<struct point>(p);
-            s2.x == 0i32;
-            s2.y == 0i32;
+/*@ requires take P = Block<struct point>(p);
+    ensures take P_post = Owned<struct point>(p);
+            P_post.x == 0i32;
+            P_post.y == 0i32;
 @*/
 {
   zero(&p->x);

@@ -285,15 +285,16 @@ A caller of `+read+` may also wish to know that `+read+` actually returns the co
 In CN, resources have _outputs_. Each resource outputs the information that can be derived from ownership of the resource. What information is returned is specific to the type of resource. A resource `+Owned<T>(p)+` (for some C-type `+T+`) outputs the _pointee value_ of `+p+`, since that can be derived from the resource ownership: assume you have a pointer `+p+` and the associated ownership, then this uniquely determines the pointee value of `+p+`.
 // TODO: BCP: ... in a given heap!  (The real problem here is that "and the associated ownership" is pretty vague.)
 
-CN uses the `+take+`-notation seen in the example above to bind the output of a resource to a new name. The precondition `+take v1 = Owned<int>(p)+` does two things: (1) it assert ownership of resource `+Owned<int>(p)+`, and (2) it binds the name `+v1+` to the resource output, here the pointee value of `+p+` at the start of the function. Similarly, the postcondition introduces the name `+v2+` for the pointee value on function return.
+CN uses the `+take+`-notation seen in the example above to bind the output of a resource to a new name. The precondition `+take P = Owned<int>(p)+` does two things: (1) it assert ownership of resource `+Owned<int>(p)+`, and (2) it binds the name `+P+` to the resource output, here the pointee value of `+p+` at the start of the function. Similarly, the postcondition introduces the name `+P_post+` for the pointee value on function return.
 
 // TODO: BCP: But, as we've discussed, the word "take" in the postcondition is quitre confusing: What it's doing is precisely the *opposite* of "taking" the resournce, not taking it but giving it back!!  It would be much better if we could choose a more neutral word that doesn't imply either taking or giving.  E.g. "resource".
 
+// TODO: BCP: This might be a good place for a comment on naming conventions
 
 That means we can use the resource outputs from the pre- and postcondition to strengthen the specification of `+read+` as planned. We add two new postconditions specifying
 
-. that `+read+` returns `+v1+` (the initial pointee value of `+p+`), and
-. that the pointee values `+v1+` and `+v2+` before and after execution of `+read+` (respectively) are the same.
+. that `+read+` returns `+P+` (the initial pointee value of `+p+`), and
+. that the pointee values `+P+` and `+P_post+` before and after execution of `+read+` (respectively) are the same.
 
 include_example(exercises/read2.c)
 
@@ -302,9 +303,9 @@ include_example(exercises/read2.c)
 ....
 ∀p.
   ∀v1.
-    { p ↦ v1 }
+    { p ↦ P }
     read(p)
-    { \return. ∃v2. (p ↦ v2) /\ return = v1 /\ v1 = v2 }
+    { \return. ∃P_post. (p ↦ P_post) /\ return = P /\ P = P_post }
 ....
 
 CN’s `+take+` notation is just an alternative syntax for quantification over the values of resources, but a useful one: the `+take+` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
@@ -390,13 +391,19 @@ already-initialised memory cell to be over-written again.
 
 Unlike `+Owned+`, whose output is the pointee value, `+Block+` has no meaningful output.
 
-=== Write example
+=== Writing through pointers
 
 Let’s explore resources and their outputs in another example. The C function `+incr+` takes an `+int+` pointer `+p+` and increments the value in the memory cell that it poinbts to.
 
-include_example(examples/slf0_basic_incr.signed.c)
+include_example(exercises/slf0_basic_incr.signed.c)
 
-In the precondition we assert ownership of resource `+Owned<int>(p)+`, binding its output/pointee value to `+v1+`, and use `+v1+` to specify that `+p+` must point to a sufficiently small value at the start of the function so as not to overflow when incremented. The postcondition asserts ownership of `+p+` with output `+v2+`, as before, and uses this to express that the value `+p+` points to is incremented by `+incr+`: `+v2 == v1+1i32+`.
+In the precondition we assert ownership of resource `+Owned<int>(p)+`,
+binding its output/pointee value to `+P+`, and use `+P+` to specify
+that `+p+` must point to a sufficiently small value at the start of
+the function so as not to overflow when incremented. The postcondition
+asserts ownership of `+p+` with output `+P_post+`, as before, and uses
+this to express that the value `+p+` points to is incremented by
+`+incr+`: `+P_post == P + 1i32+`.
 
 If we incorrectly tweaked this specification and used `+Block<int>(p)+` instead of `+Owned<int>(p)+` in the precondition, as below, then CN would reject the program.
 
@@ -442,8 +449,8 @@ include_example(exercises/slf3_basic_inplace_double.c)
 === Multiple owned pointers
 
 When functions manipulate multiple pointers, we can assert their
-ownership just like before. However (as in standard separation logic)
-pointer ownership is unique -- that is, simultaneously owning
+ownership just like before. However 
+pointer ownership in CN is unique -- that is, simultaneously owning
 `+Owned+` or `+Block+` resources for two pointers implies that these
 pointers are disjoint.
 
@@ -452,14 +459,17 @@ accessing two different pointers by a function `+add+`, which reads
 two `+int+` values in memory, at locations `+p+` and `+q+`, and
 returns their sum.
 
+// TODO: BCP: Hmmm -- I'm not very sure that the way I've been naming things is actually working that well.  The problem is that in examples like this we computer "thing pointed to by p" at both C and CN levels.  At the C level, the thing pointed to by p obviously cannot also be called p, so it doesn't make sense for it to be called P at the CN level, right?  Maybe we need to think again, but hoinestly I am not certain that it is *not* working either.  So I'm going to opush on for now...
+
 include_example(exercises/add_read.c)
 
 This time we use C’s `+unsigned int+` type. In C, over- and underflow of unsigned integers is not undefined behaviour, so we do not need any special preconditions to rule this out. Instead, when an arithmetic operation at unsigned type goes outside the representable range, the value "`wraps around`".
 
-The CN variables `+m+` and `+n+` (resp. `+m2+` and `+n2+`) for the pointee values of `+p+` and `+q+` before (resp. after) the execution of `+add+` have CN basetype `+u32+`, so unsigned 32-bit integers, matching the C `+unsigned int+` type. Like C’s unsigned integer arithmetic, CN unsigned int values wrap around when exceeding the value range of the type.
-// TODO: BCP: I propose that we uniformly use i32 integers everywhere in the tutorial (just mentioning in the bullet list below that there are other integer types, and using i64 for calculations that may overflow).  Forgetting which integer type I was using was a common (and silly) failure mode when I was first working through the tutorial.
+The CN variables `+P+` and `+Q+` (resp. `+P_post+` and `+Q_post+`) for the pointee values of `+p+` and `+q+` before (resp. after) the execution of `+add+` have CN basetype `+u32+`, so unsigned 32-bit integers, matching the C `+unsigned int+` type. Like C’s unsigned integer arithmetic, CN unsigned int values wrap around when exceeding the value range of the type.
 
-Hence, the postcondition `+return == m+n+` holds also when the sum of `+m+` and `+n+` is greater than the maximal `+unsigned int+` value.
+Hence, the postcondition `+return == P + Q+` holds also when the sum of `+P+` and `+Q+` is greater than the maximal `+unsigned int+` value.
+
+// TODO: BCP: I wonder whether we should uniformly use i32 integers everywhere in the tutorial (just mentioning in the bullet list below that there are other integer types, and using i64 for calculations that may overflow).  Forgetting which integer type I was using was a common (and silly) failure mode when I was first working through the tutorial.
 
 In the following we will sometimes use unsigned integer types to focus on specifying memory ownership, rather than the conditions necessary to show absence of C arithmetic undefined behaviour.
 
@@ -475,23 +485,30 @@ include_example(exercises/slf8_basic_transfer.c)
 
 == Ownership of compound objects
 
-So far all examples have worked with just integers and pointers, but larger programs typically also manipulate compound values, often represented using C struct types. Specifying functions manipulating structs works in much the same way as with basic types.
+So far, our examples have worked with just integers and pointers, but larger programs typically also manipulate compound values, often represented using C struct types. Specifying functions manipulating structs works in much the same way as with basic types.
 
 For instance, the following example uses a `+struct+` `+point+` to represent a point in two-dimensional space. The function `+transpose+` swaps a point’s `+x+` and `+y+` coordinates.
 
 include_example(exercises/transpose.c)
 
-Here the precondition asserts ownership for `+p+`, at type `+struct point+`; the output `+s+` is a value of CN type `+struct point+`, i.e. a record with members `+i32+` `+x+` and `+i32+` `+y+`. The postcondition similarly asserts ownership of `+p+`, with output `+s2+`, and asserts the coordinates have been swapped, by referring to the members of `+s+` and `+s2+` individually.
+Here the precondition asserts ownership for `+p+`, at type `+struct
+point+`; the output `+P_post+` is a value of CN type `+struct point+`,
+i.e. a record with members `+i32+` `+x+` and `+i32+` `+y+`. The
+postcondition similarly asserts ownership of `+p+`, with output
+`+P_post+`, and asserts the coordinates have been swapped, by referring to
+the members of `+P+` and `+P_post+` individually.
+
+// TODO: BCP: This paragraph is quite confusing if read carefully: it seems to say that the "take" in the requires clause returns a different type than the "tajke" in the "ensures" clause.  Moreover, even if the reader decides that this cannot be the case and they have to return the same type, they may wonder whether thius type is a C type (which is what it looks like, since there is only one struct declaration, and it is not in a magic comment) or a CN type (which might be expected, since it is the result of a "take").  I *guess* what's going on here is that every C type is automatically reflected as a CN type with the same name.  But this story is also not 100% satisfying, since the basic numeric types don't work this way: each C numeric type has an *analog* in CN, but with a different name.  
 
 === Compound Owned and Block resources
 
-While one might like to think of a struct as a single (compound) object that is manipulated as a whole, C permits more flexible struct manipulation: given a struct pointer, programmers can construct pointers to _individual struct members_ and pass these as values, even to other functions.
+While one might like to think of a struct as a single (compound) object that is manipulated as a whole, C permits more flexible struct manipulation: given a struct pointer, programmers can construct pointers to _individual struct members_ and manipulate these as values, including even passing them to other functions.
 
-CN therefore cannot treat resources for compound C types, such as structs, as primitive, indivisible units. Instead, `+Owned<T>+` and `+Block<T>+` are defined inductively in the structure of the C-type `+T+`.
+CN therefore cannot treat resources for compound C types like structs as primitive, indivisible units. Instead, `+Owned<T>+` and `+Block<T>+` are defined inductively on the structure of the C-type `+T+`.
 
-For struct types `+T+`, the `+Owned<T>+` resource is defined as the collection of `+Owned+` resources for its members (as well as `+Block+` resources for any padding bytes in-between). The resource `+Block<T>+`, similarly, is made up of `+Block+` resources for all members (and padding bytes).
+For struct types `+T+`, the `+Owned<T>+` resource is defined as the collection of `+Owned+` resources for its members (as well as `+Block+` resources for any padding bytes in-between them). The resource `+Block<T>+`, similarly, is made up of `+Block+` resources for all members (and padding bytes).
 
-To handle code that manipulates pointers into parts of a struct object, CN can automatically decompose a struct resource into the member resources, and recompose it, as needed. The following example illustrates this.
+To handle code that manipulates pointers into parts of a struct object, CN can automatically decompose a struct resource into the member resources, and it can recompose the struct later, as needed. The following example illustrates this.
 
 Recall the function `+zero+` from our earlier exercise. It takes an `+int+` pointer to uninitialised memory, with `+Block<int>+` ownership, and initialises the value to zero, returning an `+Owned<int>+` resource with output `+0+`.
 
@@ -501,25 +518,27 @@ include_example(exercises/init_point.c)
 
 As stated in its precondition, `+init_point+` receives ownership `+Block<struct point>(p)+`. The `+zero+` function, however, works on `+int+` pointers and requires `+Block<int>+` ownership.
 
-CN can prove the calls to `+zero+` with `+&p->x+` and `+&p->y+` are safe because it decomposes the `+Block<struct point>(p)+` into two `+Block<int>+`, one for member `+x+`, one for member `+y+`. Later, the reverse happens: following the two calls to `+zero+`, as per `+zero+`’s precondition, `+init_point+` has ownership of two adjacent `+Owned<int>+` resources – ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `+init_point+` requires ownership `+Owned<struct point>(p)+`, CN combines these back into a compound resource. The resulting `+Owned<point struct>+` resource has for an output the struct value `+s2+` that is composed of the zeroed member values for `+x+` and `+y+`.
+CN can prove the calls to `+zero+` with `+&p->x+` and `+&p->y+` are safe because it decomposes the `+Block<struct point>(p)+` into a `+Block<int>+` for member `+x+` and a `+Block<int>+` for member `+y+`. Later, the reverse happens: following the two calls to `+zero+`, as per `+zero+`’s precondition, `+init_point+` has ownership of two adjacent `+Owned<int>+` resources – ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `+init_point+` requires ownership `+Owned<struct point>(p)+`, CN combines these back into a compound resource. The resulting `+Owned<point struct>+` resource has for an output the struct value `+P_post+` that is composed of the zeroed member values for `+x+` and `+y+`.
 
 === Resource inference
 
 To handle the required resource inference, CN "`eagerly`" decomposes all `+struct+` resources into resources for the struct members, and "`lazily`" re-composes them as needed.
 
-We can see this if, for instance, we experimentally change the `+transpose+` example from above to force a type error. Let’s insert an `+/*@ assert(false) @*/+` CN assertion in the middle of the `+transpose+` function (more on CN assertions later), so we can inspect CN’s proof context shown in the error report.
+We can see this if, for instance, we experimentally change the `+transpose+` example from above to force a type error. Let’s insert an `+/*@ assert(false) @*/+` CN assertion in the middle of the `+transpose+` function, so we can inspect CN’s proof context shown in the error report.  (More on CN assertions later.)
 
 include_example(exercises/transpose.broken.c)
 
 The precondition of `+transpose+` asserts ownership of an `+Owned<struct point>(p)+` resource. The error report now instead lists under "`Available resources`" two resources:
 
-* `+Owned<signed int>(member_shift<point>(p, x))+` with output `+s.x+` and
+* `+Owned<signed int>(member_shift<point>(p, x))+` with output `+P.x+` and
 
-* `+Owned<signed int>(member_shift<point>(p, y))+` with output `+s.y+`
+* `+Owned<signed int>(member_shift<point>(p, y))+` with output `+P.y+`
+
+// TODO: BCP: We should verify that it really does say this.
 
 Here `+member_shift<s>(p,m)+` is the CN expression that constructs, from a `+struct s+` pointer `+p+`, the "`shifted`" pointer for its member `+m+`.
 
-When the function returns the two member resources are recombined "`on demand`" to satisfy the postcondition `+Owned<struct point>(p)+`.
+When the function returns, the two member resources are recombined "`on demand`" to satisfy the postcondition `+Owned<struct point>(p)+`.
 
 === Exercises
 

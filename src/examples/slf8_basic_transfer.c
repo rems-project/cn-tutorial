@@ -1,11 +1,11 @@
 void transfer (unsigned int *p, unsigned int *q)
 /* --BEGIN-- */
-/*@ requires take n1 = Owned(p);
-             take m1 = Owned(q);
-    ensures  take n2 = Owned(p);
-             take m2 = Owned(q);
-             n2 == n1 + m1;
-             m2 == 0u32;
+/*@ requires take P = Owned(p);
+             take Q = Owned(q);
+    ensures  take P_post = Owned(p);
+             take Q_post = Owned(q);
+             P_post == P + Q;
+             Q_post == 0u32;
 @*/
 /* --END-- */
 {
