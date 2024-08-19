@@ -251,16 +251,6 @@ include_example(solutions/read2.c)
 
 CN’s `+take+` notation is just alternative syntax for quantification over the values of resources, but a useful one: the `+take+` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
 
-=== Exercises
-
-*Quadruple*. Specify the function `+quadruple_mem+`, that is similar to the earlier `+quadruple+` function, except that the input is passed as an `+int+` pointer. Write a specification that takes ownership of this pointer on entry and returns this ownership on exit, leaving the pointee value unchanged.
-
-include_example(exercises/slf_quadruple_mem.c)
-
-*Abs*. Give a specification to the function `+abs_mem+`, which computes the absolute value of a number passed as an `+int+` pointer.
-
-include_example(exercises/abs_mem.c)
-
 === Linear resource ownership
 
 In the specifications we have written so far, functions that receive resources as part of their precondition also return this ownership in their postcondition.
@@ -289,6 +279,16 @@ CN’s resource types are _linear_ (as opposed to affine). This means not only t
 CN’s motivation for linear tracking of resources is its focus on low-level systems software. CN checks C programs, in which, unlike higher-level garbage-collected languages, memory is managed manually, and memory leaks are typically very undesirable.
 
 As a consequence, function specifications have to do precise "`book-keeping`" of their resource footprint, and, in particular, return any unused resources back to the caller.
+
+=== Exercises
+
+*Quadruple*. Specify the function `+quadruple_mem+`, that is similar to the earlier `+quadruple+` function, except that the input is passed as an `+int+` pointer. Write a specification that takes ownership of this pointer on entry and returns this ownership on exit, leaving the pointee value unchanged.
+
+include_example(exercises/slf_quadruple_mem.c)
+
+*Abs*. Give a specification to the function `+abs_mem+`, which computes the absolute value of a number passed as an `+int+` pointer.
+
+include_example(exercises/abs_mem.c)
 
 === The Block resource type
 
