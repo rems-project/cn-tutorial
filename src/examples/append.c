@@ -2,10 +2,10 @@
 #include "list_append.h"
 
 struct sllist* IntList_append(struct sllist* xs, struct sllist* ys)
-/*@ requires take L1 = SLList(xs); @*/
-/*@ requires take L2 = SLList(ys); @*/
-/*@ ensures take L3 = SLList(return); @*/
-/*@ ensures L3 == Append(L1, L2); @*/
+/*@ requires take L1 = SLList(xs);
+             take L2 = SLList(ys); @*/
+/*@ ensures take L3 = SLList(return);
+            L3 == Append(L1, L2); @*/
 {
   if (xs == 0) {
     /*@ unfold Append(L1, L2); @*/

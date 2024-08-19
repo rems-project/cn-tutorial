@@ -2,9 +2,9 @@
 #include "queue_push_lemma.h" 
 
 void IntQueue_push (int x, struct int_queue *q)
-/*@ requires take before = IntQueuePtr(q);
-    ensures take after = IntQueuePtr(q);
-            after == Snoc (before, x);
+/*@ requires take Q = IntQueuePtr(q);
+    ensures take Q_post = IntQueuePtr(q);
+            Q_post == Snoc (Q, x);
 @*/
 {
   struct int_queueCell *c = mallocIntQueueCell();

@@ -5,8 +5,8 @@
 
 struct sllist* rev_loop(struct sllist *l)
 /*@ requires take L = SLList(l);
-    ensures  take L_ = SLList(return);
-             L_ == RevList(L);
+    ensures  take L_post = SLList(return);
+             L_post == RevList(L);
 @*/
 {
   struct sllist *last = 0;

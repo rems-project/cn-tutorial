@@ -18,8 +18,8 @@ function [rec] (u32) Length(datatype List L) {
 unsigned int length (struct sllist *l)
 /* --BEGIN-- */
 /*@ requires take L = SLList(l);
-    ensures take L_ = SLList(l);
-            L == L_;
+    ensures take L_post = SLList(l);
+            L == L_post;
             return == Length(L);
 @*/
 /* --END-- */

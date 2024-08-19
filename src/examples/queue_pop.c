@@ -2,11 +2,11 @@
 #include "queue_pop_lemma.h"
 
 int IntQueue_pop (struct int_queue *q)
-/*@ requires take before = IntQueuePtr(q);
-             before != Nil{};
-    ensures take after = IntQueuePtr(q);
-            after == Tl(before);
-            return == Hd(before);
+/*@ requires take Q = IntQueuePtr(q);
+             Q != Nil{};
+    ensures take Q_post = IntQueuePtr(q);
+            Q_post == Tl(Q);
+            return == Hd(Q);
 @*/
 {
   /*@ split_case is_null(q->front); @*/

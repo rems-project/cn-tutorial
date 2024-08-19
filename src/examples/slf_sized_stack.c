@@ -7,14 +7,13 @@ struct sized_stack {
 };
 
 /*@
-type_synonym sizeAndData = {u32 s, datatype List d}
+type_synonym SizedStack = {u32 Size, datatype List Data}
 
-predicate (sizeAndData) SizedStack(pointer p) {
-    take S = Owned<struct sized_stack>(p);
-    let s = S.size;
-    take d = SLList(S.data);
-    assert(s == Length(d));
-    return { s: s, d: d };
+predicate (SizedStack) SizedStack (pointer p) {
+    take P = Owned<struct sized_stack>(p);
+    take D = SLList(P.data);
+    assert(P.size == Length(D));
+    return { Size: P.size, Data: D };
 }
 @*/
 
@@ -22,95 +21,95 @@ extern struct sized_stack *malloc__sized_stack ();
 /*@
 spec malloc__sized_stack();
      requires true;
-     ensures take u = Block<struct sized_stack>(return);
+     ensures take R = Block<struct sized_stack>(return);
 @*/
 
-extern void *free__sized_stack (struct sized_stack *p);
+extern void *free__sized_stack (struct sized_stack *s);
 /*@
-spec free__sized_stack(pointer p);
-     requires take u = Block<struct sized_stack>(p);
+spec free__sized_stack(pointer s);
+     requires take R = Block<struct sized_stack>(s);
      ensures true;
 @*/
 
 struct sized_stack* create()
-/*@ ensures take S = SizedStack(return);
-            S.s == 0u32;
+/*@ ensures take R = SizedStack(return);
+            R.Size == 0u32;
 @*/
 {
-  struct sized_stack *p = malloc__sized_stack();
-  p->size = 0;
-  p->data = 0;
+  struct sized_stack *s = malloc__sized_stack();
+  s->size = 0;
+  s->data = 0;
   /*@ unfold Length(Nil {}); @*/
-  return p;
+  return s;
 }
 
-unsigned int sizeOf (struct sized_stack *p)
+unsigned int sizeOf (struct sized_stack *s)
 /* FILL IN HERE */
 /* ---BEGIN--- */
-/*@ requires take S = SizedStack(p);
-    ensures take S_ = SizedStack(p);
-            S_ == S;
-            return == S.s;
+/*@ requires take S = SizedStack(s);
+    ensures take S_post = SizedStack(s);
+            S_post == S;
+            return == S.Size;
 @*/
 /* ---END--- */
 {
-  return p->size;
+  return s->size;
 }
 
-void push (struct sized_stack *p, int x)
+void push (struct sized_stack *s, int x)
 /* FILL IN HERE */
 /* ---BEGIN--- */
-/*@ requires take S = SizedStack(p);
-    ensures take S_ = SizedStack(p);
-            S_.d == Cons {Head:x, Tail:S.d};
+/*@ requires take S = SizedStack(s);
+    ensures take S_post = SizedStack(s);
+            S_post.Data == Cons {Head:x, Tail:S.Data};
 @*/
 /* ---END--- */
 {
-  struct sllist *data = slcons(x, p->data);
-  p->size++;
-  p->data = data;
+  struct sllist *data = slcons(x, s->data);
+  s->size++;
+  s->data = data;
 /* ---BEGIN--- */
-  /*@ unfold Length (Cons {Head: x, Tail: S.d}); @*/
+  /*@ unfold Length (Cons {Head: x, Tail: S.Data}); @*/
 /* ---END--- */
 }
 
-int pop (struct sized_stack *p)
+int pop (struct sized_stack *s)
 /* FILL IN HERE */
 /* ---BEGIN--- */
-/*@ requires take S = SizedStack(p);
-             S.s > 0u32;
-    ensures  take S_ = SizedStack(p);
-             S_.d == Tl(S.d);
+/*@ requires take S = SizedStack(s);
+             S.Size > 0u32;
+    ensures  take S_post = SizedStack(s);
+             S_post.Data == Tl(S.Data);
 @*/
 /* ---END--- */
 {
-  struct sllist *data = p->data;
+  struct sllist *data = s->data;
   if (data != 0) {
     int head = data->head;
     struct sllist *tail = data->tail;
     free__sllist(data);
-    p->data = tail;
-    p->size--;
+    s->data = tail;
+    s->size--;
 /* ---BEGIN--- */
-    /*@ unfold Length(S.d); @*/
+    /*@ unfold Length(S.Data); @*/
 /* ---END--- */
     return head;
   }
   return 42;
 }
 
-int top (struct sized_stack *p)
-/*@ requires take S = SizedStack(p);
-             S.s > 0u32;
-    ensures  take S_ = SizedStack(p);
-             S_ == S;
-             return == Hd(S.d);
+int top (struct sized_stack *s)
+/*@ requires take S = SizedStack(s);
+             S.Size > 0u32;
+    ensures  take S_post = SizedStack(s);
+             S_post == S;
+             return == Hd(S.Data);
 @*/
 {
-  /*@ unfold Length(S.d); @*/ 
-  // from S.s > 0u32 it follows that the 'else' branch is impossible
-  if (p->data != 0) {
-    return (p->data)->head;
+  /*@ unfold Length(S.Data); @*/ 
+  // from S.Size > 0u32 it follows that the 'else' branch is impossible
+  if (s->data != 0) {
+    return (s->data)->head;
   }
   else {
     // provably dead code

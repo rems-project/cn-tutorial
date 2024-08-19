@@ -2,11 +2,11 @@
 #include "list_append.h"
 
 struct sllist* IntList_copy (struct sllist *xs)
-/*@ requires take L1 = SLList(xs);
-    ensures take L1_ = SLList(xs);
-            take L2 = SLList(return);
-            L1 == L1_;
-            L1 == L2;
+/*@ requires take Xs = SLList(xs);
+    ensures take Xs_post = SLList(xs);
+            take R = SLList(return);
+            Xs == Xs_post;
+            Xs == R;
 @*/
 {
   if (xs == 0) {
@@ -19,24 +19,24 @@ struct sllist* IntList_copy (struct sllist *xs)
 
 struct sllist* IntList_append2 (struct sllist *xs, struct sllist *ys)
 /* --BEGIN-- */
-/*@ requires take L1 = SLList(xs); @*/
-/*@ requires take L2 = SLList(ys); @*/
-/*@ ensures take L1_ = SLList(xs); @*/
-/*@ ensures take L2_ = SLList(ys); @*/
-/*@ ensures take L3 = SLList(return); @*/
-/*@ ensures L3 == Append(L1, L2); @*/
-/*@ ensures L1 == L1_; @*/
-/*@ ensures L2 == L2_; @*/
+/*@ requires take Xs = SLList(xs); @*/
+/*@ requires take Ys = SLList(ys); @*/
+/*@ ensures take Xs_post = SLList(xs); @*/
+/*@ ensures take Ys_post = SLList(ys); @*/
+/*@ ensures take Ret = SLList(return); @*/
+/*@ ensures Ret == Append(Xs, Ys); @*/
+/*@ ensures Xs == Xs_post; @*/
+/*@ ensures Ys == Ys_post; @*/
 /* --END-- */
 {
   if (xs == 0) {
 /* --BEGIN-- */
-    /*@ unfold Append(L1, L2); @*/
+    /*@ unfold Append(Xs, Ys); @*/
 /* --END-- */
     return IntList_copy(ys);
   } else {
 /* --BEGIN-- */
-    /*@ unfold Append(L1, L2); @*/
+    /*@ unfold Append(Xs, Ys); @*/
 /* --END-- */
     struct sllist *new_tail = IntList_append2(xs->tail, ys);
     return slcons(xs->head, new_tail);

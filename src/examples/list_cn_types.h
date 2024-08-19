@@ -9,8 +9,8 @@ predicate (datatype List) SLList(pointer p) {
     return Nil{};
   } else {
     take H = Owned<struct sllist>(p);
-    take Tl = SLList(H.tail);
-    return (Cons { Head: H.head, Tail: Tl });
+    take T = SLList(H.tail);
+    return (Cons { Head: H.head, Tail: T });
   }
 }
 @*/

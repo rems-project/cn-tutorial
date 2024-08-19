@@ -1,7 +1,8 @@
 #include "list.h"
 
 /*@
-function [rec] ({datatype List fst, datatype List snd}) split(datatype List xs)
+function [rec] ({datatype List fst, datatype List snd}) 
+                 split (datatype List xs)
 {
   match xs {
     Nil {} => {

@@ -1,5 +1,3 @@
-// append.h
-
 /*@
 function [rec] (datatype List) Append(datatype List L1, datatype List L2) {
   match L1 {

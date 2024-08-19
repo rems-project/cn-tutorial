@@ -914,23 +914,25 @@ Now it's time to look at some more interesting heap structures.
 To begin with, here is a C definition for linked list cells, together
 with allocation and deallocation functions:
 
+// TODO: BCP: Here and in several other places, we should use the "take _ = ..." syntax when the owned value is not used.  And we should explain it the first time we use it.
+
 include_example(exercises/list_c_types.h)
 
 // TODO: BCP: Per discussion with Christopher, Cassia, and Daniel, the word "predicate" is quite confusing for newcomers (in logic, predicates do not return things!).  A more neutral word might make for significantly easier onboarding.
 
 To write specifications for C functions that manipulate lists, we need
-to define a CN "predicate" that describes *mathematical* list
-structures, as one would do in ML, Haskell, or Coq.  (We call them
-"sequences" here to avoid overloading the word "list".)
+to define a CN "predicate" that describes specification-level list
+structures, as one would do in ML, Haskell, or Coq.  We use the
+datatype `+List+` for CN-level lists.
 
-Intuitively, the `+SLList+` predicate walks over a pointer structure
-in the C heap and extracts an `+Owned+` version of the mathematical
-list that it represents.
+Intuitively, the `+SLList+` predicate walks over a singly-linked
+pointer structure in the C heap and extracts an `+Owned+` version of
+the CN-level list that it represents.
 
 include_example(exercises/list_cn_types.h)
 
-We can also write specification-level "functions" by ordinary
-functional programming (in slightly strange, unholy-union-of-C-and-ML
+We can also write *functions* on CN-level lists by ordinary functional
+programming (in a slightly strange, unholy-union-of-C-and-Rust
 syntax):
 
 include_example(exercises/list_hdtl.h)
@@ -940,9 +942,9 @@ empty list and the cons of a number and a list.
 
 include_example(exercises/list_constructors.h)
 
-Finally, we can collect all this stuff into a single header file and
+Finally, we can collect all this stuff into a single header file.  (We
 add the usual C `+#ifndef+` gorp to avoid complaints from the compiler
-if it happens to get included twice from the same source file later.
+if it happens to get included twice from the same source file later.)
 
 include_example(exercises/list.h)
 
@@ -986,6 +988,10 @@ avoids allocating any new list cells in the splitting step by taking
 alternate cells from the original list and linking them together into
 two new lists of roughly equal lengths.
 
+// TODO: BCP: We've heard from more than one reader that this example is particularly hard to digest without some additional help
+
+// TODO: BCP: Nit: Merge multiple requires and ensures clauses into one
+
 include_example(exercises/mergesort.c)
 
 === Exercises
@@ -1017,7 +1023,7 @@ include_example(exercises/slf_length_acc.c)
 
 == Working with External Lemmas
 
-**TODO**: This section should also show what the proof of the lemmas
+// TODO: BCP: This section should also show what the proof of the lemmas
 looks like on the Coq side!
 
 // TODO: BCP: This needs to be filled in urgently!!
@@ -1061,6 +1067,10 @@ include_example(exercises/list_rev_alt.c)
 
 **Sized stacks:** Fill in annotations where requested:
 
+// TODO: BCP: type_synonym has not been introduced yet
+
+// TODO: Mention the pun here: SizedStack is both a predicate and the type that that predicate returns.  There's no ambiguity because the latter takes no argument.
+
 include_example(exercises/slf_sized_stack.c)
 
 // ======================================================================
@@ -1076,6 +1086,8 @@ include_example(exercises/slf_sized_stack.c)
 // ======================================================================
 
 == CN Style
+
+// TODO: BCP: If we are agreed on the naming conventions suggested in /NAMING-CONVENTIONS.md, we could move that material here.
 
 This section gathers some advice on stylistic conventions and best
 practices in CN.
@@ -1149,12 +1161,13 @@ we have to rename other things above for consistency...
 Given a pointer to an `+int_queue+` struct, this predicate grabs
 ownership of the struct, asserts that the `+front+` and `+back+` pointers
 must either both be NULL or both be non-NULL, and then hands off to an
-auxiliary predicate `+IntQueueFB+`.  (Conceptually, `+IntQueueFB+` is
-part of `+IntQueuePTR+`, but CN currently allows conditional
-expressions only at the beginning of predicate definitions, not after
-a `+take+`.)
+auxiliary predicate `+IntQueueFB+`.  
 
-`+IntQueueFB+` is where the interesting part starts:
+`+IntQueueFB+` is where the interesting part starts.  (Conceptually,
+`+IntQueueFB+` is part of `+IntQueuePTR+`, but CN currently allows
+conditional expressions only at the beginning of predicate
+definitions, not after a `+take+`, so we need to make a separate
+auxiliary predicate.)
 
 include_example(exercises/queue_cn_types_2.h)
 
@@ -1174,7 +1187,7 @@ the second to last cell (or the `+front+` pointer, if there is only
 one cell in the list), so we need to be careful not to `+take+` this
 cell twice.
 
-Accordingly, we begin by `+take+`ing the tail cell and passing it
+Accordingly, we begin by `+take+`-ing the tail cell and passing it
 separately to the `+IntQueueAux+` predicate, which has the job of
 walking down the cells from the front and gathering all the rest of
 them into a sequence.  We take the result from `+IntQueueAux+` and
@@ -1232,7 +1245,7 @@ include_example(exercises/queue_push_orig.broken.c)
 *Exercise*: Before reading on, see if you can write down a reasonable
 top-level specification for this operation.
 
-(One thing you might find odd about this code is that there's a
+One thing you might find odd about this code is that there's a
 `+return+` statement at the end of each branch of the conditional,
 rather than a single `+return+` at the bottom.  The reason for this is
 that, when CN analyzes a function body containing a conditional, it
@@ -1241,7 +1254,7 @@ the branches.  Then, if verification encounters an error related to
 this code -- e.g., "you didn't establish the `+ensures+` conditions at
 the point of returning -- the error message will be confusing because
 it will not be clear which branch of the conditional it is associated
-with.)
+with.
 
 Now, here is the annotated version of the `+push+` operation.
 
@@ -1255,6 +1268,8 @@ The `+push+` operation messes with the end of the sequence of queue
 elements, so we should expect that validating `+push+` is going to
 require some reasoning about this sequence.  Here, in fact, is the
 lemma we need.
+
+// TODO: BCP: Not sure I can explain what "pointer" means here, or why we don't need to declare more specific types for these arguments to the lemma.
 
 include_example(exercises/queue_push_lemma.h)
 
@@ -1370,8 +1385,7 @@ telltale clues in the error report that suggest what the problem was?
 not `+f == b+` to find out whether we have reached the last element of
 the queue.  Another way to get the same information would be to test
 whether `+f->next == 0+`.  Can you verify this version?
-
-Note: I (BCP) have not worked out the details, so am not sure how hard
+*Note*: I (BCP) have not worked out the details, so am not sure how hard
 this is (or if it is even not possible, though I'd be surprised).
 Please let me know if you get it working!
 
@@ -1387,10 +1401,12 @@ Can you generalize the `+snoc_facts+` lemma to handle both cases?  You
 can get past the dereference with a `+split_case+` but formulating the
 lemma before the `+return+` will be a bit more complicated.
 
-Note: Again, this has not been shown to be possible, but Dhruv
+*Note*: Again, this has not been shown to be possible, but Dhruv
 believes it should be!
 
 === Doubly Linked Lists
+
+// TODO: BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions.
 
 A doubly linked list is a linked list where each node has a pointer
 to both the next node and the previous node. This allows for O(1)
@@ -1528,7 +1544,7 @@ Now, let's look at the annotations in the function body. These are similar to in
 
 // ======================================================================
 
-*Exercise*: There are many other functions that one might want to implement for a doubly linked list. For example, one might want to implement a function that appends one list to another, or a function that reverses a list. Try implementing these functions and writing their specifications.
+*Exercise*: There are many other functions that one might want to implement for a doubly linked list. For example, one might want to implement a function that appends one list to another, or a function that reverses a list. Try implementing a few of these functions and writing their specifications.
 
 === The Runway
 
