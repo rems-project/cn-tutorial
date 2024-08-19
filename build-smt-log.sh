@@ -17,7 +17,7 @@ FILES=$(git log --since="$INTERVAL" --name-only --pretty=format: "$BRANCH" | sor
 
 # Regexp selecting files in the correct location 
 EXAMPLE_RXP="^src/(examples/[^/]+\.c|example-archive/[^/]+/working/[^/]+\.c)$"
-# Regexp filtering files marked broken 
+# Regexp filtering out files marked 'broken' 
 FILTER_RXP="broken\.c$"
 # Filter the list for files of interest 
 FILTERED_FILES=$(echo "$FILES" | grep -E "$EXAMPLE_RXP" | grep -Ev "$FILTER_RXP")
@@ -27,6 +27,7 @@ TEMP_DIR=$(realpath "$(mktemp -d ./tmp.XXXXXX)")
 
 # Create a log file listing the locations of SMT logs 
 DATE_STRING=$(date +"%Y-%m-%d_%H-%M-%S")
+DATE_STRING_SHORT=$(date +"%Y-%m-%d")
 echo "# Log date: $DATE_STRING" >> "$TEMP_DIR/manifest.md"
 echo "# $(cn --version)" >> "$TEMP_DIR/manifest.md"
 echo "" >> "$TEMP_DIR/manifest.md"
@@ -43,18 +44,22 @@ for FILEPATH in $FILTERED_FILES; do
 
     cd $DIR 
     # Run CN on the target file 
-    $CN "$FILE" --solver-type=cvc5 --solver-logging="$LOG_DIR"  1>&2
+    $CN "$FILE" --solver-type=cvc5 --solver-logging="$LOG_DIR" --quiet 
     cp "$FILE" "$LOG_DIR"
     cd "$ROOT_DIR"
+
+    # Remove model files - should probably not emit these 
+    rm "$LOG_DIR"/model_send*.smt
 
     # Record the file in the manifest 
     echo "$FILEPATH-log/" >> "$TEMP_DIR/manifest.md" 
   fi 
 done 
 
-# Create a zip file of the SMT logs 
+# Create a zip file and tar.gz file of the SMT logs 
 cd "$TEMP_DIR"
-zip -r "$ROOT_DIR/SMT-log-$DATE_STRING.zip" *  1>&2 
+zip -r "$ROOT_DIR/${DATE_STRING_SHORT}_CN-SMT-log.zip" *  1>&2 
+tar -czvf "$ROOT_DIR/${DATE_STRING_SHORT}_CN-SMT-log.tar.gz" * 1>&2
 
 rm -r "$TEMP_DIR"
 
