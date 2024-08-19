@@ -802,7 +802,8 @@ include_example(exercises/list_append.h)
 
 Here is a simple destructive `+append+` function.  Note the two uses
 of the `+unfold+` annotation in the body, which are needed to help the
-CN typechecker.
+CN typechecker. The `+unfold+` annotation is an instruction to CN to replace a call to a recursive (CN) function (in this case `+append+`)
+with its definition, and is necessary because CN is unable to automatically determine when and where to expand recursive definitions on its own. 
 
 // TODO: BCP: Can someone add a more technical explanation of why they are needed and exactly what they do?
 
