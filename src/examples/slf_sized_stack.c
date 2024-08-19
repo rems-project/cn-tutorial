@@ -81,19 +81,21 @@ int pop (struct sized_stack *p)
              S.s > 0u32;
     ensures  take S_ = SizedStack(p);
              S_.d == tl(S.d);
+             return == hd(S.d);
 @*/
 /* ---END--- */
 {
   struct int_list *data = p->data;
+  /* ---BEGIN--- */
+  /*@ unfold length(S.d); @*/
+  // from S.s > 0u32 it follows that the 'else' branch is impossible
+  /* ---END--- */
   if (data != 0) {
     int head = data->head;
     struct int_list *tail = data->tail;
     freeIntList(data);
     p->data = tail;
     p->size--;
-/* ---BEGIN--- */
-    /*@ unfold length(S.d); @*/
-/* ---END--- */
     return head;
   }
   return 42;
