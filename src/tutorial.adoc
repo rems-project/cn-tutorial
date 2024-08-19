@@ -526,6 +526,8 @@ To handle the required resource inference, CN "`eagerly`" decomposes all `+struc
 
 We can see this if, for instance, we experimentally change the `+transpose+` example from above to force a type error. Let’s insert an `+/*@ assert(false) @*/+` CN assertion in the middle of the `+transpose+` function, so we can inspect CN’s proof context shown in the error report.  (More on CN assertions later.)
 
+// TODO: BCP: Recheck that what we say here matches what it actually looks like
+
 include_example(exercises/transpose.broken.c)
 
 The precondition of `+transpose+` asserts ownership of an `+Owned<struct point>(p)+` resource. The error report now instead lists under "`Available resources`" two resources:
@@ -560,9 +562,11 @@ CP: Agreed. For now continuing with arrays, but will return to this later.
 
 == Arrays and loops
 
-Another common datatype in C is arrays. Reasoning about memory ownership for arrays is more difficult than for the datatypes we have seen so far: C allows the programmer to access arrays using _computed pointers_, and the size of an array does not need to be known as a constant at compile time.
+Another common datatype in C is arrays. Reasoning about memory ownership for arrays is more difficult than for the datatypes we have seen so far, for two reasons: (1) C allows the programmer to access arrays using _computed pointers_, and (2) the size of an array does not need to be known as a constant at compile time.
 
-To support reasoning about code manipulating arrays and computed pointers, CN has _iterated resources_. For instance, to specify ownership of an `+int+` array with 10 cells starting at pointer `+p+`, CN uses the iterated resource
+To support reasoning about code manipulating arrays and computed pointers, CN has _iterated resources_. For instance, to specify ownership of an `+int+` array with 10 cells starting at pointer `+p+`, CN uses the following iterated resource:
+
+// TODO: BCP: Another tricky naming / capitalization puzzle: The index of an "each" has CN type i32, so strictly speaking I believe it should be written with a capital "I".  But insisting on this feels like insisting on a distinction that most CN programmers would never even notice, much less be confused by.  I think this is another instance of the way C and CN integer types are partly but not completely squished together.
 
 [source,c]
 ----
@@ -599,7 +603,7 @@ comprising three parts:
 
 === First array example
 
-Let’s see how this applies to a first example of an array-manipulating function. Function `+read+` takes three arguments: the base pointer `+p+` of an `+int+` array, the length `+n+` of the array, and an index `+i+` into the array; `+read+` then returns the value of the `+i+`-th array cell.
+Let’s see how this applies to a simple array-manipulating function. Function `+read+` takes three arguments: the base pointer `+p+` of an `+int+` array, the length `+n+` of the array, and an index `+i+` into the array; `+read+` then returns the value of the `+i+`-th array cell.
 
 include_example(exercises/array_load.broken.c)
 
@@ -621,13 +625,13 @@ build/solutions/array_load.broken.c:5:10: error: Missing resource for reading
 Resource needed: Owned<signed int>(array_shift<signed int>(p, (u64)i))
 ....
 
-The reason is that when searching for a required resource, such as the `+Owned+` resource for `+p[i]+` here, CN’s resource inference does not consider iterated resources. Quantifiers, as used by iterated resources, can make verification undecidable, so, in order to maintain predictable type checking, CN delegates this aspect of the reasoning to the user.
+The reason is that, when searching for a required resource, such as the `+Owned+` resource for `+p[i]+` here, CN’s resource inference does not consider iterated resources. Quantifiers, as used by iterated resources, can make verification undecidable, so, in order to maintain predictable type checking, CN delegates this aspect of the reasoning to the user.
 
-To make the `+Owned+` resource required for accessing `+p[i]+` available to CN’s resource inference we have to "`extract`" ownership for index `+i+` out of the iterated resource.
+To make the `+Owned+` resource required for accessing `+p[i]+` available to CN’s resource inference we have to explicitly "`extract`" ownership for index `+i+` out of the iterated resource.
 
 include_example(exercises/array_load.c)
 
-Here the CN comment `+/*@ extract Owned<int>, i; @*/+` is a CN "`ghost statement`"/proof hint that instructs CN to instantiate any available iterated `+Owned<int>+` resource for index `+i+`. In our example this operation splits the iterated resource into two:
+Here the CN comment `+/*@ extract Owned<int>, i; @*/+` is a proof hint in the form of a "`ghost statement`" that instructs CN to instantiate any available iterated `+Owned<int>+` resource for index `+i+`. In our example this operation splits the iterated resource into two:
 
 [source,c]
 ----
@@ -652,20 +656,33 @@ each(i32 j; 0i32 <= j && j < n && j != i)
 
 After this extraction step, CN can use the (former) extracted resource to justify the access `+p[i]+`.
 
-Following an `+extract+` statement, CN moreover remembers the extracted index and can automatically "`reverse`" the extraction when needed: after type checking the access `+p[i]+` CN must ensure the function’s postcondition holds, which needs the full array ownership again (including the extracted index `+i+`); remembering the index `+i+`, CN then automatically merges resources (1) and (2) again to obtain the required full array ownership, and completes the verification of the function.
+Following an `+extract+` statement, CN remembers the extracted index and can automatically "`reverse`" the extraction when needed: after type checking the access `+p[i]+` CN must ensure the function’s postcondition holds, which needs the full array ownership again (including the extracted index `+i+`); remembering the index `+i+`, CN then automatically merges resources (1) and (2) again to obtain the required full array ownership, and completes the verification of the function.
 
-So far the specification only guarantees safe execution but does not specify the behaviour of `+read+`. To address this, let’s return to the iterated resources in the function specification. When we specify `+take a1 = each ...+` here, what is `+a1+`? In CN, the output of an iterated resource is a _map_ from indices to resource outputs. In this example, where index `+j+` has CN type `+i32+` and the iterated resource is `+Owned<int>+`, the output `+a1+` is a map from `+i32+` indices to `+i32+` values — CN type `+map<i32,i32>+`. (If the type of `+j+` was `+i64+` and the resource `+Owned<char>+`, `+a1+` would have type `+map<i64,u8>+`.)
+So far the specification only guarantees safe execution but does not
+specify the behaviour of `+read+`. To address this, let’s return to
+the iterated resources in the function specification. When we specify
+`+take A = each ...+` here, what is `+A+`? In CN, the output of an
+iterated resource is a _map_ from indices to resource outputs. In this
+example, where index `+j+` has CN type `+i32+` and the iterated
+resource is `+Owned<int>+`, the output `+A+` is a map from `+i32+`
+indices to `+i32+` values — CN type `+map<i32,i32>+`. If the type of
+`+j+` was `+i64+` and the resource `+Owned<char>+`, `+A+` would have
+type `+map<i64,u8>+`.
 
 We can use this to refine our specification with information about the functional behaviour of `+read+`.
 
 include_example(exercises/array_load2.c)
 
-We specify that `+read+` does not change the array — the outputs `+a1+` and `+a2+`, taken before and after running the function, are the same — and that the value returned is `+a1[i]+`, `+a1+` at index `+i+`.
+We specify that `+read+` does not change the array — the outputs of `+Owned+`, 
+`+A+` and `+A_post+`, taken before and after running the function, are
+the same — and that the value returned is `+A[i]+`.
 
 === Exercises
 
 
 *Array read two.* Specify and verify the following function, `+array_read_two+`, which takes the base pointer `+p+` of an `+unsigned int+` array, the array length `+n+`, and two indices `+i+` and `+j+`. Assuming `+i+` and `+j+` are different, it returns the sum of the values at these two indices.
+
+// TODO: BCP: When we get around to renaming files in the examples directory, we should call this one array_swap or something else beginning with "array".
 
 include_example(exercises/add_two_array.c)
 
@@ -701,15 +718,17 @@ TODO: BCP: I wrote this, which seemed natural but did not work -- I still don't 
 
 === Loops
 
-The array examples covered so far manipulate one or two individual cells of an array. Another typical pattern in code working over arrays is to *loop*, uniformly accessing all cells of an array, or sub-ranges of it.
+The array examples covered so far manipulate one or two individual cells of an array. Another typical pattern in code working over arrays is to *loop*, uniformly accessing all cells of an array or a sub-range of it.
 
 In order to verify code with loops, CN requires the user to supply loop invariants -- CN specifications of all owned resources and the constraints required to verify each iteration of the loop.
 
-
 Let's take a look at a simple first example. The following function, `+init_array+`, takes the base pointer `+p+` of a `+char+` array and the array length `+n+` and writes `+0+` to each array cell.
+
+// TODO: BCP: Rename to array_init.c
+
 include_example(exercises/init_array.c)
 
-If, for the moment, we focus just on proving safe execution of `+init_array+`, ignoring its functional behaviour, a specification might look as above: on entry `+init_array+` takes ownership of an iterated `+Owned<char>+` resource -- one `+Owned+` resource for each index `+i+` of type `+u32+` (so necessarily greater or equal to `+0+`) up to `+n+`; on exit `+init_array+` returns the ownership.
+If, for the moment, we focus just on proving safe execution of `+init_array+`, ignoring its functional behaviour, a specification might look as above: on entry, `+init_array+` takes ownership of an iterated `+Owned<char>+` resource -- one `+Owned+` resource for each index `+i+` of type `+u32+` (so necessarily greater or equal to `+0+`) up to `+n+`; on exit `+init_array+` returns the ownership.
 
 To verify this, we have to supply a loop invariant that specifies all resource ownership and the necessary constraints that hold before and after each iteration of the loop. Loop invariants are specified using the keyword `inv`, followed by CN specifications using the same syntax as in function pre- and postconditions. The variables in scope for loop invariants are all in-scope C variables, as well as CN variables introduced in the function precondition. *In loop invariants, the name of a C variable refers to its current value* (more on this shortly).
 
@@ -720,7 +739,7 @@ TODO: BCP: Concrete syntax: Why not write something like "unchanged {p,n}" or "u
 
 The main condition here is unsurprising: we specify ownership of an iterated resource for an array just like in the the pre- and postcondition.
 
-The second thing we need to do, however, is less straightforward. Recall that, as discussed at the start of the tutorial, function arguments in C are mutable, and so CN permits this as well.While in this example it is obvious that `+p+` and `+n+` do not change, CN currently requires the loop invariant to explicitly state this, using special notation `+{p} unchanged+` (and similarly for `+n+`).
+The second thing we need to do, however, is less straightforward. Recall that, as discussed at the start of the tutorial, function arguments in C are mutable. Although, in this example, it is obvious that `+p+` and `+n+` do not change, CN currently requires the loop invariant to explicitly state this, using special notation `+{p} unchanged+` (and similarly for `+n+`).
 
 **Note.** If we forget to specify `+unchanged+`, this can lead to confusing errors. In this example, for instance, CN would verify the loop against the loop invariant, but would be unable to prove a function postcondition seemingly directly implied by the loop invariant (lacking the information that the postcondition's `+p+` and `+n+` are the same as the loop invariant's). Future CN versions may handle loop invariants differently and treat variables as immutable by default.
 ////
@@ -730,19 +749,23 @@ TODO: BCP: This seems like a good idea!
 The final piece needed in the verification is an `+extract+` statement, as used in the previous examples: to separate the individual `+Owned<char>+` resource for index `+j+` out of the iterated `+Owned+` resource and make it available to the resource inference, we specify `+extract Owned<char>, j;+`.
 
 
-With the `+extract+` statements in place, CN accepts the function.
+With the `+inv+` and `+extract+` statements in place, CN accepts the function.
 
 === Second loop example
 
-However, on closer look, the specification of `+init_array+` is overly strong: it requires an iterated `+Owned+` resource for the array on entry. If, as the name suggests, the purpose of `+init_array+` is to initialise the array, then a precondition asserting only an iterated `+Block+` resource for the array should also be sufficient. The modified specification is then as follows.
+The specification of `+init_array+` is overly strong: it requires an iterated `+Owned+` resource for the array on entry. If, as the name suggests, the purpose of `+init_array+` is to initialise the array, then a precondition asserting only an iterated `+Block+` resource for the array should also be sufficient. The modified specification is then as follows.
 
 include_example(exercises/init_array2.c)
 
-This specification *should* hold: assuming ownership of an uninitialised array on entry, each iteration of the loop initialises one cell of the array, moving it from `+Block+` to `+Owned+` "`state`", so that on function return the full array is initialised. (Recall that stores only require `+Block+` ownership of the written memory location, so ownership of not-necessarily-initialised memory.)
+This specification *should* hold: assuming ownership of an uninitialised array on entry, each iteration of the loop initialises one cell of the array, moving it from `+Block+` to `+Owned+` "`state`", so that on function return the full array is initialised. (Recall that stores only require `+Block+` ownership of the written memory location, i.e., ownership of not-necessarily-initialised memory.)
 
-To verify this modified example we again need a loop invariant. This time, the loop invariant is more involved, however: since each iteration of the loop initialises one more array cell, the loop invariant has to do precise book-keeping of the initialisation status of the array.
+To verify this modified example we again need a loop Invariant. But
+this time the loop invariant is more involved: since each iteration of
+the loop initialises one more array cell, the loop invariant has to do
+precise book-keeping of the initialisation status of the different
+sections of the array.
 
-To do so, we partition the array ownership into two parts: for each index of the array the loop has already visited, we have an `+Owned+` resource, for all other array indices we have the (unchanged) `+Block+` ownership.
+To do this, we partition the array ownership into two parts: for each index of the array the loop has already visited, we have an `+Owned+` resource, for all other array indices we have the (unchanged) `+Block+` ownership.
 
 include_example(solutions/init_array2.c)
 
@@ -754,16 +777,17 @@ Let's go through this line-by-line:
 
 - As in the previous example, we assert `+p+` and `+n+` are unchanged.
 
-- Finally, unlike in the previous example, this loop invariant involves `+j+`. We therefore also need to know that `+j+` does not exceed the array length `+n+`. Otherwise CN would not be able to prove that, on completing the last loop iteration, `+j=n+` holds. This, in turn, is needed to show that when the function returns, ownership of the iterated `+Owned+` resource --- as specified in the loop invariant --- is fully consumed by the function's post-condition and there is no left-over unused resource.
+- Finally, unlike in the previous example, this loop invariant involves `+j+`. We therefore also need to know that `+j+` does not exceed the array length `+n+`. Otherwise CN would not be able to prove that, on completing the last loop iteration, `+j=n+` holds. This, in turn, is needed to show that, when the function returns, ownership of the iterated `+Owned+` resource --- as specified in the loop invariant --- is fully consumed by the function's post-condition and there is no left-over unused resource.
 
 As before, we also have to instruct CN to `+extract+` ownership of individual array cells out of the iterated resources:
 
-- to allow CN to extract the individual `+Block+` to be written we use `+extract Block<char>, j;+`;
+- to allow CN to extract the individual `+Block+` to be written, we use `+extract Block<char>, j;+`;
 
 - the store returns a matching `+Owned<char>+` resource for index `+j+`;
 
-- finally, we put `+extract Owned<char>, j;+` to allow CN to "`attach`" this resource to the iterated `+Owned+` resource. CN issues a warning, because nothing is, in fact, extracted: we are using `+extract+` only for the "`reverse`" direction.
+- finally, we add `+extract Owned<char>, j;+` to allow CN to "`attach`" this resource to the iterated `+Owned+` resource. CN issues a warning, because nothing is, in fact, extracted: we are using `+extract+` only for the "`reverse`" direction.
 
+// TODO: BCP: That last bit is mysterious.
 
 === Exercises
 
@@ -771,7 +795,7 @@ As before, we also have to instruct CN to `+extract+` ownership of individual ar
 
 include_example(exercises/init_array_rev.c)
 
-
+// TODO: BCP: The transition to the next section is awkward.  Needs a sentence or two to signal that we're changing topics.  Some better visual indication would also be nice.
 
 ////
 ___________________________________________________________________________
@@ -802,16 +826,26 @@ not alias...
 include_example(exercises/slf_incr2_noalias.c)
 
 But what if they do alias?  The clunky solution is to write a whole
-different version of incr2 with a different embedded specification...
+different version of `+incr2+` with a different embedded specification...
 
 include_example(exercises/slf_incr2_alias.c)
 
-This is horrible.  Much better is to define a predicate to use
-in the pre- and postconditions that captures both cases together:
+This version does correctly state that the final values of `+p+` and `+q+` are,m respectively, `+3+` and `+1+` more than their original values.  But the way we got there -- by duplicating the whole function `+incr2+`, is horrible.
+
+A better way is to define a *predicate* that captures both the aliased
+and the non-aliased cases together and use it in the pre- and
+postconditions:
 
 include_example(exercises/slf_incr2.c)
 
+// TODO: BCP: "BothOwned" is a pretty awkward name.
+// TODO: BCP: We haven't introduced CN records.  In particular, C programmers may be surprised that we don't have to pre-declare record types.
+// TODO: BCP: the annotation on incr2 needs some unpacking for readers!!
+// TODO: BCP: first use of the "split_case" annotation
+
 == Allocating and Deallocating Memory
+
+// TODO: BCP: Again, more text is needed to set up this discussion.
 
 At the moment, CN does not understand the `+malloc+` and `+free+`
 functions.  They are a bit tricky because they rely on a bit of
@@ -823,7 +857,7 @@ However, for any given type, we can define a type-specific function
 that allocates heap storage with exactly that type.  The
 implementation of this function cannot be checked by CN, but we can
 give just the spec, together with a promise to link against an
-external C library providing the implementation:
+external C library providing a correct (but not verified!) implementation:
 
 include_example(exercises/malloc.h)
 
@@ -832,9 +866,11 @@ inside a CN file by marking it with the keyword `+trusted+` at the top
 of its CN specification.)
 
 Similarly:
+
 include_example(exercises/free.h)
 
 Now we can write code that allocates and frees memory:
+
 include_example(exercises/slf17_get_and_free.c)
 
 We can also define a "safer", ML-style version of `+malloc+` that
@@ -858,18 +894,20 @@ pointed to by its argument.
 
 include_example(exercises/slf_ref_greater.c)
 
-=== Side Note
+=== Side note
 
 Here is another syntax for external / unknown
 functions, together with an example of a loose specification:
 
 ////
-TODO: BCP: This is a bit random -- it's not clear people need to know about this alternate syntax, and it's awkwardly mixed with a semi-interesting example that's not relevant to this section.
+TODO: BCP: This is a bit random -- it's not clear people need to know about this alternate syntax, and it's awkwardly mixed with a semi-interesting example that's not relevant to this section.  Also awkwardly placed, right here.
 ////
 
 include_example(exercises/slf18_two_dice.c)
 
 == Lists
+
+// TODO: BCP: Better intro needed
 
 Now it's time to look at some more interesting heap structures.
 

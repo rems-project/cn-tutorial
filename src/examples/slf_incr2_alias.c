@@ -1,9 +1,11 @@
-void incr2b (unsigned int *p, unsigned int *q)
-/*@ requires take pv = Owned<unsigned int>(p);
-             ptr_eq(q,p);
-    ensures take pv_ = Owned<unsigned int>(p);
-            ptr_eq(q,p);
-            pv_ == pv + 2u32;
+// Increment two different pointers (same as above)
+void incr2a (unsigned int *p, unsigned int *q)
+/*@ requires take P = Owned<unsigned int>(p);
+             take Q = Owned<unsigned int>(q);
+    ensures take P_post = Owned<unsigned int>(p);
+            take Q_post = Owned<unsigned int>(q);
+            P_post == P + 1u32;
+            Q_post == Q + 1u32;
 @*/
 {
   unsigned int n = *p;
@@ -14,7 +16,22 @@ void incr2b (unsigned int *p, unsigned int *q)
   *q = m;
 }
 
-#include "slf_incr2_noalias.c"
+// Increment the same pointer twice
+void incr2b (unsigned int *p, unsigned int *q)
+/*@ requires take P = Owned<unsigned int>(p);
+             ptr_eq(q,p);
+    ensures take P_post = Owned<unsigned int>(p);
+            ptr_eq(q,p);
+            P_post == P + 2u32;
+@*/
+{
+  unsigned int n = *p;
+  unsigned int m = n+1;
+  *p = m;
+  n = *q;
+  m = n+1;
+  *q = m;
+}
 
 void call_both (unsigned int *p, unsigned int *q)
 /*@ requires take pv = Owned<unsigned int>(p);
@@ -25,6 +42,6 @@ void call_both (unsigned int *p, unsigned int *q)
             qv_ == qv + 1u32;
 @*/
 {
-  incr2a(p, q);
-  incr2b(p, p);
+  incr2a(p, q);   // increment two different pointers
+  incr2b(p, p);   // increment the same pointer twice
 }
