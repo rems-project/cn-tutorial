@@ -528,7 +528,7 @@ each(i32 j; 0i32 <= j && j < n && j != i)
     { Owned<int>(array_shift<int>(p,j)) }
 ----
 
-After this extraction step, CN can use the (former) extracted resource to justify the access `+p[i]+`.
+After this extraction step, CN can use the (former) extracted resource to justify the access `+p[i]+`. Note that an `+extract+` statement's second argument can be any arithmetic expression, not just a single identifier like in this example. 
 
 Following an `+extract+` statement, CN moreover remembers the extracted index and can automatically "`reverse`" the extraction when needed: after type checking the access `+p[i]+` CN must ensure the function’s postcondition holds, which needs the full array ownership again (including the extracted index `+i+`); remembering the index `+i+`, CN then automatically merges resources (1) and (2) again to obtain the required full array ownership, and completes the verification of the function.
 
