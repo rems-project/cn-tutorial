@@ -242,6 +242,9 @@ include_example(solutions/read2.c)
 
 *Aside.* In standard separation logic the equivalent specification for `+read+` could have been phrased as follows (where `+return+` binds the return value in the postcondition):
 
+// TODO: Sainati: as a separation logic noob, I would love a more detailed explanation about what is going on here. 
+// Why do we need to have v2 existentially quantified, for example, when p is only pointing to a single value?
+
 ....
 ∀p.
 ∀v1. { p ↦ v1 }
@@ -549,6 +552,8 @@ include_example(exercises/add_two_array.c)
 
 ////
 TODO: BCP: In this one I got quite tangled up in different kinds of integers, then got tangled up in (I think) putting the extract declarations in the wrong place.  (I didn't save the not-working version, I'm afraid.)
+
+TODO: Sainati: I think it would be useful to have a int array version of this exercise as a worked example; I am not sure, for example, how one would express bounds requirements on the contents of an array in CN, as you would need to do here to ensure that p[i] + p[j] doesn’t overflow if p's contents are signed ints
 ////
 
 *Swap array.* Specify and verify `+swap_array+`, which swaps the values of two cells of an `+int+` array. Assume again that `+i+` and `+j+` are different, and describe the effect of `+swap_array+` on the array value using the CN map update expression `+a[i:v]+`, which denotes the same map as `+a+`, except with index `+i+` updated to `+v+`.
@@ -686,6 +691,10 @@ include_example(exercises/slf_incr2_alias.c)
 
 This is horrible.  Much better is to define a predicate to use
 in the pre- and postconditions that captures both cases together:
+
+// TODO: Sainati: I think it would be useful here to add an explanation for how CN's type checking works. 
+// For example, in the definition of BothOwned here, how is CN able to prove that `+take pv = Owned<unsigned int>(p);+` 
+// type checks, since all we know about `p` in the definition of the predicate is that it's a pointer? 
 
 include_example(exercises/slf_incr2.c)
 
@@ -851,6 +860,9 @@ include_example(exercises/list_free.c)
 // TODO: BCP: Removing / forgetting the unfold in this one gives a truly
 // bizarre error message saying that the constraint "n == (n + length(L1))"
 // is unsatisfiable...
+
+// TODO: Sainati: when I went through the tutorial, the file provided for this exercise was already "complete" in that 
+// it already had all the necessary annotations present for CN to verify it
 
 include_example(exercises/slf_length_acc.c)
 
