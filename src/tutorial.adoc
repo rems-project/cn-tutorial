@@ -36,7 +36,7 @@ To fetch and install CN, check the Cerberus repository at https://github.com/rem
 
 Once completed, type `+cn --help+` in your terminal to ensure CN is installed and found by your system. This should print the list of available options CN can be executed with.
 
-To apply CN to a C file, run `+cn CFILE+`.
+To apply CN to a C file, run `+cn verify CFILE+`.
 
 == Source files for the exercises and examples
 
@@ -58,7 +58,7 @@ include_example(exercises/add_0.c)
 Running CN on the example produces an error message:
 
 ....
-cn exercises/add_0.c
+cn verify exercises/add_0.c
 [1/1]: add
 exercises/add_0.c:3:10: error: Undefined behaviour
   return x+y;
