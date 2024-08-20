@@ -25,11 +25,10 @@ datatype seq {
 
 /*@
 predicate (datatype seq) IntListSeg(pointer p, pointer tail) {
-  if (addr_eq(p,tail)) {
+  if (ptr_eq(p,tail)) {
     return Seq_Nil{};
   } else {
     take H = Owned<struct list_node>(p);
-    assert (is_null(H.next) || H.next != NULL);
     take tl = IntListSeg(H.next, tail);
     return (Seq_Cons { val: H.val, next: tl });
   }
