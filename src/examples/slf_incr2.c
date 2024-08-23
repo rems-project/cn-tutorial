@@ -14,7 +14,6 @@ predicate { u32 P, u32 Q } BothOwned (pointer p, pointer q)
 @*/
 
 void incr2 (unsigned int *p, unsigned int *q)
-void incr2 (unsigned int *p, unsigned int *q)
 /*@ requires take PQ = BothOwned(p,q);
     ensures take PQ_post = BothOwned(p,q);
             let plus2 = { P: PQ.P + 2u32, Q: PQ.Q + 2u32 };
