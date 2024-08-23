@@ -238,6 +238,7 @@ To capture the functional behaviour, the postcondition specifies that `+return+`
 include_example(exercises/slf2_basic_quadruple.signed.c)
 
 *Abs.* Give a specification to the C function `+abs+`, which computes the absolute value of a given `+int+` value. To describe the return value, use CN’s ternary "`+_ ? _ : _+`" operator. Given a boolean `+b+`, and expressions `+e1+` and `+e2+` of the same basetype, `+b ? e1 : e2+` returns `+e1+` if `+b+` holds and `+e2+` otherwise.
+Note that most binary operators in CN have higher precedence than the ternary operator, so depending on your solution you may need to place the ternary expression in parentheses.
 
 include_example(exercises/abs.c)
 
@@ -316,6 +317,8 @@ That means we can use the resource outputs from the pre- and postcondition to st
 include_example(exercises/read2.c)
 
 *Aside.* In standard separation logic, the equivalent specification for `+read+` could have been phrased as follows (where `+\return+` binds the return value in the postcondition):
+// TODO: Sainati: as a separation logic noob, I would love a more detailed explanation about what is going on here. 
+// Why do we need to have v2 existentially quantified, for example, when p is only pointing to a single value?
 
 ....
 ∀p.
@@ -372,6 +375,16 @@ this context, memory leaks are typically very undesirable.  As a
 consequence, function specifications have to do precise bookkeeping of
 their resource footprint and, in particular, return any unused
 resources back to the caller.
+
+=== Exercises
+
+*Quadruple*. Specify the function `+quadruple_mem+`, that is similar to the earlier `+quadruple+` function, except that the input is passed as an `+int+` pointer. Write a specification that takes ownership of this pointer on entry and returns this ownership on exit, leaving the pointee value unchanged.
+
+include_example(exercises/slf_quadruple_mem.c)
+
+*Abs*. Give a specification to the function `+abs_mem+`, which computes the absolute value of a number passed as an `+int+` pointer.
+
+include_example(exercises/abs_mem.c)
 
 === The Block resource type
 
@@ -682,7 +695,7 @@ each(i32 j; 0i32 <= j && j < n && j != i)
     { Owned<int>(array_shift<int>(p,j)) }
 ----
 
-After this extraction step, CN can use the (former) extracted resource to justify the access `+p[i]+`.
+After this extraction step, CN can use the (former) extracted resource to justify the access `+p[i]+`. Note that an `+extract+` statement's second argument can be any arithmetic expression, not just a single identifier like in this example. 
 
 Following an `+extract+` statement, CN remembers the extracted index and can automatically "`reverse`" the extraction when needed: after type checking the access `+p[i]+` CN must ensure the function’s postcondition holds, which needs the full array ownership again (including the extracted index `+i+`); remembering the index `+i+`, CN then automatically merges resources (1) and (2) again to obtain the required full array ownership, and completes the verification of the function.
 
@@ -716,6 +729,8 @@ include_example(exercises/add_two_array.c)
 
 ////
 TODO: BCP: In this one I got quite tangled up in different kinds of integers, then got tangled up in (I think) putting the extract declarations in the wrong place.  (I didn't save the not-working version, I'm afraid.)
+
+TODO: Sainati: I think it would be useful to have a int array version of this exercise as a worked example; I am not sure, for example, how one would express bounds requirements on the contents of an array in CN, as you would need to do here to ensure that p[i] + p[j] doesn’t overflow if p's contents are signed ints
 ////
 
 *Swap array.* Specify and verify `+swap_array+`, which swaps the values of two cells of an `+int+` array. Assume again that `+i+` and `+j+` are different, and describe the effect of `+swap_array+` on the array value using the CN map update expression `+a[i:v]+`, which denotes the same map as `+a+`, except with index `+i+` updated to `+v+`.
@@ -861,6 +876,10 @@ include_example(exercises/slf_incr2_alias.c)
 
 This version does correctly state that the final values of `+p+` and `+q+` are,m respectively, `+3+` and `+1+` more than their original values.  But the way we got there -- by duplicating the whole function `+incr2+`, is horrible.
 
+// TODO: Sainati: I think it would be useful here to add an explanation for how CN's type checking works. 
+// For example, in the definition of BothOwned here, how is CN able to prove that `+take pv = Owned<unsigned int>(p);+` 
+// type checks, since all we know about `p` in the definition of the predicate is that it's a pointer? 
+
 A better way is to define a *predicate* that captures both the aliased
 and the non-aliased cases together and use it in the pre- and
 postconditions:
@@ -995,7 +1014,8 @@ include_example(exercises/list_append.h)
 
 Here is a simple destructive `+append+` function.  Note the two uses
 of the `+unfold+` annotation in the body, which are needed to help the
-CN typechecker.
+CN typechecker. The `+unfold+` annotation is an instruction to CN to replace a call to a recursive (CN) function (in this case `+append+`)
+with its definition, and is necessary because CN is unable to automatically determine when and where to expand recursive definitions on its own. 
 
 // TODO: BCP: Can someone add a more technical explanation of why they are needed and exactly what they do?
 
@@ -1047,6 +1067,9 @@ include_example(exercises/list_free.c)
 // TODO: BCP: Removing / forgetting the unfold in this one gives a truly
 // bizarre error message saying that the constraint "n == (n + length(L1))"
 // is unsatisfiable...
+
+// TODO: Sainati: when I went through the tutorial, the file provided for this exercise was already "complete" in that 
+// it already had all the necessary annotations present for CN to verify it
 
 include_example(exercises/slf_length_acc.c)
 

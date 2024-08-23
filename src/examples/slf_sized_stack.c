@@ -80,10 +80,15 @@ int pop (struct sized_stack *s)
              S.Size > 0u32;
     ensures  take S_post = SizedStack(s);
              S_post.Data == Tl(S.Data);
+             return == hd(S.Data);
 @*/
 /* ---END--- */
 {
-  struct sllist *data = s->data;
+  struct int_list *data = p->data;
+  /* ---BEGIN--- */
+  /*@ unfold Length(S.Data); @*/
+  // from S.Size > 0u32 it follows that the 'else' branch is impossible
+  /* ---END--- */
   if (data != 0) {
     int head = data->head;
     struct sllist *tail = data->tail;
