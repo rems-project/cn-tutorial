@@ -52,7 +52,7 @@ temp: $(WORKING_AUX) build
 ##############################################################################
 # Check that the examples all run correctly 
 
-CN_PATH ?= cn 
+CN_PATH?=cn verify
 
 check-archive: 
 	@echo Check archive examples

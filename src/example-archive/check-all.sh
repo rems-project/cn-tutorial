@@ -7,7 +7,7 @@ then
   echo "check-all.sh: using CN=$1 in $PWD"
   CN="$1"
 else
-  CN=cn verify
+  CN="cn verify"
 fi
 
 subdirs=(

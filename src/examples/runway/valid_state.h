@@ -1,5 +1,5 @@
 /*@
-function (bool) valid_state (struct State s) {
+function (boolean) valid_state (struct State s) {
      (s.ModeA == INACTIVE() || s.ModeA == ACTIVE()) &&
      (s.ModeD == INACTIVE() || s.ModeD == ACTIVE()) &&
      (s.ModeA == INACTIVE() || s.ModeD == INACTIVE()) &&
