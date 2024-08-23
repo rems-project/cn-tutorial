@@ -95,6 +95,7 @@ In detail:
 
 * Finally, we require this sum to be between the minimal and maximal `+int+` values. Integer constants, such as `+-2147483648i64+`, must specifiy their CN type (`+i64+`).
 // TODO: BCP: We should use the new ' syntax (or whatever it turned out to be) for numeric constants
+// Dhruv: Yet to be implemented: rems-project/cerberus#337
 
 Running CN on the annotated program passes without errors. This means that, with our specified precondition, `+add+` is safe to execute.
 
@@ -163,6 +164,7 @@ these reads and their return values: the read at `+&ARG0+` returns
 read at `+&ARG1+` returns `+y+`. Alongside this symbolic information,
 CN displays concrete values:
 // TODO: BCP: WHere do we see that ARG0 and ARG1 have something to do with x and y?
+// Dhrurv: In the state output.  See rems-project/cerberus#519 for more details.
 
 * `+1073741825i32 /* 0x40000001 */+` for x (the first value is the decimal representation, the second, in `+/*...*/+` comments, the hex equivalent) and
 
@@ -170,6 +172,7 @@ CN displays concrete values:
 
 For now, ignore the pointer values `+{@0; 4}+` for `+x+` and `+{@0; 0}+` for `+y+`.
 // TODO: BCP: Where are these things discussed?  Anywhere?  (When) are they useful?
+// Dhruv:  These are part of VIP memory model things I'm working on, which will hopefully be implemented and enabled in the next few weeks.
 
 These concrete values are part of a _counterexample_: a concrete
 valuation of variables and pointers in the program that that leads to
@@ -183,6 +186,7 @@ whatever installed on your system.)
 
 "`Variables`" lists counterexample values for program variables and pointers. In addition to `+x+` and `+y+`, assigned the same values as above, this includes values for their memory locations `+&ARG0+` and `+&ARG1+`, function pointers in scope, and the `+__cn_alloc_history+`, all of which we ignore for now.
 // TODO: BCP: Again, where are these things discussed?  Should they be?
+// Dhruv: Also VIP.
 
 Finally, "`Constraints`" records all logical facts CN has learned along the path. This includes user-specified assumptions from preconditions or loop invariants, value ranges inferred from the C-types of variables, and facts learned during the type checking of the statements. Here -- when checking `+add+` without precondition -- the only constraints are those inferred from C-types in the code:
 
@@ -218,9 +222,12 @@ As in the first example, we need to ensure that `+n+1+` does not overflow and `+
 
 include_example(solutions/slf1_basic_example_let.signed.c)
 // TODO: BCP: WHy n_+n_ in some places and n*2i32 in others?
+// Dhruv: Unlikely to be meaningful, either is fine.
 
 We encode these expectations using a similar style of precondition as in the first example. We first define `+N+` as `+n+` cast to type `+i64+` — i.e. a type large enough to hold `+n+1+`, `+n-1+`, and `+a+b+` for any possible `+i32+` value for `+n+`. Then we specify that decrementing `+N+` does not go below the minimal `+int+` value, that incrementing `+N+` does not go above the maximal value, and that `+n+` doubled is also in range. These preconditions together guarantee safe execution.
 // TODO: BCP: How about renaming N to n64?
+// Dhruv: Sensible.
+// (someone do it on next pass)
 
 To capture the functional behaviour, the postcondition specifies that `+return+` is twice the value of `+n+`.
 
@@ -263,6 +270,15 @@ For the read `+*p+` to be safe, ownership of a resource is missing: a resource `
 === The Owned resource type
 
 // TODO: BCP: Perhaps this is a good time for one last discussion of the keyword "Owned", which I have never found very helpful: the resource itself isn't owned -- it's a description of something that *can* be owned.  (It's "take" that does the owning.)  Moreover, "Owned" and "Block" are badly non-parallel, both grammatically and semantically.  I suggest "Resource" instead of "Owned".  (We can keep "Block" -- it's not too bad, IMO.)
+////
+Dhruv: 
+We use the word "resources" to describe any "resource predicate" owned, or user-defined, (and eventually live allocations and locks) so I'm not sure that suggestion works any better. It is just a points-to with read and write permissions, so perhaps a RW(p)? (or ReadWrite(p)?).
+
+@bcpierce00
+Both of these are better than Owned!
+
+(And then Block can become WriteOnly.)
+////
 
 Given a C-type `+T+` and pointer `+p+`, the resource `+Owned<T>(p)+` asserts ownership of a memory cell at location `+p+` of the size of C-type `+T+`. It is CN’s equivalent of a points-to assertion in separation logic (indexed by C-types `+T+`).
 
@@ -284,6 +300,7 @@ A caller of `+read+` may also wish to know that `+read+` actually returns the co
 
 In CN, resources have _outputs_. Each resource outputs the information that can be derived from ownership of the resource. What information is returned is specific to the type of resource. A resource `+Owned<T>(p)+` (for some C-type `+T+`) outputs the _pointee value_ of `+p+`, since that can be derived from the resource ownership: assume you have a pointer `+p+` and the associated ownership, then this uniquely determines the pointee value of `+p+`.
 // TODO: BCP: ... in a given heap!  (The real problem here is that "and the associated ownership" is pretty vague.)
+// Dhruv: Perhaps mentioning sub-heaps will help?
 
 CN uses the `+take+`-notation seen in the example above to bind the output of a resource to a new name. The precondition `+take P = Owned<int>(p)+` does two things: (1) it assert ownership of resource `+Owned<int>(p)+`, and (2) it binds the name `+P+` to the resource output, here the pointee value of `+p+` at the start of the function. Similarly, the postcondition introduces the name `+P_post+` for the pointee value on function return.
 
@@ -435,6 +452,7 @@ The `+Owned<int>(p)+` resource required for reading is missing, since, per the p
   memory-object semantics, which we ignore for the moment.
 
 // TODO: BCP: These bullet points are all a bit mysterious and maybe TMI.  More generally, we should double check that this is actually the information displayed in the current HTML output...
+// Dhruv: It is displayed, but hidden. And perhaps TMI right now, but once the memory model lands properly, will sadly be the price of entry to writing verifiable (semantically well-defined) C.
 
 === Exercises
 
@@ -470,6 +488,8 @@ The CN variables `+P+` and `+Q+` (resp. `+P_post+` and `+Q_post+`) for the point
 Hence, the postcondition `+return == P + Q+` holds also when the sum of `+P+` and `+Q+` is greater than the maximal `+unsigned int+` value.
 
 // TODO: BCP: I wonder whether we should uniformly use i32 integers everywhere in the tutorial (just mentioning in the bullet list below that there are other integer types, and using i64 for calculations that may overflow).  Forgetting which integer type I was using was a common (and silly) failure mode when I was first working through the tutorial.
+// Dhruv: Sensible.
+// BCP: ... On second thought, maybe settling on u32 instead of i32 in most places is better (fewer things to prove).  Or maybe it doesn't matter much.  For the start of the tutorial, i32 is important because the examples are all about overflow.  But after that we could go either way.  
 
 In the following we will sometimes use unsigned integer types to focus on specifying memory ownership, rather than the conditions necessary to show absence of C arithmetic undefined behaviour.
 
@@ -499,6 +519,14 @@ postcondition similarly asserts ownership of `+p+`, with output
 the members of `+P+` and `+P_post+` individually.
 
 // TODO: BCP: This paragraph is quite confusing if read carefully: it seems to say that the "take" in the requires clause returns a different type than the "tajke" in the "ensures" clause.  Moreover, even if the reader decides that this cannot be the case and they have to return the same type, they may wonder whether thius type is a C type (which is what it looks like, since there is only one struct declaration, and it is not in a magic comment) or a CN type (which might be expected, since it is the result of a "take").  I *guess* what's going on here is that every C type is automatically reflected as a CN type with the same name.  But this story is also not 100% satisfying, since the basic numeric types don't work this way: each C numeric type has an *analog* in CN, but with a different name.  
+////
+// Dhruv: 
+C supports strong updates in certain situations and so take _ = Owned<ct>(p) in the requires clause could very well have a different C type than take _ = Owned<ct2>(p) in the ensures clause.
+
+The reason Owned needs a C-type is so that it can (a) figure out the size of the sub-heap being claimed and (b) figure out how one may need to destructure the type (unions, struct fields and padding, arrays). The relationship is that for take x = Owned<ct>(expr), expr : pointer, x : to_basetype(ct).
+
+There is a design decision to consider here rems-project/cerberus#349
+////
 
 === Compound Owned and Block resources
 
@@ -788,6 +816,7 @@ As before, we also have to instruct CN to `+extract+` ownership of individual ar
 - finally, we add `+extract Owned<char>, j;+` to allow CN to "`attach`" this resource to the iterated `+Owned+` resource. CN issues a warning, because nothing is, in fact, extracted: we are using `+extract+` only for the "`reverse`" direction.
 
 // TODO: BCP: That last bit is mysterious.
+// Dhruv: See long explanation and issue here: rems-project/cerberus#498
 
 === Exercises
 
@@ -1027,6 +1056,7 @@ include_example(exercises/slf_length_acc.c)
 looks like on the Coq side!
 
 // TODO: BCP: This needs to be filled in urgently!!
+// Dhruyv: There are some examples in the Cerberus repo tests? rems-project/cerberus@20d9d5c
 
 === List reverse
 
@@ -1270,6 +1300,7 @@ require some reasoning about this sequence.  Here, in fact, is the
 lemma we need.
 
 // TODO: BCP: Not sure I can explain what "pointer" means here, or why we don't need to declare more specific types for these arguments to the lemma.
+// Dhruv: See above comments about strong updates: in a requires/ensures, the types are given by the arguments in scope, but here we don't have that.
 
 include_example(exercises/queue_push_lemma.h)
 

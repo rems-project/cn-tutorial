@@ -14,12 +14,12 @@ predicate { u32 P, u32 Q } BothOwned (pointer p, pointer q)
 @*/
 
 void incr2 (unsigned int *p, unsigned int *q)
+void incr2 (unsigned int *p, unsigned int *q)
 /*@ requires take PQ = BothOwned(p,q);
     ensures take PQ_post = BothOwned(p,q);
-            ptr_eq (PQ_post.P,
-                    (!ptr_eq(p,q)) ? (PQ.P + 1u32) : (PQ.P + 2u32));
-            ptr_eq (PQ_post.Q,
-                    (!ptr_eq(p,q)) ? (PQ.Q + 1u32) : PQ_post.P);
+            let plus2 = { P: PQ.P + 2u32, Q: PQ.Q + 2u32 };
+            let plus1 = { P: PQ.P + 1u32, Q: PQ.Q + 1u32 };
+            PQ_post == (ptr_eq(p,q) ? plus2 : plus1);
 @*/
 {
   /*@ split_case ptr_eq(p,q); @*/
