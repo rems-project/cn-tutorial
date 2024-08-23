@@ -1,0 +1,141 @@
+site_name: CN Docs
+theme:
+  name: material
+  features:
+    - announce.dismiss
+    - content.action.edit
+    - content.action.view
+    - content.code.annotate
+    - content.code.copy
+    # - content.code.select
+    - content.tooltips
+    - navigation.footer
+    - navigation.indexes
+    # - navigation.instant
+    # - navigation.instant.prefetch
+    # - navigation.instant.progress
+    # - navigation.prune
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+  language: en
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/link
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off
+        name: Switch to system preference
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+
+# Extensions
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      base_path: ["build"]
+  - pymdownx.striphtml
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Page tree
+nav:
+  - Home: README.md
+  - Getting started:
+    - "What is CN?": getting-started/what-is-cn.md
+    - Installation: getting-started/installation.md
+    - "Hello world": getting-started/hello-world.md
+    - Tutorials:
+      - "Basic usage": getting-started/tutorials/basic-usage.md
+      - "Pointers and simple ownership": getting-started/tutorials/pointers-and-simple-ownership.md
+      - "Ownership of compound objects": getting-started/tutorials/ownership-of-compound-objects.md
+      - "Arrays and loops": getting-started/tutorials/arrays-and-loops.md
+      - "Defining predicates": getting-started/tutorials/defining-predicates.md
+      - "Allocating and deallocating memory": getting-started/tutorials/allocating-and-deallocating-memory.md
+      - "Lists": getting-started/tutorials/lists.md
+      - "Working with external lemmas": getting-started/tutorials/external-lemmas.md
+    - "Case studies":
+      - "Imperative queues": getting-started/case-studies/imperative-queues.md
+      - "Doubly-linked lists": getting-started/case-studies/doubly-linked-lists.md
+      - "The Runway": getting-started/case-studies/the-runway.md
+    - "Style guide": 
+      - getting-started/style-guide/README.md
+  - Specifications:
+    - specifications/README.md
+    - Function specifications: specifications/function-specifications.md
+    - Loop invariants: specifications/loop-invariants.md
+    - Conditions: specifications/conditions.md
+    - Expressions: specifications/expressions.md
+    - Resource predicates: specifications/resource-predicates.md
+    - Auxiliary definitions:
+      - specifications/auxiliary-definitions/README.md
+      - Data structures: specifications/auxiliary-definitions/data-structures.md
+      - Logical functions: specifications/auxiliary-definitions/logical-functions.md
+      - Custom resource predicates: specifications/auxiliary-definitions/custom-resource-predicates.md
+    - Types: specifications/types.md
+    - Scoping: specifications/scoping.md
+    - "Tactics (proof hints)": specifications/tactics.md
+    - Interactive theorem proving: specifications/interactive-theorem-proving.md
+  - Testing:
+    - testing/README.md
+  - Verification:
+    - verification/README.md
+  - Reference:
+    - reference/README.md
+  - Help:
+    - help/README.md
+
