@@ -1,13 +1,13 @@
 #include "queue_headers.h" 
 #include "queue_push_lemma.h" 
 
-void IntQueue_push (int x, struct queue *q)
-/*@ requires take Q = IntQueuePtr(q);
-    ensures take Q_post = IntQueuePtr(q);
+void Queue_push (int x, struct queue *q)
+/*@ requires take Q = QueuePtr(q);
+    ensures take Q_post = QueuePtr(q);
             Q_post == Snoc (Q, x);
 @*/
 {
-  struct queue_cell *c = mallocIntqueue_cell();
+  struct queue_cell *c = malloc_queue_cell();
   c->first = x;
   c->next = 0;
   if (q->back == 0) {

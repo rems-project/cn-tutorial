@@ -13,12 +13,12 @@ TODO: BCP: Some remaining tasks for this document:
 - establish a more sensible / consistent naming scheme for the example files
 - either make some more subdirectrories for the example files or else
 flatten the ones that are there now
- ////
+////
 
 [abstract]
 --
-CN is an extension of the C programming language for verifying the correctness of C code, especially on low-level systems code. Compared to standard C, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes _safely_ — does not raise C undefined behaviour — and _correctly_ — satisfying to strong, user-defined specifications. 
-This tutorial introduces CN through a series of examples, starting with basic usage of CN on simple arithmetic functions and slowly moving towards more elaborate separation logic specifications of data structures. 
+CN is an extension of the C programming language for verifying the correctness of C code, especially on low-level systems code. Compared to standard C, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes _safely_ — does not raise C undefined behaviour — and _correctly_ — satisfying to strong, user-defined specifications.
+This tutorial introduces CN through a series of examples, starting with basic usage of CN on simple arithmetic functions and slowly moving towards more elaborate separation logic specifications of data structures.
 
 This tutorial is a work in progress -- your suggestions are greatly appreciated!
 
@@ -200,22 +200,22 @@ Finally, "`Constraints`" records all logical facts CN has learned along the path
 * For instance, `+good<signed int>(x)+` says that the initial value of
 `+x+` is a "`good`" `+signed int+` value (i.e. in range). Here
 `+signed int+` is the same type as `+int+`, CN just makes the sign
-explicit. 
+explicit.
 // TODO: BCP: Yikes!  This seems potentially cxonfusing
 For an integer type `+T+`, the type `+good<T>+` requires the value to
 be in range of type `+T+`; for pointer types `+T+`, it also requires
 the pointer to be aligned. For structs and arrays, this extends in the
 obvious way to struct members or array cells.
-// TODO: BCP: Is this information actually ever usefulful?  Is it currently suppressed?  
+// TODO: BCP: Is this information actually ever usefulful?  Is it currently suppressed?
 
 * `+repr<T>+` requires representability (not alignment) at type `+T+`, so `+repr<signed int*>(&ARGO)+`, for instance, records that the pointer to `+x+` is representable at C-type `+signed int*+`;
 
 * `+aligned(&ARGO, 4u64)+`, moreover, states that it is 4-byte aligned.
 
-// TODO: BCP: Some of the above (especially the bit at the end) feels like TMI for many/most users, especially at this point in the tutorial.  
+// TODO: BCP: Some of the above (especially the bit at the end) feels like TMI for many/most users, especially at this point in the tutorial.
 // Dhruv: Probably true, we actually even hide some of these by default.
 // BCP: I propose we hide the rest and move this discussion to somewhere else ("Gory Details" section of the tutorial, or better yet reference manual).
-// Dhruv: Thumbs up   
+// Dhruv: Thumbs up
 
 === Another arithmetic example
 
@@ -280,7 +280,7 @@ For the read `+*p+` to be safe, ownership of a resource is missing: a resource `
 
 // TODO: BCP: Perhaps this is a good time for one last discussion of the keyword "Owned", which I have never found very helpful: the resource itself isn't owned -- it's a description of something that *can* be owned.  (It's "take" that does the owning.)  Moreover, "Owned" and "Block" are badly non-parallel, both grammatically and semantically.  I suggest "Resource" instead of "Owned".  (We can keep "Block" -- it's not too bad, IMO.)
 ////
-Dhruv: 
+Dhruv:
 We use the word "resources" to describe any "resource predicate" owned, or user-defined, (and eventually live allocations and locks) so I'm not sure that suggestion works any better. It is just a points-to with read and write permissions, so perhaps a RW(p)? (or ReadWrite(p)?).
 
 @bcpierce00
@@ -325,7 +325,7 @@ That means we can use the resource outputs from the pre- and postcondition to st
 include_example(exercises/read2.c)
 
 *Aside.* In standard separation logic, the equivalent specification for `+read+` could have been phrased as follows (where `+\return+` binds the return value in the postcondition):
-// TODO: Sainati: as a separation logic noob, I would love a more detailed explanation about what is going on here. 
+// TODO: Sainati: as a separation logic noob, I would love a more detailed explanation about what is going on here.
 // Why do we need to have v2 existentially quantified, for example, when p is only pointing to a single value?
 
 ....
@@ -368,7 +368,7 @@ Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_17e
 ....
 
 CN has typechecked the function and verified (1) that it is safe to
-execute under the precondition (given ownership `+Owned<int>(p)+`) 
+execute under the precondition (given ownership `+Owned<int>(p)+`)
 and (2) that the function (vacuously) satisfies its postcondition. But
 following the check of the postcondition it finds that not all
 resources have been "`used up`".
@@ -488,7 +488,7 @@ include_example(exercises/slf3_basic_inplace_double.c)
 === Multiple owned pointers
 
 When functions manipulate multiple pointers, we can assert their
-ownership just like before. However 
+ownership just like before. However
 pointer ownership in CN is unique -- that is, simultaneously owning
 `+Owned+` or `+Block+` resources for two pointers implies that these
 pointers are disjoint.
@@ -1217,17 +1217,17 @@ type from the list examples earlier in the tutorial.
 
 include_example(exercises/queue_cn_types_1.h)
 ////
-TODO: BCP: If we're going to call this IntQueuePtr (Dhruv's suggestion), then
+TODO: BCP: If we're going to call this QueuePtr (Dhruv's suggestion), then
 we have to rename other things above for consistency...
 ////
 
 Given a pointer to an `+queue+` struct, this predicate grabs
 ownership of the struct, asserts that the `+front+` and `+back+` pointers
 must either both be NULL or both be non-NULL, and then hands off to an
-auxiliary predicate `+IntQueueFB+`.  
+auxiliary predicate `+QueueFB+`.  
 
-`+IntQueueFB+` is where the interesting part starts.  (Conceptually,
-`+IntQueueFB+` is part of `+IntQueuePTR+`, but CN currently allows
+`+QueueFB+` is where the interesting part starts.  (Conceptually,
+`+QueueFB+` is part of `+QueuePTR+`, but CN currently allows
 conditional expressions only at the beginning of predicate
 definitions, not after a `+take+`, so we need to make a separate
 auxiliary predicate.)
@@ -1251,9 +1251,9 @@ one cell in the list), so we need to be careful not to `+take+` this
 cell twice.
 
 Accordingly, we begin by `+take+`-ing the tail cell and passing it
-separately to the `+IntQueueAux+` predicate, which has the job of
+separately to the `+QueueAux+` predicate, which has the job of
 walking down the cells from the front and gathering all the rest of
-them into a sequence.  We take the result from `+IntQueueAux+` and
+them into a sequence.  We take the result from `+QueueAux+` and
 `+snoc+` on the very last element.
 
 The `+assert (is_null(B.next))+` here gives the CN verifier a crucial
@@ -1263,7 +1263,7 @@ its `+next+` field will always be NULL.
 
 // TODO: BCP: How to help people guess that this is needed??
 
-Finally, the `+IntQueueAux+` predicate recurses down the list of
+Finally, the `+QueueAux+` predicate recurses down the list of
 cells.
 
 include_example(exercises/queue_cn_types_3.h)
@@ -1274,10 +1274,10 @@ pointer to the very last cell.
 
 When `+f+` and `+b+` are equal, we have reached the last cell and
 there is nothing to do.  (We don't even have to build a singleton
-list: that's going to happen one level up, in `+IntQueueFB+`.)
+list: that's going to happen one level up, in `+QueueFB+`.)
 
 Otherwise, we `+take+` the fields of the `+f+`, make a recurive
-call to `+IntQueueAux+` to process the rest of the cells, and cons the
+call to `+QueueAux+` to process the rest of the cells, and cons the
 `+first+` field of this cell onto the resulting sequence before
 returning it.  (Again, we need to help the CN verifier by explicitly
 informing it of the invariant that we know, that `+C.next+` cannot be
@@ -1358,10 +1358,10 @@ as part of the rest (so that the new `+back+` cell can now be treated
 specially).
 
 One interesting technicality is worth noting: After the assignment
-`+q->back = c+` we can no longer prove `+IntQueueFB(q->front,
+`+q->back = c+` we can no longer prove `+QueueFB(q->front,
 oldback)+`, but we don't care, since we want to prove
-`+IntQueueFB(q->front, q->back)+`. However, crucially,
-`+IntQueueAux(q->front, oldback)+` is still true.
+`+QueueFB(q->front, q->back)+`. However, crucially,
+`+QueueAux(q->front, oldback)+` is still true.
 
 // ======================================================================
 
@@ -1382,15 +1382,15 @@ There are three annotations to explain.  Let's consider them in order.
 
 First, the `+split_case+` on `+is_null(q->front)+` is needed to tell
 CN which of the branches of the `+if+` at the beginning of the
-`+IntQueueFB+` predicate it can "unpack".  (`+IntQueuePtr+` can be
-unpacked immediately because it is unconditional, but `+IntQueueFB+`
+`+QueueFB+` predicate it can "unpack".  (`+QueuePtr+` can be
+unpacked immediately because it is unconditional, but `+QueueFB+`
 cannot.)
 // TODO: BCP: the word "unpack" is mysterious here.
 
-The guard/condition for `+IntQueueFB+` is `+is_null(front)+`, which is
+The guard/condition for `+QueueFB+` is `+is_null(front)+`, which is
 why we need to do a `+split_case+` on this value. On one branch of the
 `+split_case+`, we have a contradiction: the fact that `+before ==
-Nil{}+` (from `+IntQueueFB+`) conflicts with `+before != Nil+`
+Nil{}+` (from `+QueueFB+`) conflicts with `+before != Nil+`
 from the precondition, so that case is immediate.  On the other
 branch, CN now knows that the queue is non-empty as required and type
 checking proceeds.
@@ -1440,10 +1440,10 @@ telltale clues in the error report that suggest what the problem was?
 
 * Remove `+assert (is_null(B.next));+` from `+InqQueueFB+`.
 * Remove `+assert (is_null(B.next));+` from `+InqQueueAux+`.
-* Remove one or both of occurrences of `+freeIntqueue_cell(f)+` in
-  `+IntQueue_pop+`.
+* Remove one or both of occurrences of `+free_queue_cell(f)+` in
+  `+Queue_pop+`.
 * Remove, in turn, each of the CN annotations in the bodies of
-  `+IntQueue_pop+` and `+IntQueue_push+`.
+  `+Queue_pop+` and `+Queue_push+`.
 
 *Exercise*: The conditional in the `+pop+` function tests whether or
 not `+f == b+` to find out whether we have reached the last element of
@@ -1457,8 +1457,8 @@ Please let me know if you get it working!
 it might seem reasonable to move the identical assignments to `+x+` in both
 branches to above the `+if+`.  This doesn't "just work" because the
 ownership reasoning is different.  In the first case, ownership of
-`+h+` comes from `+IntQueueFB+` (because `+h == q->back+`). In the
-second case, it comes from `+IntQueueAux+` (because `+h !=
+`+h+` comes from `+QueueFB+` (because `+h == q->back+`). In the
+second case, it comes from `+QueueAux+` (because `+h !=
 q->back+`).
 
 Can you generalize the `+snoc_facts+` lemma to handle both cases?  You
@@ -1724,9 +1724,9 @@ Misc things to do:
     defining an "exit" function" with trivial pre- and postconditions
     (true / false).
 
-  - In queue.c, when I tried /*@ unfold IntQueueAux (F.front, F.back,
+  - In queue.c, when I tried /*@ unfold QueueAux (F.front, F.back,
     B.first); @*/ I was confused by "the specification function
-    `IntQueueAux' is not declared".  I guess this is, again, the
+    `QueueAux' is not declared".  I guess this is, again, the
     distinction between functions and predicates...?
 
   - In debugging the queue example, The fact that some of the

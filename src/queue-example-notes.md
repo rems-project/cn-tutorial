@@ -22,49 +22,49 @@ More notes:
 
 Here's the predicate for queues:
 
-    predicate (datatype List) IntQueue(pointer q) {
+    predicate (datatype List) Queue(pointer q) {
       take H = Owned<struct queue>(q);
-      take Q = IntQueue1(q,H);
+      take Q = Queue1(q,H);
       return Q;
     }
 
-    predicate (datatype List) IntQueue1(pointer dummy, struct queue H) {
+    predicate (datatype List) Queue1(pointer dummy, struct queue H) {
       if (is_null(H.Head)) {
         assert (is_null(H.tail));
         return (Nil{});
       } else {
         assert (!is_null(H.tail));
-        take Q = IntQueueAux (H.Head, H.tail);
+        take Q = QueueAux (H.Head, H.tail);
         return Q;
       }
     }
 
-    predicate (datatype List) IntQueueAux(pointer h, pointer t) {
+    predicate (datatype List) QueueAux(pointer h, pointer t) {
       take C = Owned<struct queue_cell>(h);
-      take L = IntQueueAux1(h, C, t);
+      take L = QueueAux1(h, C, t);
       return L;
     }
 
-    predicate (datatype List) IntQueueAux1
+    predicate (datatype List) QueueAux1
                                (pointer h, struct queue_cell C, pointer t) {
       if (is_null(C.next)) {
         assert (h == t);
         return (Cons{Head: C.first, Tail: Nil{}});
       } else {
-        take TL = IntQueueAux(C.next, t);
+        take TL = QueueAux(C.next, t);
         return (Cons { Head: C.first, Tail: TL });
       }
     }
 
 And here's the push operation.
 
-    void IntQueue_push (int x, struct queue *q)
-    /*@ requires take l = IntQueue(q);
-        ensures take ret = IntQueue(q);
+    void Queue_push (int x, struct queue *q)
+    /*@ requires take l = Queue(q);
+        ensures take ret = Queue(q);
                 ret == snoc (l, x);
     @*/
     {
-      struct queue_cell *c = mallocIntqueue_cell();
+      struct queue_cell *c = malloc_queue_cell();
       c->first = x;
       c->next = 0;
       if (q->tail == 0) {
@@ -113,12 +113,12 @@ Once we've unfolded, we get some more hints:
 
   - Look at the value of l in Terms: Cons {Head: 0i32, Tail: Nil {}}
   - But we are in the empty queue case, so this seems fishy.
-  - Now, in the constraints, we see   l == unpack_IntQueue1.Q
-  - Then look at the resources and see that unpack_IntQueue1.Q has not
+  - Now, in the constraints, we see   l == unpack_Queue1.Q
+  - Then look at the resources and see that unpack_Queue1.Q has not
     been unpacked in the final line:
-        IntQueue1(q, unpack_IntQueue1.H)(unpack_IntQueue1.Q)
+        Queue1(q, unpack_Queue1.H)(unpack_Queue1.Q)
   - This means that CN did not have enough information to decide which
-    way the conditional at the beginning of IntQueue1 is going to go.
+    way the conditional at the beginning of Queue1 is going to go.
   - But the condition is testing H.Head, while the conditional in the
     code is testing the tail field!
   - We could get around this mismatch by adjusting the condition
@@ -143,13 +143,13 @@ This tells us to look at snoc, which turns out to be very wrong!
 # --------------------------------------------------------------------------
 # Next try
 
-    void IntQueue_push (int x, struct queue *q)
-    /*@ requires take l = IntQueue(q);
-        ensures take ret = IntQueue(q);
+    void Queue_push (int x, struct queue *q)
+    /*@ requires take l = Queue(q);
+        ensures take ret = Queue(q);
                 ret == snoc (l, x);
     @*/
     {
-      struct queue_cell *c = mallocIntqueue_cell();
+      struct queue_cell *c = malloc_queue_cell();
       c->first = x;
       c->next = 0;
       if (q->tail == 0) {
@@ -169,7 +169,7 @@ This time the error is:
         q->tail->next = c;
         ~~~~~~~~~~~~~~^~~
     Resource needed: Block<struct
-        queue_cell*>(member_shift<queue_cell>(unpack_IntQueue1
+        queue_cell*>(member_shift<queue_cell>(unpack_Queue1
         .H
         .tail, next))
 
@@ -185,17 +185,17 @@ reaches the tail.  This would work (might be a good exercise?), but it
 nullifies the whole purpose of having the tail pointer in the first
 place.
 
-Instead, we need to rearrange IntQueue and friends so that we take
+Instead, we need to rearrange Queue and friends so that we take
 ownership of the very last cell in the list at the very beginning,
 instead of at the very end.
 
-    predicate (datatype List) IntQueue(pointer q) {
+    predicate (datatype List) Queue(pointer q) {
       take H = Owned<struct queue>(q);
-      take Q = IntQueue1(q,H);
+      take Q = Queue1(q,H);
       return Q;
     }
 
-    predicate (datatype List) IntQueue1(pointer dummy, struct queue H) {
+    predicate (datatype List) Queue1(pointer dummy, struct queue H) {
       if (is_null(H.Head)) {
         assert (is_null(H.tail));
         return (Nil{});
@@ -203,17 +203,17 @@ instead of at the very end.
         assert (!is_null(H.tail));
         take T = Owned<struct queue_cell>(H.tail);
         assert (is_null(T.next));
-        take Q = IntQueueAux (H.Head, H.tail, T.first);
+        take Q = QueueAux (H.Head, H.tail, T.first);
         return Q;
       }
     }
 
-    predicate (datatype List) IntQueueAux (pointer h, pointer t, i32 lastVal) {
+    predicate (datatype List) QueueAux (pointer h, pointer t, i32 lastVal) {
       if (h == t) {
         return (Cons{Head: lastVal, Tail: Nil{}});
       } else {
         take C = Owned<struct queue_cell>(h);
-        take TL = IntQueueAux(C.next, t, lastVal);
+        take TL = QueueAux(C.next, t, lastVal);
         return (Cons { Head: C.first, Tail: TL });
       }
     }

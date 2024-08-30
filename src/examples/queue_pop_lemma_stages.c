@@ -13,7 +13,7 @@ predicate (datatype List) Pre(pointer front, pointer back, i32 popped, datatype 
   } else {
     take B = Owned<struct queue_cell>(back);
     assert (is_null(B.next));
-    take L = IntQueueAux (front, back);
+    take L = QueueAux (front, back);
     assert (before == Snoc(Cons {Head: popped, Tail: L}, B.first));
     let after = Snoc(L, B.first);
     return after;
@@ -42,7 +42,7 @@ predicate (datatype List) Post(pointer front, pointer back, i32 popped, datatype
   } else {
     take B = Owned<struct queue_cell>(back);
     assert (is_null(B.next));
-    take L = IntQueueAux (front, back);
+    take L = QueueAux (front, back);
     assert (before == Snoc(Cons {Head: popped, Tail: L}, B.first));
     let after = Snoc(L, B.first);
     assert (after == Tl(before));
@@ -73,7 +73,7 @@ predicate (result) Queue_pop_lemma(pointer front, pointer back, i32 popped) {
   } else {
     take B = Owned<struct queue_cell>(back);
     assert (is_null(B.next));
-    take L = IntQueueAux (front, back);
+    take L = QueueAux (front, back);
     return { after: Snoc(L, B.first), before: Snoc(Cons {Head: popped, Tail: L}, B.first) };
   }
 }

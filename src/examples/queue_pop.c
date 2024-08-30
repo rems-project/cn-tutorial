@@ -1,10 +1,10 @@
 #include "queue_headers.h"
 #include "queue_pop_lemma.h"
 
-int IntQueue_pop (struct queue *q)
-/*@ requires take Q = IntQueuePtr(q);
+int Queue_pop (struct queue *q)
+/*@ requires take Q = QueuePtr(q);
              Q != Nil{};
-    ensures take Q_post = IntQueuePtr(q);
+    ensures take Q_post = QueuePtr(q);
             Q_post == Tl(Q);
             return == Hd(Q);
 @*/
@@ -13,7 +13,7 @@ int IntQueue_pop (struct queue *q)
   struct queue_cell* h = q->front;
   if (h == q->back) {
     int x = h->first;
-    freeIntqueue_cell(h);
+    free_queue_cell(h);
     q->front = 0;
     q->back = 0;
     /*@ unfold Snoc(Nil{}, x); @*/
@@ -22,7 +22,7 @@ int IntQueue_pop (struct queue *q)
     int x = h->first;
     /*@ apply snoc_facts(h->next, q->back, x); @*/
     q->front = h->next;
-    freeIntqueue_cell(h);
+    free_queue_cell(h);
     return x;
   }
 }

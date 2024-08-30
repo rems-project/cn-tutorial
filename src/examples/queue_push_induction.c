@@ -5,12 +5,12 @@ void push_induction(struct queue_cell* front
         , struct queue_cell* last)
 /*@
   requires
-      take Q = IntQueueAux(front, second_last);
+      take Q = QueueAux(front, second_last);
       take Second_last = Owned(second_last);
       ptr_eq(Second_last.next, last);
       take Last = Owned(last);
   ensures
-      take NewQ = IntQueueAux(front, last);
+      take NewQ = QueueAux(front, last);
       take Last2 = Owned(last);
       NewQ == Snoc(Q, Second_last.first);
       Last == Last2;
@@ -26,13 +26,13 @@ void push_induction(struct queue_cell* front
     }
 }
 
-void IntQueue_push (int x, struct queue *q)
-/*@ requires take before = IntQueuePtr(q);
-    ensures take after = IntQueuePtr(q);
+void Queue_push (int x, struct queue *q)
+/*@ requires take before = QueuePtr(q);
+    ensures take after = QueuePtr(q);
             after == Snoc (before, x);
 @*/
 {
-  struct queue_cell *c = mallocIntqueue_cell();
+  struct queue_cell *c = malloc_queue_cell();
   c->first = x;
   c->next = 0;
   if (q->back == 0) {

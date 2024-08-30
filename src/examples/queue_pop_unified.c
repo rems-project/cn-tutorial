@@ -9,7 +9,7 @@ predicate (result) Queue_pop_lemma(pointer front, pointer back, i32 popped) {
   } else {
     take B = Owned<struct queue_cell>(back);
     assert (is_null(B.next));
-    take L = IntQueueAux (front, back);
+    take L = QueueAux (front, back);
     return { after: Snoc(L, B.first), before: Snoc(Cons {Head: popped, Tail: L}, B.first) };
   }
 }
@@ -18,10 +18,10 @@ predicate (result) Queue_pop_lemma(pointer front, pointer back, i32 popped) {
 void snoc_fact(struct queue_cell *front, struct queue_cell *back, int x)
 /*@
 requires
-    take Q = IntQueueAux(front, back);
+    take Q = QueueAux(front, back);
     take B = Owned<struct queue_cell>(back);
 ensures
-    take NewQ = IntQueueAux(front, back);
+    take NewQ = QueueAux(front, back);
     take NewB = Owned<struct queue_cell>(back);
     Q == NewQ; B == NewB;
     let L = Snoc (Cons{Head: x, Tail: Q}, B.first);
@@ -50,10 +50,10 @@ ensures
     }
 }
 
-int IntQueue_pop (struct queue *q)
-/*@ requires take before = IntQueuePtr(q);
+int Queue_pop (struct queue *q)
+/*@ requires take before = QueuePtr(q);
              before != Nil{};
-    ensures take after = IntQueuePtr(q);
+    ensures take after = QueuePtr(q);
             after == Tl(before);
             return == Hd(before);
 @*/
@@ -63,7 +63,7 @@ int IntQueue_pop (struct queue *q)
   /*@ split_case ptr_eq(h, q->back); @*/
   int x = h->first;
   q->front = h->next;
-  freeIntqueue_cell(h);
+  free_queue_cell(h);
   if (!q->front) q->back = 0;
   snoc_fact_unified(q->front, q->back, x);
   return x;
