@@ -1,6 +1,6 @@
 #include "queue_headers.h"
 
-struct queue* Queue_empty ()
+struct queue* queue_empty ()
 /* --BEGIN-- */
 /*@ ensures take ret = QueuePtr(return);
             ret == Nil{};

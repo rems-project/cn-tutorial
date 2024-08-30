@@ -10,9 +10,9 @@ void push_induction(struct queue_cell* front
       ptr_eq(Second_last.next, last);
       take Last = Owned(last);
   ensures
-      take NewQ = QueueAux(front, last);
+      take Q_post = QueueAux(front, last);
       take Last2 = Owned(last);
-      NewQ == Snoc(Q, Second_last.first);
+      Q_post == Snoc(Q, Second_last.first);
       Last == Last2;
 @*/
 {
@@ -26,7 +26,7 @@ void push_induction(struct queue_cell* front
     }
 }
 
-void Queue_push (int x, struct queue *q)
+void queue_push (int x, struct queue *q)
 /*@ requires take before = QueuePtr(q);
     ensures take after = QueuePtr(q);
             after == Snoc (before, x);

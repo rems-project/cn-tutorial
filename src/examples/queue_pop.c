@@ -1,7 +1,7 @@
 #include "queue_headers.h"
 #include "queue_pop_lemma.h"
 
-int Queue_pop (struct queue *q)
+int queue_pop (struct queue *q)
 /*@ requires take Q = QueuePtr(q);
              Q != Nil{};
     ensures take Q_post = QueuePtr(q);

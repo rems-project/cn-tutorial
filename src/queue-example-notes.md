@@ -58,7 +58,7 @@ Here's the predicate for queues:
 
 And here's the push operation.
 
-    void Queue_push (int x, struct queue *q)
+    void queue_push (int x, struct queue *q)
     /*@ requires take l = Queue(q);
         ensures take ret = Queue(q);
                 ret == snoc (l, x);
@@ -143,7 +143,7 @@ This tells us to look at snoc, which turns out to be very wrong!
 # --------------------------------------------------------------------------
 # Next try
 
-    void Queue_push (int x, struct queue *q)
+    void queue_push (int x, struct queue *q)
     /*@ requires take l = Queue(q);
         ensures take ret = Queue(q);
                 ret == snoc (l, x);

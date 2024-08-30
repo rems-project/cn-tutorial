@@ -1219,7 +1219,7 @@ include_example(exercises/queue_cn_types_1.h)
 ////
 TODO: BCP: If we're going to call this QueuePtr (Dhruv's suggestion), then
 we have to rename other things above for consistency...
-TODO: BCP: I am starting to think Queue_At is actually the best, for various reasons.  Here, I'm realizing that, if we call it just Queue, there will be an unfortunate inconsistency with some other places where an abstract CN structure and the predicate that extracts such a structure from the heap have the same name.  Here, the predicate would be Queue but the returned type would be List, not Queue...  This seems like another argument for Queue_At.
+TODO: BCP: I am starting to think queue_At is actually the best, for various reasons.  Here, I'm realizing that, if we call it just Queue, there will be an unfortunate inconsistency with some other places where an abstract CN structure and the predicate that extracts such a structure from the heap have the same name.  Here, the predicate would be Queue but the returned type would be List, not Queue...  This seems like another argument for Queue_At.
 ////
 
 Given a pointer to a `+queue+` struct, this predicate grabs ownership
@@ -1230,8 +1230,6 @@ auxiliary predicate `+QueueFB+`.  Note that `+QueuePtr+` returns a
 simply the sequence of elements that it contains.  The difference
 between a queue and a singly or doubly linked list is simply one of
 concrete representation.
-
-// TODO: BCP: STOPPED HERE ___________________________________________
 
 `+QueueFB+` is where the interesting part starts.  (Conceptually,
 `+QueueFB+` is part of `+QueuePTR+`, but CN currently allows
@@ -1247,7 +1245,7 @@ then the queue is empty and we return the empty sequence.
 If the queue is not empty, we need to walk down the linked list of
 elements and gather up all their values into a sequence.  But we must
 treat the last element of the queue specially, for two reasons.
-First, because the `+push+` operation is going to follow the `+back+`
+First, since the `+push+` operation is going to follow the `+back+`
 pointer directly to the last list cell without traversing all the
 others, we need to `+take+` that element now rather than waiting to
 get to it at the end of the recursion starting from the `+front+`.
@@ -1271,24 +1269,24 @@ its `+next+` field will always be NULL.
 // TODO: BCP: How to help people guess that this is needed??
 
 Finally, the `+QueueAux+` predicate recurses down the list of
-cells.
+cells and returns a list of their contents.
 
 include_example(exercises/queue_cn_types_3.h)
 
 Its first argument (`+f+`) starts out at `+front+` and progresses
-through the list on recursive calls; its `+b+` argument is always a
+through the queue on recursive calls; its `+b+` argument is always a
 pointer to the very last cell.
 
 When `+f+` and `+b+` are equal, we have reached the last cell and
-there is nothing to do.  (We don't even have to build a singleton
-list: that's going to happen one level up, in `+QueueFB+`.)
+there is nothing to do.  We don't even have to build a singleton
+list: that's going to happen one level up, in `+QueueFB+`.
 
 Otherwise, we `+take+` the fields of the `+f+`, make a recurive
 call to `+QueueAux+` to process the rest of the cells, and cons the
 `+first+` field of this cell onto the resulting sequence before
-returning it.  (Again, we need to help the CN verifier by explicitly
+returning it.  Again, we need to help the CN verifier by explicitly
 informing it of the invariant that we know, that `+C.next+` cannot be
-null if `+f+` and `+b+` are different.)
+null if `+f+` and `+b+` are different.
 
 Now we need a bit of boilerplate: just as with linked lists, we need
 to be able to allocate and deallocate queues and queue cells.  There
@@ -1365,8 +1363,8 @@ as part of the rest (so that the new `+back+` cell can now be treated
 specially).
 
 One interesting technicality is worth noting: After the assignment
-`+q->back = c+` we can no longer prove `+QueueFB(q->front,
-oldback)+`, but we don't care, since we want to prove
+`+q->back = c+`, we can no longer prove `+QueueFB(q->front,
+oldback)+`, but we don't care about this, since we want to prove
 `+QueueFB(q->front, q->back)+`. However, crucially,
 `+QueueAux(q->front, oldback)+` is still true.
 
@@ -1396,10 +1394,10 @@ cannot.)
 
 The guard/condition for `+QueueFB+` is `+is_null(front)+`, which is
 why we need to do a `+split_case+` on this value. On one branch of the
-`+split_case+`, we have a contradiction: the fact that `+before ==
+`+split_case+` we have a contradiction: the fact that `+before ==
 Nil{}+` (from `+QueueFB+`) conflicts with `+before != Nil+`
 from the precondition, so that case is immediate.  On the other
-branch, CN now knows that the queue is non-empty as required and type
+branch, CN now knows that the queue is non-empty, as required, and type
 checking proceeds.
 
 When `+h == q->back+`, we are in the case where the queue contains
@@ -1448,9 +1446,9 @@ telltale clues in the error report that suggest what the problem was?
 * Remove `+assert (is_null(B.next));+` from `+InqQueueFB+`.
 * Remove `+assert (is_null(B.next));+` from `+InqQueueAux+`.
 * Remove one or both of occurrences of `+free_queue_cell(f)+` in
-  `+Queue_pop+`.
+  `+queue_pop+`.
 * Remove, in turn, each of the CN annotations in the bodies of
-  `+Queue_pop+` and `+Queue_push+`.
+  `+queue_pop+` and `+queue_push+`.
 
 *Exercise*: The conditional in the `+pop+` function tests whether or
 not `+f == b+` to find out whether we have reached the last element of
@@ -1471,7 +1469,7 @@ q->back+`).
 Can you generalize the `+snoc_facts+` lemma to handle both cases?  You
 can get past the dereference with a `+split_case+` but formulating the
 lemma before the `+return+` will be a bit more complicated.
-
+//
 *Note*: Again, this has not been shown to be possible, but Dhruv
 believes it should be!
 

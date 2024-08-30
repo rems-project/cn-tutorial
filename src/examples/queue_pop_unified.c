@@ -21,9 +21,9 @@ requires
     take Q = QueueAux(front, back);
     take B = Owned<struct queue_cell>(back);
 ensures
-    take NewQ = QueueAux(front, back);
-    take NewB = Owned<struct queue_cell>(back);
-    Q == NewQ; B == NewB;
+    take Q_post = QueueAux(front, back);
+    take B_post = Owned<struct queue_cell>(back);
+    Q == Q_post; B == B_post;
     let L = Snoc (Cons{Head: x, Tail: Q}, B.first);
     Hd(L) == x;
     Tl(L) == Snoc (Q, B.first);
@@ -50,7 +50,7 @@ ensures
     }
 }
 
-int Queue_pop (struct queue *q)
+int queue_pop (struct queue *q)
 /*@ requires take before = QueuePtr(q);
              before != Nil{};
     ensures take after = QueuePtr(q);

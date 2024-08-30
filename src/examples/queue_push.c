@@ -1,7 +1,7 @@
 #include "queue_headers.h" 
 #include "queue_push_lemma.h" 
 
-void Queue_push (int x, struct queue *q)
+void queue_push (int x, struct queue *q)
 /*@ requires take Q = QueuePtr(q);
     ensures take Q_post = QueuePtr(q);
             Q_post == Snoc (Q, x);

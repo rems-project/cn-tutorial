@@ -1,6 +1,6 @@
 #include "queue_headers.h" 
 
-void Queue_push (int x, struct queue *q)
+void queue_push (int x, struct queue *q)
 {
   struct queue_cell *c = malloc_queue_cell();
   c->first = x;
