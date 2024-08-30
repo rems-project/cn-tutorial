@@ -45,10 +45,10 @@ tutorial), we aim for maximal correspondence between
   type of the `Queue` predicate is also called `Queue`.
 
   *Discussion*: There is clearly some potential for confusion, and for
-  this reason Liz prefers using `Queue_at` for the predicate.  On the
-  other hand hand, types don't take an argument and predicates do, so
-  it's easy to disambiguate.  We're going with the lighter alternative
-  for the moment.
+  this reason Liz prefers using `Queue_at` for the predicate (as does
+  Cole).  On the other hand hand, types don't take an argument and
+  predicates do, so it's easy to disambiguate.  We're going with the
+  lighter alternative for the moment.
   
 ## For existing code
 
@@ -120,13 +120,6 @@ the first case.
 
 # Loose ends
 
-- Do we need a convention for auxiliary predicates?
-    - E.g., maybe adding `_Aux` to the original predicate name
-      (e.g. `Queue_Aux` for the recursive predicate that walks down
-      the list of queue nodes to gather them into a list once a
-      top-level `Queue` or `Queue_at` predicate has dealt with the
-      non-recursive part of the structure).
-
 - The current function `IntList_free__list` is hard to rename with
   these conventions. It feels like it should be `free__sllist`, but
   that’s also the new name of the free function for individual list
@@ -137,3 +130,10 @@ the first case.
       `free__sllist_node` for the single-node operation (even though
       what it returns is an `sllist`, noit an `sllist_node`),
       leaving `free__sllist` for the recursive one?
+    - Cole opines: "In this case, it really feels like you're defining
+      an API for a data structure, rather than just a polymorphic free
+      function. What does it mean to free an sllist? As you point out,
+      it could mean freeing the node or the whole list, and it makes
+      sense to have two functions for these two actions.  Under the
+      "API for a data structure" interpretation, something like
+      sllist_free_list and sllist_free_node feels more natural to me."

@@ -206,6 +206,9 @@ obvious way to struct members or array cells.
 * `+aligned(&ARGO, 4u64)+`, moreover, states that it is 4-byte aligned.
 
 // TODO: BCP: Some of the above (especially the bit at the end) feels like TMI for many/most users, especially at this point in the tutorial.  
+// Dhruv: Probably true, we actually even hide some of these by default.
+// BCP: I propose we hide the rest and move this discussion to somewhere else ("Gory Details" section of the tutorial, or better yet reference manual).
+// Dhruv: Thumbs up   
 
 === Another arithmetic example
 
@@ -246,9 +249,7 @@ include_example(exercises/abs.c)
 
 So far we’ve only considered example functions manipulating integer values. Verification becomes more interesting and challenging when _pointers_ are involved, because the safety of memory accesses via pointers has to be verified.
 
-// TODO: BCP: As a non-expert coming to CN, I was (and to some extent still am) consistently confused by the terminology of "resource TYPES" -- they do not look like types, and I just think of them as resources.  I think we could save other readers some confusion by reserving the word "type" for C-types and juset talking about "resources" for CN-level things.
-
-CN uses _separation logic resource types_ and the concept of _ownership_ to reason about memory accesses. A resource is the permission to access a region of memory. Unlike logical constraints, resource ownership is _unique_, meaning resources cannot be duplicated.
+CN uses _separation logic resources_ and the concept of _ownership_ to reason about memory accesses. A resource is the permission to access a region of memory. Unlike logical constraints, resource ownership is _unique_, meaning resources cannot be duplicated.
 
 Let’s look at a simple example. The function `+read+` takes an `+int+` pointer `+p+` and returns the pointee value.
 
@@ -268,7 +269,7 @@ Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_403
 
 For the read `+*p+` to be safe, ownership of a resource is missing: a resource `+Owned<signed int>(p)+`.
 
-=== The Owned resource type
+=== Owned resources
 
 // TODO: BCP: Perhaps this is a good time for one last discussion of the keyword "Owned", which I have never found very helpful: the resource itself isn't owned -- it's a description of something that *can* be owned.  (It's "take" that does the owning.)  Moreover, "Owned" and "Block" are badly non-parallel, both grammatically and semantically.  I suggest "Resource" instead of "Owned".  (We can keep "Block" -- it's not too bad, IMO.)
 ////
@@ -367,7 +368,7 @@ resources have been "`used up`".
 
 Indeed, given the above specification, `+read+` leaks memory: it takes ownership, does not return it, but also does not deallocate the owned memory or otherwise dispose of it. In CN this is a type error.
 
-CN’s resource types are _linear_. This means not only that resources cannot be duplicated, but also that resources cannot simply be dropped or "`forgotten`". Every resource passed into a function has to be either _returned_ to the caller or else _destroyed_ by deallocating the owned area of memory (as we shall see later).
+CN’s resources are _linear_. This means not only that resources cannot be duplicated, but also that resources cannot simply be dropped or "`forgotten`". Every resource passed into a function has to be either _returned_ to the caller or else _destroyed_ by deallocating the owned area of memory (as we shall see later).
 
 CN’s motivation for linear tracking of resources is its focus on
 low-level systems software in which memory is managed manually; in
@@ -386,14 +387,14 @@ include_example(exercises/slf_quadruple_mem.c)
 
 include_example(exercises/abs_mem.c)
 
-=== The Block resource type
+=== Block resources
 
 Aside from the `+Owned+` resources seen so far, CN has another
-built-in resource type called `+Block+`. Given a C-type `+T+` and
+built-in type of resource called `+Block+`. Given a C-type `+T+` and
 pointer `+p+`, `+Block<T>(p)+` asserts the same ownership as
-`+Owned<T>(p)+` — ownership of a memory cell at `+p+` the size of
-type `+T+` — but, in contrast to `+Owned+`, `+Block+` memory is not
-assumed to be initialised.
+`+Owned<T>(p)+` — ownership of a memory cell at `+p+` the size of type
+`+T+` — but, in contrast to `+Owned+`, `+Block+` memory is not assumed
+to be initialised.
 
 CN uses this distinction to prevent reads from uninitialised memory:
 
@@ -967,6 +968,8 @@ with allocation and deallocation functions:
 include_example(exercises/list_c_types.h)
 
 // TODO: BCP: Per discussion with Christopher, Cassia, and Daniel, the word "predicate" is quite confusing for newcomers (in logic, predicates do not return things!).  A more neutral word might make for significantly easier onboarding.
+// Dhruv: Or no keyword? rems-project/cerberus#304  How about traversal?
+// BCP: No keyword sounds even better. But "traversal" in the interim is not bad. Or maybe "extractor" or something like that?
 
 To write specifications for C functions that manipulate lists, we need
 to define a CN "predicate" that describes specification-level list
