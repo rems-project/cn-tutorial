@@ -23,12 +23,12 @@ More notes:
 Here's the predicate for queues:
 
     predicate (datatype List) IntQueue(pointer q) {
-      take H = Owned<struct int_queue>(q);
+      take H = Owned<struct queue>(q);
       take Q = IntQueue1(q,H);
       return Q;
     }
 
-    predicate (datatype List) IntQueue1(pointer dummy, struct int_queue H) {
+    predicate (datatype List) IntQueue1(pointer dummy, struct queue H) {
       if (is_null(H.Head)) {
         assert (is_null(H.tail));
         return (Nil{});
@@ -40,13 +40,13 @@ Here's the predicate for queues:
     }
 
     predicate (datatype List) IntQueueAux(pointer h, pointer t) {
-      take C = Owned<struct int_queueCell>(h);
+      take C = Owned<struct queue_cell>(h);
       take L = IntQueueAux1(h, C, t);
       return L;
     }
 
     predicate (datatype List) IntQueueAux1
-                               (pointer h, struct int_queueCell C, pointer t) {
+                               (pointer h, struct queue_cell C, pointer t) {
       if (is_null(C.next)) {
         assert (h == t);
         return (Cons{Head: C.first, Tail: Nil{}});
@@ -58,13 +58,13 @@ Here's the predicate for queues:
 
 And here's the push operation.
 
-    void IntQueue_push (int x, struct int_queue *q)
+    void IntQueue_push (int x, struct queue *q)
     /*@ requires take l = IntQueue(q);
         ensures take ret = IntQueue(q);
                 ret == snoc (l, x);
     @*/
     {
-      struct int_queueCell *c = mallocIntQueueCell();
+      struct queue_cell *c = mallocIntqueue_cell();
       c->first = x;
       c->next = 0;
       if (q->tail == 0) {
@@ -143,13 +143,13 @@ This tells us to look at snoc, which turns out to be very wrong!
 # --------------------------------------------------------------------------
 # Next try
 
-    void IntQueue_push (int x, struct int_queue *q)
+    void IntQueue_push (int x, struct queue *q)
     /*@ requires take l = IntQueue(q);
         ensures take ret = IntQueue(q);
                 ret == snoc (l, x);
     @*/
     {
-      struct int_queueCell *c = mallocIntQueueCell();
+      struct queue_cell *c = mallocIntqueue_cell();
       c->first = x;
       c->next = 0;
       if (q->tail == 0) {
@@ -169,7 +169,7 @@ This time the error is:
         q->tail->next = c;
         ~~~~~~~~~~~~~~^~~
     Resource needed: Block<struct
-        int_queueCell*>(member_shift<int_queueCell>(unpack_IntQueue1
+        queue_cell*>(member_shift<queue_cell>(unpack_IntQueue1
         .H
         .tail, next))
 
@@ -190,18 +190,18 @@ ownership of the very last cell in the list at the very beginning,
 instead of at the very end.
 
     predicate (datatype List) IntQueue(pointer q) {
-      take H = Owned<struct int_queue>(q);
+      take H = Owned<struct queue>(q);
       take Q = IntQueue1(q,H);
       return Q;
     }
 
-    predicate (datatype List) IntQueue1(pointer dummy, struct int_queue H) {
+    predicate (datatype List) IntQueue1(pointer dummy, struct queue H) {
       if (is_null(H.Head)) {
         assert (is_null(H.tail));
         return (Nil{});
       } else {
         assert (!is_null(H.tail));
-        take T = Owned<struct int_queueCell>(H.tail);
+        take T = Owned<struct queue_cell>(H.tail);
         assert (is_null(T.next));
         take Q = IntQueueAux (H.Head, H.tail, T.first);
         return Q;
@@ -212,7 +212,7 @@ instead of at the very end.
       if (h == t) {
         return (Cons{Head: lastVal, Tail: Nil{}});
       } else {
-        take C = Owned<struct int_queueCell>(h);
+        take C = Owned<struct queue_cell>(h);
         take TL = IntQueueAux(C.next, t, lastVal);
         return (Cons { Head: C.first, Tail: TL });
       }

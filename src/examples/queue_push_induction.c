@@ -1,8 +1,8 @@
 #include "queue_headers.h" 
 
-void push_induction(struct int_queueCell* front
-        , struct int_queueCell* second_last
-        , struct int_queueCell* last)
+void push_induction(struct queue_cell* front
+        , struct queue_cell* second_last
+        , struct queue_cell* last)
 /*@
   requires
       take Q = IntQueueAux(front, second_last);
@@ -26,13 +26,13 @@ void push_induction(struct int_queueCell* front
     }
 }
 
-void IntQueue_push (int x, struct int_queue *q)
+void IntQueue_push (int x, struct queue *q)
 /*@ requires take before = IntQueuePtr(q);
     ensures take after = IntQueuePtr(q);
             after == Snoc (before, x);
 @*/
 {
-  struct int_queueCell *c = mallocIntQueueCell();
+  struct queue_cell *c = mallocIntqueue_cell();
   c->first = x;
   c->next = 0;
   if (q->back == 0) {
@@ -40,7 +40,7 @@ void IntQueue_push (int x, struct int_queue *q)
     q->back = c;
     return;
   } else {
-    struct int_queueCell *oldback = q->back;
+    struct queue_cell *oldback = q->back;
     q->back->next = c;
     q->back = c;
     push_induction(q->front, oldback, c);

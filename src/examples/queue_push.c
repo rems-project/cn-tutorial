@@ -1,13 +1,13 @@
 #include "queue_headers.h" 
 #include "queue_push_lemma.h" 
 
-void IntQueue_push (int x, struct int_queue *q)
+void IntQueue_push (int x, struct queue *q)
 /*@ requires take Q = IntQueuePtr(q);
     ensures take Q_post = IntQueuePtr(q);
             Q_post == Snoc (Q, x);
 @*/
 {
-  struct int_queueCell *c = mallocIntQueueCell();
+  struct queue_cell *c = mallocIntqueue_cell();
   c->first = x;
   c->next = 0;
   if (q->back == 0) {
@@ -15,7 +15,7 @@ void IntQueue_push (int x, struct int_queue *q)
     q->back = c;
     return;
   } else {
-    struct int_queueCell *oldback = q->back;
+    struct queue_cell *oldback = q->back;
     q->back->next = c;
     q->back = c;
     /*@ apply push_lemma (q->front, oldback); @*/

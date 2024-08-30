@@ -1,8 +1,8 @@
 #include "queue_headers.h" 
 
-void IntQueue_push (int x, struct int_queue *q)
+void IntQueue_push (int x, struct queue *q)
 {
-  struct int_queueCell *c = mallocIntQueueCell();
+  struct queue_cell *c = mallocIntqueue_cell();
   c->first = x;
   c->next = 0;
   if (q->back == 0) {
@@ -10,7 +10,7 @@ void IntQueue_push (int x, struct int_queue *q)
     q->back = c;
     return;
   } else {
-    struct int_queueCell *oldback = q->back;
+    struct queue_cell *oldback = q->back;
     q->back->next = c;
     q->back = c;
     return;

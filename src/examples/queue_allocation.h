@@ -1,23 +1,23 @@
-extern struct int_queue *mallocIntQueue();
+extern struct queue *mallocIntQueue();
 /*@ spec mallocIntQueue();
     requires true;
-    ensures take R = Block<struct int_queue>(return);
+    ensures take R = Block<struct queue>(return);
 @*/ 
 
-extern void freeIntQueue (struct int_queue *p);
+extern void freeIntQueue (struct queue *p);
 /*@ spec freeIntQueue(pointer p);
-    requires take P = Block<struct int_queue>(p);
+    requires take P = Block<struct queue>(p);
     ensures true;
 @*/
 
-extern struct int_queueCell *mallocIntQueueCell();
-/*@ spec mallocIntQueueCell();
+extern struct queue_cell *mallocIntqueue_cell();
+/*@ spec mallocIntqueue_cell();
     requires true;
-    ensures take R = Block<struct int_queueCell>(return);
+    ensures take R = Block<struct queue_cell>(return);
 @*/ 
 
-extern void freeIntQueueCell (struct int_queueCell *p);
-/*@ spec freeIntQueueCell(pointer p);
-    requires take P = Block<struct int_queueCell>(p);
+extern void freeIntqueue_cell (struct queue_cell *p);
+/*@ spec freeIntqueue_cell(pointer p);
+    requires take P = Block<struct queue_cell>(p);
     ensures true;
 @*/

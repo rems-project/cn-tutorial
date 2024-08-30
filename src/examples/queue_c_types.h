@@ -1,9 +1,9 @@
-struct int_queue {
-  struct int_queueCell* front;  
-  struct int_queueCell* back;
+struct queue {
+  struct queue_cell* front;  
+  struct queue_cell* back;
 };
 
-struct int_queueCell {
+struct queue_cell {
   int first;  
-  struct int_queueCell* next;
+  struct queue_cell* next;
 };

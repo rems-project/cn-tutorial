@@ -8,6 +8,13 @@
 :stylesheet: style.css
 By Christopher Pulte and Benjamin C. Pierce, with contributions from Elizabeth Austell
 
+////
+TODO: BCP: Some remaining tasks for this document:
+- establish a more sensible / consistent naming scheme for the example files
+- either make some more subdirectrories for the example files or else
+flatten the ones that are there now
+ ////
+
 [abstract]
 --
 CN is an extension of the C programming language for verifying the correctness of C code, especially on low-level systems code. Compared to standard C, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes _safely_ — does not raise C undefined behaviour — and _correctly_ — satisfying to strong, user-defined specifications. 
@@ -503,7 +510,7 @@ Hence, the postcondition `+return == P + Q+` holds also when the sum of `+P+` an
 
 // TODO: BCP: I wonder whether we should uniformly use i32 integers everywhere in the tutorial (just mentioning in the bullet list below that there are other integer types, and using i64 for calculations that may overflow).  Forgetting which integer type I was using was a common (and silly) failure mode when I was first working through the tutorial.
 // Dhruv: Sensible.
-// BCP: ... On second thought, maybe settling on u32 instead of i32 in most places is better (fewer things to prove).  Or maybe it doesn't matter much.  For the start of the tutorial, i32 is important because the examples are all about overflow.  But after that we could go either way.  
+// BCP: ... On second thought, maybe settling on u32 instead of i32 in most places is better (fewer things to prove).  Or maybe it doesn't matter much.  For the start of the tutorial, i32 is important because the examples are all about overflow.  But after that we could go either way.
 
 In the following we will sometimes use unsigned integer types to focus on specifying memory ownership, rather than the conditions necessary to show absence of C arithmetic undefined behaviour.
 
@@ -532,9 +539,9 @@ postcondition similarly asserts ownership of `+p+`, with output
 `+P_post+`, and asserts the coordinates have been swapped, by referring to
 the members of `+P+` and `+P_post+` individually.
 
-// TODO: BCP: This paragraph is quite confusing if read carefully: it seems to say that the "take" in the requires clause returns a different type than the "tajke" in the "ensures" clause.  Moreover, even if the reader decides that this cannot be the case and they have to return the same type, they may wonder whether thius type is a C type (which is what it looks like, since there is only one struct declaration, and it is not in a magic comment) or a CN type (which might be expected, since it is the result of a "take").  I *guess* what's going on here is that every C type is automatically reflected as a CN type with the same name.  But this story is also not 100% satisfying, since the basic numeric types don't work this way: each C numeric type has an *analog* in CN, but with a different name.  
+// TODO: BCP: This paragraph is quite confusing if read carefully: it seems to say that the "take" in the requires clause returns a different type than the "tajke" in the "ensures" clause.  Moreover, even if the reader decides that this cannot be the case and they have to return the same type, they may wonder whether thius type is a C type (which is what it looks like, since there is only one struct declaration, and it is not in a magic comment) or a CN type (which might be expected, since it is the result of a "take").  I *guess* what's going on here is that every C type is automatically reflected as a CN type with the same name.  But this story is also not 100% satisfying, since the basic numeric types don't work this way: each C numeric type has an *analog* in CN, but with a different name.
 ////
-// Dhruv: 
+// Dhruv:
 C supports strong updates in certain situations and so take _ = Owned<ct>(p) in the requires clause could very well have a different C type than take _ = Owned<ct2>(p) in the ensures clause.
 
 The reason Owned needs a C-type is so that it can (a) figure out the size of the sub-heap being claimed and (b) figure out how one may need to destructure the type (unions, struct fields and padding, arrays). The relationship is that for take x = Owned<ct>(expr), expr : pointer, x : to_basetype(ct).
@@ -696,7 +703,7 @@ each(i32 j; 0i32 <= j && j < n && j != i)
     { Owned<int>(array_shift<int>(p,j)) }
 ----
 
-After this extraction step, CN can use the (former) extracted resource to justify the access `+p[i]+`. Note that an `+extract+` statement's second argument can be any arithmetic expression, not just a single identifier like in this example. 
+After this extraction step, CN can use the (former) extracted resource to justify the access `+p[i]+`. Note that an `+extract+` statement's second argument can be any arithmetic expression, not just a single identifier like in this example.
 
 Following an `+extract+` statement, CN remembers the extracted index and can automatically "`reverse`" the extraction when needed: after type checking the access `+p[i]+` CN must ensure the function’s postcondition holds, which needs the full array ownership again (including the extracted index `+i+`); remembering the index `+i+`, CN then automatically merges resources (1) and (2) again to obtain the required full array ownership, and completes the verification of the function.
 
@@ -715,7 +722,7 @@ We can use this to refine our specification with information about the functiona
 
 include_example(exercises/array_load2.c)
 
-We specify that `+read+` does not change the array — the outputs of `+Owned+`, 
+We specify that `+read+` does not change the array — the outputs of `+Owned+`,
 `+A+` and `+A_post+`, taken before and after running the function, are
 the same — and that the value returned is `+A[i]+`.
 
@@ -877,9 +884,9 @@ include_example(exercises/slf_incr2_alias.c)
 
 This version does correctly state that the final values of `+p+` and `+q+` are,m respectively, `+3+` and `+1+` more than their original values.  But the way we got there -- by duplicating the whole function `+incr2+`, is horrible.
 
-// TODO: Sainati: I think it would be useful here to add an explanation for how CN's type checking works. 
-// For example, in the definition of BothOwned here, how is CN able to prove that `+take pv = Owned<unsigned int>(p);+` 
-// type checks, since all we know about `p` in the definition of the predicate is that it's a pointer? 
+// TODO: Sainati: I think it would be useful here to add an explanation for how CN's type checking works.
+// For example, in the definition of BothOwned here, how is CN able to prove that `+take pv = Owned<unsigned int>(p);+`
+// type checks, since all we know about `p` in the definition of the predicate is that it's a pointer?
 
 A better way is to define a *predicate* that captures both the aliased
 and the non-aliased cases together and use it in the pre- and
@@ -1018,7 +1025,7 @@ include_example(exercises/list_append.h)
 Here is a simple destructive `+append+` function.  Note the two uses
 of the `+unfold+` annotation in the body, which are needed to help the
 CN typechecker. The `+unfold+` annotation is an instruction to CN to replace a call to a recursive (CN) function (in this case `+append+`)
-with its definition, and is necessary because CN is unable to automatically determine when and where to expand recursive definitions on its own. 
+with its definition, and is necessary because CN is unable to automatically determine when and where to expand recursive definitions on its own.
 
 // TODO: BCP: Can someone add a more technical explanation of why they are needed and exactly what they do?
 
@@ -1071,7 +1078,7 @@ include_example(exercises/list_free.c)
 // bizarre error message saying that the constraint "n == (n + length(L1))"
 // is unsatisfiable...
 
-// TODO: Sainati: when I went through the tutorial, the file provided for this exercise was already "complete" in that 
+// TODO: Sainati: when I went through the tutorial, the file provided for this exercise was already "complete" in that
 // it already had all the necessary annotations present for CN to verify it
 
 include_example(exercises/slf_length_acc.c)
@@ -1201,7 +1208,7 @@ are the C type definitions:
 include_example(exercises/queue_c_types.h)
 
 A queue consists of a pair of pointers, one pointing to the front
-element, which is the first in a linked list of `+int_queueCell+`s,
+element, which is the first in a linked list of `+queue_cell+`s,
 the other pointing directly to the last cell in this list.  If the
 queue is empty, both pointers are NULL.
 
@@ -1214,7 +1221,7 @@ TODO: BCP: If we're going to call this IntQueuePtr (Dhruv's suggestion), then
 we have to rename other things above for consistency...
 ////
 
-Given a pointer to an `+int_queue+` struct, this predicate grabs
+Given a pointer to an `+queue+` struct, this predicate grabs
 ownership of the struct, asserts that the `+front+` and `+back+` pointers
 must either both be NULL or both be non-NULL, and then hands off to an
 auxiliary predicate `+IntQueueFB+`.  
@@ -1433,7 +1440,7 @@ telltale clues in the error report that suggest what the problem was?
 
 * Remove `+assert (is_null(B.next));+` from `+InqQueueFB+`.
 * Remove `+assert (is_null(B.next));+` from `+InqQueueAux+`.
-* Remove one or both of occurrences of `+freeIntQueueCell(f)+` in
+* Remove one or both of occurrences of `+freeIntqueue_cell(f)+` in
   `+IntQueue_pop+`.
 * Remove, in turn, each of the CN annotations in the bodies of
   `+IntQueue_pop+` and `+IntQueue_push+`.
@@ -1525,7 +1532,7 @@ And we compile all of these files into a single header file.
 
 include_example(exercises/Dbl_Linked_List/headers.h)
 
-Lastly, an important note about this representation of a doubly linked list is that there is no higher level representation of the list (such as the `int_queue` structure in the `Imperative Queues` section). This makes it difficult to reason about adding and removing things from a list that may be empty at some times. If we have an empty list, we do not want any identifier of this list to disappear altogether. To work around this problem, we represent an empty list as a null pointer and require that every function that manipulates the list must return a pointer to somewhere in the list. This way, we can always have a pointer to the list, even if it is empty.
+Lastly, an important note about this representation of a doubly linked list is that there is no higher level representation of the list (such as the `queue` structure in the `Imperative Queues` section). This makes it difficult to reason about adding and removing things from a list that may be empty at some times. If we have an empty list, we do not want any identifier of this list to disappear altogether. To work around this problem, we represent an empty list as a null pointer and require that every function that manipulates the list must return a pointer to somewhere in the list. This way, we can always have a pointer to the list, even if it is empty.
 
 // ======================================================================
 
