@@ -1,5 +1,5 @@
-#include "list.h"
-#include "list_append.h"
+#include "./headers.h"
+#include "./append.h"
 
 struct sllist* IntList_append(struct sllist* xs, struct sllist* ys)
 /*@ requires take L1 = SLList_At(xs);

@@ -1,4 +1,4 @@
-#include "list.h"
+#include "./headers.h"
 
 struct sllist* slcopy (struct sllist *l)
 /*@ requires take L = SLList_At(l);

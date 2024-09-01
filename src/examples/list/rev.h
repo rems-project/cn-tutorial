@@ -1,4 +1,4 @@
-#include "list_snoc.h"
+#include "./snoc.h"
 
 /*@
 function [rec] (datatype List) RevList(datatype List L) {

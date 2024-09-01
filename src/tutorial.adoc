@@ -969,7 +969,7 @@ with allocation and deallocation functions:
 
 // TODO: BCP: Here and in several other places, we should use the "take _ = ..." syntax when the owned value is not used.  And we should explain it the first time we use it.
 
-include_example(exercises/list_c_types.h)
+include_example(exercises/list/c_types.h)
 
 // TODO: BCP: Per discussion with Christopher, Cassia, and Daniel, the word "predicate" is quite confusing for newcomers (in logic, predicates do not return things!).  A more neutral word might make for significantly easier onboarding.
 // Dhruv: Or no keyword? rems-project/cerberus#304  How about traversal?
@@ -984,24 +984,24 @@ Intuitively, the `+SLList_At+` predicate walks over a singly-linked
 pointer structure in the C heap and extracts an `+Owned+` version of
 the CN-level list that it represents.
 
-include_example(exercises/list_cn_types.h)
+include_example(exercises/list/cn_types.h)
 
 We can also write *functions* on CN-level lists by ordinary functional
 programming (in a slightly strange, unholy-union-of-C-and-Rust
 syntax):
 
-include_example(exercises/list_hdtl.h)
+include_example(exercises/list/hdtl.h)
 
 We use the `+SLList_At+` predicate to specify functions returning the
 empty list and the cons of a number and a list.
 
-include_example(exercises/list_constructors.h)
+include_example(exercises/list/constructors.h)
 
 Finally, we can collect all this stuff into a single header file.  (We
 add the usual C `+#ifndef+` gorp to avoid complaints from the compiler
 if it happens to get included twice from the same source file later.)
 
-include_example(exercises/list.h)
+include_example(exercises/list/headers.h)
 
 ////
 TODO: BCP: The 'return != NULL' should not be needed, but to remove it
@@ -1017,7 +1017,7 @@ verifying list-manipulating functions.  First, `+append+`.
 Here is its specification (in a separate file, because we'll want to
 use it multiple times below.)
 
-include_example(exercises/list_append.h)
+include_example(exercises/list/append.h)
 
 Here is a simple destructive `+append+` function.  Note the two uses
 of the `+unfold+` annotation in the body, which are needed to help the
@@ -1026,14 +1026,14 @@ with its definition, and is necessary because CN is unable to automatically dete
 
 // TODO: BCP: Can someone add a more technical explanation of why they are needed and exactly what they do?
 
-include_example(exercises/append.c)
+include_example(exercises/list/append.c)
 
 === List copy
 
 Here is an allocating list copy function with a pleasantly light
 annotation burden.
 
-include_example(exercises/list_copy.c)
+include_example(exercises/list/copy.c)
 
 === Merge sort
 
@@ -1048,7 +1048,7 @@ two new lists of roughly equal lengths.
 
 // TODO: BCP: Nit: Merge multiple requires and ensures clauses into one
 
-include_example(exercises/mergesort.c)
+include_example(exercises/list/mergesort.c)
 
 === Exercises
 
@@ -1056,19 +1056,19 @@ include_example(exercises/mergesort.c)
 `+IntList_append2+`.  (You will need some in the body as well as at
 the top.)
 
-include_example(exercises/append2.c)
+include_example(exercises/list/append2.c)
 
 Note that it would not make sense to do the usual
 functional-programming trick of copying xs but sharing ys.  (Why?)
 
 *Length*.  Add annotations as appropriate:
 
-include_example(exercises/list_length.c)
+include_example(exercises/list/length.c)
 
 *List deallocation*.  Fill in the body of the following procedure and
 add annotations as appropriate:
 
-include_example(exercises/list_free.c)
+include_example(exercises/list/free.c)
 
 *Length with an accumulator*.  Add annotations as appropriate:
 // TODO: BCP: Removing / forgetting the unfold in this one gives a truly
@@ -1101,15 +1101,15 @@ think about capitalization, etc., for lemma names
 The specification of list reversal in CN relies on the familiar
 recursive list reverse function, with a recursive helper.
 
-include_example(exercises/list_snoc.h)
-include_example(exercises/list_rev.h)
+include_example(exercises/list/snoc.h)
+include_example(exercises/list/rev.h)
 
 To reason about the C implementation of list reverse, we need to help
 the SMT solver by enriching its knowledge base with a couple of facts
 about lists.  The proofs of these facts require induction, so in CN we
 simply state them as lemmas and defer the proofs to Coq.
 
-include_example(exercises/list_rev_lemmas.h)
+include_example(exercises/list/rev_lemmas.h)
 
 Having stated these lemmas, we can now complete the specification and
 proof of `+IntList_rev+`.  Note the two places where `+apply+` is used
@@ -1122,14 +1122,14 @@ general scope where a given set of lemmas might be needed, rather than
 specifying exactly where to use them.)
 ////
 
-include_example(exercises/list_rev.c)
+include_example(exercises/list/rev.c)
 
 For comparison, here is another way to write the program, using a
 while loop instead of recursion, with its specification and proof.
 
 // TODO: BCP: Why 0 instead of NULL??  (Is 0 better?)
 
-include_example(exercises/list_rev_alt.c)
+include_example(exercises/list/rev_alt.c)
 
 === Exercises
 

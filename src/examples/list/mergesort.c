@@ -1,4 +1,4 @@
-#include "list.h"
+#include "./headers.h"
 
 /*@
 function [rec] ({datatype List fst, datatype List snd}) 

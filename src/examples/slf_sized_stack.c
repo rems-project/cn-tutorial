@@ -1,5 +1,5 @@
-#include "list.h"
-#include "list_length.c"
+#include "list/headers.h"
+#include "list/length.c"
 
 struct sized_stack {
   unsigned int size;

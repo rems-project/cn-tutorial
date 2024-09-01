@@ -1,7 +1,7 @@
-#include "list.h"
-#include "list_append.h"
-#include "list_rev.h"
-#include "list_rev_lemmas.h"
+#include "./headers.h"
+#include "./append.h"
+#include "./rev.h"
+#include "./rev_lemmas.h"
 
 struct sllist* rev_aux(struct sllist* l1, struct sllist* l2)
 /*@ requires take L1 = SLList_At(l1); @*/
