@@ -1,11 +1,11 @@
 #include "./headers.h"
-#include "./node_and_int.h"
+#include "./dllist_and_int.h"
 
 // removes the given node from the list and returns another pointer 
 // to somewhere in the list, or a null pointer if the list is empty.
-struct node_and_int *remove(struct node *n)
+struct dllist_and_int *remove(struct dllist *n)
 {
-    struct node *temp = 0;
+    struct dllist *temp = 0;
     if (n->prev != 0) {
         n->prev->next = n->next;
         temp = n->prev;
@@ -15,10 +15,10 @@ struct node_and_int *remove(struct node *n)
         temp = n->next;
     }
 
-    struct node_and_int *pair = malloc__node_and_int();
-    pair->node = temp;
+    struct dllist_and_int *pair = malloc__dllist_and_int();
+    pair->dllist = temp;
     pair->data = n->data;
 
-    free__node(n);       
+    free__dllist(n);       
     return pair;
 }
