@@ -1482,7 +1482,7 @@ to both the next node and the previous node. This allows for O(1)
 operations for adding or removing nodes anywhere in the list. Here is
 the C type definition:
 
-include_example(exercises/Dbl_Linked_List/c_types.h)
+include_example(exercises/dll/c_types.h)
 
 The idea behind the representation of this list is that we don't keep
 track of the front or back, but rather we take any node in the list
@@ -1491,7 +1491,7 @@ and `right` are from the point of view of the node itself, so `left`
 is kept in reverse order. Additionally, similarly to in the
 `Imperative Queues` example, we can reuse the `+List+` type.
 
-include_example(exercises/Dbl_Linked_List/cn_types.h)
+include_example(exercises/dll/cn_types.h)
 
 The predicate for this datatype is a bit complicated. The idea is that
 we first want to own the node that is passed in. Then, we want to
@@ -1500,7 +1500,7 @@ node. We want to do the same for the `next` pointers to own everything
 forwards from the node. This is how we construct our `left` and `right`
 fields.
 
-include_example(exercises/Dbl_Linked_List/predicates.h)
+include_example(exercises/dll/predicates.h)
 
 Note that `Dll_at` takes ownership of the node passed in, and then
 calls `Own_Backwards` and `Own_Forwards` which recursively take
@@ -1526,16 +1526,16 @@ list, we need to define a few "getter" functions that will allow us
 to access the fields of our `Dll` datatype. This will make our
 specifications much easier to write.
 
-include_example(exercises/Dbl_Linked_List/getters.h)
+include_example(exercises/dll/getters.h)
 
 We also must include some boilerplate code for allocation and
 deallocation.
 
-include_example(exercises/Dbl_Linked_List/malloc_free.h)
+include_example(exercises/dll/malloc_free.h)
 
 And we compile all of these files into a single header file.
 
-include_example(exercises/Dbl_Linked_List/headers.h)
+include_example(exercises/dll/headers.h)
 
 Lastly, an important note about this representation of a doubly linked list is that there is no higher level representation of the list (such as the `queue` structure in the `Imperative Queues` section). This makes it difficult to reason about adding and removing things from a list that may be empty at some times. If we have an empty list, we do not want any identifier of this list to disappear altogether. To work around this problem, we represent an empty list as a null pointer and require that every function that manipulates the list must return a pointer to somewhere in the list. This way, we can always have a pointer to the list, even if it is empty.
 
@@ -1544,20 +1544,20 @@ Lastly, an important note about this representation of a doubly linked list is t
 Now we can move on to an initialization function. Since an empty list is represented as a null pointer, we will look at initializing
 a singleton list (or in other words, a list with only one item).
 
-include_example(exercises/Dbl_Linked_List/singleton.c)
+include_example(exercises/dll/singleton.c)
 
 // ======================================================================
 
 The `add` and `remove` functions are where it gets a little tricker.
 Let's start with `add`. Here is the unannotated version:
 
-include_example(exercises/Dbl_Linked_List/add_orig.broken.c)
+include_example(exercises/dll/add_orig.broken.c)
 
 *Exercise*: Before reading on, see if you can figure out what specifications are needed.
 
 Now, here is the annotated version of the `add` operation:
 
-include_example(exercises/Dbl_Linked_List/add.c)
+include_example(exercises/dll/add.c)
 
 First, let's look at the pre and post conditions. The `requires`
 clause is straightforward. We need to own the list centered around
@@ -1581,17 +1581,17 @@ have to go one more node forward to make sure that everything past `n->next` is 
 
 Now let's look at the `remove` operation. Traditionally, a `remove` operation for a list returns the integer that was removed. However we also want all of our functions to return a pointer to the list. Because of this, we define a `+struct+` that includes an `int` and a `node`. 
 
-include_example(exercises/Dbl_Linked_List/node_and_int.h)
+include_example(exercises/dll/dllist_and_int.h)
 
 Now we can look at the code for the `remove` operation. Here is the un-annotated version:
 
-include_example(exercises/Dbl_Linked_List/remove_orig.broken.c)
+include_example(exercises/dll/remove_orig.broken.c)
 
 *Exercise*: Before reading on, see if you can figure out what specifications are needed.
 
 Now, here is the fully annotated version of the `remove` operation:
 
-include_example(exercises/Dbl_Linked_List/remove.c)
+include_example(exercises/dll/remove.c)
 
 First, let's look at the pre and post conditions. The `requires` clause says that we cannot remove a node from an empty list, so the pointer passed in must not be null. Then we take ownership of the list, and we
 assign the node of that list to the identifier `del`
