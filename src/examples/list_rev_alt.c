@@ -4,8 +4,8 @@
 #include "list_rev_lemmas.h"
 
 struct sllist* rev_loop(struct sllist *l)
-/*@ requires take L = SLList(l);
-    ensures  take L_post = SLList(return);
+/*@ requires take L = SLList_At(l);
+    ensures  take L_post = SLList_At(return);
              L_post == RevList(L);
 @*/
 {
@@ -13,8 +13,8 @@ struct sllist* rev_loop(struct sllist *l)
   struct sllist *cur = l;
   /*@ apply Append_Nil_RList(RevList(L)); @*/
   while(1)
-  /*@ inv take Last = SLList(last);
-          take Cur = SLList(cur);
+  /*@ inv take Last = SLList_At(last);
+          take Cur = SLList_At(cur);
           Append(RevList(Cur), Last) == RevList(L);
   @*/
   {

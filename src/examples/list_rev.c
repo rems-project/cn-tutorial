@@ -4,9 +4,9 @@
 #include "list_rev_lemmas.h"
 
 struct sllist* rev_aux(struct sllist* l1, struct sllist* l2)
-/*@ requires take L1 = SLList(l1); @*/
-/*@ requires take L2 = SLList(l2); @*/
-/*@ ensures take R = SLList(return); @*/
+/*@ requires take L1 = SLList_At(l1); @*/
+/*@ requires take L2 = SLList_At(l2); @*/
+/*@ ensures take R = SLList_At(return); @*/
 /*@ ensures R == Append(RevList(L2), L1); @*/
 {
   if (l2 == 0) {
@@ -23,8 +23,8 @@ struct sllist* rev_aux(struct sllist* l1, struct sllist* l2)
 }
 
 struct sllist* rev(struct sllist* l1)
-/*@ requires take L1 = SLList(l1); @*/
-/*@ ensures take L1_Rev = SLList(return); @*/
+/*@ requires take L1 = SLList_At(l1); @*/
+/*@ ensures take L1_Rev = SLList_At(return); @*/
 /*@ ensures L1_Rev == RevList(L1); @*/
 {
   /*@ apply Append_Nil_RList(RevList(L1)); @*/

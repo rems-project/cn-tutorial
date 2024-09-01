@@ -1,9 +1,9 @@
 #include "list.h"
 
 struct sllist* slcopy (struct sllist *l)
-/*@ requires take L = SLList(l);
-    ensures take L_ = SLList(l);
-            take Ret = SLList(return);
+/*@ requires take L = SLList_At(l);
+    ensures take L_ = SLList_At(l);
+            take Ret = SLList_At(return);
             L == L_;
             L == Ret;
 @*/

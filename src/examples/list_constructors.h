@@ -1,5 +1,5 @@
 struct sllist* slnil()
-/*@ ensures take Ret = SLList(return);
+/*@ ensures take Ret = SLList_At(return);
             Ret == Nil{};
  @*/
 {
@@ -7,8 +7,8 @@ struct sllist* slnil()
 }
 
 struct sllist* slcons(int h, struct sllist* t)
-/*@ requires take T = SLList(t);
-    ensures take Ret = SLList(return);
+/*@ requires take T = SLList_At(t);
+    ensures take Ret = SLList_At(return);
             Ret == Cons{ Head: h, Tail: T};
  @*/
 {

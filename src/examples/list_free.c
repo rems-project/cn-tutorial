@@ -3,7 +3,7 @@
 void free__rec_sllist(struct sllist* l)
 // You fill in the rest...
 /* --BEGIN-- */
-/*@ requires take L = SLList(l); @*/
+/*@ requires take L = SLList_At(l); @*/
 {
   if (l == 0) {
   } else {

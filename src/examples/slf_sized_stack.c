@@ -9,9 +9,9 @@ struct sized_stack {
 /*@
 type_synonym SizedStack = {u32 Size, datatype List Data}
 
-predicate (SizedStack) SizedStack (pointer p) {
+predicate (SizedStack) SizedStack_At (pointer p) {
     take P = Owned<struct sized_stack>(p);
-    take D = SLList(P.data);
+    take D = SLList_At(P.data);
     assert(P.size == Length(D));
     return { Size: P.size, Data: D };
 }
@@ -32,7 +32,7 @@ spec free__sized_stack(pointer s);
 @*/
 
 struct sized_stack* create()
-/*@ ensures take R = SizedStack(return);
+/*@ ensures take R = SizedStack_At(return);
             R.Size == 0u32;
 @*/
 {
@@ -46,8 +46,8 @@ struct sized_stack* create()
 unsigned int sizeOf (struct sized_stack *s)
 /* FILL IN HERE */
 /* ---BEGIN--- */
-/*@ requires take S = SizedStack(s);
-    ensures take S_post = SizedStack(s);
+/*@ requires take S = SizedStack_At(s);
+    ensures take S_post = SizedStack_At(s);
             S_post == S;
             return == S.Size;
 @*/
@@ -59,8 +59,8 @@ unsigned int sizeOf (struct sized_stack *s)
 void push (struct sized_stack *s, int x)
 /* FILL IN HERE */
 /* ---BEGIN--- */
-/*@ requires take S = SizedStack(s);
-    ensures take S_post = SizedStack(s);
+/*@ requires take S = SizedStack_At(s);
+    ensures take S_post = SizedStack_At(s);
             S_post.Data == Cons {Head:x, Tail:S.Data};
 @*/
 /* ---END--- */
@@ -76,9 +76,9 @@ void push (struct sized_stack *s, int x)
 int pop (struct sized_stack *s)
 /* FILL IN HERE */
 /* ---BEGIN--- */
-/*@ requires take S = SizedStack(s);
+/*@ requires take S = SizedStack_At(s);
              S.Size > 0u32;
-    ensures  take S_post = SizedStack(s);
+    ensures  take S_post = SizedStack_At(s);
              S_post.Data == Tl(S.Data);
              return == Hd(S.Data);
 @*/
@@ -104,9 +104,9 @@ int pop (struct sized_stack *s)
 }
 
 int top (struct sized_stack *s)
-/*@ requires take S = SizedStack(s);
+/*@ requires take S = SizedStack_At(s);
              S.Size > 0u32;
-    ensures  take S_post = SizedStack(s);
+    ensures  take S_post = SizedStack_At(s);
              S_post == S;
              return == Hd(S.Data);
 @*/

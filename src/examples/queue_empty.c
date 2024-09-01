@@ -2,7 +2,7 @@
 
 struct queue* queue_empty ()
 /* --BEGIN-- */
-/*@ ensures take ret = QueuePtr(return);
+/*@ ensures take ret = QueuePtr_At(return);
             ret == Nil{};
 @*/
 /* --END-- */

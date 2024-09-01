@@ -27,8 +27,8 @@ void push_induction(struct queue_cell* front
 }
 
 void queue_push (int x, struct queue *q)
-/*@ requires take before = QueuePtr(q);
-    ensures take after = QueuePtr(q);
+/*@ requires take before = QueuePtr_At(q);
+    ensures take after = QueuePtr_At(q);
             after == Snoc (before, x);
 @*/
 {

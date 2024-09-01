@@ -2,8 +2,8 @@
 #include "queue_push_lemma.h" 
 
 void queue_push (int x, struct queue *q)
-/*@ requires take Q = QueuePtr(q);
-    ensures take Q_post = QueuePtr(q);
+/*@ requires take Q = QueuePtr_At(q);
+    ensures take Q_post = QueuePtr_At(q);
             Q_post == Snoc (Q, x);
 @*/
 {

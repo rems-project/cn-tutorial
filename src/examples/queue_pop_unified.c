@@ -51,9 +51,9 @@ ensures
 }
 
 int queue_pop (struct queue *q)
-/*@ requires take before = QueuePtr(q);
+/*@ requires take before = QueuePtr_At(q);
              before != Nil{};
-    ensures take after = QueuePtr(q);
+    ensures take after = QueuePtr_At(q);
             after == Tl(before);
             return == Hd(before);
 @*/

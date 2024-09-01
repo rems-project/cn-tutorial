@@ -980,7 +980,7 @@ to define a CN "predicate" that describes specification-level list
 structures, as one would do in ML, Haskell, or Coq.  We use the
 datatype `+List+` for CN-level lists.
 
-Intuitively, the `+SLList+` predicate walks over a singly-linked
+Intuitively, the `+SLList_At+` predicate walks over a singly-linked
 pointer structure in the C heap and extracts an `+Owned+` version of
 the CN-level list that it represents.
 
@@ -992,7 +992,7 @@ syntax):
 
 include_example(exercises/list_hdtl.h)
 
-We use the `+SLList+` predicate to specify functions returning the
+We use the `+SLList_At+` predicate to specify functions returning the
 empty list and the cons of a number and a list.
 
 include_example(exercises/list_constructors.h)
@@ -1129,8 +1129,6 @@ include_example(exercises/list_rev_alt.c)
 
 // TODO: BCP: type_synonym has not been introduced yet
 
-// TODO: Mention the pun here: SizedStack is both a predicate and the type that that predicate returns.  There's no ambiguity because the latter takes no argument.
-
 include_example(exercises/slf_sized_stack.c)
 
 // ======================================================================
@@ -1215,16 +1213,11 @@ Abstractly, a queue just represents a list, so we can reuse the `+List+`
 type from the list examples earlier in the tutorial.
 
 include_example(exercises/queue_cn_types_1.h)
-////
-TODO: BCP: If we're going to call this QueuePtr (Dhruv's suggestion), then
-we have to rename other things above for consistency...
-TODO: BCP: I am starting to think queue_At is actually the best, for various reasons.  Here, I'm realizing that, if we call it just Queue_At, there will be an unfortunate inconsistency with some other places where an abstract CN structure and the predicate that extracts such a structure from the heap have the same name.  Here, the predicate would be Queue_At but the returned type would be List, not Queue_At...  This seems like another argument for Queue_At.
-////
 
 Given a pointer to a `+queue+` struct, this predicate grabs ownership
 of the struct, asserts that the `+front+` and `+back+` pointers must
 either both be NULL or both be non-NULL, and then hands off to an
-auxiliary predicate `+QueueFB+`.  Note that `+QueuePtr+` returns a
+auxiliary predicate `+QueueFB+`.  Note that `+QueuePtr_At+` returns a
 `+List+` -- that is, the abstract view of a queue heap structure is
 simply the sequence of elements that it contains.  The difference
 between a queue and a singly or doubly linked list is simply one of
@@ -1386,7 +1379,7 @@ There are three annotations to explain.  Let's consider them in order.
 
 First, the `+split_case+` on `+is_null(q->front)+` is needed to tell
 CN which of the branches of the `+if+` at the beginning of the
-`+QueueFB+` predicate it can "unpack".  (`+QueuePtr+` can be
+`+QueueFB+` predicate it can "unpack".  (`+QueuePtr_At+` can be
 unpacked immediately because it is unconditional, but `+QueueFB+`
 cannot.)
 // TODO: BCP: the word "unpack" is mysterious here.
@@ -1507,6 +1500,7 @@ we first own the node that is passed in. Then we follow all of the
 all the `next` pointers to own everything forwards from the node, to
 construct the `left` and `right` fields.
 
+// TODO: BCP: Maybe rethink the Own_Forwards / Backwards naming -- would something like Queue_At_Left and Queue_At_Right be clearer??
 include_example(exercises/dll/predicates.h)
 
 Note that `Dll_at` takes ownership of the node passed in, and then
@@ -1809,7 +1803,7 @@ Misc things to do:
   - naming issues
         - rename == to ptr_eq everywhere in specs
         - rename list to List in filenames.  or go more radical and rename List to cnlist
-        - consider renaming SLList to just List (and sllist to just list,
+        - consider renaming SLList_At to just List (and sllist to just list,
           etc.) everywhere (since we are only dealing with one kind of list
           in the tutorial, the extra pedantry is not getting us much; and
           this simplification would avoid trying to fix conventions that all

@@ -2,9 +2,9 @@
 #include "queue_pop_lemma.h"
 
 int queue_pop (struct queue *q)
-/*@ requires take Q = QueuePtr(q);
+/*@ requires take Q = QueuePtr_At(q);
              Q != Nil{};
-    ensures take Q_post = QueuePtr(q);
+    ensures take Q_post = QueuePtr_At(q);
             Q_post == Tl(Q);
             return == Hd(Q);
 @*/
