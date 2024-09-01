@@ -1,23 +1,23 @@
 /*@
-predicate { u32 pv, u32 qv } BothOwned (pointer p, pointer q)
+predicate { u32 P, u32 Q } BothOwned (pointer p, pointer q)
 {
   if (ptr_eq(p,q)) {
-    take pv = Owned<unsigned int>(p);
-    return {pv: pv, qv: pv};
+    take PX = Owned<unsigned int>(p);
+    return {P: PX, Q: PX};
   }
   else {
-    take pv = Owned<unsigned int>(p);
-    take qv = Owned<unsigned int>(q);
-    return {pv: pv, qv: qv};
+    take PX = Owned<unsigned int>(p);
+    take QX = Owned<unsigned int>(q);
+    return {P: PX, Q: QX};
   }
 }
 @*/
 
 void incr2 (unsigned int *p, unsigned int *q)
-/*@ requires take vs = BothOwned(p,q);
-    ensures take vs_ = BothOwned(p,q);
-            vs_.pv == (!ptr_eq(p,q) ? (vs.pv + 1u32) : (vs.pv + 2u32));
-            vs_.qv == (!ptr_eq(p,q) ? (vs.qv + 1u32) : vs_.pv);
+/*@ requires take PQ = BothOwned(p,q);
+    ensures take PQ_post = BothOwned(p,q);
+            PQ_post.P == (!ptr_eq(p,q) ? (PQ.P + 1u32) : (PQ.P + 2u32));
+            PQ_post.Q == (!ptr_eq(p,q) ? (PQ.Q + 1u32) : PQ_post.P);
 @*/
 {
   /*@ split_case ptr_eq(p,q); @*/
@@ -30,13 +30,13 @@ void incr2 (unsigned int *p, unsigned int *q)
 }
 
 void call_both_better (unsigned int *p, unsigned int *q)
-/*@ requires take pv = Owned<unsigned int>(p);
-             take qv = Owned<unsigned int>(q);
+/*@ requires take P = Owned<unsigned int>(p);
+             take Q = Owned<unsigned int>(q);
              !ptr_eq(p,q);
-    ensures take pv_ = Owned<unsigned int>(p);
-            take qv_ = Owned<unsigned int>(q);
-            pv_ == pv + 3u32;
-            qv_ == qv + 1u32;
+    ensures take P_post = Owned<unsigned int>(p);
+            take Q_post = Owned<unsigned int>(q);
+            P_post == P + 3u32;
+            Q_post == Q + 1u32;
 @*/
 {
   incr2(p, q);

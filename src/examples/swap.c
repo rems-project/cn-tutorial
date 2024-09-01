@@ -1,10 +1,10 @@
 void swap (unsigned int *p, unsigned int *q)
 /* --BEGIN-- */
-/*@ requires take v = Owned<unsigned int>(p);
-             take w = Owned<unsigned int>(q);
-    ensures  take v2 = Owned<unsigned int>(p);
-             take w2 = Owned<unsigned int>(q);
-             v2 == w && w2 == v;
+/*@ requires take P = Owned<unsigned int>(p);
+             take Q = Owned<unsigned int>(q);
+    ensures  take P_post = Owned<unsigned int>(p);
+             take Q_post = Owned<unsigned int>(q);
+             P_post == Q && Q_post == P;
 @*/
 /* --END-- */
 {

@@ -10,11 +10,13 @@ By Christopher Pulte and Benjamin C. Pierce, with contributions from Elizabeth A
 
 [abstract]
 --
-CN is a type system for verifying C code, focusing especially on low-level systems code. Compared to the normal C type system, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes _safely_ — does not raise C undefined behaviour — and _correctly_ — according to strong user-defined specifications. 
-// 
-This tutorial introduces CN along a series of examples, starting with basic usage of CN on simple arithmetic functions and slowly moving towards more elaborate separation logic specifications of data structures. 
+CN is an extension of the C programming language for verifying the correctness of C code, especially on low-level systems code. Compared to standard C, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes _safely_ — does not raise C undefined behaviour — and _correctly_ — satisfying to strong, user-defined specifications.
+This tutorial introduces CN through a series of examples, starting with basic usage of CN on simple arithmetic functions and slowly moving towards more elaborate separation logic specifications of data structures.
 
-CN was first described in https://dl.acm.org/doi/10.1145/3571194[CN: Verifying Systems C Code with Separation-Logic Refinement Types] by Christopher Pulte, Dhruv C. Makwana, Thomas Sewell, Kayvan Memarian, Peter Sewell, Neel Krishnaswami.
+This tutorial is a work in progress -- your suggestions are greatly appreciated!
+
+**Origins.**
+CN was first described in https://dl.acm.org/doi/10.1145/3571194[CN: Verifying Systems C Code with Separation-Logic Refinement Types] by Christopher Pulte, Dhruv C. Makwana, Thomas Sewell, Kayvan Memarian, Peter Sewell, and Neel Krishnaswami.
 //
 To accurately handle the complex semantics of C, CN builds on the https://github.com/rems-project/cerberus/[Cerberus semantics for C].
 //
@@ -23,55 +25,46 @@ https://softwarefoundations.cis.upenn.edu[Separation Logic
 Foundations] textbook, and one of the case studies is based on an
 extended exercise due to Bryan Parno.
 
-This tutorial is a work in progress -- your suggestions are greatly appreciated!
-
-**Acknowledgment of Support and Disclaimer.**
-This material is based upon work supported by the Air Force Research Laboratory (AFRL) and Defense Advanced Research Projects Agencies (DARPA) under Contract No. FA8750-24-C-B044, a European Research Council (ERC) Advanced Grant “ELVER” under the European Union’s Horizon 2020 research and innovation programme (grant agreement no. 789108), and additional funding from Google.  The opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the Air Force Research Laboratory (AFRL).
-
 --
 
 == Installing CN
 
-To fetch and install CN, check the Cerberus repository at https://github.com/rems-project/cerberus and follow the instructions in https://github.com/rems-project/cerberus/blob/master/backend/cn/README.md[backend/cn/README.md].
+To fetch and install CN, visit the Cerberus repository at https://github.com/rems-project/cerberus and follow the instructions in https://github.com/rems-project/cerberus/blob/master/backend/cn/README.md[backend/cn/README.md].
 
-Once completed, type `+cn --help+` in your terminal to ensure CN is installed and found by your system. This should print the list of available options CN can be executed with.
+Once the installation is completed, type `+cn --help+` in your terminal to ensure CN is installed and found by your system. This should print the list of available options CN can be executed with.
 
-To apply CN to a C file, run `+cn CFILE+`.
+To apply CN to a C file, run `+cn verify CFILE+`.
 
-== Source files for the exercises and examples
+== Source files
 
-The source files can be downloaded from link:exercises.zip[here].
+The source files for all the exercises and examples below can be downloaded
+from link:exercises.zip[here].
 
-== Basic usage
+== Basics
 
 === First example
 
-For a first example, let’s look at a simple arithmetic function: `+add+`, shown below, takes two `+int+` arguments, `+x+` and `+y+`, and returns their sum.
+The simple arithmetic function: `+add+` shown below takes two `+int+` arguments, `+x+` and `+y+`, and returns their sum.
 
-// TODO: BCP: We should probably adopt the convention that all the files in
-// the exercises directory have a comment at the top giving their name.
-// (We could actually auto-generate those header comments when we process
-// /src/examples into build/exercises, to avoid having to maintain them
-// and possibly get them wrong...)
 include_example(exercises/add_0.c)
 
 Running CN on the example produces an error message:
 
 ....
-cn exercises/add_0.c
+cn verify exercises/add_0.c
 [1/1]: add
 exercises/add_0.c:3:10: error: Undefined behaviour
   return x+y;
          ~^~
 an exceptional condition occurs during the evaluation of an expression (§6.5#5)
-Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_393431.html
+Consider the state in /var/folders/_v/ndl32rvc8ph0000gn/T/state_393431.html
 ....
 
-CN rejects the program because it has _C undefined behaviour_, meaning it is not safe to execute. CN points to the relevant source location, the addition `+x+y+`, and paragraph §6.5#5 of the C language standard that specifies the undefined behaviour. It also puts a link to an HTML file with more details on the error to help in diagnosing the problem.
+CN rejects the program because it has _undefined behaviour_ according to the C standard, meaning it is not safe to execute. CN points to the relevant source location, the addition `+x+y+`, and paragraph §6.5#5 of the standard, which specifies the undefined behaviour. It also includes a link to an HTML file with more details on the error to help in diagnosing the problem.
 
 Inspecting this HTML report (as we do in a moment) gives us possible example values for `+x+` and `+y+` that cause the undefined behaviour and hint at the problem: for very large values for `+x+` and `+y+`, such as `+1073741825+` and `+1073741824+`, the sum of `+x+` and `+y+` can exceed the representable range of a C `+int+` value: `+1073741825 + 1073741824 = 2^31+1+`, so their sum is larger than the maximal `+int+` value, `+2^31-1+`.
 
-Here `+x+` and `+y+` are _signed integers_, and in C, signed integer _overflow_ is undefined behaviour (UB). Hence, `+add+` is only safe to execute for smaller values. Similarly, _large negative_ values of `+x+` and `+y+` can cause signed integer _underflow_, also UB in C. We therefore need to rule out too large values for `+x+` and `+y+`, both positive and negative, which we do by writing a CN function specification.
+Here `+x+` and `+y+` are _signed integers_, and in C, signed integer _overflow_ is undefined behaviour (UB). Hence, `+add+` is only safe to execute for smaller values. Similarly, _large negative_ values of `+x+` and `+y+` can cause signed integer _underflow_, also UB in C. We therefore need to rule out too-large values for `+x+` and `+y+`, both positive and negative, which we do by writing a CN function specification.
 
 === First function specification
 
@@ -89,22 +82,28 @@ In detail:
 
 * In function specifications, the names of the function arguments, here `+x+` and `+y+`, refer to their _initial values_. (Function arguments are mutable in C.)
 
-* `+let sum = (i64) x + (i64) y+` is a let-binding, which defines `+sum+` as the value `+(i64) x + (i64) y+` in the remainder of the function specification.
+* `+let Sum = (i64) x + (i64) y+` is a let-binding, which defines `+Sum+` as the value `+(i64) x + (i64) y+` in the remainder of the function specification.
 
-* Instead of C syntax, CN uses Rust-like syntax for integer types, such as `+u32+` for 32-bit unsigned integers and `+i64+` for signed 64-bit integers to make their sizes unambiguous. Here, `+x+` and `+y+`, of C-type `+int+`, have CN type `+i32+`.
+* Instead of C syntax, CN uses Rust-like syntax for integer types, such as `+u32+` for 32-bit unsigned integers and `+i64+` for signed 64-bit integers, to make their sizes unambiguous. Here, `+x+` and `+y+`, of C-type `+int+`, have CN type `+i32+`.
 // TODO: BCP: I understand this reasoning, but I wonder whether it introduces more confusion than it avoids -- it means there are two ways of writing everything, and people have to remember whether the particular thing they are writing right now is C or CN...
+// BCP: Hopefully we are moving toward unifying these notations anyway?
 
-* To define `+sum+` we cast `+x+` and `+y+` to the larger `+i64+` type, using syntax `+(i64)+`, which is large enough to hold the sum of any two `+i32+` values.
+* To define `+Sum+` we cast `+x+` and `+y+` to the larger `+i64+` type, using syntax `+(i64)+`, which is large enough to hold the sum of any two `+i32+` values.
 
-* Finally, we require this sum to be in-between the minimal and maximal `+int+` value. Integer constants, such as `+-2147483648i64+`, must specifiy their CN type (`+i64+`).
+* Finally, we require this sum to be between the minimal and maximal `+int+` values. Integer constants, such as `+-2147483648i64+`, must specifiy their CN type (`+i64+`).
+// TODO: BCP: We should use the new ' syntax (or whatever it turned out to be) for numeric constants
+// Dhruv: Yet to be implemented: rems-project/cerberus#337
 
-Running CN on the annotated program passes without errors. This means with our specified precondition, `+add+` is safe to execute.
+Running CN on the annotated program passes without errors. This means that, with our specified precondition, `+add+` is safe to execute.
 
-We may, however, wish to be more precise. So far the specification gives no information to callers of `+add+` about its output. To also specify the return values we add a postcondition, using the `+ensures+` keyword.
+We may, however, wish to be more precise. So far, the specification gives no information to callers of `+add+` about its output. To describe its return value we add a postcondition to the specification using the `+ensures+` keyword.
 
 include_example(solutions/add_1.c)
 
-Here we use the keyword `+return+`, only available in function postconditions, to refer to the return value, and equate it to `+sum+` as defined in the preconditions, cast back to `+i32+` type: `+add+` returns the sum of `+x+` and `+y+`.
+Here we use the keyword `+return+`, which is only available in function
+postconditions, to refer to the return value, and we equate it to `+Sum+`
+as defined in the precondition, cast back to `+i32+` type: that is, `+add+`
+returns the sum of `+x+` and `+y+`.
 
 Running CN confirms that this postcondition also holds.
 
@@ -112,50 +111,103 @@ One final refinement of this example.  CN defines constant functions `MINi32`, `
 
 include_example(solutions/add_2.c)
 
-Two things to note:
-   * These are constant _functions_, so they require a following `()`.
-   * The type of `MINi32()` is `i32`, so if we want to use it as a 64-bit constant
-     we need to add the explicit coercion `(i64)`.
+Two things to note: (1) These are constant _functions_, so they
+require a following `()`.  And (2) The type of `MINi32()` is `i32`, so
+if we want to use it as a 64-bit constant we need to add the explicit
+coercion `(i64)`.
 
 === Error reports
 
-In the original example CN reported a type error due to C undefined behaviour. While that example was perhaps simple enough to guess the problem and solution, this can become quite challenging as program and specification complexity increases. Diagnosing type errors is therefore an important part of using CN. CN tries to help with that by producing detailed error information, in the form of an HTML error report.
+In the original example, CN reported a type error due to C undefined
+behaviour. While that example was perhaps simple enough to guess the
+problem and solution, this can become quite challenging as program and
+specification complexity increases. Diagnosing errors is
+therefore an important part of using CN. CN tries to help with this by
+producing detailed error information, in the form of an HTML error
+report.
 
-Let’s return to the type error from earlier (`+add+` without precondition) and take a closer look at this report. The report comprises two sections.
+Let’s return to the type error from earlier -- `+add+` without
+precondition -- and take a closer look at this report. It
+comprises two sections:
 
-// TODO: BCP: It looks different now!
+// TODO: BCP: It looks quite different now!
 .*CN error report*
 image::images/0.error.png[*CN error report*]
 
-*Path.* The first section, "`Path to error`", contains information about the control-flow path leading to the error.
+*Path to error.* The first section contains information about the
+control-flow path leading to the error.
 
-When type checking a C function, CN checks each possible control-flow path through the program individually. If CN detects UB or a violation of user-defined specifications, CN reports the problematic control-flow path, as a nested structure of statements: paths are split into sections, which group together statements between high-level control-flow positions (e.g. function entry, the start of a loop, the invocation of a `+continue+`, `+break+`, or `+return+` statement, etc.); within each section, statements are listed by source code location; finally, per statement, CN lists the typechecked sub-expressions, and the memory accesses and function calls within these.
+When checking a C function, CN examines each possible control-flow
+path individually. If it detects UB or a violation of user-defined
+specifications, CN reports the problematic control-flow path as a
+nested structure of statements: the path is split into sections that
+group together statements between high-level control-flow positions
+(e.g. function entry, the start of a loop, the invocation of a
+`+continue+`, `+break+`, or `+return+` statement, etc.); within each
+section, statements are listed by source code location; finally, per
+statement, CN lists the typechecked sub-expressions, and the memory
+accesses and function calls within these.
 
-In our example, there is only one possible control-flow path: entering the function body (section "`function body`") and executing the block from lines 2 to 4, followed by the return statement at line 3. The entry for the latter contains the sequence of sub-expressions in the return statement, including reads of the variables `+x+` and `+y+`.
+In our example, there is only one possible control-flow path: entering
+the function body (section "`function body`") and executing the block
+from lines 2 to 4, followed by the return statement at line 3. The
+entry for the latter contains the sequence of sub-expressions in the
+return statement, including reads of the variables `+x+` and `+y+`.
 
-In C, local variables in a function, including its arguments, are mutable and their address can be taken and passed as a value. CN therefore represents local variables as memory allocations that are manipulated using memory reads and writes. Here, type checking the return statement includes checking memory reads for `+x+` and `+y+`, at their locations `+&ARG0+` and `+&ARG1+`. The path report lists these reads and their return values: the read at `+&ARG0+` returns `+x+` (that is, the value of `+x+` originally passed to `+add+`); the read at `+&ARG1+` returns `+y+`. Alongside this symbolic information, CN displays concrete values:
+In C, local variables in a function, including its arguments, are
+mutable,  their addresses can be taken and passed as values. CN
+therefore represents local variables as memory allocations that are
+manipulated using memory reads and writes. Here, type checking the
+return statement includes checking memory reads for `+x+` and `+y+`,
+at their locations `+&ARG0+` and `+&ARG1+`. The path report lists
+these reads and their return values: the read at `+&ARG0+` returns
+`+x+` (that is, the value of `+x+` originally passed to `+add+`); the
+read at `+&ARG1+` returns `+y+`. Alongside this symbolic information,
+CN displays concrete values:
 
 * `+1073741825i32 /* 0x40000001 */+` for x (the first value is the decimal representation, the second, in `+/*...*/+` comments, the hex equivalent) and
 
 * `+1073741824i32 /* 0x40000000 */+` for `+y+`.
 
 For now, ignore the pointer values `+{@0; 4}+` for `+x+` and `+{@0; 0}+` for `+y+`.
+// TODO: BCP: Where are these things discussed?  Anywhere?  (When) are they useful?
+// Dhruv:  These are part of VIP memory model things I'm working on, which will hopefully be implemented and enabled in the next few weeks.
 
-These concrete values are part of a _counterexample_: a concrete valuation of variables and pointers in the program that that leads to the error. (The exact values may vary on your machine, depending on the version of Z3 installed on your system.)
+These concrete values are part of a _counterexample_: a concrete
+valuation of variables and pointers in the program that that leads to
+the error. (The exact values may vary on your machine, depending on
+the SMT solver -- i.e., the particular version of Z3, CVC5, or
+whatever installed on your system.)
 
 *Proof context.* The second section, below the error trace, lists the proof context CN has reached along this control-flow path.
 
 "`Available resources`" lists the owned resources, as discussed in later sections.
 
 "`Variables`" lists counterexample values for program variables and pointers. In addition to `+x+` and `+y+`, assigned the same values as above, this includes values for their memory locations `+&ARG0+` and `+&ARG1+`, function pointers in scope, and the `+__cn_alloc_history+`, all of which we ignore for now.
+// TODO: BCP: Again, where are these things discussed?  Should they be?
+// Dhruv: Also VIP.
 
-Finally, "`Constraints`" records all logical facts CN has learned along the path. This includes user-specified assumptions from preconditions or loop invariants, value ranges inferred from the C-types of variables, and facts learned during the type checking of the statements. Here (`+add+` without precondition) the only constraints are some contraints inferred from C-types in the code.
+Finally, "`Constraints`" records all logical facts CN has learned along the path. This includes user-specified assumptions from preconditions or loop invariants, value ranges inferred from the C-types of variables, and facts learned during the type checking of the statements. Here -- when checking `+add+` without precondition -- the only constraints are those inferred from C-types in the code:
 
-* For instance, `+good<signed int>(x)+` says that the initial value of `+x+` is a "`good`" `+signed int+` value (i.e. in range). Here `+signed int+` is the same type as `+int+`, CN just makes the sign explicit. For integer types `+T+`, `+good<T>+` requires the value to be in range of type `+T+`; for pointer types `+T+` it also requires the pointer to be aligned. For structs and arrays this extends in the obvious way to struct members or array cells.
+* For instance, `+good<signed int>(x)+` says that the initial value of
+`+x+` is a "`good`" `+signed int+` value (i.e. in range). Here
+`+signed int+` is the same type as `+int+`, CN just makes the sign
+explicit.
+// TODO: BCP: Yikes!  This seems potentially confusing
+For an integer type `+T+`, the type `+good<T>+` requires the value to
+be in range of type `+T+`; for pointer types `+T+`, it also requires
+the pointer to be aligned. For structs and arrays, this extends in the
+obvious way to struct members or array cells.
+// TODO: BCP: Is this information actually ever useful?  Is it currently suppressed?
 
 * `+repr<T>+` requires representability (not alignment) at type `+T+`, so `+repr<signed int*>(&ARGO)+`, for instance, records that the pointer to `+x+` is representable at C-type `+signed int*+`;
 
 * `+aligned(&ARGO, 4u64)+`, moreover, states that it is 4-byte aligned.
+
+// TODO: URGENT: BCP: Some of the above (especially the bit at the end) feels like TMI for many/most users, especially at this point in the tutorial.
+// Dhruv: Probably true, we actually even hide some of these by default.
+// BCP: I propose we hide the rest and move this discussion to somewhere else ("Gory Details" section of the tutorial, or better yet reference manual).
+// Dhruv: Thumbs up
 
 === Another arithmetic example
 
@@ -163,26 +215,32 @@ Let’s apply what we know so far to another simple arithmetic example.
 
 The function `+doubled+`, shown below, takes an int `+n+`, defines `+a+` as `+n+` incremented, `+b+` as `+n+` decremented, and returns the sum of the two.
 
-// TODO: BCP: Is it important to number the slf examples?  If so, we should do it consistently, but IMO it is not.
+// TODO: BCP: Is it important to number the slf examples?  If so, we should do it consistently, but IMO it is not.  Better to rename them without numbers.
 include_example(exercises/slf1_basic_example_let.signed.c)
 
 We would like to verify this is safe, and that `+doubled+` returns twice the value of `+n+`. Running CN on `+doubled+` leads to a type error: the increment of `+a+` has undefined behaviour.
 
-As in the first example, we need to ensure that `+n+1+` does not overflow and `+n-1+` does not underflow. Similarly also `+a+b+` has to be representable at `+int+` type.
+As in the first example, we need to ensure that `+n+1+` does not overflow and `+n-1+` does not underflow. Similarly `+a+b+` has to be representable at `+int+` type.
 
 include_example(solutions/slf1_basic_example_let.signed.c)
+// TODO: BCP: WHy n_+n_ in some places and n*2i32 in others?
+// Dhruv: Unlikely to be meaningful, either is fine.
 
-We can specify these using a similar style of precondition as in the first example. We first define `+n_+` as `+n+` cast to type `+i64+` — i.e. a type large enough to hold `+n+1+`, `+n-1+` and `+a+b+` for any possible `+i32+` value for `+n+`. Then we specify that decrementing `+n_+` does not go below the minimal `+int+` value, that incrementing `+n_+` does not go above the maximal value, and that `+n+` doubled is also in range. These preconditions together guarantee safe execution.
+We encode these expectations using a similar style of precondition as in the first example. We first define `+N+` as `+n+` cast to type `+i64+` — i.e. a type large enough to hold `+n+1+`, `+n-1+`, and `+a+b+` for any possible `+i32+` value for `+n+`. Then we specify that decrementing `+N+` does not go below the minimal `+int+` value, that incrementing `+N+` does not go above the maximal value, and that `+n+` doubled is also in range. These preconditions together guarantee safe execution.
+// TODO: BCP: How about renaming N to n64?
+// Dhruv: Sensible.
+// BCP: (someone do it on next pass)
 
 To capture the functional behaviour, the postcondition specifies that `+return+` is twice the value of `+n+`.
 
-=== Exercise
+=== Exercises
 
 *Quadruple.* Specify the precondition needed to ensure safety of the C function `+quadruple+`, and a postcondition that describes its return value.
 
 include_example(exercises/slf2_basic_quadruple.signed.c)
 
 *Abs.* Give a specification to the C function `+abs+`, which computes the absolute value of a given `+int+` value. To describe the return value, use CN’s ternary "`+_ ? _ : _+`" operator. Given a boolean `+b+`, and expressions `+e1+` and `+e2+` of the same basetype, `+b ? e1 : e2+` returns `+e1+` if `+b+` holds and `+e2+` otherwise.
+Note that most binary operators in CN have higher precedence than the ternary operator, so depending on your solution you may need to place the ternary expression in parentheses.
 
 include_example(exercises/abs.c)
 
@@ -190,7 +248,7 @@ include_example(exercises/abs.c)
 
 So far we’ve only considered example functions manipulating integer values. Verification becomes more interesting and challenging when _pointers_ are involved, because the safety of memory accesses via pointers has to be verified.
 
-CN uses _separation logic resource types_ and the concept of _ownership_ to reason about memory accesses. A resource is the permission to access a region of memory. Unlike logical constraints, resource ownership is _unique_, meaning resources cannot be duplicated.
+CN uses _separation logic resources_ and the concept of _ownership_ to reason about memory accesses. A resource is the permission to access a region of memory. Unlike logical constraints, resource ownership is _unique_, meaning resources cannot be duplicated.
 
 Let’s look at a simple example. The function `+read+` takes an `+int+` pointer `+p+` and returns the pointee value.
 
@@ -199,7 +257,7 @@ include_example(exercises/read.c)
 Running CN on this example produces the following error:
 
 ....
-cn exercises/read.c
+cn verify exercises/read.c
 [1/1]: read
 exercises/read.c:3:10: error: Missing resource for reading
   return *p;
@@ -210,15 +268,28 @@ Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_403
 
 For the read `+*p+` to be safe, ownership of a resource is missing: a resource `+Owned<signed int>(p)+`.
 
-=== The Owned resource type
+=== Owned resources
+
+// TODO: BCP: Perhaps this is a good time for one last discussion of the keyword "Owned", which I have never found very helpful: the resource itself isn't owned -- it's a description of something that *can* be owned.  (It's "take" that does the owning.)  Moreover, "Owned" and "Block" are badly non-parallel, both grammatically and semantically.  I suggest "Resource" instead of "Owned".  (We can keep "Block" -- it's not too bad, IMO.)
+////
+Dhruv:
+We use the word "resources" to describe any "resource predicate" owned, or user-defined, (and eventually live allocations and locks) so I'm not sure that suggestion works any better. It is just a points-to with read and write permissions, so perhaps a RW(p)? (or ReadWrite(p)?).
+
+@bcpierce00
+Both of these are better than Owned!
+
+(And then Block can become WriteOnly.)
+
+BCP: I think this discussion is reflected in the GitHub exchange
+////
 
 Given a C-type `+T+` and pointer `+p+`, the resource `+Owned<T>(p)+` asserts ownership of a memory cell at location `+p+` of the size of C-type `+T+`. It is CN’s equivalent of a points-to assertion in separation logic (indexed by C-types `+T+`).
 
-In this example we can ensure the safe execution of `+read+` by adding a precondition that requires ownership of `+Owned<int>(p)+`, as shown below. For now ignore the notation `+take ... = Owned<int>(p)+`. Since `+read+` maintains this ownership, we also add a corresponding postcondition, whereby `+read+` returns ownership of `+p+` after it is finished executing, in the form of another `+Owned<int>(p)+` resource.
+In this example we can ensure the safe execution of `+read+` by adding a precondition that requires ownership of `+Owned<int>(p)+`, as shown below. For now ignore the notation `+take ... = Owned<int>(p)+`. Since reading the pointer does not disturb its value, we also add a corresponding postcondition, whereby `+read+` returns ownership of `+p+` after it is finished executing, in the form of another `+Owned<int>(p)+` resource.
 
 include_example(solutions/read.c)
 
-This specifications means that
+This specification means that:
 
 * any function calling `+read+` has to be able to provide a resource `+Owned<int>(p)+` to pass into `+read+`, and
 
@@ -226,33 +297,44 @@ This specifications means that
 
 === Resource outputs
 
-However, a caller of `+read+` may also wish to know that `+read+` actually returns the correct value, the pointee of `+p+`, and also that it does not change memory at location `+p+`. To phrase both we need a way to refer to the pointee of `+p+`.
+A caller of `+read+` may also wish to know that `+read+` actually returns the correct value, the pointee of `+p+`, and also that it does not change memory at location `+p+`. To phrase both we need a way to refer to the pointee of `+p+`.
 
-In CN resources have _outputs_. Each resource outputs the information that can be derived from ownership of the resource. What information is returned is specific to the type of resource. A resource `+Owned<T>(p)+` (for some C-type `+T+`) outputs the _pointee value_ of `+p+`, since that can be derived from the resource ownership: assume you have a pointer `+p+` and the associated ownership, then this uniquely determines the pointee value of `+p+`.
+// TODO: BCP: The idea that "resources have outputs" is very mind-boggling to many new users, *especially* folks with some separation logic background.  Needs to be explained very carefully.  Also, there's some semantic muddle in the terminology: Is a resource (1) a thing in the heap, (2) a thing in the heap that one is currently holding, or (3) the act of holding a thing in the heap?  These are definitely not at all the same thing, but our language at different points suggests all three!  To me, (1) is the natural sense of the word "resource"; (2) is somewhat awkward, and (3) is extremely awkward.
 
-CN uses the `+take+`-notation seen in the example above to refer to the output of a resource, introducing a new name binding for the output. The precondition `+take v1 = Owned<int>(p)+` from the precondition does two things: (1) it assert ownership of resource `+Owned<int>(p)+`, and (2) it binds the name `+v1+` to the resource output, here the pointee value of `+p+` at the start of the function. Similarly, the postcondition introduces the name `+v2+` for the pointee value on function return.
+In CN, resources have _outputs_. Each resource outputs the information that can be derived from ownership of the resource. What information is returned is specific to the type of resource. A resource `+Owned<T>(p)+` (for some C-type `+T+`) outputs the _pointee value_ of `+p+`, since that can be derived from the resource ownership: assume you have a pointer `+p+` and the associated ownership, then this uniquely determines the pointee value of `+p+`.
+// TODO: BCP: ... in a given heap!  (The real problem here is that "and the associated ownership" is pretty vague.)
+// Dhruv: Perhaps mentioning sub-heaps will help?
 
-That means we can use the resource outputs from the pre- and postcondition to strengthen the specification of `+read+` as planned. We add two new postconditions: we specify
+CN uses the `+take+`-notation seen in the example above to bind the output of a resource to a new name. The precondition `+take P = Owned<int>(p)+` does two things: (1) it assert ownership of resource `+Owned<int>(p)+`, and (2) it binds the name `+P+` to the resource output, here the pointee value of `+p+` at the start of the function. Similarly, the postcondition introduces the name `+P_post+` for the pointee value on function return.
 
-. that `+read+` returns `+v1+` (the initial pointee value of `+p+`), and
-. that the pointee values `+v1+` and `+v2+` before and after execution of `+read+` (respectively) are the same.
+// TODO: BCP: But, as we've discussed, the word "take" in the postcondition is quite confusing: What it's doing is precisely the *opposite* of "taking" the resournce, not taking it but giving it back!!  It would be much better if we could choose a more neutral word that doesn't imply either taking or giving.  E.g. "resource".
 
-include_example(solutions/read2.c)
+// TODO: BCP: This might be a good place for a comment on naming conventions.  Plus a pointer to a longer discussion if needed
 
-*Aside.* In standard separation logic the equivalent specification for `+read+` could have been phrased as follows (where `+return+` binds the return value in the postcondition):
+That means we can use the resource outputs from the pre- and postcondition to strengthen the specification of `+read+` as planned. We add two new postconditions specifying
+
+. that `+read+` returns `+P+` (the initial pointee value of `+p+`), and
+. that the pointee values `+P+` and `+P_post+` before and after execution of `+read+` (respectively) are the same.
+
+include_example(exercises/read2.c)
+
+*Aside.* In standard separation logic, the equivalent specification for `+read+` could have been phrased as follows (where `+\return+` binds the return value in the postcondition):
+// TODO: Sainati: as a separation logic noob, I would love a more detailed explanation about what is going on here.
+// Why do we need to have v2 existentially quantified, for example, when p is only pointing to a single value?
 
 ....
 ∀p.
-∀v1. { p ↦ v1 }
-     read(p)
-     { return. ∃v2. (p ↦ v2) /\ return = v1 /\ v1 = v2 }
+  ∀v1.
+    { p ↦ P }
+    read(p)
+    { \return. ∃P_post. (p ↦ P_post) /\ return = P /\ P = P_post }
 ....
 
-CN’s `+take+` notation is just alternative syntax for quantification over the values of resources, but a useful one: the `+take+` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
+CN’s `+take+` notation is just an alternative syntax for quantification over the values of resources, but a useful one: the `+take+` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
 
 === Exercises
 
-*Quadruple*. Specify the function `+quadruple_mem+`, that is similar to the earlier `+quadruple+` function, except that the input is passed as an `+int+` pointer. Write a specification that takes ownership of this pointer on entry and returns this ownership on exit, leaving the pointee value unchanged.
+*Quadruple*. Specify the function `+quadruple_mem+`, which is similar to the earlier `+quadruple+` function, except that the input is passed as an `+int+` pointer. Write a specification that takes ownership of this pointer on entry and returns this ownership on exit, leaving the pointee value unchanged.
 
 include_example(exercises/slf_quadruple_mem.c)
 
@@ -271,45 +353,89 @@ include_example(exercises/read.broken.c)
 CN rejects this program with the following message:
 
 ....
-cn build/exercises/read.broken.c
+cn verify exercises/read.broken.c
 [1/1]: read
-build/exercises/read.broken.c:4:3: error: Left-over unused resource 'Owned<signed int>(p)(v1)'
+build/exercises/read.broken.c:4:3: error: Left_Sublist-over unused resource 'Owned<signed int>(p)(v1)'
   return *p;
   ^~~~~~~~~~
 Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_17eb4a.html
 ....
 
-CN has typechecked the function, verified that it is safe to execute under the precondition (given ownership `+Owned<int>(p)+`), and that the function (vacuously) satisfies its postcondition. But, following the check of the postcondition it finds that not all resources have been "`used up`".
+CN has typechecked the function and verified (1) that it is safe to
+execute under the precondition (given ownership `+Owned<int>(p)+`)
+and (2) that the function (vacuously) satisfies its postcondition. But
+following the check of the postcondition it finds that not all
+resources have been "`used up`".
 
-Given the above specification, `+read+` leaks memory: it takes ownership, does not return it, but also does not deallocate the owned memory or otherwise dispose of it. In CN this is a type error.
+Indeed, given the above specification, `+read+` leaks memory: it takes ownership, does not return it, but also does not deallocate the owned memory or otherwise dispose of it. In CN this is a type error.
 
-CN’s resource types are _linear_ (as opposed to affine). This means not only that resources cannot be duplicated, but also that resources cannot simply be dropped or "`forgotten`". Every resource passed into a function has to either be used up by it, by returning it or passing it to another function that consumes it, or destroyed, by deallocating the owned area of memory (as we shall see later).
+CN’s resources are _linear_. This means not only that resources cannot be duplicated, but also that resources cannot simply be dropped or "`forgotten`". Every resource passed into a function has to be either _returned_ to the caller or else _destroyed_ by deallocating the owned area of memory (as we shall see later).
 
-CN’s motivation for linear tracking of resources is its focus on low-level systems software. CN checks C programs, in which, unlike higher-level garbage-collected languages, memory is managed manually, and memory leaks are typically very undesirable.
+CN’s motivation for linear tracking of resources is its focus on
+low-level systems software in which memory is managed manually; in
+this context, memory leaks are typically very undesirable.  As a
+consequence, function specifications have to do precise bookkeeping of
+their resource footprint and, in particular, return any unused
+resources back to the caller.
 
-As a consequence, function specifications have to do precise "`book-keeping`" of their resource footprint, and, in particular, return any unused resources back to the caller.
+=== Exercises
 
-=== The Block resource type
+*Quadruple*. Specify the function `+quadruple_mem+`, that is similar to the earlier `+quadruple+` function, except that the input is passed as an `+int+` pointer. Write a specification that takes ownership of this pointer on entry and returns this ownership on exit, leaving the pointee value unchanged.
 
-Aside from the `+Owned+` resource seen so far, CN has another built-in resource type: `+Block+`. Given a C-type `+T+` and pointer `+p+`, `+Block<T>(p)+` asserts the same ownership as `+Owned<T>(p)+` — so ownership of a memory cell at `+p+` the size of type `+T+` — but in contrast to `+Owned+`, `+Block+` memory is not necessarily initialised.
+include_example(exercises/slf_quadruple_mem.c)
+
+*Abs*. Give a specification to the function `+abs_mem+`, which computes the absolute value of a number passed as an `+int+` pointer.
+
+include_example(exercises/abs_mem.c)
+
+=== Block resources
+
+Aside from the `+Owned+` resources seen so far, CN has another
+built-in type of resource called `+Block+`. Given a C-type `+T+` and
+pointer `+p+`, `+Block<T>(p)+` asserts the same ownership as
+`+Owned<T>(p)+` — ownership of a memory cell at `+p+` the size of type
+`+T+` — but, in contrast to `+Owned+`, `+Block+` memory is not assumed
+to be initialised.
 
 CN uses this distinction to prevent reads from uninitialised memory:
 
-* A read at C-type `+T+` and pointer `+p+` requires a resource `+Owned<T>(p)+`, i.e., ownership of _initialised_ memory at the right C-type. The load returns the `+Owned+` resource unchanged.
+* A read at C-type `+T+` and pointer `+p+` requires a resource
+  `+Owned<T>(p)+`, i.e., ownership of _initialised_ memory at the
+  right C-type. The load returns the `+Owned+` resource unchanged.
 
-* A write at C-type `+T+` and pointer `+p+` needs only a `+Block<T>(p)+` (so, unlike reads, writes to uninitialised memory are fine). The write consumes ownership of the `+Block+` resource (it destroys it) and returns a new resource `+Owned<T>(p)+` with the value written as the output. This means the resource returned from a write records the fact that this memory cell is now initialised and can be read from.
+* A write at C-type `+T+` and pointer `+p+` needs only a
+  `+Block<T>(p)+` (so, unlike reads, writes to uninitialised memory
+  are fine). The write consumes ownership of the `+Block+` resource
+  (it destroys it) and returns a new resource `+Owned<T>(p)+` with the
+  value written as the output. This means the resource returned from a
+  write records the fact that this memory cell is now initialised and
+  can be read from.
+// TODO: BCP: Not sure I understand "returns a new resource `+Owned<T>(p)+` with the value written as the output" -- perhaps in part because I don't understand what the output of a resource means when the resource is not in the context o a take expression.
 
-Since `+Owned+` carries the same ownership as `+Block+`, just with the additional information that the `+Owned+` memory is initalised, a resource `+Owned<T>(p)+` is "`at least as good`" as `+Block<T>(p)+` — an `+Owned<T>(p)+` resource can be used whenever `+Block<T>(p)+` is needed. For instance CN’s type checking of a write to `+p+` requires a `+Block<T>(p)+`, but if an `+Owned<T>(p)+` resource is what is available, this can be used just the same. This allows an already-initialised memory cell to be over-written again.
+Since `+Owned+` carries the same ownership as `+Block+`, just with the
+additional information that the `+Owned+` memory is initalised, a
+resource `+Owned<T>(p)+` is "`at least as good`" as `+Block<T>(p)+` —
+an `+Owned<T>(p)+` resource can be used whenever `+Block<T>(p)+` is
+needed. For instance CN’s type checking of a write to `+p+` requires a
+`+Block<T>(p)+`, but if an `+Owned<T>(p)+` resource is what is
+available, this can be used just the same. This allows an
+already-initialised memory cell to be over-written again.
 
-Unlike `+Owned+`, whose output is the pointee value, `+Block+` has no meaningful output: its output is `+void+`/`+unit+`.
+Unlike `+Owned+`, whose output is the pointee value, `+Block+` has no meaningful output.
 
-=== Write example
+=== Writing through pointers
 
-Let’s explore resources and their outputs in another example. The C function `+incr+` takes an `+int+` pointer `+p+` and increments the pointee value.
+Let’s explore resources and their outputs in another example. The C function `+incr+` takes an `+int+` pointer `+p+` and increments the value in the memory cell that it poinbts to.
 
-include_example(solutions/slf0_basic_incr.signed.c)
+include_example(exercises/slf0_basic_incr.signed.c)
 
-In the precondition we assert ownership of resource `+Owned<int>(p)+`, binding its output/pointee value to `+v1+`, and use `+v1+` to specify that `+p+` must point to a sufficiently small value at the start of the function not to overflow when incremented. The postcondition asserts ownership of `+p+` with output `+v2+`, as before, and uses this to express that the value `+p+` points to is incremented by `+incr+`: `+v2 == v1+1i32+`.
+In the precondition we assert ownership of resource `+Owned<int>(p)+`,
+binding its output/pointee value to `+P+`, and use `+P+` to specify
+that `+p+` must point to a sufficiently small value at the start of
+the function so as not to overflow when incremented. The postcondition
+asserts ownership of `+p+` with output `+P_post+`, as before, and uses
+this to express that the value `+p+` points to is incremented by
+`+incr+`: `+P_post == P + 1i32+`.
 
 If we incorrectly tweaked this specification and used `+Block<int>(p)+` instead of `+Owned<int>(p)+` in the precondition, as below, then CN would reject the program.
 
@@ -325,13 +451,23 @@ Resource needed: Owned<signed int>(p)
 Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_5da0f3.html
 ....
 
-The `+Owned<int>(p)+` resource required for reading is missing, since, as per precondition, only `+Block<int>(p)+` is available. Checking the linked HTML file confirms this. Here the section "`Available resources`" lists all resource ownership at the point of the failure:
+The `+Owned<int>(p)+` resource required for reading is missing, since, per the precondition, only `+Block<int>(p)+` is available. Checking the linked HTML file confirms this. Here the section "`Available resources`" lists all resource ownership at the point of the failure:
 
-* `+Block<signed int>(p)(u)+`, so ownership of uninitialised memory at location `+p+`; the output is a `+void+`/`+unit+` value `+u+` (specified in the second pair of parentheses)
+* `+Block<signed int>(p)(u)+`, i.e., ownership of uninitialised memory
+  at location `+p+`; the output is a `+void+`/`+unit+` value `+u+`
+  (specified in the second pair of parentheses)
 
-* `+Owned<signed int*>(&ARG0)(p)+`, the ownership of (initialised) memory at location `+&ARG0+`, so the memory location where the first function argument is stored; its output is the pointer `+p+` (not to be confused with the pointee of `+p+`); and finally
+* `+Owned<signed int*>(&ARG0)(p)+`, the ownership of (initialised)
+  memory at location `+&ARG0+`, i.e., the memory location where the
+  first function argument is stored; its output is the pointer `+p+`
+  (not to be confused with the pointee of `+p+`); and finally
 
-* `+__CN_Alloc(&ARG0)(void)+` is a resource that records allocation information for location `+&ARG0+`; this is related to CN’s memory-object semantics, which we ignore for the moment.
+* `+__CN_Alloc(&ARG0)(void)+` is a resource that records allocation
+  information for location `+&ARG0+`; this is related to CN’s
+  memory-object semantics, which we ignore for the moment.
+
+// TODO: BCP: These bullet points are all a bit mysterious and maybe TMI.  More generally, we should double check that this is actually the information displayed in the current HTML output...
+// Dhruv: It is displayed, but hidden. And perhaps TMI right now, but once the memory model lands properly, will sadly be the price of entry to writing verifiable (semantically well-defined) C.
 
 === Exercises
 
@@ -345,17 +481,30 @@ include_example(exercises/slf3_basic_inplace_double.c)
 
 === Multiple owned pointers
 
-When functions manipulate multiple pointers, we can assert their ownership just like before. However (as in standard separation logic) pointer ownership is unique, so simultaneous ownership of `+Owned+` or `+Block+` resources for two pointers requires these pointers to be disjoint.
+When functions manipulate multiple pointers, we can assert their
+ownership just like before. However
+pointer ownership in CN is unique -- that is, simultaneously owning
+`+Owned+` or `+Block+` resources for two pointers implies that these
+pointers are disjoint.
 
-The following example shows the use of two `+Owned+` resources for accessing two different pointers: function `+add+` reads two `+int+` values in memory, at locations `+p+` and `+q+`, and returns their sum.
+The following example shows the use of two `+Owned+` resources for
+accessing two different pointers by a function `+add+`, which reads
+two `+int+` values in memory, at locations `+p+` and `+q+`, and
+returns their sum.
+
+// TODO: BCP: Hmmm -- I'm not very sure that the way I've been naming things is actually working that well.  The problem is that in examples like this we computer "thing pointed to by p" at both C and CN levels.  At the C level, the thing pointed to by p obviously cannot also be called p, so it doesn't make sense for it to be called P at the CN level, right?  Maybe we need to think again, but hoinestly I am not certain that it is *not* working either.  So I'm going to opush on for now...
 
 include_example(exercises/add_read.c)
 
 This time we use C’s `+unsigned int+` type. In C, over- and underflow of unsigned integers is not undefined behaviour, so we do not need any special preconditions to rule this out. Instead, when an arithmetic operation at unsigned type goes outside the representable range, the value "`wraps around`".
 
-The CN variables `+m+` and `+n+` (resp. `+m2+` and `+n2+`) for the pointee values of `+p+` and `+q+` before (resp. after) the execution of `+add+` have CN basetype `+u32+`, so unsigned 32-bit integers, matching the C `+unsigned int+` type. Like C’s unsigned integer arithmetic, CN unsigned int values wrap around when exceeding the value range of the type.
+The CN variables `+P+` and `+Q+` (resp. `+P_post+` and `+Q_post+`) for the pointee values of `+p+` and `+q+` before (resp. after) the execution of `+add+` have CN basetype `+u32+`, so unsigned 32-bit integers, matching the C `+unsigned int+` type. Like C’s unsigned integer arithmetic, CN unsigned int values wrap around when exceeding the value range of the type.
 
-Hence, the postcondition `+return == m+n+` holds also when the sum of `+m+` and `+n+` is greater than the maximal `+unsigned int+` value.
+Hence, the postcondition `+return == P + Q+` holds also when the sum of `+P+` and `+Q+` is greater than the maximal `+unsigned int+` value.
+
+// TODO: BCP: I wonder whether we should uniformly use i32 integers everywhere in the tutorial (just mentioning in the bullet list below that there are other integer types, and using i64 for calculations that may overflow).  Forgetting which integer type I was using was a common (and silly) failure mode when I was first working through the tutorial.
+// Dhruv: Sensible.
+// BCP: ... On second thought, maybe settling on u32 instead of i32 in most places is better (fewer things to prove).  Or maybe it doesn't matter much.  For the start of the tutorial, i32 is important because the examples are all about overflow.  But after that we could go either way.
 
 In the following we will sometimes use unsigned integer types to focus on specifying memory ownership, rather than the conditions necessary to show absence of C arithmetic undefined behaviour.
 
@@ -371,23 +520,38 @@ include_example(exercises/slf8_basic_transfer.c)
 
 == Ownership of compound objects
 
-So far all examples have worked with just integers and pointers, but larger programs typically also manipulate compound values, often represented using C struct types. Specifying functions manipulating structs works in much the same way as with basic types.
+So far, our examples have worked with just integers and pointers, but larger programs typically also manipulate compound values, often represented using C struct types. Specifying functions manipulating structs works in much the same way as with basic types.
 
 For instance, the following example uses a `+struct+` `+point+` to represent a point in two-dimensional space. The function `+transpose+` swaps a point’s `+x+` and `+y+` coordinates.
 
 include_example(exercises/transpose.c)
 
-Here the precondition asserts ownership for `+p+`, at type `+struct point+`; the output `+s+` is a value of CN type `+struct point+`, i.e. a record with members `+i32+` `+x+` and `+i32+` `+y+`. The postcondition similarly asserts ownership of `+p+`, with output `+s2+`, and asserts the coordinates have been swapped, by referring to the members of `+s+` and `+s2+` individually.
+Here the precondition asserts ownership for `+p+`, at type `+struct
+point+`; the output `+P_post+` is a value of CN type `+struct point+`,
+i.e. a record with members `+i32+` `+x+` and `+i32+` `+y+`. The
+postcondition similarly asserts ownership of `+p+`, with output
+`+P_post+`, and asserts the coordinates have been swapped, by referring to
+the members of `+P+` and `+P_post+` individually.
+
+// TODO: BCP: This paragraph is quite confusing if read carefully: it seems to say that the "take" in the requires clause returns a different type than the "tajke" in the "ensures" clause.  Moreover, even if the reader decides that this cannot be the case and they have to return the same type, they may wonder whether thius type is a C type (which is what it looks like, since there is only one struct declaration, and it is not in a magic comment) or a CN type (which might be expected, since it is the result of a "take").  I *guess* what's going on here is that every C type is automatically reflected as a CN type with the same name.  But this story is also not 100% satisfying, since the basic numeric types don't work this way: each C numeric type has an *analog* in CN, but with a different name.
+////
+// Dhruv:
+C supports strong updates in certain situations and so take _ = Owned<ct>(p) in the requires clause could very well have a different C type than take _ = Owned<ct2>(p) in the ensures clause.
+
+The reason Owned needs a C-type is so that it can (a) figure out the size of the sub-heap being claimed and (b) figure out how one may need to destructure the type (unions, struct fields and padding, arrays). The relationship is that for take x = Owned<ct>(expr), expr : pointer, x : to_basetype(ct).
+
+There is a design decision to consider here rems-project/cerberus#349
+////
 
 === Compound Owned and Block resources
 
-While one might like to think of a struct as a single (compound) object that is manipulated as a whole, C permits more flexible struct manipulation: given a struct pointer, programmers can construct pointers to _individual struct members_ and pass these as values, even to other functions.
+While one might like to think of a struct as a single (compound) object that is manipulated as a whole, C permits more flexible struct manipulation: given a struct pointer, programmers can construct pointers to _individual struct members_ and manipulate these as values, including even passing them to other functions.
 
-CN therefore cannot treat resources for compound C types, such as structs, as primitive, indivisible units. Instead, `+Owned<T>+` and `+Block<T>+` are defined inductively in the structure of the C-type `+T+`.
+CN therefore cannot treat resources for compound C types like structs as primitive, indivisible units. Instead, `+Owned<T>+` and `+Block<T>+` are defined inductively on the structure of the C-type `+T+`.
 
-For struct types `+T+`, the `+Owned<T>+` resource is defined as the collection of `+Owned+` resources for its members (as well as `+Block+` resources for any padding bytes in-between). The resource `+Block<T>+`, similarly, is made up of `+Block+` resources for all members (and padding bytes).
+For struct types `+T+`, the `+Owned<T>+` resource is defined as the collection of `+Owned+` resources for its members (as well as `+Block+` resources for any padding bytes in-between them). The resource `+Block<T>+`, similarly, is made up of `+Block+` resources for all members (and padding bytes).
 
-To handle code that manipulates pointers into parts of a struct object, CN can automatically decompose a struct resource into the member resources, and recompose it, as needed. The following example illustrates this.
+To handle code that manipulates pointers into parts of a struct object, CN can automatically decompose a struct resource into the member resources, and it can recompose the struct later, as needed. The following example illustrates this.
 
 Recall the function `+zero+` from our earlier exercise. It takes an `+int+` pointer to uninitialised memory, with `+Block<int>+` ownership, and initialises the value to zero, returning an `+Owned<int>+` resource with output `+0+`.
 
@@ -397,25 +561,29 @@ include_example(exercises/init_point.c)
 
 As stated in its precondition, `+init_point+` receives ownership `+Block<struct point>(p)+`. The `+zero+` function, however, works on `+int+` pointers and requires `+Block<int>+` ownership.
 
-CN can prove the calls to `+zero+` with `+&p->x+` and `+&p->y+` are safe because it decomposes the `+Block<struct point>(p)+` into two `+Block<int>+`, one for member `+x+`, one for member `+y+`. Later, the reverse happens: following the two calls to `+zero+`, as per `+zero+`’s precondition, `+init_point+` has ownership of two adjacent `+Owned<int>+` resources – ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `+init_point+` requires ownership `+Owned<struct point>(p)+`, CN combines these back into a compound resource. The resulting `+Owned<point struct>+` resource has for an output the struct value `+s2+` that is composed of the zeroed member values for `+x+` and `+y+`.
+CN can prove the calls to `+zero+` with `+&p->x+` and `+&p->y+` are safe because it decomposes the `+Block<struct point>(p)+` into a `+Block<int>+` for member `+x+` and a `+Block<int>+` for member `+y+`. Later, the reverse happens: following the two calls to `+zero+`, as per `+zero+`’s precondition, `+init_point+` has ownership of two adjacent `+Owned<int>+` resources – ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `+init_point+` requires ownership `+Owned<struct point>(p)+`, CN combines these back into a compound resource. The resulting `+Owned<point struct>+` resource has for an output the struct value `+P_post+` that is composed of the zeroed member values for `+x+` and `+y+`.
 
 === Resource inference
 
 To handle the required resource inference, CN "`eagerly`" decomposes all `+struct+` resources into resources for the struct members, and "`lazily`" re-composes them as needed.
 
-We can see this if, for instance, we experimentally change the `+transpose+` example from above to force a type error. Let’s insert an `+/*@ assert(false) @*/+` CN assertion in the middle of the `+transpose+` function (more on CN assertions later), so we can inspect CN’s proof context shown in the error report.
+We can see this if, for instance, we experimentally change the `+transpose+` example from above to force a type error. Let’s insert an `+/*@ assert(false) @*/+` CN assertion in the middle of the `+transpose+` function, so we can inspect CN’s proof context shown in the error report.  (More on CN assertions later.)
+
+// TODO: BCP: Recheck that what we say here matches what it actually looks like
 
 include_example(exercises/transpose.broken.c)
 
 The precondition of `+transpose+` asserts ownership of an `+Owned<struct point>(p)+` resource. The error report now instead lists under "`Available resources`" two resources:
 
-* `+Owned<signed int>(member_shift<point>(p, x))+` with output `+s.x+` and
+* `+Owned<signed int>(member_shift<point>(p, x))+` with output `+P.x+` and
 
-* `+Owned<signed int>(member_shift<point>(p, y))+` with output `+s.y+`
+* `+Owned<signed int>(member_shift<point>(p, y))+` with output `+P.y+`
+
+// TODO: BCP: We should verify that it really does say this.
 
 Here `+member_shift<s>(p,m)+` is the CN expression that constructs, from a `+struct s+` pointer `+p+`, the "`shifted`" pointer for its member `+m+`.
 
-When the function returns the two member resources are recombined "`on demand`" to satisfy the postcondition `+Owned<struct point>(p)+`.
+When the function returns, the two member resources are recombined "`on demand`" to satisfy the postcondition `+Owned<struct point>(p)+`.
 
 === Exercises
 
@@ -437,9 +605,11 @@ CP: Agreed. For now continuing with arrays, but will return to this later.
 
 == Arrays and loops
 
-Another common datatype in C is arrays. Reasoning about memory ownership for arrays is more difficult than for the datatypes we have seen so far: C allows the programmer to access arrays using _computed pointers_, and the size of an array does not need to be known as a constant at compile time.
+Another common datatype in C is arrays. Reasoning about memory ownership for arrays is more difficult than for the datatypes we have seen so far, for two reasons: (1) C allows the programmer to access arrays using _computed pointers_, and (2) the size of an array does not need to be known as a constant at compile time.
 
-To support reasoning about code manipulating arrays and computed pointers, CN has _iterated resources_. For instance, to specify ownership of an `+int+` array with 10 cells starting at pointer `+p+`, CN uses the iterated resource
+To support reasoning about code manipulating arrays and computed pointers, CN has _iterated resources_. For instance, to specify ownership of an `+int+` array with 10 cells starting at pointer `+p+`, CN uses the following iterated resource:
+
+// TODO: BCP: Another tricky naming / capitalization puzzle: The index of an "each" has CN type i32, so strictly speaking I believe it should be written with a capital "I".  But insisting on this feels like insisting on a distinction that most CN programmers would never even notice, much less be confused by.  I think this is another instance of the way C and CN integer types are partly but not completely squished together.
 
 [source,c]
 ----
@@ -476,7 +646,7 @@ comprising three parts:
 
 === First array example
 
-Let’s see how this applies to a first example of an array-manipulating function. Function `+read+` takes three arguments: the base pointer `+p+` of an `+int+` array, the length `+n+` of the array, and an index `+i+` into the array; `+read+` then returns the value of the `+i+`-th array cell.
+Let’s see how this applies to a simple array-manipulating function. Function `+read+` takes three arguments: the base pointer `+p+` of an `+int+` array, the length `+n+` of the array, and an index `+i+` into the array; `+read+` then returns the value of the `+i+`-th array cell.
 
 include_example(exercises/array_load.broken.c)
 
@@ -490,7 +660,7 @@ On exit the array ownership is returned again.
 This specification, in principle, should ensure that the access `+p[i]+` is safe. However, running CN on the example produces an error: CN is unable to find the required ownership for reading `+p[i]+`.
 
 ....
-cn build/solutions/array_load.broken.c
+cn verify solutions/array_load.broken.c
 [1/1]: read
 build/solutions/array_load.broken.c:5:10: error: Missing resource for reading
   return p[i];
@@ -498,13 +668,13 @@ build/solutions/array_load.broken.c:5:10: error: Missing resource for reading
 Resource needed: Owned<signed int>(array_shift<signed int>(p, (u64)i))
 ....
 
-The reason is that when searching for a required resource, such as the `+Owned+` resource for `+p[i]+` here, CN’s resource inference does not consider iterated resources. Quantifiers, as used by iterated resources, can make verification undecidable, so, in order to maintain predictable type checking, CN delegates this aspect of the reasoning to the user.
+The reason is that, when searching for a required resource, such as the `+Owned+` resource for `+p[i]+` here, CN’s resource inference does not consider iterated resources. Quantifiers, as used by iterated resources, can make verification undecidable, so, in order to maintain predictable type checking, CN delegates this aspect of the reasoning to the user.
 
-To make the `+Owned+` resource required for accessing `+p[i]+` available to CN’s resource inference we have to "`extract`" ownership for index `+i+` out of the iterated resource.
+To make the `+Owned+` resource required for accessing `+p[i]+` available to CN’s resource inference we have to explicitly "`extract`" ownership for index `+i+` out of the iterated resource.
 
 include_example(exercises/array_load.c)
 
-Here the CN comment `+/*@ extract Owned<int>, i; @*/+` is a CN "`ghost statement`"/proof hint that instructs CN to instantiate any available iterated `+Owned<int>+` resource for index `+i+`. In our example this operation splits the iterated resource into two:
+Here the CN comment `+/*@ extract Owned<int>, i; @*/+` is a proof hint in the form of a "`ghost statement`" that instructs CN to instantiate any available iterated `+Owned<int>+` resource for index `+i+`. In our example this operation splits the iterated resource into two:
 
 [source,c]
 ----
@@ -527,27 +697,42 @@ each(i32 j; 0i32 <= j && j < n && j != i)
     { Owned<int>(array_shift<int>(p,j)) }
 ----
 
-After this extraction step, CN can use the (former) extracted resource to justify the access `+p[i]+`.
+After this extraction step, CN can use the (former) extracted resource to justify the access `+p[i]+`. Note that an `+extract+` statement's second argument can be any arithmetic expression, not just a single identifier like in this example.
 
-Following an `+extract+` statement, CN moreover remembers the extracted index and can automatically "`reverse`" the extraction when needed: after type checking the access `+p[i]+` CN must ensure the function’s postcondition holds, which needs the full array ownership again (including the extracted index `+i+`); remembering the index `+i+`, CN then automatically merges resources (1) and (2) again to obtain the required full array ownership, and completes the verification of the function.
+Following an `+extract+` statement, CN remembers the extracted index and can automatically "`reverse`" the extraction when needed: after type checking the access `+p[i]+` CN must ensure the function’s postcondition holds, which needs the full array ownership again (including the extracted index `+i+`); remembering the index `+i+`, CN then automatically merges resources (1) and (2) again to obtain the required full array ownership, and completes the verification of the function.
 
-So far the specification only guarantees safe execution but does not specify the behaviour of `+read+`. To address this, let’s return to the iterated resources in the function specification. When we specify `+take a1 = each ...+` here, what is `+a1+`? In CN, the output of an iterated resource is a _map_ from indices to resource outputs. In this example, where index `+j+` has CN type `+i32+` and the iterated resource is `+Owned<int>+`, the output `+a1+` is a map from `+i32+` indices to `+i32+` values — CN type `+map<i32,i32>+`. (If the type of `+j+` was `+i64+` and the resource `+Owned<char>+`, `+a1+` would have type `+map<i64,u8>+`.)
+So far the specification only guarantees safe execution but does not
+specify the behaviour of `+read+`. To address this, let’s return to
+the iterated resources in the function specification. When we specify
+`+take A = each ...+` here, what is `+A+`? In CN, the output of an
+iterated resource is a _map_ from indices to resource outputs. In this
+example, where index `+j+` has CN type `+i32+` and the iterated
+resource is `+Owned<int>+`, the output `+A+` is a map from `+i32+`
+indices to `+i32+` values — CN type `+map<i32,i32>+`. If the type of
+`+j+` was `+i64+` and the resource `+Owned<char>+`, `+A+` would have
+type `+map<i64,u8>+`.
 
 We can use this to refine our specification with information about the functional behaviour of `+read+`.
 
 include_example(exercises/array_load2.c)
 
-We specify that `+read+` does not change the array — the outputs `+a1+` and `+a2+`, taken before and after running the function, are the same — and that the value returned is `+a1[i]+`, `+a1+` at index `+i+`.
+We specify that `+read+` does not change the array — the outputs of `+Owned+`,
+`+A+` and `+A_post+`, taken before and after running the function, are
+the same — and that the value returned is `+A[i]+`.
 
 === Exercises
 
 
 *Array read two.* Specify and verify the following function, `+array_read_two+`, which takes the base pointer `+p+` of an `+unsigned int+` array, the array length `+n+`, and two indices `+i+` and `+j+`. Assuming `+i+` and `+j+` are different, it returns the sum of the values at these two indices.
 
+// TODO: BCP: When we get around to renaming files in the examples directory, we should call this one array_swap or something else beginning with "array".
+
 include_example(exercises/add_two_array.c)
 
 ////
 TODO: BCP: In this one I got quite tangled up in different kinds of integers, then got tangled up in (I think) putting the extract declarations in the wrong place.  (I didn't save the not-working version, I'm afraid.)
+
+TODO: Sainati: I think it would be useful to have a int array version of this exercise as a worked example; I am not sure, for example, how one would express bounds requirements on the contents of an array in CN, as you would need to do here to ensure that p[i] + p[j] doesn’t overflow if p's contents are signed ints
 ////
 
 *Swap array.* Specify and verify `+swap_array+`, which swaps the values of two cells of an `+int+` array. Assume again that `+i+` and `+j+` are different, and describe the effect of `+swap_array+` on the array value using the CN map update expression `+a[i:v]+`, which denotes the same map as `+a+`, except with index `+i+` updated to `+v+`.
@@ -578,15 +763,17 @@ TODO: BCP: I wrote this, which seemed natural but did not work -- I still don't 
 
 === Loops
 
-The array examples covered so far manipulate one or two individual cells of an array. Another typical pattern in code working over arrays is to *loop*, uniformly accessing all cells of an array, or sub-ranges of it.
+The array examples covered so far manipulate one or two individual cells of an array. Another typical pattern in code working over arrays is to *loop*, uniformly accessing all cells of an array or a sub-range of it.
 
 In order to verify code with loops, CN requires the user to supply loop invariants -- CN specifications of all owned resources and the constraints required to verify each iteration of the loop.
 
-
 Let's take a look at a simple first example. The following function, `+init_array+`, takes the base pointer `+p+` of a `+char+` array and the array length `+n+` and writes `+0+` to each array cell.
+
+// TODO: BCP: Rename to array_init.c
+
 include_example(exercises/init_array.c)
 
-If, for the moment, we focus just on proving safe execution of `+init_array+`, ignoring its functional behaviour, a specification might look as above: on entry `+init_array+` takes ownership of an iterated `+Owned<char>+` resource -- one `+Owned+` resource for each index `+i+` of type `+u32+` (so necessarily greater or equal to `+0+`) up to `+n+`; on exit `+init_array+` returns the ownership.
+If, for the moment, we focus just on proving safe execution of `+init_array+`, ignoring its functional behaviour, a specification might look as above: on entry, `+init_array+` takes ownership of an iterated `+Owned<char>+` resource -- one `+Owned+` resource for each index `+i+` of type `+u32+` (so necessarily greater or equal to `+0+`) up to `+n+`; on exit `+init_array+` returns the ownership.
 
 To verify this, we have to supply a loop invariant that specifies all resource ownership and the necessary constraints that hold before and after each iteration of the loop. Loop invariants are specified using the keyword `inv`, followed by CN specifications using the same syntax as in function pre- and postconditions. The variables in scope for loop invariants are all in-scope C variables, as well as CN variables introduced in the function precondition. *In loop invariants, the name of a C variable refers to its current value* (more on this shortly).
 
@@ -597,7 +784,7 @@ TODO: BCP: Concrete syntax: Why not write something like "unchanged {p,n}" or "u
 
 The main condition here is unsurprising: we specify ownership of an iterated resource for an array just like in the the pre- and postcondition.
 
-The second thing we need to do, however, is less straightforward. Recall that, as discussed at the start of the tutorial, function arguments in C are mutable, and so CN permits this as well.While in this example it is obvious that `+p+` and `+n+` do not change, CN currently requires the loop invariant to explicitly state this, using special notation `+{p} unchanged+` (and similarly for `+n+`).
+The second thing we need to do, however, is less straightforward. Recall that, as discussed at the start of the tutorial, function arguments in C are mutable. Although, in this example, it is obvious that `+p+` and `+n+` do not change, CN currently requires the loop invariant to explicitly state this, using special notation `+{p} unchanged+` (and similarly for `+n+`).
 
 **Note.** If we forget to specify `+unchanged+`, this can lead to confusing errors. In this example, for instance, CN would verify the loop against the loop invariant, but would be unable to prove a function postcondition seemingly directly implied by the loop invariant (lacking the information that the postcondition's `+p+` and `+n+` are the same as the loop invariant's). Future CN versions may handle loop invariants differently and treat variables as immutable by default.
 ////
@@ -607,19 +794,23 @@ TODO: BCP: This seems like a good idea!
 The final piece needed in the verification is an `+extract+` statement, as used in the previous examples: to separate the individual `+Owned<char>+` resource for index `+j+` out of the iterated `+Owned+` resource and make it available to the resource inference, we specify `+extract Owned<char>, j;+`.
 
 
-With the `+extract+` statements in place, CN accepts the function.
+With the `+inv+` and `+extract+` statements in place, CN accepts the function.
 
 === Second loop example
 
-However, on closer look, the specification of `+init_array+` is overly strong: it requires an iterated `+Owned+` resource for the array on entry. If, as the name suggests, the purpose of `+init_array+` is to initialise the array, then a precondition asserting only an iterated `+Block+` resource for the array should also be sufficient. The modified specification is then as follows.
+The specification of `+init_array+` is overly strong: it requires an iterated `+Owned+` resource for the array on entry. If, as the name suggests, the purpose of `+init_array+` is to initialise the array, then a precondition asserting only an iterated `+Block+` resource for the array should also be sufficient. The modified specification is then as follows.
 
 include_example(exercises/init_array2.c)
 
-This specification *should* hold: assuming ownership of an uninitialised array on entry, each iteration of the loop initialises one cell of the array, moving it from `+Block+` to `+Owned+` "`state`", so that on function return the full array is initialised. (Recall that stores only require `+Block+` ownership of the written memory location, so ownership of not-necessarily-initialised memory.)
+This specification *should* hold: assuming ownership of an uninitialised array on entry, each iteration of the loop initialises one cell of the array, moving it from `+Block+` to `+Owned+` "`state`", so that on function return the full array is initialised. (Recall that stores only require `+Block+` ownership of the written memory location, i.e., ownership of not-necessarily-initialised memory.)
 
-To verify this modified example we again need a loop invariant. This time, the loop invariant is more involved, however: since each iteration of the loop initialises one more array cell, the loop invariant has to do precise book-keeping of the initialisation status of the array.
+To verify this modified example we again need a loop Invariant. But
+this time the loop invariant is more involved: since each iteration of
+the loop initialises one more array cell, the loop invariant has to do
+precise book-keeping of the initialisation status of the different
+sections of the array.
 
-To do so, we partition the array ownership into two parts: for each index of the array the loop has already visited, we have an `+Owned+` resource, for all other array indices we have the (unchanged) `+Block+` ownership.
+To do this, we partition the array ownership into two parts: for each index of the array the loop has already visited, we have an `+Owned+` resource, for all other array indices we have the (unchanged) `+Block+` ownership.
 
 include_example(solutions/init_array2.c)
 
@@ -631,16 +822,18 @@ Let's go through this line-by-line:
 
 - As in the previous example, we assert `+p+` and `+n+` are unchanged.
 
-- Finally, unlike in the previous example, this loop invariant involves `+j+`. We therefore also need to know that `+j+` does not exceed the array length `+n+`. Otherwise CN would not be able to prove that, on completing the last loop iteration, `+j=n+` holds. This, in turn, is needed to show that when the function returns, ownership of the iterated `+Owned+` resource --- as specified in the loop invariant --- is fully consumed by the function's post-condition and there is no left-over unused resource.
+- Finally, unlike in the previous example, this loop invariant involves `+j+`. We therefore also need to know that `+j+` does not exceed the array length `+n+`. Otherwise CN would not be able to prove that, on completing the last loop iteration, `+j=n+` holds. This, in turn, is needed to show that, when the function returns, ownership of the iterated `+Owned+` resource --- as specified in the loop invariant --- is fully consumed by the function's post-condition and there is no left-over unused resource.
 
 As before, we also have to instruct CN to `+extract+` ownership of individual array cells out of the iterated resources:
 
-- to allow CN to extract the individual `+Block+` to be written we use `+extract Block<char>, j;+`;
+- to allow CN to extract the individual `+Block+` to be written, we use `+extract Block<char>, j;+`;
 
 - the store returns a matching `+Owned<char>+` resource for index `+j+`;
 
-- finally, we put `+extract Owned<char>, j;+` to allow CN to "`attach`" this resource to the iterated `+Owned+` resource. CN issues a warning, because nothing is, in fact, extracted: we are using `+extract+` only for the "`reverse`" direction.
+- finally, we add `+extract Owned<char>, j;+` to allow CN to "`attach`" this resource to the iterated `+Owned+` resource. CN issues a warning, because nothing is, in fact, extracted: we are using `+extract+` only for the "`reverse`" direction.
 
+// TODO: BCP: That last bit is mysterious.
+// Dhruv: See long explanation and issue here: rems-project/cerberus#498
 
 === Exercises
 
@@ -648,7 +841,7 @@ As before, we also have to instruct CN to `+extract+` ownership of individual ar
 
 include_example(exercises/init_array_rev.c)
 
-
+// TODO: BCP: The transition to the next section is awkward.  Needs a sentence or two to signal that we're changing topics.  Some better visual indication would also be nice.
 
 ////
 ___________________________________________________________________________
@@ -679,16 +872,30 @@ not alias...
 include_example(exercises/slf_incr2_noalias.c)
 
 But what if they do alias?  The clunky solution is to write a whole
-different version of incr2 with a different embedded specification...
+different version of `+incr2+` with a different embedded specification...
 
 include_example(exercises/slf_incr2_alias.c)
 
-This is horrible.  Much better is to define a predicate to use
-in the pre- and postconditions that captures both cases together:
+This version does correctly state that the final values of `+p+` and `+q+` are,m respectively, `+3+` and `+1+` more than their original values.  But the way we got there -- by duplicating the whole function `+incr2+`, is horrible.
+
+// TODO: Sainati: I think it would be useful here to add an explanation for how CN's type checking works.
+// For example, in the definition of BothOwned here, how is CN able to prove that `+take pv = Owned<unsigned int>(p);+`
+// type checks, since all we know about `p` in the definition of the predicate is that it's a pointer?
+
+A better way is to define a *predicate* that captures both the aliased
+and the non-aliased cases together and use it in the pre- and
+postconditions:
 
 include_example(exercises/slf_incr2.c)
 
+// TODO: BCP: "BothOwned" is a pretty awkward name.
+// TODO: BCP: We haven't introduced CN records.  In particular, C programmers may be surprised that we don't have to pre-declare record types.
+// TODO: BCP: the annotation on incr2 needs some unpacking for readers!!
+// TODO: BCP: first use of the "split_case" annotation
+
 == Allocating and Deallocating Memory
+
+// TODO: BCP: Again, more text is needed to set up this discussion.
 
 At the moment, CN does not understand the `+malloc+` and `+free+`
 functions.  They are a bit tricky because they rely on a bit of
@@ -700,7 +907,7 @@ However, for any given type, we can define a type-specific function
 that allocates heap storage with exactly that type.  The
 implementation of this function cannot be checked by CN, but we can
 give just the spec, together with a promise to link against an
-external C library providing the implementation:
+external C library providing a correct (but not verified!) implementation:
 
 include_example(exercises/malloc.h)
 
@@ -709,9 +916,11 @@ inside a CN file by marking it with the keyword `+trusted+` at the top
 of its CN specification.)
 
 Similarly:
+
 include_example(exercises/free.h)
 
 Now we can write code that allocates and frees memory:
+
 include_example(exercises/slf17_get_and_free.c)
 
 We can also define a "safer", ML-style version of `+malloc+` that
@@ -735,53 +944,61 @@ pointed to by its argument.
 
 include_example(exercises/slf_ref_greater.c)
 
-=== Side Note
+=== Side note
 
 Here is another syntax for external / unknown
 functions, together with an example of a loose specification:
 
 ////
-TODO: BCP: This is a bit random -- it's not clear people need to know about this alternate syntax, and it's awkwardly mixed with a semi-interesting example that's not relevant to this section.
+TODO: BCP: This is a bit random -- it's not clear people need to know about this alternate syntax, and it's awkwardly mixed with a semi-interesting example that's not relevant to this section.  Also awkwardly placed, right here.
 ////
 
 include_example(exercises/slf18_two_dice.c)
 
 == Lists
 
+// TODO: BCP: Better intro needed
+
 Now it's time to look at some more interesting heap structures.
 
 To begin with, here is a C definition for linked list cells, together
 with allocation and deallocation functions:
 
-include_example(exercises/list_c_types.h)
+// TODO: BCP: Here and in several other places, we should use the "take _ = ..." syntax when the owned value is not used.  And we should explain it the first time we use it.
+
+include_example(exercises/list/c_types.h)
+
+// TODO: BCP: Per discussion with Christopher, Cassia, and Daniel, the word "predicate" is quite confusing for newcomers (in logic, predicates do not return things!).  A more neutral word might make for significantly easier onboarding.
+// Dhruv: Or no keyword? rems-project/cerberus#304  How about traversal?
+// BCP: No keyword sounds even better. But "traversal" in the interim is not bad. Or maybe "extractor" or something like that?
 
 To write specifications for C functions that manipulate lists, we need
-to define a CN "predicate" that describes *mathematical* list
-structures, as one would do in ML, Haskell, or Coq.  (We call them
-"sequences" here to avoid overloading the word "list".)
+to define a CN "predicate" that describes specification-level list
+structures, as one would do in ML, Haskell, or Coq.  We use the
+datatype `+List+` for CN-level lists.
 
-Intuitively, the `+IntList+` predicate walks over a pointer structure
-in the C heap and extracts an `+Owned+` version of the mathematical
-list that it represents.
+Intuitively, the `+SLList_At+` predicate walks over a singly-linked
+pointer structure in the C heap and extracts an `+Owned+` version of
+the CN-level list that it represents.
 
-include_example(exercises/list_cn_types.h)
+include_example(exercises/list/cn_types.h)
 
-We can also write specification-level "functions" by ordinary
-functional programming (in slightly strange, unholy-union-of-C-and-ML
+We can also write *functions* on CN-level lists by ordinary functional
+programming (in a slightly strange, unholy-union-of-C-and-Rust
 syntax):
 
-include_example(exercises/list_hdtl.h)
+include_example(exercises/list/hdtl.h)
 
-We use the `+IntList+` predicate to specify functions returning the
+We use the `+SLList_At+` predicate to specify functions returning the
 empty list and the cons of a number and a list.
 
-include_example(exercises/list_constructors.h)
+include_example(exercises/list/constructors.h)
 
-Finally, we can collect all this stuff into a single header file and
+Finally, we can collect all this stuff into a single header file.  (We
 add the usual C `+#ifndef+` gorp to avoid complaints from the compiler
-if it happens to get included twice from the same source file later.
+if it happens to get included twice from the same source file later.)
 
-include_example(exercises/list.h)
+include_example(exercises/list/headers.h)
 
 ////
 TODO: BCP: The 'return != NULL' should not be needed, but to remove it
@@ -797,22 +1014,23 @@ verifying list-manipulating functions.  First, `+append+`.
 Here is its specification (in a separate file, because we'll want to
 use it multiple times below.)
 
-include_example(exercises/list_append.h)
+include_example(exercises/list/append.h)
 
 Here is a simple destructive `+append+` function.  Note the two uses
 of the `+unfold+` annotation in the body, which are needed to help the
-CN typechecker.
+CN typechecker. The `+unfold+` annotation is an instruction to CN to replace a call to a recursive (CN) function (in this case `+append+`)
+with its definition, and is necessary because CN is unable to automatically determine when and where to expand recursive definitions on its own.
 
 // TODO: BCP: Can someone add a more technical explanation of why they are needed and exactly what they do?
 
-include_example(exercises/append.c)
+include_example(exercises/list/append.c)
 
 === List copy
 
 Here is an allocating list copy function with a pleasantly light
 annotation burden.
 
-include_example(exercises/list_copy.c)
+include_example(exercises/list/copy.c)
 
 === Merge sort
 
@@ -823,7 +1041,11 @@ avoids allocating any new list cells in the splitting step by taking
 alternate cells from the original list and linking them together into
 two new lists of roughly equal lengths.
 
-include_example(exercises/mergesort.c)
+// TODO: BCP: We've heard from more than one reader that this example is particularly hard to digest without some additional help
+
+// TODO: BCP: Nit: Merge multiple requires and ensures clauses into one
+
+include_example(exercises/list/mergesort.c)
 
 === Exercises
 
@@ -831,48 +1053,60 @@ include_example(exercises/mergesort.c)
 `+IntList_append2+`.  (You will need some in the body as well as at
 the top.)
 
-include_example(exercises/append2.c)
+include_example(exercises/list/append2.c)
 
 Note that it would not make sense to do the usual
 functional-programming trick of copying xs but sharing ys.  (Why?)
 
 *Length*.  Add annotations as appropriate:
 
-include_example(exercises/list_length.c)
+include_example(exercises/list/length.c)
 
 *List deallocation*.  Fill in the body of the following procedure and
 add annotations as appropriate:
 
-include_example(exercises/list_free.c)
+include_example(exercises/list/free.c)
 
 *Length with an accumulator*.  Add annotations as appropriate:
 // TODO: BCP: Removing / forgetting the unfold in this one gives a truly
 // bizarre error message saying that the constraint "n == (n + length(L1))"
 // is unsatisfiable...
 
+// TODO: Sainati: when I went through the tutorial, the file provided for this exercise was already "complete" in that
+// it already had all the necessary annotations present for CN to verify it
+
 include_example(exercises/slf_length_acc.c)
 
 == Working with External Lemmas
 
-**TODO**: This section should also show what the proof of the lemmas
+// TODO: BCP: This section should also show what the proof of the lemmas
 looks like on the Coq side!
 
 // TODO: BCP: This needs to be filled in urgently!!
+// Dhruyv: There are some examples in the Cerberus repo tests? rems-project/cerberus@20d9d5c
+
+////
+TODO: BCP: 
+think about capitalization, etc., for lemma names
+  push_lemma should be Push_lemma, I guess?  Or lemma_push?
+  snoc_facts should be lemma_Snoc or something
+  others?
+////
 
 === List reverse
 
 The specification of list reversal in CN relies on the familiar
 recursive list reverse function, with a recursive helper.
 
-include_example(exercises/list_snoc.h)
-include_example(exercises/list_rev.h)
+include_example(exercises/list/snoc.h)
+include_example(exercises/list/rev.h)
 
 To reason about the C implementation of list reverse, we need to help
 the SMT solver by enriching its knowledge base with a couple of facts
 about lists.  The proofs of these facts require induction, so in CN we
 simply state them as lemmas and defer the proofs to Coq.
 
-include_example(exercises/list_rev_lemmas.h)
+include_example(exercises/list/rev_lemmas.h)
 
 Having stated these lemmas, we can now complete the specification and
 proof of `+IntList_rev+`.  Note the two places where `+apply+` is used
@@ -885,18 +1119,20 @@ general scope where a given set of lemmas might be needed, rather than
 specifying exactly where to use them.)
 ////
 
-include_example(exercises/list_rev.c)
+include_example(exercises/list/rev.c)
 
 For comparison, here is another way to write the program, using a
 while loop instead of recursion, with its specification and proof.
 
 // TODO: BCP: Why 0 instead of NULL??  (Is 0 better?)
 
-include_example(exercises/list_rev_alt.c)
+include_example(exercises/list/rev_alt.c)
 
 === Exercises
 
 **Sized stacks:** Fill in annotations where requested:
+
+// TODO: BCP: type_synonym has not been introduced yet
 
 include_example(exercises/slf_sized_stack.c)
 
@@ -913,6 +1149,8 @@ include_example(exercises/slf_sized_stack.c)
 // ======================================================================
 
 == CN Style
+
+// TODO: BCP: If we are agreed on the naming conventions suggested in /NAMING-CONVENTIONS.md, we could move that material here.
 
 This section gathers some advice on stylistic conventions and best
 practices in CN.
@@ -956,44 +1194,47 @@ potential source of nasty bugs!
 
 
 // ======================================================================
+// ======================================================================
+// ======================================================================
 
 == Case Studies
 
 To close out the tutorial, let's look at some larger examples.
 
-=== Imperative Queues
+=== Case Study: Imperative Queues
 
 A queue is a linked list with O(1) operations for adding things to one
 end (the "back") and removing them from the other (the "front").  Here
 are the C type definitions:
 
-include_example(exercises/queue_c_types.h)
+include_example(exercises/queue/c_types.h)
 
 A queue consists of a pair of pointers, one pointing to the front
-element, which is the first in a linked list of `+int_queueCell+`s,
+element, which is the first in a linked list of `+queue_cell+`s,
 the other pointing directly to the last cell in this list.  If the
 queue is empty, both pointers are NULL.
 
-Abstractly, a queue just represents a list, so we can reuse the `+seq+`
+Abstractly, a queue just represents a list, so we can reuse the `+List+`
 type from the list examples earlier in the tutorial.
 
-include_example(exercises/queue_cn_types_1.h)
-////
-TODO: BCP: If we're going to call this IntQueuePtr (Dhruv's suggestion), then
-we have to rename other things above for consistency...
-////
+include_example(exercises/queue/cn_types_1.h)
 
-Given a pointer to an `+int_queue+` struct, this predicate grabs
-ownership of the struct, asserts that the `+front+` and `+back+` pointers
-must either both be NULL or both be non-NULL, and then hands off to an
-auxiliary predicate `+IntQueueFB+`.  (Conceptually, `+IntQueueFB+` is
-part of `+IntQueuePTR+`, but CN currently allows conditional
-expressions only at the beginning of predicate definitions, not after
-a `+take+`.)
+Given a pointer to a `+queue+` struct, this predicate grabs ownership
+of the struct, asserts that the `+front+` and `+back+` pointers must
+either both be NULL or both be non-NULL, and then hands off to an
+auxiliary predicate `+QueueFB+`.  Note that `+QueuePtr_At+` returns a
+`+List+` -- that is, the abstract view of a queue heap structure is
+simply the sequence of elements that it contains.  The difference
+between a queue and a singly or doubly linked list is simply one of
+concrete representation.
 
-`+IntQueueFB+` is where the interesting part starts:
+`+QueueFB+` is where the interesting part starts.  (Conceptually,
+`+QueueFB+` is part of `+QueuePTR+`, but CN currently allows
+conditional expressions only at the beginning of predicate
+definitions, not after a `+take+`, so we need to make a separate
+auxiliary predicate.)
 
-include_example(exercises/queue_cn_types_2.h)
+include_example(exercises/queue/cn_types_2.h)
 
 First, we case on whether the `+front+` of the queue is NULL.  If so,
 then the queue is empty and we return the empty sequence.
@@ -1001,7 +1242,7 @@ then the queue is empty and we return the empty sequence.
 If the queue is not empty, we need to walk down the linked list of
 elements and gather up all their values into a sequence.  But we must
 treat the last element of the queue specially, for two reasons.
-First, because the `+push+` operation is going to follow the `+back+`
+First, since the `+push+` operation is going to follow the `+back+`
 pointer directly to the last list cell without traversing all the
 others, we need to `+take+` that element now rather than waiting to
 get to it at the end of the recursion starting from the `+front+`.
@@ -1011,10 +1252,10 @@ the second to last cell (or the `+front+` pointer, if there is only
 one cell in the list), so we need to be careful not to `+take+` this
 cell twice.
 
-Accordingly, we begin by `+take+`ing the tail cell and passing it
-separately to the `+IntQueueAux+` predicate, which has the job of
+Accordingly, we begin by `+take+`-ing the tail cell and passing it
+separately to the `+QueueAux+` predicate, which has the job of
 walking down the cells from the front and gathering all the rest of
-them into a sequence.  We take the result from `+IntQueueAux+` and
+them into a sequence.  We take the result from `+QueueAux+` and
 `+snoc+` on the very last element.
 
 The `+assert (is_null(B.next))+` here gives the CN verifier a crucial
@@ -1024,38 +1265,38 @@ its `+next+` field will always be NULL.
 
 // TODO: BCP: How to help people guess that this is needed??
 
-Finally, the `+IntQueueAux+` predicate recurses down the list of
-cells.
+Finally, the `+QueueAux+` predicate recurses down the list of
+cells and returns a list of their contents.
 
-include_example(exercises/queue_cn_types_3.h)
+include_example(exercises/queue/cn_types_3.h)
 
 Its first argument (`+f+`) starts out at `+front+` and progresses
-through the list on recursive calls; its `+b+` argument is always a
+through the queue on recursive calls; its `+b+` argument is always a
 pointer to the very last cell.
 
 When `+f+` and `+b+` are equal, we have reached the last cell and
-there is nothing to do.  (We don't even have to build a singleton
-list: that's going to happen one level up, in `+IntQueueFB+`.)
+there is nothing to do.  We don't even have to build a singleton
+list: that's going to happen one level up, in `+QueueFB+`.
 
 Otherwise, we `+take+` the fields of the `+f+`, make a recurive
-call to `+IntQueueAux+` to process the rest of the cells, and cons the
+call to `+QueueAux+` to process the rest of the cells, and cons the
 `+first+` field of this cell onto the resulting sequence before
-returning it.  (Again, we need to help the CN verifier by explicitly
+returning it.  Again, we need to help the CN verifier by explicitly
 informing it of the invariant that we know, that `+C.next+` cannot be
-null if `+f+` and `+b+` are different.)
+null if `+f+` and `+b+` are different.
 
 Now we need a bit of boilerplate: just as with linked lists, we need
 to be able to allocate and deallocate queues and queue cells.  There
 are no interesting novelties here.
 
-include_example(exercises/queue_allocation.h)
+include_example(exercises/queue/allocation.h)
 
 // ======================================================================
 
 *Exercise*: The function for creating an empty queue just needs to set
 both of its fields to NULL.  See if you can fill in its specification.
 
-include_example(exercises/queue_empty.c)
+include_example(exercises/queue/empty.c)
 
 // ======================================================================
 
@@ -1064,12 +1305,12 @@ first.
 
 Here's the unannotated C code -- make sure you understand it.
 
-include_example(exercises/queue_push_orig.broken.c)
+include_example(exercises/queue/push_orig.broken.c)
 
 *Exercise*: Before reading on, see if you can write down a reasonable
 top-level specification for this operation.
 
-(One thing you might find odd about this code is that there's a
+One thing you might find odd about this code is that there's a
 `+return+` statement at the end of each branch of the conditional,
 rather than a single `+return+` at the bottom.  The reason for this is
 that, when CN analyzes a function body containing a conditional, it
@@ -1078,11 +1319,11 @@ the branches.  Then, if verification encounters an error related to
 this code -- e.g., "you didn't establish the `+ensures+` conditions at
 the point of returning -- the error message will be confusing because
 it will not be clear which branch of the conditional it is associated
-with.)
+with.
 
 Now, here is the annotated version of the `+push+` operation.
 
-include_example(exercises/queue_push.c)
+include_example(exercises/queue/push.c)
 
 The case where the queue starts out empty (`+q->back == 0+`) is easy.
 CN can work it out all by itself.
@@ -1093,7 +1334,10 @@ elements, so we should expect that validating `+push+` is going to
 require some reasoning about this sequence.  Here, in fact, is the
 lemma we need.
 
-include_example(exercises/queue_push_lemma.h)
+// TODO: BCP: Not sure I can explain what "pointer" means here, or why we don't need to declare more specific types for these arguments to the lemma.
+// Dhruv: See above comments about strong updates: in a requires/ensures, the types are given by the arguments in scope, but here we don't have that.
+
+include_example(exercises/queue/push_lemma.h)
 
 This says, in effect, that we have two choices for how to read out the
 values in some chain of queue cells of length at least 2, starting
@@ -1116,17 +1360,17 @@ as part of the rest (so that the new `+back+` cell can now be treated
 specially).
 
 One interesting technicality is worth noting: After the assignment
-`+q->back = c+` we can no longer prove `+IntQueueFB(q->front,
-oldback)+`, but we don't care, since we want to prove
-`+IntQueueFB(q->front, q->back)+`. However, crucially,
-`+IntQueueAux(q->front, oldback)+` is still true.
+`+q->back = c+`, we can no longer prove `+QueueFB(q->front,
+oldback)+`, but we don't care about this, since we want to prove
+`+QueueFB(q->front, q->back)+`. However, crucially,
+`+QueueAux(q->front, oldback)+` is still true.
 
 // ======================================================================
 
 Now let's look at the `+pop+` operation.  Here is the un-annotated
 version:
 
-include_example(exercises/queue_pop_orig.broken.c)
+include_example(exercises/queue/pop_orig.broken.c)
 
 *Exercise*: Again, before reading on, see if you can write down a
 plausible top-level specification.  (For extra credit, see how far you
@@ -1134,23 +1378,23 @@ can get with verifying it!)
 
 Here is the fully annotated `+pop+` code:
 
-include_example(exercises/queue_pop.c)
+include_example(exercises/queue/pop.c)
 
 There are three annotations to explain.  Let's consider them in order.
 
 First, the `+split_case+` on `+is_null(q->front)+` is needed to tell
 CN which of the branches of the `+if+` at the beginning of the
-`+IntQueueFB+` predicate it can "unpack".  (`+IntQueuePtr+` can be
-unpacked immediately because it is unconditional, but `+IntQueueFB+`
+`+QueueFB+` predicate it can "unpack".  (`+QueuePtr_At+` can be
+unpacked immediately because it is unconditional, but `+QueueFB+`
 cannot.)
 // TODO: BCP: the word "unpack" is mysterious here.
 
-The guard/condition for `+IntQueueFB+` is `+is_null(front)+`, which is
+The guard/condition for `+QueueFB+` is `+is_null(front)+`, which is
 why we need to do a `+split_case+` on this value. On one branch of the
-`+split_case+`, we have a contradiction: the fact that `+before ==
-Seq_Nil{}+` (from `+IntQueueFB+`) conflicts with `+before != Seq_Nil+`
+`+split_case+` we have a contradiction: the fact that `+before ==
+Nil{}+` (from `+QueueFB+`) conflicts with `+before != Nil+`
 from the precondition, so that case is immediate.  On the other
-branch, CN now knows that the queue is non-empty as required and type
+branch, CN now knows that the queue is non-empty, as required, and type
 checking proceeds.
 
 When `+h == q->back+`, we are in the case where the queue contains
@@ -1165,7 +1409,7 @@ the `+front+` field of the queue structure to point to the next cell.
 To push the verification through, we need a simple lemma about the
 `+snoc+` function:
 
-include_example(exercises/queue_pop_lemma.h)
+include_example(exercises/queue/pop_lemma.h)
 
 The crucial part of this lemma is the last three lines, which express
 a simple, general fact about `+snoc+`:
@@ -1198,17 +1442,16 @@ telltale clues in the error report that suggest what the problem was?
 
 * Remove `+assert (is_null(B.next));+` from `+InqQueueFB+`.
 * Remove `+assert (is_null(B.next));+` from `+InqQueueAux+`.
-* Remove one or both of occurrences of `+freeIntQueueCell(f)+` in
-  `+IntQueue_pop+`.
+* Remove one or both of occurrences of `+free_queue_cell(f)+` in
+  `+pop_queue+`.
 * Remove, in turn, each of the CN annotations in the bodies of
-  `+IntQueue_pop+` and `+IntQueue_push+`.
+  `+pop_queue+` and `+push_queue+`.
 
 *Exercise*: The conditional in the `+pop+` function tests whether or
 not `+f == b+` to find out whether we have reached the last element of
 the queue.  Another way to get the same information would be to test
 whether `+f->next == 0+`.  Can you verify this version?
-
-Note: I (BCP) have not worked out the details, so am not sure how hard
+*Note*: I (BCP) have not worked out the details, so am not sure how hard
 this is (or if it is even not possible, though I'd be surprised).
 Please let me know if you get it working!
 
@@ -1216,136 +1459,155 @@ Please let me know if you get it working!
 it might seem reasonable to move the identical assignments to `+x+` in both
 branches to above the `+if+`.  This doesn't "just work" because the
 ownership reasoning is different.  In the first case, ownership of
-`+h+` comes from `+IntQueueFB+` (because `+h == q->back+`). In the
-second case, it comes from `+IntQueueAux+` (because `+h !=
+`+h+` comes from `+QueueFB+` (because `+h == q->back+`). In the
+second case, it comes from `+QueueAux+` (because `+h !=
 q->back+`).
 
 Can you generalize the `+snoc_facts+` lemma to handle both cases?  You
 can get past the dereference with a `+split_case+` but formulating the
 lemma before the `+return+` will be a bit more complicated.
-
-Note: Again, this has not been shown to be possible, but Dhruv
+//
+*Note*: Again, this has not been shown to be possible, but Dhruv
 believes it should be!
 
-=== Doubly Linked Lists
+// ======================================================================
+// ======================================================================
+// ======================================================================
+=== Case Study: Doubly Linked Lists
+
+// TODO: BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions.
 
 A doubly linked list is a linked list where each node has a pointer
 to both the next node and the previous node. This allows for O(1)
-operations for adding or removing nodes anywhere in the list. Here is
-the C type definition:
+operations for adding or removing nodes anywhere in the list. 
 
-include_example(exercises/Dbl_Linked_List/c_types.h)
+Because of all the sharing in this data structure, the separation
+reasoning is a bit tricky.  We'll give you the core definitions and
+then invite you to help fill in the annotations for some of the
+functions that manipulate doubly linked lists.
 
-The idea behind the representation of this list is that we don't keep 
-track of the front or back, but rather we take any node in the list 
-and have a sequence to the left and to the right of that node. The `left` 
-and `right` are from the point of view of the node itself, so `left` 
-is kept in reverse order. Additionally, similarly to in the 
-`Imperative Queues` example, we can reuse the `+seq+` type.
+First, here is the C type definition:
 
-include_example(exercises/Dbl_Linked_List/cn_types.h)
+include_example(exercises/dll/c_types.h)
 
-The predicate for this datatype is a bit complicated. The idea is that 
-we first want to own the node that is passed in. Then, we want to 
-follow all of the `prev` pointers to own everything backwards from the 
-node. We want to do the same for the `next` pointers to own everything 
-forwards from the node. This is how we construct our `left` and `right`
-fields.
+The idea behind the representation of this list is that we don't keep
+track of the front or back, but rather we take any node in the list
+and have a sequence to the left and to the right of that node. The `left`
+and `right` are from the point of view of the node itself, so `left`
+is kept in reverse order. Additionally, similarly to in the
+`Imperative Queues` example, we can reuse the `+List+` type.
 
-include_example(exercises/Dbl_Linked_List/predicates.h)
+include_example(exercises/dll/cn_types.h)
+
+The predicate for this datatype is a bit complicated. The idea is that
+we first own the node that is passed in. Then we follow all of the
+`prev` pointers to own everything backwards from the node, and finally
+all the `next` pointers to own everything forwards from the node, to
+construct the `left` and `right` fields.
+
+// TODO: BCP: Maybe rethink the Own_Forwards / Backwards naming -- would something like Queue_At_Left and Queue_At_Right be clearer??
+include_example(exercises/dll/predicates.h)
 
 Note that `Dll_at` takes ownership of the node passed in, and then
-calls `Own_Backwards` and `Own_Forwards` which recursively take 
-ownership of the rest of the list and add their values to the `left` 
-and `right` sequences, respectively.
+calls `Own_Backwards` and `Own_Forwards`, which recursively take
+ownership of the rest of the list.
 
-Additionally, you will notice that `Own_Forwards` and `Own_Backwards` 
-include `ptr_eq` assertions for the `prev` and `next` pointers. This 
-is to ensure that the nodes in the list are correctly 
-doubly linked. For example, the line 
-`assert (ptr_eq(n.prev, prev_pointer));` in `Own_Forwards` ensures 
-that the current node correctly points backward to the previous node in the 
-list. The line `assert(ptr_eq(prev_node.next, p));` ensures that the 
-previous node correctly points forward to the current node. The same can be 
-said for these assertions in `Own_Backwards`.
+Also, notice that `Own_Forwards` and `Own_Backwards` include `ptr_eq`
+assertions for the `prev` and `next` pointers. This is to ensure that
+the nodes in the list are correctly doubly linked. For example, the
+line `assert (ptr_eq(n.prev, prev_pointer));` in `Own_Forwards`
+ensures that the current node correctly points backward to the
+previous node in the list. The line `assert(ptr_eq(prev_node.next,
+p));` ensures that the previous node correctly points forward to the
+current node. 
 
-All three of these predicates stop once they reach a null pointer. In 
-this way, we can ensure that the only null pointers in the list are at 
-the beginning and end of the list.
+Before we move on to the functions that manipulate doubly linked
+lists, we need to define a few "getter" functions that will allow us
+to access the fields of our `Dll` datatype. This will make the
+specifications easier to write.
 
-Before we move on to the functions that manipulate the doubly linked 
-list, we need to define a few "getter" functions that will allow us 
-to access the fields of our `Dll` datatype. This will make our 
-specifications much easier to write.
+include_example(exercises/dll/getters.h)
 
-include_example(exercises/Dbl_Linked_List/getters.h)
+We also need some boilerplate for allocation and deallocation.
 
-We also must include some boilerplate code for allocation and 
-deallocation.
+include_example(exercises/dll/malloc_free.h)
 
-include_example(exercises/Dbl_Linked_List/malloc_free.h)
+For convenience, we gather all of these files into a single header file.
 
-And we compile all of these files into a single header file.
-
-include_example(exercises/Dbl_Linked_List/headers.h)
-
-Lastly, an important note about this representation of a doubly linked list is that there is no higher level representation of the list (such as the `int_queue` structure in the `Imperative Queues` section). This makes it difficult to reason about adding and removing things from a list that may be empty at some times. If we have an empty list, we do not want any identifier of this list to disappear altogether. To work around this problem, we represent an empty list as a null pointer and require that every function that manipulates the list must return a pointer to somewhere in the list. This way, we can always have a pointer to the list, even if it is empty.
+include_example(exercises/dll/headers.h)
 
 // ======================================================================
 
-Now we can move on to an initialization function. Since an empty list is represented as a null pointer, we will look at initializing
-a singleton list (or in other words, a list with only one item).
+Now we can move on to an initialization function. Since an empty list
+is represented as a null pointer, we will look at initializing a
+singleton list (or in other words, a list with only one item).
 
-include_example(exercises/Dbl_Linked_List/singleton.c)
+include_example(exercises/dll/singleton.c)
 
 // ======================================================================
 
 The `add` and `remove` functions are where it gets a little tricker.
 Let's start with `add`. Here is the unannotated version:
 
-include_example(exercises/Dbl_Linked_List/add_orig.broken.c)
+include_example(exercises/dll/add_orig.broken.c)
 
-*Exercise*: Before reading on, see if you can figure out what specifications are needed.
+*Exercise*: Before reading on, see if you can figure out what
+specification is appropriate and what other are needed.
+// TODO: BCP: I rather doubt they are going to be able to come up with this specification on their own!  We need to set it up earlier with a simpler example (maybe in a whoile earlier section) showing how to use conditionals in specs.
 
 Now, here is the annotated version of the `add` operation:
 
-include_example(exercises/Dbl_Linked_List/add.c)
+include_example(exercises/dll/add.c)
 
-First, let's look at the pre and post conditions. The `requires` 
-clause is straightforward. We need to own the list centered around 
+First, let's look at the pre- and post-conditions. The `requires`
+clause is straightforward. We need to own the list centered around
 the node that `n` points to. `Before` is a `Dll`
-that is either empty, or it has a seq to the left,
-the current node that `n` points to, and a seq to the right.
+that is either empty, or it has a List to the left,
+the current node that `n` points to, and a List to the right.
 This corresponds to the state of the list when it is passed in.
 
-In the ensures clause, we again establish ownership of the list, but this time it is centered around the added node. This means that `After` is a `Dll` structure similar to `Before`, except that the node `curr` is 
-now the created node. The old `curr` is pushed into the
-left part of the new list. The ternary operator in the `ensures` clause is saying that if the list was empty
-coming in, it now is a singleton list. Otherwise, the left left part of the list now has the data from the old `curr` node, the new `curr` node is the added node,
-and the right part of the list is the same as before.
+In the ensures clause, we again establish ownership of the list, but
+this time it is centered around the added node. This means that
+`After` is a `Dll` structure similar to `Before`, except that the node
+`curr` is now the created node. The old `curr` is pushed into the left
+part of the new list. The conditional operator in the `ensures` clause
+is saying that if the list was empty coming in, it now is a singleton
+list. Otherwise, the left left part of the list now has the data from
+the old `curr` node, the new `curr` node is the added node, and the
+right part of the list is the same as before.
 
-Now, let's look at the annotations in the function body.
-CN can figure out the empty list case for itself, but it needs some help with the non-empty list case. The
-`split_case` on `is_null((\*n).prev)` tells CN to unpack the `Own_Backwards` predicate. Without this annotation,
-CN cannot reason that we didn't lose the left half of the list before we return, and will claim we are missing a resource for returning. The `split_case` on `is_null(n->next->next)` is similar, but for unpacking the `Own_Forwards` predicate. Note that we 
-have to go one more node forward to make sure that everything past `n->next` is still owned at the end of the function.
+Now, let's look at the annotations in the function body.  CN can
+figure out the empty list case for itself, but it needs some help with
+the non-empty list case. The `split_case` on `is_null(n->prev)`
+tells CN to unpack the `Own_Backwards` predicate. Without this
+annotation, CN cannot reason that we didn't lose the left half of the
+list before we return, and will claim we are missing a resource for
+returning. The `split_case` on `is_null(n->next->next)` is similar,
+but for unpacking the `Own_Forwards` predicate. Note that we have to
+go one more node forward to make sure that everything past `n->next`
+is still owned at the end of the function.
 
+Now let's look at the `remove` operation. Traditionally, a `remove`
+operation for a list returns the integer that was removed. However we
+also want all of our functions to return a pointer to the
+list. Because of this, we define a `+struct+` that includes an `int`
+and a `node`.
 
-Now let's look at the `remove` operation. Traditionally, a `remove` operation for a list returns the integer that was removed. However we also want all of our functions to return a pointer to the list. Because of this, we define a `+struct+` that includes an `int` and a `node`. 
-
-include_example(exercises/Dbl_Linked_List/node_and_int.h)
+include_example(exercises/dll/dllist_and_int.h)
 
 Now we can look at the code for the `remove` operation. Here is the un-annotated version:
 
-include_example(exercises/Dbl_Linked_List/remove_orig.broken.c)
+include_example(exercises/dll/remove_orig.broken.c)
 
-*Exercise*: Before reading on, see if you can figure out what specifications are needed.
+*Exercise*: Before reading on, see if you can figure out what
+specification is appropriate and what annotations are needed.
+// TODO: BCP: Again, unlikely the reader is going to be able to figure this out without help.  We need some hints.
 
 Now, here is the fully annotated version of the `remove` operation:
 
-include_example(exercises/Dbl_Linked_List/remove.c)
+include_example(exercises/dll/remove.c)
 
-First, let's look at the pre and post conditions. The `requires` clause says that we cannot remove a node from an empty list, so the pointer passed in must not be null. Then we take ownership of the list, and we
+First, let's look at the pre- and post-conditions. The `requires` clause says that we cannot remove a node from an empty list, so the pointer passed in must not be null. Then we take ownership of the list, and we
 assign the node of that list to the identifier `del`
 to make our spec more readable. So `Before` refers to the `Dll` when the function is called, and `del` refers to the node that will be deleted.
 
@@ -1354,47 +1616,125 @@ of the `node_and_int` struct as well as the `Dll` that
 the node is part of. Here, `After` refers to the `Dll`
 when the function returns. We ensure that the int that is returned is the value of the deleted node, as intended. Then we have a complicated nested ternary conditional that ensures that `After` is the same as `Before` except for the deleted node. Let's break down this conditional:
 
-- The first guard asks if both `del.prev` and `del.next` are null. In this case, we are removing the only node in the list, so the resulting list will be empty. The `else` branch of this conditional contains it's own conditional.
+- The first guard asks if both `del.prev` and `del.next` are null. In this case, we are removing the only node in the list, so the resulting list will be empty. The `else` branch of this conditional contains its own conditional.
 
-- For the following conditional, the guard checks if 'del.prev' is NOT null. Note that in the code, this means that the returned node is `del.next`, regardless of whether or not `del.prev` is null. If this is the case, `After` is now centered around `del.next`, and the left part of the list is the same as before. Since `del.next` was previously the head of the right side, the right side loses its head in `After`. This is where we get `After == Dll{left: Left(Before), curr: Node(After), right: tl(Right(Before))}`. 
+- For the following conditional, the guard checks if 'del.prev' is
+  _not_ null. This means that the returned node is `del.next`,
+  regardless of whether or not `del.prev` is null. If this is the
+  case, `After` is now centered around `del.next`, and the left part
+  of the list is the same as before. Since `del.next` was previously
+  the head of the right side, the right side loses its head in
+  `After`. This is where we get `After == Dll{left:
+  Left_Sublist(Before), curr: Node(After), right: Tl(Right(Before))}`.
 
-- The final `else` branch is the case where `del.next` is null, but `del.prev` is not null. In this case, the returned node is `del.prev`. This branch follows the same logic as the one before it, except now we are taking the head of the left side rather than the right side. Now the right side is unchanged, and the left side is just the tail, as seen shown in
-`After == Dll{left: tl(Left(Before)), curr: Node(After), right: Right(Before)};`
+- The final `else` branch is the case where `del.next` is null, but
+`del.prev` is not null. In this case, the returned node is
+`del.prev`. This branch follows the same logic as the one before it,
+except now we are taking the head of the left side rather than the
+right side. Now the right side is unchanged, and the left side is just
+the tail, as seen shown in `After == Dll{left:
+Tl(Left_Sublist(Before)), curr: Node(After), right: Right(Before)};`
 
-Now, let's look at the annotations in the function body. These are similar to in the `add` function. Both of these `split_case` annotations are needed to unpack the `Own_Forwards` and `Own_Backwards` predicates. Without these annotations, CN will not be able to reason that we didn't lose the left or right half of the list before we return, and will claim we are missing a resource for returning.
+The annotations in the function body are similar to in the `add`
+function. Both of these `split_case` annotations are needed to unpack
+the `Own_Forwards` and `Own_Backwards` predicates. Without them, CN
+will not be able to reason that we didn't lose the left or right half
+of the list before we return and will claim we are missing a resource
+for returning.
 
 // ======================================================================
 
-*Exercise*: There are many other functions that one might want to implement for a doubly linked list. For example, one might want to implement a function that appends one list to another, or a function that reverses a list. Try implementing these functions and writing their specifications.
+*Exercise*: There are many other functions that one might want to
+ implement for a doubly linked list. For example, one might want to
+ implement a function that appends one list to another, or a function
+ that reverses a list. Try implementing a few of these functions and
+ writing their specifications.
 
-=== The Runway
+*Exercise*: For extra practice, try coming up with one or two
+variations on the Dll data structure itself (there are many!).
 
-Suppose we have been tasked with writing a program that simulates a runway at an airport. This airport is very small, so it only has one runway that is used for both takeoffs and landings. We want to verify that the runway is always safe by implementing the following specifications into CN:
+// ======================================================================
+// ======================================================================
+// ======================================================================
+=== Case Study: Airport Simulation
 
-1. The runway has two modes: departure mode and arrival mode. The two modes can never be active at the same time, and neither mode is active at the beginning of the day.
+// TODO: BCP: I'm nervous about this case study -- it is not nearly as well debugged as the others, and it seems potentially quite confusing.  I propose deleting it, but if other like it we can try to whip it into better shape...
 
-2. There is always a waitlist of planes that need to land at the airport and planes that need to leave the airport at a given moment. These can be modeled with counters `W_A` for the number of planes waiting to arrive, and `W_D` for the number of planes waiting to depart. 
+Suppose we have been tasked with writing a program that simulates a
+runway at an airport. This airport is very small, so it only has one
+runway, which is used for both takeoffs and landings. We want to
+verify that the runway is always used safely, by checking the
+following informal specification:
 
-3. At any time, a plane is either waiting to arrive, waiting to depart, or on the runway. Once a plane has started arriving or departing, the corresponding counter (`W_A` or `W_D`) is decremented. There is no need to keep track of planes once they have arrived or departed. Additionally,  once a plane is waiting to arrive or depart, it continues waiting until it has arrived or departed.
+1. The runway has two modes: departure mode and arrival mode. The two
+   modes can never be active at the same time.  Neither mode is active
+   at the beginning of the day.
+// TODO: BCP: Would it be simpler to say it is in arrival mode at the beginning of the day?  What difference would that make?  (Saying there are two modes and then immediately introducing a third one is a bit confusing.)
 
+2. At any given moment, there is a waiting list of planes that need to
+   land at the airport and planes that need to leave the
+   airport. These are modeled with counters `W_A` for the number of
+   planes waiting to arrive, and `W_D` for the number of planes
+   waiting to depart.
 
-4. Let’s say it takes 5 minutes for a plane to arrive or depart. During these 5 minutes, no other plane may use the runway. We can keep track of how long a plane has been on the runway with the `Runway_Counter`. If the `Runway_Counter` is at 0, then there is currently no plane using the runway, and it is clear for another plane to begin arriving or departing. Once the `Runway_Counter` reaches 5, we can reset it at the next clock tick. One clock tick represents 1 minute.
+3. At any moment, a plane is either waiting to arrive, waiting to
+   depart, or on the runway. Once a plane has started arriving or
+   departing, the corresponding counter (`W_A` or `W_D`) is
+   decremented. There is no need to keep track of planes once they
+   have arrived or departed. Additionally, once a plane is waiting to
+   arrive or depart, it continues waiting until it has arrived or
+   departed.
 
-5.  If there is at least one plane waiting to depart and no cars waiting to arrive, then the runway is set to departure mode (and vice versa for arrivals).
+4. It takes 5 minutes for a plane to arrive or depart. During these 5
+   minutes, no other plane may use the runway. We can keep track of
+   how long a plane has been on the runway with the
+   `Runway_Counter`. If the `Runway_Counter` is at 0, then there is
+   currently no plane using the runway, and it is clear for another
+   plane to begin arriving or departing. Once the `Runway_Counter`
+   reaches 5, we can reset it at the next clock tick. One clock tick
+   represents 1 minute.
 
-6.  If both modes of the runway are inactive and planes become ready to depart and arrive simultaneously, the runway will activate arrival mode first. If the runway is in arrival mode and there are planes waiting to depart, no more than 3 planes may arrive from that time point. When either no more planes are waiting to arrive or 3 planes have arrived, the runway switches to departure mode. If the runway is on arrival mode and no planes are waiting to depart, then the runway may stay in arrival mode until a plane is ready to depart, from which time the 3-plane limit is imposed (and vice versa for departures). Put simply, if any planes are waiting for a mode that is inactive, that mode will become active no more than 15 minutes later (5 minutes for each of 3 planes).
+5. If there is at least one plane waiting to depart and no cars
+   waiting to arrive, then the runway is set to departure mode (and
+   vice versa for arrivals).
 
-To encode all this in CN, we first need a way to describe the state of the runway at a given time. We can use a *struct* that includes the following fields:
+6. If both modes of the runway are inactive and planes become ready to
+   depart and arrive simultaneously, the runway will activate arrival
+   mode first. If the runway is in arrival mode and there are planes
+   waiting to depart, no more than 3 planes may arrive from that time
+   point. When either no more planes are waiting to arrive or 3 planes
+   have arrived, the runway switches to departure mode. If the runway
+   is on arrival mode and no planes are waiting to depart, then the
+   runway may stay in arrival mode until a plane is ready to depart,
+   from which time the 3-plane limit is imposed (and vice versa for
+   departures). Put simply, if any planes are waiting for a mode that
+   is inactive, that mode will become active no more than 15 minutes
+   later (5 minutes for each of 3 planes).
 
-- `ModeA` and `ModeD` to represent the arrival and departure modes, respectively. We can define constants for `ACTIVE` and `INACTIVE`, as described in the `Constants` section above.
-- `W_A` and `W_D` to represent the number of planes waiting to arrive and depart, respectively.
-- `Runway_Time` to represent the time (in minutes) that a plane has spent on the runway while arriving or departing.
-- `Plane_Counter` to represent the number of planes that have arrived or departed while planes are waiting for the other mode. This will help us keep track of the 3-plane limit as described in *(6)*.
+To encode all this in CN, we first need a way to describe the state of
+the runway at a given time. We can use a *struct* that includes the
+following fields:
 
+- `ModeA` and `ModeD` to represent the arrival and departure modes,
+  respectively. We can define constants for `ACTIVE` and `INACTIVE`,
+  as described in the `Constants` section above.
+
+- `W_A` and `W_D` to represent the number of planes waiting to arrive
+  and depart, respectively.
+
+- `Runway_Time` to represent the time (in minutes) that a plane has
+  spent on the runway while arriving or departing.
+
+- `Plane_Counter` to represent the number of planes that have arrived
+  or departed while planes are waiting for the other mode. This will
+  help us keep track of the 3-plane limit as described in *(6)*.
 
 include_example(exercises/runway/state.h)
 
-Next, we need to specify what makes a state valid. We must define a rigorous specification in order to ensure that the runway is always safe and working as intended. Try thinking about what this might look like before looking at the code below.
+Next, we need to specify what makes a state valid. We must define a
+rigorous specification in order to ensure that the runway is always
+safe and working as intended. Try thinking about what this might look
+like before looking at the code below.
 
 include_example(exercises/runway/valid_state.h)
 
@@ -1422,11 +1762,18 @@ First, let's look at an initialization function and functions to update `Plane_C
 
 include_example(exercises/runway/funcs1.h)
 
-*Exercise*: Now try adding your own specifications to the following functions. Make sure that you specify a valid state as a pre and post condition for every function. If you get stuck, the solution is in the solutions folder.
+*Exercise*: Now try adding your own specifications to the following
+functions. Make sure that you specify a valid state as a pre- and
+post-condition for every function. If you get stuck, the solution is
+in the solutions folder.
 
 include_example(exercises/runway/funcs2.c)
 
-*Exercise*: For extra practice, try coming up with different specifications or variations for this exercise and implementing them yourself!
+// ======================================================================
+
+== Acknowledgment of Support and Disclaimer
+
+This material is based upon work supported by the Air Force Research Laboratory (AFRL) and Defense Advanced Research Projects Agencies (DARPA) under Contract No. FA8750-24-C-B044, a European Research Council (ERC) Advanced Grant “ELVER” under the European Union’s Horizon 2020 research and innovation programme (grant agreement no. 789108), and additional funding from Google.  The opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the Air Force Research Laboratory (AFRL).
 
 // ======================================================================
 
@@ -1447,9 +1794,9 @@ Further topics:
     https://www.geeksforgeeks.org/data-structures/#most-popular-data-structures
   - Maybe add some explanation of -- or at least a pointer to --
     Dhruv's Iris-in-C examples:
-       queue_pop_lemma_stages.c
-       queue_push_induction.c
-       queue_pop_unified.c
+       pop_queue_lemma_stages.c
+       push_queue_induction.c
+       pop_queue_unified.c
 
 Further exercises:
   - Some exercises that get THEM to write predicates, datatype
@@ -1460,15 +1807,15 @@ Misc things to do:
 
   - naming issues
         - rename == to ptr_eq everywhere in specs
-        - rename list to seq in filenames.  or go more radical and rename seq to cnlist
-        - consider renaming IntList to just List (and int_list to just list,
+        - rename list to List in filenames.  or go more radical and rename List to cnlist
+        - consider renaming SLList_At to just List (and sllist to just list,
           etc.) everywhere (since we are only dealing with one kind of list
           in the tutorial, the extra pedantry is not getting us much; and
           this simplification would avoid trying to fix conventions that all
           CN code should use everywhere...)
-       - related: the name Seq_Cons is awkward for several reasons:
+       - related: the name Cons is awkward for several reasons:
            - long / verbose (nothing to do about that, I guess)
-           - Seq is capitalized, but it means seq
+           - Seq is capitalized, but it means List
            - most important part is buried in the middle
            - What are the established C conventions here??
 
@@ -1481,9 +1828,9 @@ Misc things to do:
     defining an "exit" function" with trivial pre- and postconditions
     (true / false).
 
-  - In queue.c, when I tried /*@ unfold IntQueueAux (F.front, F.back,
+  - In queue.c, when I tried /*@ unfold QueueAux (F.front, F.back,
     B.first); @*/ I was confused by "the specification function
-    `IntQueueAux' is not declared".  I guess this is, again, the
+    `QueueAux' is not declared".  I guess this is, again, the
     distinction between functions and predicates...?
 
   - In debugging the queue example, The fact that some of the

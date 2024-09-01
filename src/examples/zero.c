@@ -1,8 +1,8 @@
 void zero (int *p)
 /* --BEGIN-- */
-/*@ requires take u = Block<int>(p);
-    ensures take v = Owned<int>(p);
-            v == 0i32;
+/*@ requires take P = Block<int>(p);
+    ensures take P_post = Owned<int>(p);
+            P_post == 0i32;
 @*/
 /* --END-- */
 {

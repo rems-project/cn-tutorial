@@ -2,8 +2,8 @@ int abs_mem (int *p)
 /* --BEGIN-- */
 /*@ requires take x = Owned<int>(p);
              MINi32() < x;
-    ensures take x2 = Owned<int>(p);
-            x == x2;
+    ensures take x_post = Owned<int>(p);
+            x == x_post;
             return == ((x >= 0i32) ? x : (0i32-x));
 @*/
 /* --END-- */
