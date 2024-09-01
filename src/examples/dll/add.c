@@ -4,9 +4,16 @@
 struct dllist *add(int element, struct dllist *n)
 /*@ requires take Before = Dll_at(n);
     ensures  take After = Dll_at(return);
-
-             is_null(n) ? After == Nonempty_Dll { left: Nil{}, curr: Node(After), right: Nil{}}
-                        : After == Nonempty_Dll { left: Cons{Head: Node(Before).data, Tail: Left(Before)}, curr: Node(After), right: Right(Before)};
+             is_null(n) ? 
+                After == Nonempty_Dll { 
+                           left: Nil{}, 
+                           curr: Node(After), 
+                           right: Nil{}}
+              : After == Nonempty_Dll { 
+                           left: Cons {Head: Node(Before).data, 
+                                       Tail: Left_Sublist(Before)}, 
+                           curr: Node(After), 
+                           right: Right_Sublist(Before)};
 @*/
 {
     struct dllist *new_dllist = malloc__dllist();
@@ -24,7 +31,7 @@ struct dllist *add(int element, struct dllist *n)
         new_dllist->next = n->next;
         new_dllist->prev = n;
 
-        if (n->next !=0) {
+        if (n->next != 0) {
             /*@ split_case(is_null(n->next->next)); @*/
             n->next->prev = new_dllist;
         }

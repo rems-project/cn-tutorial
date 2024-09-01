@@ -17,7 +17,7 @@ struct dllist *add(int element, struct dllist *n)
         new_dllist->next = n->next;
         new_dllist->prev = n;
 
-        if (n->next !=0) {
+        if (n->next != 0) {
             n->next->prev = new_dllist;
         }
 

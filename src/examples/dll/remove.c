@@ -1,18 +1,24 @@
 #include "./headers.h"
 #include "./dllist_and_int.h"
 
-// removes the given node from the list and returns another pointer 
-// to somewhere in the list, or a null pointer if the list is empty.
+// Remove the given node from the list and returns another pointer 
+// to somewhere in the list, or a null pointer if the list is empty
 struct dllist_and_int *remove(struct dllist *n)
 /*@ requires !is_null(n);
              take Before = Dll_at(n);
-             let del = Node(Before);
-    ensures  take ret = Owned<struct dllist_and_int>(return);
-             take After = Dll_at(ret.dllist);
-             ret.data == del.data;
-             (is_null(del.prev) && is_null(del.next)) ? After == Empty_Dll{}
-                 : (!is_null(del.next) ? After == Nonempty_Dll{left: Left(Before), curr: Node(After), right: Tl(Right(Before))}
-                     : After == Nonempty_Dll{left: Tl(Left(Before)), curr: Node(After), right: Right(Before)});
+             let Del = Node(Before);
+    ensures  take Ret = Owned<struct dllist_and_int>(return);
+             take After = Dll_at(Ret.dllist);
+             Ret.data == Del.data;
+             (is_null(Del.prev) && is_null(Del.next)) 
+               ? After == Empty_Dll{}
+               : (!is_null(Del.next) ? 
+                    After == Nonempty_Dll {left: Left_Sublist(Before), 
+                                           curr: Node(After), 
+                                           right: Tl(Right_Sublist(Before))}
+                   : After == Nonempty_Dll {left: Tl(Left_Sublist(Before)), 
+                                            curr: Node(After), 
+                                            right: Right_Sublist(Before)});
 @*/
 {
     struct dllist *temp = 0;

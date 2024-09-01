@@ -358,7 +358,7 @@ CN rejects this program with the following message:
 ....
 cn verify exercises/read.broken.c
 [1/1]: read
-build/exercises/read.broken.c:4:3: error: Left-over unused resource 'Owned<signed int>(p)(v1)'
+build/exercises/read.broken.c:4:3: error: Left_Sublist-over unused resource 'Owned<signed int>(p)(v1)'
   return *p;
   ^~~~~~~~~~
 Consider the state in /var/folders/_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_17eb4a.html
@@ -1191,12 +1191,14 @@ potential source of nasty bugs!
 
 
 // ======================================================================
+// ======================================================================
+// ======================================================================
 
 == Case Studies
 
 To close out the tutorial, let's look at some larger examples.
 
-=== Imperative Queues
+=== Case Study: Imperative Queues
 
 A queue is a linked list with O(1) operations for adding things to one
 end (the "back") and removing them from the other (the "front").  Here
@@ -1470,14 +1472,23 @@ lemma before the `+return+` will be a bit more complicated.
 *Note*: Again, this has not been shown to be possible, but Dhruv
 believes it should be!
 
-=== Doubly Linked Lists
+// ======================================================================
+// ======================================================================
+// ======================================================================
+=== Case Study: Doubly Linked Lists
 
 // TODO: BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions.
 
 A doubly linked list is a linked list where each node has a pointer
 to both the next node and the previous node. This allows for O(1)
-operations for adding or removing nodes anywhere in the list. Here is
-the C type definition:
+operations for adding or removing nodes anywhere in the list. 
+
+Because of all the sharing in this data structure, the separation
+reasoning is a bit tricky.  We'll give you the core definitions and
+then invite you to help fill in the annotations for some of the
+functions that manipulate doubly linked lists.
+
+First, here is the C type definition:
 
 include_example(exercises/dll/c_types.h)
 
@@ -1491,55 +1502,46 @@ is kept in reverse order. Additionally, similarly to in the
 include_example(exercises/dll/cn_types.h)
 
 The predicate for this datatype is a bit complicated. The idea is that
-we first want to own the node that is passed in. Then, we want to
-follow all of the `prev` pointers to own everything backwards from the
-node. We want to do the same for the `next` pointers to own everything
-forwards from the node. This is how we construct our `left` and `right`
-fields.
+we first own the node that is passed in. Then we follow all of the
+`prev` pointers to own everything backwards from the node, and finally
+all the `next` pointers to own everything forwards from the node, to
+construct the `left` and `right` fields.
 
 include_example(exercises/dll/predicates.h)
 
 Note that `Dll_at` takes ownership of the node passed in, and then
-calls `Own_Backwards` and `Own_Forwards` which recursively take
-ownership of the rest of the list and add their values to the `left`
-and `right` sequences, respectively.
+calls `Own_Backwards` and `Own_Forwards`, which recursively take
+ownership of the rest of the list.
 
-Additionally, you will notice that `Own_Forwards` and `Own_Backwards`
-include `ptr_eq` assertions for the `prev` and `next` pointers. This
-is to ensure that the nodes in the list are correctly
-doubly linked. For example, the line
-`assert (ptr_eq(n.prev, prev_pointer));` in `Own_Forwards` ensures
-that the current node correctly points backward to the previous node in the
-list. The line `assert(ptr_eq(prev_node.next, p));` ensures that the
-previous node correctly points forward to the current node. The same can be
-said for these assertions in `Own_Backwards`.
+Also, notice that `Own_Forwards` and `Own_Backwards` include `ptr_eq`
+assertions for the `prev` and `next` pointers. This is to ensure that
+the nodes in the list are correctly doubly linked. For example, the
+line `assert (ptr_eq(n.prev, prev_pointer));` in `Own_Forwards`
+ensures that the current node correctly points backward to the
+previous node in the list. The line `assert(ptr_eq(prev_node.next,
+p));` ensures that the previous node correctly points forward to the
+current node. 
 
-All three of these predicates stop once they reach a null pointer. In
-this way, we can ensure that the only null pointers in the list are at
-the beginning and end of the list.
-
-Before we move on to the functions that manipulate the doubly linked
-list, we need to define a few "getter" functions that will allow us
-to access the fields of our `Dll` datatype. This will make our
-specifications much easier to write.
+Before we move on to the functions that manipulate doubly linked
+lists, we need to define a few "getter" functions that will allow us
+to access the fields of our `Dll` datatype. This will make the
+specifications easier to write.
 
 include_example(exercises/dll/getters.h)
 
-We also must include some boilerplate code for allocation and
-deallocation.
+We also need some boilerplate for allocation and deallocation.
 
 include_example(exercises/dll/malloc_free.h)
 
-And we compile all of these files into a single header file.
+For convenience, we gather all of these files into a single header file.
 
 include_example(exercises/dll/headers.h)
 
-Lastly, an important note about this representation of a doubly linked list is that there is no higher level representation of the list (such as the `queue` structure in the `Imperative Queues` section). This makes it difficult to reason about adding and removing things from a list that may be empty at some times. If we have an empty list, we do not want any identifier of this list to disappear altogether. To work around this problem, we represent an empty list as a null pointer and require that every function that manipulates the list must return a pointer to somewhere in the list. This way, we can always have a pointer to the list, even if it is empty.
-
 // ======================================================================
 
-Now we can move on to an initialization function. Since an empty list is represented as a null pointer, we will look at initializing
-a singleton list (or in other words, a list with only one item).
+Now we can move on to an initialization function. Since an empty list
+is represented as a null pointer, we will look at initializing a
+singleton list (or in other words, a list with only one item).
 
 include_example(exercises/dll/singleton.c)
 
@@ -1550,33 +1552,47 @@ Let's start with `add`. Here is the unannotated version:
 
 include_example(exercises/dll/add_orig.broken.c)
 
-*Exercise*: Before reading on, see if you can figure out what specifications are needed.
+*Exercise*: Before reading on, see if you can figure out what
+specification is appropriate and what other are needed.
+// TODO: BCP: I rather doubt they are going to be able to come up with this specification on their own!  We need to set it up earlier with a simpler example (maybe in a whoile earlier section) showing how to use conditionals in specs.
 
 Now, here is the annotated version of the `add` operation:
 
 include_example(exercises/dll/add.c)
 
-First, let's look at the pre and post conditions. The `requires`
+First, let's look at the pre- and post-conditions. The `requires`
 clause is straightforward. We need to own the list centered around
 the node that `n` points to. `Before` is a `Dll`
 that is either empty, or it has a List to the left,
 the current node that `n` points to, and a List to the right.
 This corresponds to the state of the list when it is passed in.
 
-In the ensures clause, we again establish ownership of the list, but this time it is centered around the added node. This means that `After` is a `Dll` structure similar to `Before`, except that the node `curr` is
-now the created node. The old `curr` is pushed into the
-left part of the new list. The ternary operator in the `ensures` clause is saying that if the list was empty
-coming in, it now is a singleton list. Otherwise, the left left part of the list now has the data from the old `curr` node, the new `curr` node is the added node,
-and the right part of the list is the same as before.
+In the ensures clause, we again establish ownership of the list, but
+this time it is centered around the added node. This means that
+`After` is a `Dll` structure similar to `Before`, except that the node
+`curr` is now the created node. The old `curr` is pushed into the left
+part of the new list. The conditional operator in the `ensures` clause
+is saying that if the list was empty coming in, it now is a singleton
+list. Otherwise, the left left part of the list now has the data from
+the old `curr` node, the new `curr` node is the added node, and the
+right part of the list is the same as before.
 
-Now, let's look at the annotations in the function body.
-CN can figure out the empty list case for itself, but it needs some help with the non-empty list case. The
-`split_case` on `is_null((\*n).prev)` tells CN to unpack the `Own_Backwards` predicate. Without this annotation,
-CN cannot reason that we didn't lose the left half of the list before we return, and will claim we are missing a resource for returning. The `split_case` on `is_null(n->next->next)` is similar, but for unpacking the `Own_Forwards` predicate. Note that we
-have to go one more node forward to make sure that everything past `n->next` is still owned at the end of the function.
+Now, let's look at the annotations in the function body.  CN can
+figure out the empty list case for itself, but it needs some help with
+the non-empty list case. The `split_case` on `is_null(n->prev)`
+tells CN to unpack the `Own_Backwards` predicate. Without this
+annotation, CN cannot reason that we didn't lose the left half of the
+list before we return, and will claim we are missing a resource for
+returning. The `split_case` on `is_null(n->next->next)` is similar,
+but for unpacking the `Own_Forwards` predicate. Note that we have to
+go one more node forward to make sure that everything past `n->next`
+is still owned at the end of the function.
 
-
-Now let's look at the `remove` operation. Traditionally, a `remove` operation for a list returns the integer that was removed. However we also want all of our functions to return a pointer to the list. Because of this, we define a `+struct+` that includes an `int` and a `node`. 
+Now let's look at the `remove` operation. Traditionally, a `remove`
+operation for a list returns the integer that was removed. However we
+also want all of our functions to return a pointer to the
+list. Because of this, we define a `+struct+` that includes an `int`
+and a `node`.
 
 include_example(exercises/dll/dllist_and_int.h)
 
@@ -1584,13 +1600,15 @@ Now we can look at the code for the `remove` operation. Here is the un-annotated
 
 include_example(exercises/dll/remove_orig.broken.c)
 
-*Exercise*: Before reading on, see if you can figure out what specifications are needed.
+*Exercise*: Before reading on, see if you can figure out what
+specification is appropriate and what annotations are needed.
+// TODO: BCP: Again, unlikely the reader is going to be able to figure this out without help.  We need some hints.
 
 Now, here is the fully annotated version of the `remove` operation:
 
 include_example(exercises/dll/remove.c)
 
-First, let's look at the pre and post conditions. The `requires` clause says that we cannot remove a node from an empty list, so the pointer passed in must not be null. Then we take ownership of the list, and we
+First, let's look at the pre- and post-conditions. The `requires` clause says that we cannot remove a node from an empty list, so the pointer passed in must not be null. Then we take ownership of the list, and we
 assign the node of that list to the identifier `del`
 to make our spec more readable. So `Before` refers to the `Dll` when the function is called, and `del` refers to the node that will be deleted.
 
@@ -1599,47 +1617,125 @@ of the `node_and_int` struct as well as the `Dll` that
 the node is part of. Here, `After` refers to the `Dll`
 when the function returns. We ensure that the int that is returned is the value of the deleted node, as intended. Then we have a complicated nested ternary conditional that ensures that `After` is the same as `Before` except for the deleted node. Let's break down this conditional:
 
-- The first guard asks if both `del.prev` and `del.next` are null. In this case, we are removing the only node in the list, so the resulting list will be empty. The `else` branch of this conditional contains it's own conditional.
+- The first guard asks if both `del.prev` and `del.next` are null. In this case, we are removing the only node in the list, so the resulting list will be empty. The `else` branch of this conditional contains its own conditional.
 
-- For the following conditional, the guard checks if 'del.prev' is NOT null. Note that in the code, this means that the returned node is `del.next`, regardless of whether or not `del.prev` is null. If this is the case, `After` is now centered around `del.next`, and the left part of the list is the same as before. Since `del.next` was previously the head of the right side, the right side loses its head in `After`. This is where we get `After == Dll{left: Left(Before), curr: Node(After), right: tl(Right(Before))}`. 
+- For the following conditional, the guard checks if 'del.prev' is
+  _not_ null. This means that the returned node is `del.next`,
+  regardless of whether or not `del.prev` is null. If this is the
+  case, `After` is now centered around `del.next`, and the left part
+  of the list is the same as before. Since `del.next` was previously
+  the head of the right side, the right side loses its head in
+  `After`. This is where we get `After == Dll{left:
+  Left_Sublist(Before), curr: Node(After), right: Tl(Right(Before))}`.
 
-- The final `else` branch is the case where `del.next` is null, but `del.prev` is not null. In this case, the returned node is `del.prev`. This branch follows the same logic as the one before it, except now we are taking the head of the left side rather than the right side. Now the right side is unchanged, and the left side is just the tail, as seen shown in
-`After == Dll{left: tl(Left(Before)), curr: Node(After), right: Right(Before)};`
+- The final `else` branch is the case where `del.next` is null, but
+`del.prev` is not null. In this case, the returned node is
+`del.prev`. This branch follows the same logic as the one before it,
+except now we are taking the head of the left side rather than the
+right side. Now the right side is unchanged, and the left side is just
+the tail, as seen shown in `After == Dll{left:
+Tl(Left_Sublist(Before)), curr: Node(After), right: Right(Before)};`
 
-Now, let's look at the annotations in the function body. These are similar to in the `add` function. Both of these `split_case` annotations are needed to unpack the `Own_Forwards` and `Own_Backwards` predicates. Without these annotations, CN will not be able to reason that we didn't lose the left or right half of the list before we return, and will claim we are missing a resource for returning.
+The annotations in the function body are similar to in the `add`
+function. Both of these `split_case` annotations are needed to unpack
+the `Own_Forwards` and `Own_Backwards` predicates. Without them, CN
+will not be able to reason that we didn't lose the left or right half
+of the list before we return and will claim we are missing a resource
+for returning.
 
 // ======================================================================
 
-*Exercise*: There are many other functions that one might want to implement for a doubly linked list. For example, one might want to implement a function that appends one list to another, or a function that reverses a list. Try implementing a few of these functions and writing their specifications.
+*Exercise*: There are many other functions that one might want to
+ implement for a doubly linked list. For example, one might want to
+ implement a function that appends one list to another, or a function
+ that reverses a list. Try implementing a few of these functions and
+ writing their specifications.
 
-=== The Runway
+*Exercise*: For extra practice, try coming up with one or two
+variations on the Dll data structure itself (there are many!).
 
-Suppose we have been tasked with writing a program that simulates a runway at an airport. This airport is very small, so it only has one runway that is used for both takeoffs and landings. We want to verify that the runway is always safe by implementing the following specifications into CN:
+// ======================================================================
+// ======================================================================
+// ======================================================================
+=== Case Study: Airport Simulation
 
-1. The runway has two modes: departure mode and arrival mode. The two modes can never be active at the same time, and neither mode is active at the beginning of the day.
+// TODO: BCP: I'm nervous about this case study -- it is not nearly as well debugged as the others, and it seems potentially quite confusing.  I propose deleting it, but if other like it we can try to whip it into better shape...
 
-2. There is always a waitlist of planes that need to land at the airport and planes that need to leave the airport at a given moment. These can be modeled with counters `W_A` for the number of planes waiting to arrive, and `W_D` for the number of planes waiting to depart. 
+Suppose we have been tasked with writing a program that simulates a
+runway at an airport. This airport is very small, so it only has one
+runway, which is used for both takeoffs and landings. We want to
+verify that the runway is always used safely, by checking the
+following informal specification:
 
-3. At any time, a plane is either waiting to arrive, waiting to depart, or on the runway. Once a plane has started arriving or departing, the corresponding counter (`W_A` or `W_D`) is decremented. There is no need to keep track of planes once they have arrived or departed. Additionally,  once a plane is waiting to arrive or depart, it continues waiting until it has arrived or departed.
+1. The runway has two modes: departure mode and arrival mode. The two
+   modes can never be active at the same time.  Neither mode is active
+   at the beginning of the day.
+// TODO: BCP: Would it be simpler to say it is in arrival mode at the beginning of the day?  What difference would that make?  (Saying there are two modes and then immediately introducing a third one is a bit confusing.)
 
+2. At any given moment, there is a waiting list of planes that need to
+   land at the airport and planes that need to leave the
+   airport. These are modeled with counters `W_A` for the number of
+   planes waiting to arrive, and `W_D` for the number of planes
+   waiting to depart.
 
-4. Let’s say it takes 5 minutes for a plane to arrive or depart. During these 5 minutes, no other plane may use the runway. We can keep track of how long a plane has been on the runway with the `Runway_Counter`. If the `Runway_Counter` is at 0, then there is currently no plane using the runway, and it is clear for another plane to begin arriving or departing. Once the `Runway_Counter` reaches 5, we can reset it at the next clock tick. One clock tick represents 1 minute.
+3. At any moment, a plane is either waiting to arrive, waiting to
+   depart, or on the runway. Once a plane has started arriving or
+   departing, the corresponding counter (`W_A` or `W_D`) is
+   decremented. There is no need to keep track of planes once they
+   have arrived or departed. Additionally, once a plane is waiting to
+   arrive or depart, it continues waiting until it has arrived or
+   departed.
 
-5.  If there is at least one plane waiting to depart and no cars waiting to arrive, then the runway is set to departure mode (and vice versa for arrivals).
+4. It takes 5 minutes for a plane to arrive or depart. During these 5
+   minutes, no other plane may use the runway. We can keep track of
+   how long a plane has been on the runway with the
+   `Runway_Counter`. If the `Runway_Counter` is at 0, then there is
+   currently no plane using the runway, and it is clear for another
+   plane to begin arriving or departing. Once the `Runway_Counter`
+   reaches 5, we can reset it at the next clock tick. One clock tick
+   represents 1 minute.
 
-6.  If both modes of the runway are inactive and planes become ready to depart and arrive simultaneously, the runway will activate arrival mode first. If the runway is in arrival mode and there are planes waiting to depart, no more than 3 planes may arrive from that time point. When either no more planes are waiting to arrive or 3 planes have arrived, the runway switches to departure mode. If the runway is on arrival mode and no planes are waiting to depart, then the runway may stay in arrival mode until a plane is ready to depart, from which time the 3-plane limit is imposed (and vice versa for departures). Put simply, if any planes are waiting for a mode that is inactive, that mode will become active no more than 15 minutes later (5 minutes for each of 3 planes).
+5. If there is at least one plane waiting to depart and no cars
+   waiting to arrive, then the runway is set to departure mode (and
+   vice versa for arrivals).
 
-To encode all this in CN, we first need a way to describe the state of the runway at a given time. We can use a *struct* that includes the following fields:
+6. If both modes of the runway are inactive and planes become ready to
+   depart and arrive simultaneously, the runway will activate arrival
+   mode first. If the runway is in arrival mode and there are planes
+   waiting to depart, no more than 3 planes may arrive from that time
+   point. When either no more planes are waiting to arrive or 3 planes
+   have arrived, the runway switches to departure mode. If the runway
+   is on arrival mode and no planes are waiting to depart, then the
+   runway may stay in arrival mode until a plane is ready to depart,
+   from which time the 3-plane limit is imposed (and vice versa for
+   departures). Put simply, if any planes are waiting for a mode that
+   is inactive, that mode will become active no more than 15 minutes
+   later (5 minutes for each of 3 planes).
 
-- `ModeA` and `ModeD` to represent the arrival and departure modes, respectively. We can define constants for `ACTIVE` and `INACTIVE`, as described in the `Constants` section above.
-- `W_A` and `W_D` to represent the number of planes waiting to arrive and depart, respectively.
-- `Runway_Time` to represent the time (in minutes) that a plane has spent on the runway while arriving or departing.
-- `Plane_Counter` to represent the number of planes that have arrived or departed while planes are waiting for the other mode. This will help us keep track of the 3-plane limit as described in *(6)*.
+To encode all this in CN, we first need a way to describe the state of
+the runway at a given time. We can use a *struct* that includes the
+following fields:
 
+- `ModeA` and `ModeD` to represent the arrival and departure modes,
+  respectively. We can define constants for `ACTIVE` and `INACTIVE`,
+  as described in the `Constants` section above.
+
+- `W_A` and `W_D` to represent the number of planes waiting to arrive
+  and depart, respectively.
+
+- `Runway_Time` to represent the time (in minutes) that a plane has
+  spent on the runway while arriving or departing.
+
+- `Plane_Counter` to represent the number of planes that have arrived
+  or departed while planes are waiting for the other mode. This will
+  help us keep track of the 3-plane limit as described in *(6)*.
 
 include_example(exercises/runway/state.h)
 
-Next, we need to specify what makes a state valid. We must define a rigorous specification in order to ensure that the runway is always safe and working as intended. Try thinking about what this might look like before looking at the code below.
+Next, we need to specify what makes a state valid. We must define a
+rigorous specification in order to ensure that the runway is always
+safe and working as intended. Try thinking about what this might look
+like before looking at the code below.
 
 include_example(exercises/runway/valid_state.h)
 
@@ -1667,11 +1763,12 @@ First, let's look at an initialization function and functions to update `Plane_C
 
 include_example(exercises/runway/funcs1.h)
 
-*Exercise*: Now try adding your own specifications to the following functions. Make sure that you specify a valid state as a pre and post condition for every function. If you get stuck, the solution is in the solutions folder.
+*Exercise*: Now try adding your own specifications to the following
+functions. Make sure that you specify a valid state as a pre- and
+post-condition for every function. If you get stuck, the solution is
+in the solutions folder.
 
 include_example(exercises/runway/funcs2.c)
-
-*Exercise*: For extra practice, try coming up with different specifications or variations for this exercise and implementing them yourself!
 
 // ======================================================================
 
