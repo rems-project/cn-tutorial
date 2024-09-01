@@ -22,7 +22,7 @@ More notes:
 
 Here's the predicate for queues:
 
-    predicate (datatype List) Queue(pointer q) {
+    predicate (datatype List) Queue_At(pointer q) {
       take H = Owned<struct queue>(q);
       take Q = Queue1(q,H);
       return Q;
@@ -59,8 +59,8 @@ Here's the predicate for queues:
 And here's the push operation.
 
     void queue_push (int x, struct queue *q)
-    /*@ requires take l = Queue(q);
-        ensures take ret = Queue(q);
+    /*@ requires take l = Queue_At(q);
+        ensures take ret = Queue_At(q);
                 ret == snoc (l, x);
     @*/
     {
@@ -144,8 +144,8 @@ This tells us to look at snoc, which turns out to be very wrong!
 # Next try
 
     void queue_push (int x, struct queue *q)
-    /*@ requires take l = Queue(q);
-        ensures take ret = Queue(q);
+    /*@ requires take l = Queue_At(q);
+        ensures take ret = Queue_At(q);
                 ret == snoc (l, x);
     @*/
     {
@@ -185,11 +185,11 @@ reaches the tail.  This would work (might be a good exercise?), but it
 nullifies the whole purpose of having the tail pointer in the first
 place.
 
-Instead, we need to rearrange Queue and friends so that we take
+Instead, we need to rearrange Queue_At and friends so that we take
 ownership of the very last cell in the list at the very beginning,
 instead of at the very end.
 
-    predicate (datatype List) Queue(pointer q) {
+    predicate (datatype List) Queue_At(pointer q) {
       take H = Owned<struct queue>(q);
       take Q = Queue1(q,H);
       return Q;

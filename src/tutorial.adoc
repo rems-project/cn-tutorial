@@ -1218,7 +1218,7 @@ include_example(exercises/queue_cn_types_1.h)
 ////
 TODO: BCP: If we're going to call this QueuePtr (Dhruv's suggestion), then
 we have to rename other things above for consistency...
-TODO: BCP: I am starting to think queue_At is actually the best, for various reasons.  Here, I'm realizing that, if we call it just Queue, there will be an unfortunate inconsistency with some other places where an abstract CN structure and the predicate that extracts such a structure from the heap have the same name.  Here, the predicate would be Queue but the returned type would be List, not Queue...  This seems like another argument for Queue_At.
+TODO: BCP: I am starting to think queue_At is actually the best, for various reasons.  Here, I'm realizing that, if we call it just Queue_At, there will be an unfortunate inconsistency with some other places where an abstract CN structure and the predicate that extracts such a structure from the heap have the same name.  Here, the predicate would be Queue_At but the returned type would be List, not Queue_At...  This seems like another argument for Queue_At.
 ////
 
 Given a pointer to a `+queue+` struct, this predicate grabs ownership
