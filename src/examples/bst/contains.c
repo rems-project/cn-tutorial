@@ -12,7 +12,7 @@ function [rec] (u32) exists(datatype Tree sapling, i32 value)
         {
             0u32
         }
-        Node {left: l, data: dat, right: r} =>
+        Node {Left: l, data: dat, right: r} =>
         {   
             let lb_exist = exists(l, value);
             let rb_exist = exists(r, value);  

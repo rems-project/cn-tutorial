@@ -20,7 +20,7 @@ predicate (datatype Tree) Tree_At (pointer p)
         assert (left_b == Leaf{} || get_data(left_b) < T.data);
         take right_b = Tree_At(T.right);
         assert (right_b == Leaf{} || get_data(right_b) >= T.data);
-        return (Node {left: left_b, data: T.data, right: right_b});
+        return (Node {Left: left_b, data: T.data, right: right_b});
     }
 }
 

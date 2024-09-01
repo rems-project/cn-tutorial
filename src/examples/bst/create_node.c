@@ -5,7 +5,7 @@ struct node* node_create_node(int value)
 /* FILL IN HERE */
 /* --BEGIN-- */
 /*@ ensures take T = Tree_At(return);
-        T == Node {left: Leaf{}, data: value, right: Leaf{}};
+        T == Node {Left: Leaf{}, data: value, right: Leaf{}};
         !is_null(return);
         get_data(T) == value;
 @*/

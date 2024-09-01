@@ -4,7 +4,7 @@
 /* FILL IN CN FUNCTION SPEC DEFINTION HERE */
 /* --BEGIN-- */
 /*@
-function [rec] (u32) depth (datatype tree sapling)
+function [rec] (u32) depth (datatype Tree sapling)
 {
     match sapling 
     {
@@ -12,7 +12,7 @@ function [rec] (u32) depth (datatype tree sapling)
         {
             0u32
         }
-        Node {left: l, data: dat, right: r} => 
+        Node {Left: l, data: dat, right: r} => 
         {
             let left_b = depth(l);
             let right_b = depth(r);
