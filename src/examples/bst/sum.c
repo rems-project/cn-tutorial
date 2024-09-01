@@ -12,7 +12,7 @@ function [rec] (u32) sum(datatype Tree sapling)
         {
             0u32
         }
-        Node {Left: l, data: dat, right: r} => 
+        Node {Left: l, Data: dat, Right: r} => 
         {
             let rt_val = (u32) dat;
             let sum_lb = sum(l);

@@ -9,7 +9,7 @@ function (i32) get_data (datatype Tree sapling)
     {
       default<i32>
     }
-    Node {Left : _, data : dat, right: _} => 
+    Node {Left : _, Data : dat, Right: _} => 
     {
       dat
     }
@@ -24,7 +24,7 @@ function (datatype Tree) get_lb (datatype Tree sapling)
     {
       Leaf {}
     }
-    Node {Left : left, data : _ , right: _} => 
+    Node {Left : left, Data : _ , Right: _} => 
     {
       left
     }
@@ -39,7 +39,7 @@ function (datatype Tree) get_rb (datatype Tree sapling)
     {
       Leaf {}
     }
-    Node {Left : _, data : _ , right: right} => 
+    Node {Left : _, Data : _ , Right: right} => 
     {
       right
     }

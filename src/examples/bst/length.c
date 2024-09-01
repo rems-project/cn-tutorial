@@ -12,7 +12,7 @@ function [rec] (u32) length (datatype Tree sapling)
         {
             0u32
         }
-        Node {Left: l, data: dat, right: r} => 
+        Node {Left: l, Data: dat, Right: r} => 
         {
             let left_b = length(l);
             let right_b = length(r);

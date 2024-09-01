@@ -4,7 +4,7 @@
 /*@
 datatype Tree {
     Leaf {},
-    Node {datatype Tree Left, i32 data, datatype Tree right}
+    Node {datatype Tree Left, i32 Data, datatype Tree Right}
 } 
 
 predicate (datatype Tree) Tree_At (pointer p) 
@@ -20,7 +20,7 @@ predicate (datatype Tree) Tree_At (pointer p)
         assert (left_b == Leaf{} || get_data(left_b) < T.data);
         take right_b = Tree_At(T.right);
         assert (right_b == Leaf{} || get_data(right_b) >= T.data);
-        return (Node {Left: left_b, data: T.data, right: right_b});
+        return (Node {Left: left_b, Data: T.data, Right: right_b});
     }
 }
 

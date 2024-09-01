@@ -12,7 +12,7 @@ function [rec] (datatype Tree) search(datatype Tree sapling, i32 value)
         {
             Leaf{}
         }
-        Node {Left: l, data: dat, right: r} =>
+        Node {Left: l, Data: dat, Right: r} =>
         {
             ((value == dat) ? sapling :
             ((value < dat) ? search(l, value) : search(r, value)))

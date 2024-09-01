@@ -12,7 +12,7 @@ function [rec] (u32) depth (datatype Tree sapling)
         {
             0u32
         }
-        Node {Left: l, data: dat, right: r} => 
+        Node {Left: l, Data: dat, Right: r} => 
         {
             let left_b = depth(l);
             let right_b = depth(r);

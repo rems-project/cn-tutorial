@@ -11,13 +11,13 @@ function [rec] (datatype Tree) insert (datatype Tree sapling, i32 value)
     {
         Leaf{} => 
         {
-            Node{Left: Leaf{}, data: value, right: Leaf{}}
+            Node{Left: Leaf{}, Data: value, Right: Leaf{}}
         }
-        Node{Left: l, data: dat, right: r} => 
+        Node{Left: l, Data: dat, Right: r} => 
         {
 
-            ((value < dat) ? Node {Left: insert(l, value), data: dat, right: r} :
-            Node {Left: l, data: dat, right: insert(r, value)})
+            ((value < dat) ? Node {Left: insert(l, value), Data: dat, Right: r} :
+            Node {Left: l, Data: dat, Right: insert(r, value)})
         }
     }
 }
