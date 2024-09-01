@@ -28,9 +28,9 @@ struct node* node_insert(struct node* t, int value)
 /* FILL IN HERE */
 /* --BEGIN-- */
 /*@ requires take T1 = Tree_At(t);
-    ensures take ret = Tree_At(return);  
-                 ret == insert(T1,value);
-                 T1 != Leaf{} implies get_data(ret) == get_data(T1);
+    ensures take Ret = Tree_At(return);  
+                 Ret == insert(T1,value);
+                 T1 != Leaf{} implies Data_Of(Ret) == Data_Of(T1);
                 !is_null(return);  
 @*/
 /* --END-- */

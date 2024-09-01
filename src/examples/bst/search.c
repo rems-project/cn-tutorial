@@ -28,8 +28,8 @@ struct node* node_search(struct node* t, int value)
 /*@ requires take t1 = Tree_At(t);
     ensures  take t2 = Tree_At(t);
                   t1 == t2;
-                  let ret = search(t1, value);
-                  (ret == Leaf{} ? is_null(return) : get_data(ret) == value);                
+                  let Ret = search(t1, value);
+                  (Ret == Leaf{} ? is_null(return) : Data_Of(Ret) == value);                
 @*/
 /* --END-- */
 {   

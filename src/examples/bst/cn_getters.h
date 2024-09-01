@@ -1,7 +1,7 @@
 // Defines basic CN functions to extract a member of the Tree datatype
 
 /*@
-function (i32) get_data (datatype Tree sapling) 
+function (i32) Data_Of (datatype Tree sapling) 
 {
   match sapling 
   {

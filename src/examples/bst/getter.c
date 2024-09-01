@@ -7,7 +7,7 @@ int get_Tree_Data (struct node *t)
 /*@ requires take v1 = Tree_At(t);
     ensures  take v2 = Tree_At(t);
                   v1 == v2;
-            return == (is_null(t) ? 0i32 : get_data(v2)); @*/
+            return == (is_null(t) ? 0i32 : Data_Of(v2)); @*/
 /* --END-- */
 {
     if (t)

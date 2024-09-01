@@ -45,8 +45,7 @@ bool node_containsValue (struct node* t, int value)
         return false;
     }
     else
-    {
-        
+      {
         if (t->data == value)
         {
             return true;

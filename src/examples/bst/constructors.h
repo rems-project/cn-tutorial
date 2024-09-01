@@ -1,53 +1,53 @@
-// Defines C functions that initialize or data insert for the Binary Tree data structure
-// Also gives each function their own associating CN verification
+// Constructors for trees
 
 struct node* node_nil()
-/*@ ensures take ret = Tree_At(return);
-            ret == Leaf{};
+/*@ ensures take Ret = Tree_At(return);
+            Ret == Leaf{};
  @*/
 {
   return 0;
 }
 
 struct node* node_cons_left(int val, struct node* left_b)
-/*@ requires take l_b = Tree_At(left_b);
-    (l_b == Leaf{} || get_data(l_b) < val);
-    ensures take ret = Tree_At(return);
-            ret == Node{Left: l_b, Data: val, Right: Leaf{}};
+/*@ requires take L = Tree_At(left_b);
+             (L == Leaf{} || Data_Of(L) < val);
+    ensures take Ret = Tree_At(return);
+            Ret == Node{Left: L, Data: val, Right: Leaf{}};
  @*/
 {
-  struct node *p = malloc_node();
-  p->data = val;
-  p->left = left_b;
-  p->right = 0;
-  return p;
+  struct node *t = malloc_node();
+  t->data = val;
+  t->left = left_b;
+  t->right = 0;
+  return t;
 }
 
 struct node* node_cons_right(int val, struct node* right_b)
-/*@ requires take r_b = Tree_At(right_b);
-    (r_b == Leaf{} || get_data(r_b) >= val);
-    ensures take ret = Tree_At(return);
-            ret == Node{Left: Leaf{}, Data: val, Right: r_b};
+/*@ requires take R = Tree_At(right_b);
+             (R == Leaf{} || Data_Of(R) >= val);
+    ensures take Ret = Tree_At(return);
+            Ret == Node{Left: Leaf{}, Data: val, Right: R};
  @*/
 {
-  struct node *p = malloc_node();
-  p->data = val;
-  p->left = 0;
-  p->right = right_b;
-  return p;
+  struct node *t = malloc_node();
+  t->data = val;
+  t->left = 0;
+  t->right = right_b;
+  return t;
 }
 
 struct node* node_cons_both(int val, struct node* left_b, struct node* right_b)
-/*@ requires take l_b = Tree_At(left_b);
-             take r_b = Tree_At(right_b);
-             (l_b == Leaf{} || get_data(l_b) < val) && (r_b == Leaf{} || get_data(r_b) >= val);
-    ensures take ret = Tree_At(return);
-            ret == Node{Left: l_b, Data: val, Right: r_b};
+/*@ requires take L = Tree_At(left_b);
+             take R = Tree_At(right_b);
+             (L == Leaf{} || Data_Of(L) < val);
+             (R == Leaf{} || Data_Of(R) >= val);
+    ensures take Ret = Tree_At(return);
+            Ret == Node{Left: L, Data: val, Right: R};
 @*/
 {
-  struct node *p = malloc_node();
-  p->data = val;
-  p->left = left_b;
-  p->right = right_b;
-  return p;
+  struct node *t = malloc_node();
+  t->data = val;
+  t->left = left_b;
+  t->right = right_b;
+  return t;
 }
