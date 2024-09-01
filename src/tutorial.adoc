@@ -1210,7 +1210,7 @@ A queue is a linked list with O(1) operations for adding things to one
 end (the "back") and removing them from the other (the "front").  Here
 are the C type definitions:
 
-include_example(exercises/queue_c_types.h)
+include_example(exercises/queue/c_types.h)
 
 A queue consists of a pair of pointers, one pointing to the front
 element, which is the first in a linked list of `+queue_cell+`s,
@@ -1220,7 +1220,7 @@ queue is empty, both pointers are NULL.
 Abstractly, a queue just represents a list, so we can reuse the `+List+`
 type from the list examples earlier in the tutorial.
 
-include_example(exercises/queue_cn_types_1.h)
+include_example(exercises/queue/cn_types_1.h)
 
 Given a pointer to a `+queue+` struct, this predicate grabs ownership
 of the struct, asserts that the `+front+` and `+back+` pointers must
@@ -1237,7 +1237,7 @@ conditional expressions only at the beginning of predicate
 definitions, not after a `+take+`, so we need to make a separate
 auxiliary predicate.)
 
-include_example(exercises/queue_cn_types_2.h)
+include_example(exercises/queue/cn_types_2.h)
 
 First, we case on whether the `+front+` of the queue is NULL.  If so,
 then the queue is empty and we return the empty sequence.
@@ -1271,7 +1271,7 @@ its `+next+` field will always be NULL.
 Finally, the `+QueueAux+` predicate recurses down the list of
 cells and returns a list of their contents.
 
-include_example(exercises/queue_cn_types_3.h)
+include_example(exercises/queue/cn_types_3.h)
 
 Its first argument (`+f+`) starts out at `+front+` and progresses
 through the queue on recursive calls; its `+b+` argument is always a
@@ -1292,14 +1292,14 @@ Now we need a bit of boilerplate: just as with linked lists, we need
 to be able to allocate and deallocate queues and queue cells.  There
 are no interesting novelties here.
 
-include_example(exercises/queue_allocation.h)
+include_example(exercises/queue/allocation.h)
 
 // ======================================================================
 
 *Exercise*: The function for creating an empty queue just needs to set
 both of its fields to NULL.  See if you can fill in its specification.
 
-include_example(exercises/queue_empty.c)
+include_example(exercises/queue/empty.c)
 
 // ======================================================================
 
@@ -1308,7 +1308,7 @@ first.
 
 Here's the unannotated C code -- make sure you understand it.
 
-include_example(exercises/queue_push_orig.broken.c)
+include_example(exercises/queue/push_orig.broken.c)
 
 *Exercise*: Before reading on, see if you can write down a reasonable
 top-level specification for this operation.
@@ -1326,7 +1326,7 @@ with.
 
 Now, here is the annotated version of the `+push+` operation.
 
-include_example(exercises/queue_push.c)
+include_example(exercises/queue/push.c)
 
 The case where the queue starts out empty (`+q->back == 0+`) is easy.
 CN can work it out all by itself.
@@ -1340,7 +1340,7 @@ lemma we need.
 // TODO: BCP: Not sure I can explain what "pointer" means here, or why we don't need to declare more specific types for these arguments to the lemma.
 // Dhruv: See above comments about strong updates: in a requires/ensures, the types are given by the arguments in scope, but here we don't have that.
 
-include_example(exercises/queue_push_lemma.h)
+include_example(exercises/queue/push_lemma.h)
 
 This says, in effect, that we have two choices for how to read out the
 values in some chain of queue cells of length at least 2, starting
@@ -1373,7 +1373,7 @@ oldback)+`, but we don't care about this, since we want to prove
 Now let's look at the `+pop+` operation.  Here is the un-annotated
 version:
 
-include_example(exercises/queue_pop_orig.broken.c)
+include_example(exercises/queue/pop_orig.broken.c)
 
 *Exercise*: Again, before reading on, see if you can write down a
 plausible top-level specification.  (For extra credit, see how far you
@@ -1381,7 +1381,7 @@ can get with verifying it!)
 
 Here is the fully annotated `+pop+` code:
 
-include_example(exercises/queue_pop.c)
+include_example(exercises/queue/pop.c)
 
 There are three annotations to explain.  Let's consider them in order.
 
@@ -1412,7 +1412,7 @@ the `+front+` field of the queue structure to point to the next cell.
 To push the verification through, we need a simple lemma about the
 `+snoc+` function:
 
-include_example(exercises/queue_pop_lemma.h)
+include_example(exercises/queue/pop_lemma.h)
 
 The crucial part of this lemma is the last three lines, which express
 a simple, general fact about `+snoc+`:
@@ -1446,9 +1446,9 @@ telltale clues in the error report that suggest what the problem was?
 * Remove `+assert (is_null(B.next));+` from `+InqQueueFB+`.
 * Remove `+assert (is_null(B.next));+` from `+InqQueueAux+`.
 * Remove one or both of occurrences of `+free_queue_cell(f)+` in
-  `+queue_pop+`.
+  `+pop_queue+`.
 * Remove, in turn, each of the CN annotations in the bodies of
-  `+queue_pop+` and `+queue_push+`.
+  `+pop_queue+` and `+push_queue+`.
 
 *Exercise*: The conditional in the `+pop+` function tests whether or
 not `+f == b+` to find out whether we have reached the last element of
@@ -1797,9 +1797,9 @@ Further topics:
     https://www.geeksforgeeks.org/data-structures/#most-popular-data-structures
   - Maybe add some explanation of -- or at least a pointer to --
     Dhruv's Iris-in-C examples:
-       queue_pop_lemma_stages.c
-       queue_push_induction.c
-       queue_pop_unified.c
+       pop_queue_lemma_stages.c
+       push_queue_induction.c
+       pop_queue_unified.c
 
 Further exercises:
   - Some exercises that get THEM to write predicates, datatype

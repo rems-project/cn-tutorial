@@ -1,4 +1,4 @@
-#include "queue_headers.h"
+#include "./headers.h"
 
 /*@
 type_synonym result = { datatype List after, datatype List before }
@@ -50,7 +50,7 @@ ensures
     }
 }
 
-int queue_pop (struct queue *q)
+int pop_queue (struct queue *q)
 /*@ requires take before = QueuePtr_At(q);
              before != Nil{};
     ensures take after = QueuePtr_At(q);

@@ -1,6 +1,6 @@
-#include "queue_headers.h"
+#include "./headers.h"
 
-int queue_pop (struct queue *q)
+int pop_queue (struct queue *q)
 {
   struct queue_cell* h = q->front;
   if (h == q->back) {
