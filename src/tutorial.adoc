@@ -8,13 +8,6 @@
 :stylesheet: style.css
 By Christopher Pulte and Benjamin C. Pierce, with contributions from Elizabeth Austell
 
-////
-TODO: BCP: Some remaining tasks for this document:
-- establish a more sensible / consistent naming scheme for the example files
-- either make some more subdirectrories for the example files or else
-flatten the ones that are there now
-////
-
 [abstract]
 --
 CN is an extension of the C programming language for verifying the correctness of C code, especially on low-level systems code. Compared to standard C, CN checks not only that expressions and statements follow the correct typing discipline for C-types, but also that the C code executes _safely_ — does not raise C undefined behaviour — and _correctly_ — satisfying to strong, user-defined specifications.
@@ -93,7 +86,7 @@ In detail:
 
 * Instead of C syntax, CN uses Rust-like syntax for integer types, such as `+u32+` for 32-bit unsigned integers and `+i64+` for signed 64-bit integers, to make their sizes unambiguous. Here, `+x+` and `+y+`, of C-type `+int+`, have CN type `+i32+`.
 // TODO: BCP: I understand this reasoning, but I wonder whether it introduces more confusion than it avoids -- it means there are two ways of writing everything, and people have to remember whether the particular thing they are writing right now is C or CN...
-// TODO: BCP: Hopefully we are moving toward unifying these notations anyway?
+// BCP: Hopefully we are moving toward unifying these notations anyway?
 
 * To define `+Sum+` we cast `+x+` and `+y+` to the larger `+i64+` type, using syntax `+(i64)+`, which is large enough to hold the sum of any two `+i32+` values.
 
@@ -155,7 +148,11 @@ section, statements are listed by source code location; finally, per
 statement, CN lists the typechecked sub-expressions, and the memory
 accesses and function calls within these.
 
-In our example, there is only one possible control-flow path: entering the function body (section "`function body`") and executing the block from lines 2 to 4, followed by the return statement at line 3. The entry for the latter contains the sequence of sub-expressions in the return statement, including reads of the variables `+x+` and `+y+`.
+In our example, there is only one possible control-flow path: entering
+the function body (section "`function body`") and executing the block
+from lines 2 to 4, followed by the return statement at line 3. The
+entry for the latter contains the sequence of sub-expressions in the
+return statement, including reads of the variables `+x+` and `+y+`.
 
 In C, local variables in a function, including its arguments, are
 mutable,  their addresses can be taken and passed as values. CN
@@ -167,8 +164,6 @@ these reads and their return values: the read at `+&ARG0+` returns
 `+x+` (that is, the value of `+x+` originally passed to `+add+`); the
 read at `+&ARG1+` returns `+y+`. Alongside this symbolic information,
 CN displays concrete values:
-// TODO: BCP: WHere do we see that ARG0 and ARG1 have something to do with x and y?
-// Dhrurv: In the state output.  See rems-project/cerberus#519 for more details.
 
 * `+1073741825i32 /* 0x40000001 */+` for x (the first value is the decimal representation, the second, in `+/*...*/+` comments, the hex equivalent) and
 
@@ -198,18 +193,18 @@ Finally, "`Constraints`" records all logical facts CN has learned along the path
 `+x+` is a "`good`" `+signed int+` value (i.e. in range). Here
 `+signed int+` is the same type as `+int+`, CN just makes the sign
 explicit.
-// TODO: BCP: Yikes!  This seems potentially cxonfusing
+// TODO: BCP: Yikes!  This seems potentially confusing
 For an integer type `+T+`, the type `+good<T>+` requires the value to
 be in range of type `+T+`; for pointer types `+T+`, it also requires
 the pointer to be aligned. For structs and arrays, this extends in the
 obvious way to struct members or array cells.
-// TODO: BCP: Is this information actually ever usefulful?  Is it currently suppressed?
+// TODO: BCP: Is this information actually ever useful?  Is it currently suppressed?
 
 * `+repr<T>+` requires representability (not alignment) at type `+T+`, so `+repr<signed int*>(&ARGO)+`, for instance, records that the pointer to `+x+` is representable at C-type `+signed int*+`;
 
 * `+aligned(&ARGO, 4u64)+`, moreover, states that it is 4-byte aligned.
 
-// TODO: BCP: Some of the above (especially the bit at the end) feels like TMI for many/most users, especially at this point in the tutorial.
+// TODO: URGENT: BCP: Some of the above (especially the bit at the end) feels like TMI for many/most users, especially at this point in the tutorial.
 // Dhruv: Probably true, we actually even hide some of these by default.
 // BCP: I propose we hide the rest and move this discussion to somewhere else ("Gory Details" section of the tutorial, or better yet reference manual).
 // Dhruv: Thumbs up
@@ -220,7 +215,7 @@ Let’s apply what we know so far to another simple arithmetic example.
 
 The function `+doubled+`, shown below, takes an int `+n+`, defines `+a+` as `+n+` incremented, `+b+` as `+n+` decremented, and returns the sum of the two.
 
-// TODO: BCP: Is it important to number the slf examples?  If so, we should do it consistently, but IMO it is not.
+// TODO: BCP: Is it important to number the slf examples?  If so, we should do it consistently, but IMO it is not.  Better to rename them without numbers.
 include_example(exercises/slf1_basic_example_let.signed.c)
 
 We would like to verify this is safe, and that `+doubled+` returns twice the value of `+n+`. Running CN on `+doubled+` leads to a type error: the increment of `+a+` has undefined behaviour.
@@ -234,7 +229,7 @@ include_example(solutions/slf1_basic_example_let.signed.c)
 We encode these expectations using a similar style of precondition as in the first example. We first define `+N+` as `+n+` cast to type `+i64+` — i.e. a type large enough to hold `+n+1+`, `+n-1+`, and `+a+b+` for any possible `+i32+` value for `+n+`. Then we specify that decrementing `+N+` does not go below the minimal `+int+` value, that incrementing `+N+` does not go above the maximal value, and that `+n+` doubled is also in range. These preconditions together guarantee safe execution.
 // TODO: BCP: How about renaming N to n64?
 // Dhruv: Sensible.
-// (someone do it on next pass)
+// BCP: (someone do it on next pass)
 
 To capture the functional behaviour, the postcondition specifies that `+return+` is twice the value of `+n+`.
 
@@ -284,6 +279,8 @@ We use the word "resources" to describe any "resource predicate" owned, or user-
 Both of these are better than Owned!
 
 (And then Block can become WriteOnly.)
+
+BCP: I think this discussion is reflected in the GitHub exchange
 ////
 
 Given a C-type `+T+` and pointer `+p+`, the resource `+Owned<T>(p)+` asserts ownership of a memory cell at location `+p+` of the size of C-type `+T+`. It is CN’s equivalent of a points-to assertion in separation logic (indexed by C-types `+T+`).
@@ -310,9 +307,9 @@ In CN, resources have _outputs_. Each resource outputs the information that can 
 
 CN uses the `+take+`-notation seen in the example above to bind the output of a resource to a new name. The precondition `+take P = Owned<int>(p)+` does two things: (1) it assert ownership of resource `+Owned<int>(p)+`, and (2) it binds the name `+P+` to the resource output, here the pointee value of `+p+` at the start of the function. Similarly, the postcondition introduces the name `+P_post+` for the pointee value on function return.
 
-// TODO: BCP: But, as we've discussed, the word "take" in the postcondition is quitre confusing: What it's doing is precisely the *opposite* of "taking" the resournce, not taking it but giving it back!!  It would be much better if we could choose a more neutral word that doesn't imply either taking or giving.  E.g. "resource".
+// TODO: BCP: But, as we've discussed, the word "take" in the postcondition is quite confusing: What it's doing is precisely the *opposite* of "taking" the resournce, not taking it but giving it back!!  It would be much better if we could choose a more neutral word that doesn't imply either taking or giving.  E.g. "resource".
 
-// TODO: BCP: This might be a good place for a comment on naming conventions
+// TODO: BCP: This might be a good place for a comment on naming conventions.  Plus a pointer to a longer discussion if needed
 
 That means we can use the resource outputs from the pre- and postcondition to strengthen the specification of `+read+` as planned. We add two new postconditions specifying
 

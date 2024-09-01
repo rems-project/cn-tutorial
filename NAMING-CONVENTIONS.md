@@ -3,10 +3,9 @@ CN Naming Conventions
 
 This document describes our (Benjamin and Liz's) current best shot at
 a good set of conventions for naming identifiers in CN, based on
-numerous discussions and worked examples.
-
-All the list-related files in src/examples have been converted to this
-convention -- do `ls src/examples/list*` to check it out.
+numerous discussions and worked examples. Everything in the tutorial
+(in src/examples) follows these conventions. Future CN coders are
+encouraged to follow suit.
 
 # Principles
 
@@ -22,14 +21,15 @@ convention -- do `ls src/examples/list*` to check it out.
 
  ## For new code
 
-When we're writing both C and CN code from scratch (e.g., in the
-tutorial), we aim for maximal correspondence between 
+When writing both C and CN code from scratch (e.g., in the tutorial),
+aim for maximal correspondence between
 
-- In general, CN identifiers are written in `snake_case` rather than `camlCase`
+- In general, identifiers are written in `snake_case` (or
+  `Snake_Case`) rather than `camlCase` (or `CamlCase`).
 
-- C-level identifiers are `lowercase_consistently_throughout`
+- C-level identifiers are `lowercase` wherever possible.
 
-- CN-level identifiers are `Uppercase_Consistently_Throughout`
+- CN-level identifiers are `Uppercase_Consistently_Throughout`.
 
 - A CN identifier that represents the state of a mutable data
   structure after some function returns should be named the same as
@@ -41,15 +41,10 @@ tutorial), we aim for maximal correspondence between
         (Moreover, it returns a new sequence `Ret` with `L == Ret`.)
 
 - Predicates that extract some structure from the heap should be named
-  the same as the structure they extract.  E.g., the result
-  type of the `Queue` predicate is also called `Queue`.
+  the same as the structure they extract, plus the suffix `_At`.
+  E.g., the result type of the `Queue` predicate is also called
+  `Queue_At`.
 
-  *Discussion*: There is clearly some potential for confusion, and for
-  this reason Liz prefers using `Queue_at` for the predicate (as does
-  Cole).  On the other hand hand, types don't take an argument and
-  predicates do, so it's easy to disambiguate.  We're going with the
-  lighter alternative for the moment.
-  
 ## For existing code
 
 In existing C codebases, uppercase-initial identifiers are often used
@@ -61,7 +56,7 @@ which convention we like best; this is left for future discussions.
 
 # Built-ins
 
-This proposal may also require changing some built-ins for
+This proposal may ultimately suggest changing some built-ins for
 consistency.
 
       - `i32` should change to `I32`, `u64` to `U64`
@@ -103,37 +98,8 @@ We propose a compromise:
 
    This convention is used in the CN tutorial, for example.
 
-   TODO: Right now, the tutorial uses option (1).  It was this
-   exercise that convinced me [BCP] that option (2) was better. :-)
-
 *Discussion*: One downside of this convention is that it might
 sometimes require some after-the-fact renaming: If a project starts
 out using just lists of signed ints and later needs to introduce lists
 of unsigned ints, the old signed operations will need to be renamed.
 This seems like an acceptable cost for keeping things light.
-
-Another downside is that it introduces two different ways of naming
-polymorphic things.  But hopefully (a) the appropriate use of each is
-clear and (b) most C developments will actually fall in the second,
-lighter case, and programmers will never need to bother understanding
-the first case.
-
-# Loose ends
-
-- The current function `IntList_free__list` is hard to rename with
-  these conventions. It feels like it should be `free__sllist`, but
-  that’s also the new name of the free function for individual list
-  cells (opposite of `malloc`). Current solution is
-  `free_rec__sllist`.
-    - BCP wonders if this issue is specific to malloc and free.  If
-      so, maybe we can make some special convention like
-      `free__sllist_node` for the single-node operation (even though
-      what it returns is an `sllist`, noit an `sllist_node`),
-      leaving `free__sllist` for the recursive one?
-    - Cole opines: "In this case, it really feels like you're defining
-      an API for a data structure, rather than just a polymorphic free
-      function. What does it mean to free an sllist? As you point out,
-      it could mean freeing the node or the whole list, and it makes
-      sense to have two functions for these two actions.  Under the
-      "API for a data structure" interpretation, something like
-      sllist_free_list and sllist_free_node feels more natural to me."
