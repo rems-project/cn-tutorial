@@ -8,11 +8,11 @@ function [rec] (u32) depth (datatype tree sapling)
 {
     match sapling 
     {
-        Tree_Nil {} => 
+        Leaf {} => 
         {
             0u32
         }
-        Tree_Cons {left: l, data: dat, right: r} => 
+        Node {left: l, data: dat, right: r} => 
         {
             let left_b = depth(l);
             let right_b = depth(r);
@@ -26,8 +26,8 @@ function [rec] (u32) depth (datatype tree sapling)
 unsigned int node_depth(struct node* t)
 /* FILL IN HERE */
 /* --BEGIN-- */
-/*@ requires take t1 = IntTree(t);
-    ensures take t2 = IntTree(t);
+/*@ requires take t1 = Tree_At(t);
+    ensures take t2 = Tree_At(t);
                  t1 == t2;
              return == depth(t1);
 @*/

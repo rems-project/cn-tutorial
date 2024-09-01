@@ -4,7 +4,7 @@
 void node_free_tree (struct node* t)
 /* FILL IN HERE */
 /* --BEGIN-- */
-/*@  requires take v1 = IntTree(t); @*/
+/*@  requires take v1 = Tree_At(t); @*/
 /* --END-- */
 {
     if (t == 0)

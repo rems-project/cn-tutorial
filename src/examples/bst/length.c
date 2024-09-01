@@ -4,15 +4,15 @@
 /* FILL IN CN FUNCTION SPEC DEFINTION HERE */
 /* --BEGIN-- */
 /*@
-function [rec] (u32) length (datatype tree sapling)
+function [rec] (u32) length (datatype Tree sapling)
 {
     match sapling 
     {
-        Tree_Nil {} => 
+        Leaf {} => 
         {
             0u32
         }
-        Tree_Cons {left: l, data: dat, right: r} => 
+        Node {left: l, data: dat, right: r} => 
         {
             let left_b = length(l);
             let right_b = length(r);
@@ -26,8 +26,8 @@ function [rec] (u32) length (datatype tree sapling)
 unsigned int node_length(struct node* t)
 /* FILL IN HERE */
 /* --BEGIN-- */
-/*@ requires take t1 = IntTree(t);
-    ensures take t2 = IntTree(t);
+/*@ requires take t1 = Tree_At(t);
+    ensures take t2 = Tree_At(t);
                  t1 == t2;
              return == length(t1);
 @*/

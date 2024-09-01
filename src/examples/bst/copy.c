@@ -5,9 +5,9 @@
 struct node* node_copy (struct node* t)
 /* FILL IN HERE */
 /* --BEGIN-- */
-/*@ requires take T1 = IntTree(t);
-    ensures  take T1_ = IntTree(t);
-             take T2  = IntTree(return);
+/*@ requires take T1 = Tree_At(t);
+    ensures  take T1_ = Tree_At(t);
+             take T2  = Tree_At(return);
                   T1 == T1_;
                   T1 == T2;
 @*/

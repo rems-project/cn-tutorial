@@ -1,11 +1,11 @@
 #include "./headers.h"
-// Extracts the members of a given tree node
+// Extracts the members of a given Tree node
 
 int get_Tree_Data (struct node *t)
 /* FILL IN HERE */
 /* --BEGIN-- */
-/*@ requires take v1 = IntTree(t);
-    ensures  take v2 = IntTree(t);
+/*@ requires take v1 = Tree_At(t);
+    ensures  take v2 = Tree_At(t);
                   v1 == v2;
             return == (is_null(t) ? 0i32 : get_data(v2)); @*/
 /* --END-- */

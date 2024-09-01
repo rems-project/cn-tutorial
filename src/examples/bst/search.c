@@ -1,18 +1,18 @@
 #include "./headers.h"
-// Searches for a node with the given value in the binary tree
+// Searches for a node with the given value in the binary Tree
 
 /* FILL IN CN FUNCTION SPEC DEFINTION HERE */
 /* --BEGIN-- */
 /*@
-function [rec] (datatype tree) search(datatype tree sapling, i32 value)
+function [rec] (datatype Tree) search(datatype Tree sapling, i32 value)
 {
     match sapling 
     {
-        Tree_Nil {} => 
+        Leaf {} => 
         {
-            Tree_Nil{}
+            Leaf{}
         }
-        Tree_Cons {left: l, data: dat, right: r} =>
+        Node {left: l, data: dat, right: r} =>
         {
             ((value == dat) ? sapling :
             ((value < dat) ? search(l, value) : search(r, value)))
@@ -25,11 +25,11 @@ function [rec] (datatype tree) search(datatype tree sapling, i32 value)
 struct node* node_search(struct node* t, int value)
 /* FILL IN HERE */
 /* --BEGIN-- */
-/*@ requires take t1 = IntTree(t);
-    ensures  take t2 = IntTree(t);
+/*@ requires take t1 = Tree_At(t);
+    ensures  take t2 = Tree_At(t);
                   t1 == t2;
                   let ret = search(t1, value);
-                  (ret == Tree_Nil{} ? is_null(return) : get_data(ret) == value);                
+                  (ret == Leaf{} ? is_null(return) : get_data(ret) == value);                
 @*/
 /* --END-- */
 {   

@@ -5,19 +5,19 @@
 /* FILL IN CN FUNCTION SPEC HERE */
 /* --BEGIN-- */
 /*@ 
-function [rec] (datatype tree) insert (datatype tree sapling, i32 value)
+function [rec] (datatype Tree) insert (datatype Tree sapling, i32 value)
 {
     match sapling 
     {
-        Tree_Nil{} => 
+        Leaf{} => 
         {
-            Tree_Cons{left: Tree_Nil{}, data: value, right: Tree_Nil{}}
+            Node{left: Leaf{}, data: value, right: Leaf{}}
         }
-        Tree_Cons{left: l, data: dat, right: r} => 
+        Node{left: l, data: dat, right: r} => 
         {
 
-            ((value < dat) ? Tree_Cons {left: insert(l, value), data: dat, right: r} :
-            Tree_Cons {left: l, data: dat, right: insert(r, value)})
+            ((value < dat) ? Node {left: insert(l, value), data: dat, right: r} :
+            Node {left: l, data: dat, right: insert(r, value)})
         }
     }
 }
@@ -27,16 +27,16 @@ function [rec] (datatype tree) insert (datatype tree sapling, i32 value)
 struct node* node_insert(struct node* t, int value)
 /* FILL IN HERE */
 /* --BEGIN-- */
-/*@ requires take T1 = IntTree(t);
-    ensures take ret = IntTree(return);  
+/*@ requires take T1 = Tree_At(t);
+    ensures take ret = Tree_At(return);  
                  ret == insert(T1,value);
-                 T1 != Tree_Nil{} implies get_data(ret) == get_data(T1);
+                 T1 != Leaf{} implies get_data(ret) == get_data(T1);
                 !is_null(return);  
 @*/
 /* --END-- */
 {
     /* --BEGIN-- */
-    /*@ unfold insert(Tree_Nil{}, value); @*/
+    /*@ unfold insert(Leaf{}, value); @*/
     /*@ unfold insert(T1, value); @*/
     /* --END-- */
     if (t == 0)

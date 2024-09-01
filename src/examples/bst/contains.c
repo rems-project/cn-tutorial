@@ -1,18 +1,18 @@
 #include "./headers.h"
-// returns true (1u32) or false (u32), if value is an node in the binary tree
+// returns true (1u32) or false (u32), if value is an node in the binary Tree
 
 /* FILL IN CN FUNCTION SPEC DEFINTION HERE */
 /* --BEGIN-- */
 /*@
-function [rec] (u32) exists(datatype tree sapling, i32 value)
+function [rec] (u32) exists(datatype Tree sapling, i32 value)
 {
     match sapling 
     {
-        Tree_Nil {} => 
+        Leaf {} => 
         {
             0u32
         }
-        Tree_Cons {left: l, data: dat, right: r} =>
+        Node {left: l, data: dat, right: r} =>
         {   
             let lb_exist = exists(l, value);
             let rb_exist = exists(r, value);  
@@ -30,8 +30,8 @@ typedef enum { false, true } bool;
 bool node_containsValue (struct node* t, int value)
 /* FILL IN HERE */
 /* --BEGIN-- */
-/*@ requires take t1 = IntTree(t);
-    ensures  take t2 = IntTree(t);
+/*@ requires take t1 = Tree_At(t);
+    ensures  take t2 = Tree_At(t);
                   t1 == t2;
             return == exists(t1, value);
 @*/

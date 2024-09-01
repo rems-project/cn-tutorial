@@ -4,15 +4,15 @@
 /* FILL IN CN FUNCTION SPEC DEFINTION HERE */
 /* --BEGIN-- */
 /*@
-function [rec] (u32) sum(datatype tree sapling)
+function [rec] (u32) sum(datatype Tree sapling)
 {
     match sapling 
     {
-        Tree_Nil {} => 
+        Leaf {} => 
         {
             0u32
         }
-        Tree_Cons {left: l, data: dat, right: r} => 
+        Node {left: l, data: dat, right: r} => 
         {
             let rt_val = (u32) dat;
             let sum_lb = sum(l);
@@ -27,8 +27,8 @@ function [rec] (u32) sum(datatype tree sapling)
 unsigned int node_sum(struct node* t)
 /* FILL IN HERE */
 /* --BEGIN-- */
-/*@ requires take t1 = IntTree(t);
-    ensures  take t2 = IntTree(t);
+/*@ requires take t1 = Tree_At(t);
+    ensures  take t2 = Tree_At(t);
                  t1 == t2;
              return == sum(t1);
 @*/

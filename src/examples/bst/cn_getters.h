@@ -1,45 +1,45 @@
-// Defines basic CN functions to extract a member of the tree datatype
+// Defines basic CN functions to extract a member of the Tree datatype
 
 /*@
-function (i32) get_data (datatype tree sapling) 
+function (i32) get_data (datatype Tree sapling) 
 {
   match sapling 
   {
-    Tree_Nil {} => 
+    Leaf {} => 
     {
       default<i32>
     }
-    Tree_Cons {left : _, data : dat, right: _} => 
+    Node {left : _, data : dat, right: _} => 
     {
       dat
     }
   }
 }
 
-function (datatype tree) get_lb (datatype tree sapling) 
+function (datatype Tree) get_lb (datatype Tree sapling) 
 {
   match sapling 
   {
-    Tree_Nil {} => 
+    Leaf {} => 
     {
-      Tree_Nil {}
+      Leaf {}
     }
-    Tree_Cons {left : left, data : _ , right: _} => 
+    Node {left : left, data : _ , right: _} => 
     {
       left
     }
   }
 }
 
-function (datatype tree) get_rb (datatype tree sapling) 
+function (datatype Tree) get_rb (datatype Tree sapling) 
 {
   match sapling 
   {
-    Tree_Nil {} => 
+    Leaf {} => 
     {
-      Tree_Nil {}
+      Leaf {}
     }
-    Tree_Cons {left : _, data : _ , right: right} => 
+    Node {left : _, data : _ , right: right} => 
     {
       right
     }
