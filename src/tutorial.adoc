@@ -1088,6 +1088,14 @@ looks like on the Coq side!
 // TODO: BCP: This needs to be filled in urgently!!
 // Dhruyv: There are some examples in the Cerberus repo tests? rems-project/cerberus@20d9d5c
 
+////
+TODO: BCP: 
+think about capitalization, etc., for lemma names
+  push_lemma should be Push_lemma, I guess?  Or lemma_push?
+  snoc_facts should be lemma_Snoc or something
+  others?
+////
+
 === List reverse
 
 The specification of list reversal in CN relies on the familiar
