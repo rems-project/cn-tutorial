@@ -1,0 +1,164 @@
+Here’s the C code and the spec. The spec is very simple and just packages the
+expected queue contents (a list) with a pointer to the actual queue into the
+model state. The model is a little dated in that nowadays we normally use a
+“command_args” callback that spares us from constructing the symbolic function
+calls in the model. So the X_command callbacks would be replaced by X_args
+probably, which would be slightly simpler.
+ 
+I will start off with a buggy put precondition, omitting the check that the
+buffer isn’t full. That generates a counterexample where we put a 0 and a 1
+into a buffer of size 1, and of course when we get a value then we get the
+wrong one. That lets me talk about shrinking and what minimality tells me, and
+also lets me show the precondition and parts of the model.
+ 
+After fixing that, we’ll get a size of zero after putting one item into a queue
+of size 1. The problem is that full queues and empty queues have the same
+representation—this representation is inadequate. The simplest fix is just to
+set bufsize in the new function to n+1, so we never create a ‘full’ queue (with
+n+1 elements, that is, because we are limited to n by the precondition).
+ 
+After fixing that, we’ll get a size of -1 after put-get-put with a queue of
+size 1—whose size field is 2, of course. The problem is that % in C is not
+`mod`, it’s `rem`, and the expression in the size function is (0 – 1) `rem` 2…
+that is, -1. The problem arises when (q->inp - q->outp) is negative, and with
+many audiences I can get someone to suggest adding a call of abs to fix the
+problem. I don’t suppose I’ll get that on this occasion, but I’ll add abs
+anyway. Then I’ll repeat the same test—and it will pass. If there’s time, I
+sometimes talk about how people work… adding a test to provoke a bug, and then
+hacking the code until the test passes—which it now does. But random tests will
+still fail, with put-put-get-put or put-get-put-put and a queue of size 2. Once
+again, the input pointer has wrapped around and the output pointer has not, but
+abs no longer fixes the problem. That motivates the correct fix, so add q->size
+instead of taking abs, guaranteeing a non-negative result while preserving the
+value modulo q->size.
+
+Now the code works, and I can run maybe 10K tests to get some confidence in
+that.
+
+Points to bring out: one and the same spec could find many different bugs;
+shrinking results in minimal counterexamples that are easy to debug.
+
+_________________________
+C code:
+
+    #include <stdlib.h>
+
+    typedef struct queue
+    { int inp;
+      int outp;
+      int size;
+      int *buf;
+    } Queue;
+
+    Queue *new(int n)
+    { int bufsize = n;
+      int *buff = malloc(bufsize*sizeof(int));
+      Queue q = {0,0,bufsize,buff};
+      Queue *qptr = malloc(sizeof(Queue));
+      *qptr = q;
+      return qptr;
+    }
+
+    void put(Queue *q, int n)
+    { q -> buf[q -> inp] = n;
+      q -> inp = (q -> inp + 1) % q -> size;
+    }
+
+    int get(Queue *q)
+    { int ans = q -> buf[q -> outp];
+      q -> outp = (q -> outp + 1) % q -> size;
+      return ans;
+    }
+
+    int size(Queue *q)
+    { return (q->inp - q->outp) % q -> size;
+    }
+
+________________________
+Spec (in Erlang QuickCheck):
+
+    -module(q_eqc).
+    -include_lib("eqc/include/eqc.hrl").
+    -include_lib("eqc/include/eqc_statem.hrl").
+    -compile([export_all,nowarn_export_all]).
+
+    -record(state,{size,         % maximum size of the queue
+                   contents=[],  % current contents
+                   ptr           % address of the queue
+                  }).
+
+    %% Returns the state in which each test case starts.
+    initial_state() ->
+        #state{}.
+
+    %% new
+
+    new_command(_S) -> 
+        {call, q, new, [nat()]}.
+
+    new_pre(S) ->
+        S#state.ptr == undefined.
+
+    new_pre(_S, [Size]) ->
+        Size > 0.
+
+    new_next(_S, Value, [Size]) ->
+        #state{size=Size,contents=[],ptr=Value}.
+
+    new_post(_S, _Args, _Res) ->
+        true.
+
+    %% get
+
+    get_command(S) ->
+        {call,q,get,[S#state.ptr]}.
+
+    get_pre(S) ->
+        S#state.ptr /= undefined andalso
+            S#state.contents /= [].
+
+    get_next(S,_Value,_Args) ->
+        S#state{contents=tl(S#state.contents)}.
+
+    get_post(S,_Args,Res) ->
+        eq(Res,hd(S#state.contents)).
+
+    %% put
+
+    put_command(S) ->
+        {call,q,put,[S#state.ptr, int()]}.
+
+    put_pre(S) ->
+      S#state.ptr /= undefined andalso
+      length(S#state.contents) < S#state.size.
+
+    put_next(S, _Value, [_Ptr,X]) ->
+        S#state{contents=S#state.contents++[X]}.
+
+    %% size
+
+    size_command(S) ->
+        {call,q,size,[S#state.ptr]}.
+
+    size_pre(S) ->
+        S#state.ptr /= undefined.
+
+    size_post(S,_,Res) ->
+         eq(Res,length(S#state.contents)).
+
+    %% weights
+
+    weight(_,put) -> 20;
+    weight(_,get) -> 20;
+    weight(_,_)   -> 1.
+
+    %% Property
+
+    prop_q() ->
+        ?FORALL(Cmds, commands(?MODULE),
+                begin
+                    {H, S, Res} = run_commands(?MODULE,Cmds),
+                    pretty_commands(?MODULE, Cmds, {H, S, Res},
+                                    aggregate(command_names(Cmds),
+                                              Res == ok))
+                end).
