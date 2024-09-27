@@ -1,11 +1,10 @@
-.PHONY: clean test
+.PHONY: clean test cerberus-home
 
-CC=clang
-DEPS=
-ROOT=queue
-
-# Assumes cerberus is in the same directory as cn-tutorial.
-CN_TEST=../../../../cerberus/tests/cn-runtime/cn-runtime-single-file.sh
+CC?=clang
+CN?=cn
+CFLAGS?=
+DEPS?=
+ROOT?=queue
 
 default: exercise
 
@@ -18,11 +17,21 @@ solution: $(ROOT)_solution.o
 %.o : %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-test:
-	$(CN_TEST) $(ROOT)_exercise.c || true
+test: $(ROOT)_exercise.c
+	# Check for CERBERUS_HOME
+	@if [ -z "${CERBERUS_HOME}" ]; \
+      then \
+        echo "ERROR: Please set CERBERUS_HOME to point to your Cerberus repo."; \
+        exit 1; \
+      else echo ${CERBERUS_HOME}; \
+      fi
+
+	$(CN) instrument $<
+	make $(ROOT)_exercise-exec.o cn.o CFLAGS="$(CFLAGS) -I${CERBERUS_HOME}/runtime/libcn/include"
+	$(CC) -o $@ $(ROOT)_exercise-exec.o cn.o $(CFLAGS)
 
 verify:
-	cn verify $(ROOT)_exercise.c
+	$(CN) verify $(ROOT)_exercise.c
 
 clean:
-	rm -f exercise solution *.o
+	rm -f exercise solution cn.c cn.h stdlib.h *-exec.c *.o
