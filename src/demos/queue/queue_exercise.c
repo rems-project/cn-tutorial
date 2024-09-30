@@ -9,6 +9,7 @@ datatype seq {
 @*/
 
 #include "../../examples/list_hdtl.h"
+#include "../../examples/list_snoc.h"
 
 
 /*@
@@ -56,27 +57,35 @@ typedef struct queue
 function (boolean) queue_wf (i32 inp, i32 outp, i32 bufsize)
 {
   bufsize > 0i32
+  && (i64) bufsize + (i64) bufsize <= 2147483647i64
   && (0i32 <= inp && inp < bufsize)
   && (0i32 <= outp && outp < bufsize)
 }
 
-predicate {datatype seq content, i32 size} QueueP (pointer p) {
+type_synonym impl_state = {
+  Queue q, 
+  map<i32,i32> buf, 
+  datatype seq content,
+  i32 size
+}
+
+type_synonym state = {
+  datatype seq content, 
+  i32 size
+}
+
+predicate impl_state QueueImpl(pointer p) {
   take q = Owned<Queue>(p);
   take buf = each (i32 i; 0i32 <= i && i < q.size) { Owned<int>(q.buf + i) };
   assert (queue_wf (q.inp, q.outp, q.size));
   let content = seq_of_buf(buf, q.inp, q.outp, q.size);
-  let size = size(q.inp, q.outp, q.size);
-  assert(length(content) == size);
-  return {content: content, size: q.size - 1i32};
+  return {q: q, buf: buf, content: content, size: q.size - 1i32};
 }
 
-//for proof purposes only
-predicate {Queue q, map<i32,i32> buf} Queue_ImplP(pointer p)
+predicate state QueueAbs(pointer p)
 {
-  take q = Owned<Queue>(p);
-  take buf = each (i32 i; 0i32 <= i && i < q.size) { Owned<int>(q.buf + i) };
-  assert (queue_wf (q.inp, q.outp, q.size));
-  return {q: q, buf: buf} ;
+  take i = QueueImpl(p);
+  return {content: i.content, size: i.size};
 }
 
 @*/
@@ -106,39 +115,52 @@ Queue *malloc_queue()
 // for proof
 void prove_queue_empty(struct queue *p)
 /*@
-requires take qi = Queue_ImplP(p);
-         size(qi.q.inp, qi.q.outp, qi.q.size) == 0i32;
-ensures take qi_out = Queue_ImplP(p);
-        qi == qi_out;
-        seq_of_buf(qi.buf, qi.q.inp, qi.q.outp, qi.q.size) == Seq_Nil {};
+requires take i = QueueImpl(p);
+ensures take i_out = QueueImpl(p);
+        i == i_out;
+        let empty = size(i.q.inp, i.q.outp, i.q.size) == 0i32;
+        empty ? (seq_of_buf(i.buf, i.q.inp, i.q.outp, i.q.size) == Seq_Nil {}) : true;
 @*/
 {
-  /*@ unfold seq_of_buf(qi.buf, qi.q.inp, qi.q.outp, qi.q.size); @*/
+  /*@ unfold seq_of_buf(i.buf, i.q.inp, i.q.outp, i.q.size); @*/
 }
 
 // for proof
-void prove_queue_put(struct queue *p, int n)
+void prove_buf_frame(struct queue *p, int n)
 /*@
-requires take qi = Queue_ImplP(p);
-         let q = qi.q;
+requires take i = QueueImpl(p);
+         let q = i.q;
          size(q.inp, q.outp, q.size) < q.size;
-ensures take qi_out = Queue_ImplP(p);
-        qi == qi_out;
-        let content_before = seq_of_buf(qi.buf, q.inp, q.outp, q.size);
-        let content_after = seq_of_buf(qi.buf[q.inp: n], (q.inp+1i32)%q.size, q.outp, q.size);
-        content_after == Seq_Cons {head: n, tail: content_before};
+ensures take i_out = QueueImpl(p);
+        i == i_out;
+        let content_before = seq_of_buf(i.buf, q.inp, q.outp, q.size);
+        let content_after = seq_of_buf(i.buf[q.inp: n], q.inp, q.outp, q.size);
+        content_after == content_before;
 @*/
 {
-  /*@ unfold seq_of_buf(qi.buf[q.inp: n + 0i32], (q.inp+1i32)%q.size, q.outp, q.size); @*/
+}
+
+void prove_buf_cons(struct queue *p)
+/*@
+requires take i = QueueImpl(p);
+         let q = i.q;
+         size(q.inp, q.outp, q.size) < q.size;
+ensures take i_out = QueueImpl(p);
+        i == i_out;
+        let content_before = seq_of_buf(i.buf, q.inp, q.outp, q.size);
+        let content_after = seq_of_buf(i.buf, (q.inp+1i32)%q.size, q.outp, q.size);
+        content_after == snoc(content_before, i.buf[q.inp]);
+@*/
+{
 }
 
 // for proof
 void prove_queue_get(struct queue *p)
 /*@
-requires take qi = Queue_ImplP(p);
+requires take qi = QueueImpl(p);
          let q = qi.q;
          size(q.inp, q.outp, q.size) > 1i32;
-ensures take qi_out = Queue_ImplP(p);
+ensures take qi_out = QueueImpl(p);
         qi == qi_out;
         let content1 = seq_of_buf(qi.buf, q.inp, q.outp, q.size);
         let content2 = seq_of_buf(qi.buf, q.inp, (q.outp+1i32)%q.size, q.size);
@@ -148,66 +170,86 @@ ensures take qi_out = Queue_ImplP(p);
   /*@ unfold seq_of_buf(qi.buf, q.inp, q.outp, q.size); @*/
 }
 
+void prove_in_sync(struct queue *p)
+/*@
+requires take qi = QueueImpl(p);
+         let q = qi.q;
+ensures take qi_out = QueueImpl(p);
+        qi == qi_out;
+        size(q.inp, q.outp, q.size) == length(qi.content);
+@*/
+{
+  /*@ unfold seq_of_buf(qi.buf, q.inp, q.outp, q.size); @*/
+  /*@ unfold length(seq_of_buf(qi.buf, q.inp, q.outp, q.size)); @*/
+  /* if (((p->inp - p->outp + p->size) % p->size) == 0) { */
+  /* } */
+  /* else { */
+  /*   Queue induction_step = *p; */
+  /*   induction_step.outp = (induction_step.outp + 1) % induction_step.size; */
+  /*   prove_in_sync(&induction_step); */
+  /* } */
+}
 
 
 Queue *new(int n)
-/*@ requires 0i32 < n && n < 2147483647i32;
-    ensures take queue_out = QueueP(return);
+/*@ requires 0i32 < n;
+             (i64) n + (i64) n + 2i64 < 2147483647i64;
+    ensures take queue_out = QueueAbs(return);
             queue_out.size == n;
             queue_out.content == Seq_Nil {};
 @*/
 {
-  int bufsize = n+1;
+  int bufsize = n + 1;
   int *buff = malloc_buf(bufsize);
   Queue q = {0, 0, bufsize, buff};
   Queue *qptr = malloc_queue();
   *qptr = q;
   /*CN*/ prove_queue_empty(qptr);
-  /*@ unfold length(Seq_Nil {}); @*/
   return qptr;
 }
 
 void put(Queue *q, int n)
-/*@ requires take queue = QueueP(q);
+/*@ requires take queue = QueueAbs(q);
              length(queue.content) < queue.size;
-             let expected_content = Seq_Cons{head: n, tail: queue.content};
-    ensures take queue_out = QueueP(q);
+             let expected_content = snoc(queue.content, n);
+    ensures take queue_out = QueueAbs(q);
             queue_out.content == expected_content;
             queue_out.size == queue.size;
 @*/
 {
-  /*CN*/ prove_queue_put(q,n);
   /*@ extract Owned<int>, q->inp; @*/
-  /*@ unfold length (expected_content); @*/
-  q->buf[q->inp] = n;
-  q->inp = (q->inp + 1) % q->size;
+  /*CN*/ prove_buf_frame(q,n);
+  q -> buf[q -> inp] = n;
+  /*CN*/ prove_buf_cons(q);
+  q -> inp = (q -> inp + 1) % q -> size;
 }
 
 int get(Queue *q)
-/*@ requires take queue = QueueP(q);
+/*@ requires take queue = QueueAbs(q);
              length(queue.content) > 1i32;
-    ensures take queue_out = QueueP(q);
+    ensures take queue_out = QueueAbs(q);
             return == hd(queue.content);
             queue_out.content == tl(queue.content);
             queue_out.size == queue.size;
 @*/
 {
   /*@ extract Owned<int>, q->outp; @*/
+  /*CN*/ prove_in_sync(q);
   /*CN*/ prove_queue_get(q);
-  int ans = q->buf[q->outp];
-  q->outp = (q->outp + 1) % q->size;
-  // unfold length(queue.content); 
+  int ans = q -> buf[q -> outp];
+  q -> outp = (q -> outp + 1) % q -> size;
   return ans;
 }
 
 int size(Queue *q)
-/*@ requires take queue = QueueP(q);
-    ensures take queue_out = QueueP(q);
+/*@ requires take queue = QueueAbs(q);
+    ensures take queue_out = QueueAbs(q);
             queue == queue_out;
             return == length(queue.content);
 @*/
 {
-  return ((q->inp - q->outp) + q->size) % q->size;
+  /*CN*/ prove_in_sync(q);
+  return (q->inp - q->outp + q->size) % q->size;
 }
 
 int main()
