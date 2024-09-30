@@ -12,6 +12,7 @@ int IntQueue_pop (struct int_queue *q)
   /*@ split_case is_null(q->front); @*/
   struct int_queueCell* h = q->front;
   if (h == q->back) {
+    /*@ assert ((alloc_id) h == (alloc_id) (q->back)); @*/
     int x = h->first;
     freeIntQueueCell(h);
     q->front = 0;

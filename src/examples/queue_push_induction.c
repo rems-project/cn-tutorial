@@ -5,11 +5,13 @@ void push_induction(struct int_queueCell* front
         , struct int_queueCell* last)
 /*@
   requires
+      ptr_eq(front, second_last) || !addr_eq(front, second_last);
       take Q = IntQueueAux(front, second_last);
       take Second_last = Owned(second_last);
       ptr_eq(Second_last.next, last);
       take Last = Owned(last);
   ensures
+      ptr_eq(front, last) || !addr_eq(front, last);
       take NewQ = IntQueueAux(front, last);
       take Last2 = Owned(last);
       NewQ == snoc(Q, Second_last.first);
