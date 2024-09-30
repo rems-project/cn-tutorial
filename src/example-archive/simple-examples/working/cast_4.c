@@ -19,7 +19,7 @@ int cast_4(int *ptr_original)
   if (ptr_as_int < ptr_as_int_copy) // Check for overflow 
   {
     ptr_as_int_copy = ptr_as_int_copy - OFFSET;
-    int *ptr_restored = (int *)ptr_as_int_copy;
+    int *ptr_restored = __cerbvar_copy_alloc_id(ptr_as_int_copy, ptr_original);
 
     int ret = *ptr_restored;
 

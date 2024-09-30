@@ -5,6 +5,7 @@ predicate (datatype seq) IntQueueFB (pointer front, pointer back) {
   } else {
     take B = Owned<struct int_queueCell>(back);
     assert (is_null(B.next));
+    assert (ptr_eq(front, back) || !addr_eq(front, back));
     take L = IntQueueAux (front, back);
     return snoc(L, B.first);
   }
