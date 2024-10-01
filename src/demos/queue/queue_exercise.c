@@ -24,14 +24,18 @@ function [rec] (i32) length(datatype seq xs) {
   }
 }
 
-function (i32) size (i32 inp, i32 outp, i32 bufsize)
+function (i32) cn_size (i32 inp, i32 outp, i32 bufsize)
 {
   ((inp - outp) + bufsize) % bufsize
 }
 
 
 function [rec] (datatype seq) seq_of_buf (map<i32,i32> buf, i32 inp, i32 outp, i32 bufsize) {
+<<<<<<< HEAD
   if (size (inp, outp, bufsize) > 0i32) {
+=======
+  if (cn_size (inp, outp, bufsize) > 0i32) { 
+>>>>>>> c0c47c9d21cce132adc0eba7b36b3fe924eaae06
     Seq_Cons {
       head: buf[outp],
       tail: seq_of_buf(buf, inp, (outp + 1i32) % bufsize, bufsize)
@@ -116,7 +120,7 @@ void prove_queue_empty(struct queue *p)
 requires take i = QueueImpl(p);
 ensures take i_out = QueueImpl(p);
         i == i_out;
-        let empty = size(i.q.inp, i.q.outp, i.q.size) == 0i32;
+        let empty = cn_size(i.q.inp, i.q.outp, i.q.size) == 0i32;
         empty ? (seq_of_buf(i.buf, i.q.inp, i.q.outp, i.q.size) == Seq_Nil {}) : true;
 @*/
 {
@@ -128,7 +132,7 @@ void prove_buf_frame(struct queue *p, int n)
 /*@
 requires take i = QueueImpl(p);
          let q = i.q;
-         size(q.inp, q.outp, q.size) < q.size;
+         cn_size(q.inp, q.outp, q.size) < q.size;
 ensures take i_out = QueueImpl(p);
         i == i_out;
         let content_before = seq_of_buf(i.buf, q.inp, q.outp, q.size);
@@ -142,7 +146,7 @@ void prove_buf_cons(struct queue *p)
 /*@
 requires take i = QueueImpl(p);
          let q = i.q;
-         size(q.inp, q.outp, q.size) < q.size;
+         cn_size(q.inp, q.outp, q.size) < q.size;
 ensures take i_out = QueueImpl(p);
         i == i_out;
         let content_before = seq_of_buf(i.buf, q.inp, q.outp, q.size);
@@ -157,7 +161,7 @@ void prove_queue_get(struct queue *p)
 /*@
 requires take qi = QueueImpl(p);
          let q = qi.q;
-         size(q.inp, q.outp, q.size) > 1i32;
+         cn_size(q.inp, q.outp, q.size) > 1i32;
 ensures take qi_out = QueueImpl(p);
         qi == qi_out;
         let content1 = seq_of_buf(qi.buf, q.inp, q.outp, q.size);
@@ -174,7 +178,7 @@ requires take qi = QueueImpl(p);
          let q = qi.q;
 ensures take qi_out = QueueImpl(p);
         qi == qi_out;
-        size(q.inp, q.outp, q.size) == length(qi.content);
+        cn_size(q.inp, q.outp, q.size) == length(qi.content);
 @*/
 {
   /*@ unfold seq_of_buf(qi.buf, q.inp, q.outp, q.size); @*/
@@ -239,7 +243,7 @@ int get(Queue *q)
   return ans;
 }
 
-int size(Queue *q)
+int queueSize(Queue *q)
 /*@ requires take queue = QueueAbs(q);
     ensures take queue_out = QueueAbs(q);
             queue == queue_out;
