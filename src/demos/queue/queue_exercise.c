@@ -11,7 +11,6 @@ datatype seq {
 #include "../../examples/list_hdtl.h"
 #include "../../examples/list_snoc.h"
 
-
 /*@
 // copying from list_length.c
 function [rec] (i32) length(datatype seq xs) {
@@ -32,11 +31,11 @@ function (i32) size (i32 inp, i32 outp, i32 bufsize)
 
 
 function [rec] (datatype seq) seq_of_buf (map<i32,i32> buf, i32 inp, i32 outp, i32 bufsize) {
-  if (size (inp, outp, bufsize) > 0i32) { 
+  if (size (inp, outp, bufsize) > 0i32) {
     Seq_Cons {
-      head: buf[outp], 
+      head: buf[outp],
       tail: seq_of_buf(buf, inp, (outp + 1i32) % bufsize, bufsize)
-    } 
+    }
   }
   else {
     Seq_Nil {}
@@ -63,15 +62,15 @@ function (boolean) queue_wf (i32 inp, i32 outp, i32 bufsize)
 }
 
 type_synonym impl_state = {
-  Queue q, 
-  map<i32,i32> buf, 
+  Queue q,
+  map<i32,i32> buf,
   datatype seq content,
   i32 size
 }
 
 type_synonym state = {
-  datatype seq content, 
-  i32 size
+  datatype seq content,
+  i32 size  // max size
 }
 
 predicate impl_state QueueImpl(pointer p) {
@@ -89,7 +88,6 @@ predicate state QueueAbs(pointer p)
 }
 
 @*/
-
 
 int *malloc_buf(int size)
 /*@
@@ -211,7 +209,7 @@ Queue *new(int n)
 void put(Queue *q, int n)
 /*@ requires take queue = QueueAbs(q);
              length(queue.content) < queue.size;
-             let expected_content = snoc(queue.content, n);
+             let expected_content = snoc(queue.content, n);  // Why not inline below?
     ensures take queue_out = QueueAbs(q);
             queue_out.content == expected_content;
             queue_out.size == queue.size;
