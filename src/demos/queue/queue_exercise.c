@@ -32,7 +32,7 @@ function (i32) cn_size (i32 inp, i32 outp, i32 bufsize)
 
 
 function [rec] (datatype seq) seq_of_buf (map<i32,i32> buf, i32 inp, i32 outp, i32 bufsize) {
-  if (size (inp, outp, bufsize) > 0i32) { 
+  if (cn_size (inp, outp, bufsize) > 0i32) { 
     Seq_Cons {
       head: buf[outp], 
       tail: seq_of_buf(buf, inp, (outp + 1i32) % bufsize, bufsize)
