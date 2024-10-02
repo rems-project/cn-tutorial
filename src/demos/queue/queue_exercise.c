@@ -8,8 +8,41 @@ datatype seq {
 }
 @*/
 
-#include "../../examples/list_hdtl.h"
-#include "../../examples/list_snoc.h"
+/*@
+function (i32) hd (datatype seq xs) {
+  match xs {
+    Seq_Nil {} => {
+      0i32
+    }
+    Seq_Cons {head : h, tail : _} => {
+      h
+    }
+  }
+}
+
+function (datatype seq) tl (datatype seq xs) {
+  match xs {
+    Seq_Nil {} => {
+      Seq_Nil {}
+    }
+    Seq_Cons {head : _, tail : tail} => {
+      tail
+    }
+  }
+}
+@*/
+/*@
+function [rec] (datatype seq) snoc(datatype seq xs, i32 y) {
+  match xs {
+    Seq_Nil {} => {
+      Seq_Cons {head: y, tail: Seq_Nil{}}
+    }
+    Seq_Cons {head: x, tail: zs}  => {
+      Seq_Cons{head: x, tail: snoc (zs, y)}
+    }
+  }
+}
+@*/
 
 /*@
 // copying from list_length.c
@@ -31,11 +64,7 @@ function (i32) cn_size (i32 inp, i32 outp, i32 bufsize)
 
 
 function [rec] (datatype seq) seq_of_buf (map<i32,i32> buf, i32 inp, i32 outp, i32 bufsize) {
-<<<<<<< HEAD
-  if (size (inp, outp, bufsize) > 0i32) {
-=======
   if (cn_size (inp, outp, bufsize) > 0i32) { 
->>>>>>> c0c47c9d21cce132adc0eba7b36b3fe924eaae06
     Seq_Cons {
       head: buf[outp],
       tail: seq_of_buf(buf, inp, (outp + 1i32) % bufsize, bufsize)
@@ -48,13 +77,14 @@ function [rec] (datatype seq) seq_of_buf (map<i32,i32> buf, i32 inp, i32 outp, i
 
 @*/
 
-typedef struct queue
+
+struct queue
 {
   int inp;
   int outp;
   int size;
   int *buf;
-} Queue;
+};
 
 /*@
 function (boolean) queue_wf (i32 inp, i32 outp, i32 bufsize)
@@ -66,8 +96,8 @@ function (boolean) queue_wf (i32 inp, i32 outp, i32 bufsize)
 }
 
 type_synonym impl_state = {
-  Queue q,
-  map<i32,i32> buf,
+  struct queue q, 
+  map<i32,i32> buf, 
   datatype seq content,
   i32 size
 }
@@ -78,7 +108,7 @@ type_synonym state = {
 }
 
 predicate impl_state QueueImpl(pointer p) {
-  take q = Owned<Queue>(p);
+  take q = Owned<struct queue>(p);
   take buf = each (i32 i; 0i32 <= i && i < q.size) { Owned<int>(q.buf + i) };
   assert (queue_wf (q.inp, q.outp, q.size));
   let content = seq_of_buf(buf, q.inp, q.outp, q.size);
@@ -93,6 +123,8 @@ predicate state QueueAbs(pointer p)
 
 @*/
 
+void *cn_malloc(unsigned long size);
+
 int *malloc_buf(int size)
 /*@
   trusted;
@@ -100,17 +132,17 @@ int *malloc_buf(int size)
   ensures take rv = each (i32 i; 0i32 <= i && i < size) { Owned<int>(return + i) };
 @*/
 {
-  return malloc(size * sizeof(int));
+  return cn_malloc(size * sizeof(int));
 }
 
-Queue *malloc_queue()
+struct queue *malloc_queue()
 /*@
   trusted;
   requires true;
-  ensures take rv = Owned<Queue>(return);
+  ensures take rv = Owned<struct queue>(return);
 @*/
 {
-  return malloc(sizeof(Queue));
+  return cn_malloc(sizeof(struct queue));
 }
 
 
@@ -193,7 +225,7 @@ ensures take qi_out = QueueImpl(p);
 }
 
 
-Queue *new(int n)
+struct queue *new(int n)
 /*@ requires 0i32 < n;
              (i64) n + (i64) n + 2i64 < 2147483647i64;
     ensures take queue_out = QueueAbs(return);
@@ -203,14 +235,14 @@ Queue *new(int n)
 {
   int bufsize = n + 1;
   int *buff = malloc_buf(bufsize);
-  Queue q = {0, 0, bufsize, buff};
-  Queue *qptr = malloc_queue();
+  struct queue q = {0, 0, bufsize, buff};
+  struct queue *qptr = malloc_queue();
   *qptr = q;
   /*CN*/ prove_queue_empty(qptr);
   return qptr;
 }
 
-void put(Queue *q, int n)
+void put(struct queue *q, int n)
 /*@ requires take queue = QueueAbs(q);
              length(queue.content) < queue.size;
              let expected_content = snoc(queue.content, n);  // Why not inline below?
@@ -226,7 +258,7 @@ void put(Queue *q, int n)
   q -> inp = (q -> inp + 1) % q -> size;
 }
 
-int get(Queue *q)
+int get(struct queue *q)
 /*@ requires take queue = QueueAbs(q);
              length(queue.content) > 1i32;
     ensures take queue_out = QueueAbs(q);
@@ -243,7 +275,7 @@ int get(Queue *q)
   return ans;
 }
 
-int queueSize(Queue *q)
+int queueSize(struct queue *q)
 /*@ requires take queue = QueueAbs(q);
     ensures take queue_out = QueueAbs(q);
             queue == queue_out;
@@ -254,6 +286,12 @@ int queueSize(Queue *q)
   return (q->inp - q->outp + q->size) % q->size;
 }
 
-int main()
+int main(void)
 {
+  struct queue *q = new(3);
+  put(q, 5);
+  put(q, 2);
+  put(q, 1);
+  int elem1 = get(q);
+  return 0;
 }
