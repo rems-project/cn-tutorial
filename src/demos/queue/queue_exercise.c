@@ -8,41 +8,8 @@ datatype seq {
 }
 @*/
 
-/*@
-function (i32) hd (datatype seq xs) {
-  match xs {
-    Seq_Nil {} => {
-      0i32
-    }
-    Seq_Cons {head : h, tail : _} => {
-      h
-    }
-  }
-}
-
-function (datatype seq) tl (datatype seq xs) {
-  match xs {
-    Seq_Nil {} => {
-      Seq_Nil {}
-    }
-    Seq_Cons {head : _, tail : tail} => {
-      tail
-    }
-  }
-}
-@*/
-/*@
-function [rec] (datatype seq) snoc(datatype seq xs, i32 y) {
-  match xs {
-    Seq_Nil {} => {
-      Seq_Cons {head: y, tail: Seq_Nil{}}
-    }
-    Seq_Cons {head: x, tail: zs}  => {
-      Seq_Cons{head: x, tail: snoc (zs, y)}
-    }
-  }
-}
-@*/
+#include "../../examples/list_hdtl.h"
+#include "../../examples/list_snoc.h"
 
 /*@
 // copying from list_length.c
