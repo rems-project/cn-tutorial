@@ -443,13 +443,13 @@ To support reasoning about code manipulating arrays and computed pointers, CN ha
 
 [source,c]
 ----
-each (i32 i; 0i32 <= i && i < 10i32)
+each (u64 i; 0u64 <= i && i < 10u64)
      { Owned<int>(array_shift<int>(p,i)) }
 ----
 
 In detail, this can be read as follows:
 
-* for each integer `+i+` of CN type `+i32+`, …
+* for each integer `+i+` of CN type `+u64+`, …
 
 * if `+i+` is between `+0+` and `+10+`, …
 
@@ -508,7 +508,7 @@ Here the CN comment `+/*@ extract Owned<int>, i; @*/+` is a CN "`ghost statement
 
 [source,c]
 ----
-each(i32 j; 0i32 <= j && j < n) { Owned<int>(array_shift<int>(p,j)) }
+each(u64 j; 0u64 <= j && j < n) { Owned<int>(array_shift<int>(p,j)) }
 ----
 
 is split into
@@ -523,7 +523,7 @@ Owned<int>(array_shift<int>(p,i))
 +
 [source,c]
 ----
-each(i32 j; 0i32 <= j && j < n && j != i)
+each(u64 j; 0u64 <= j && j < n && j != i)
     { Owned<int>(array_shift<int>(p,j)) }
 ----
 
@@ -531,7 +531,7 @@ After this extraction step, CN can use the (former) extracted resource to justif
 
 Following an `+extract+` statement, CN moreover remembers the extracted index and can automatically "`reverse`" the extraction when needed: after type checking the access `+p[i]+` CN must ensure the function’s postcondition holds, which needs the full array ownership again (including the extracted index `+i+`); remembering the index `+i+`, CN then automatically merges resources (1) and (2) again to obtain the required full array ownership, and completes the verification of the function.
 
-So far the specification only guarantees safe execution but does not specify the behaviour of `+read+`. To address this, let’s return to the iterated resources in the function specification. When we specify `+take a1 = each ...+` here, what is `+a1+`? In CN, the output of an iterated resource is a _map_ from indices to resource outputs. In this example, where index `+j+` has CN type `+i32+` and the iterated resource is `+Owned<int>+`, the output `+a1+` is a map from `+i32+` indices to `+i32+` values — CN type `+map<i32,i32>+`. (If the type of `+j+` was `+i64+` and the resource `+Owned<char>+`, `+a1+` would have type `+map<i64,u8>+`.)
+So far the specification only guarantees safe execution but does not specify the behaviour of `+read+`. To address this, let’s return to the iterated resources in the function specification. When we specify `+take a1 = each ...+` here, what is `+a1+`? In CN, the output of an iterated resource is a _map_ from indices to resource outputs. In this example, where index `+j+` has CN type `+u64+` and the iterated resource is `+Owned<int>+`, the output `+a1+` is a map from `+u64+` indices to `+i32+` values — CN type `+map<u64,i32>+`.
 
 We can use this to refine our specification with information about the functional behaviour of `+read+`.
 
@@ -557,14 +557,14 @@ include_example(exercises/swap_array.c)
 ////
 TODO: BCP: I wrote this, which seemed natural but did not work -- I still don't fully understand why.  I think this section will need some more examples / exercises to be fully digestible, or perhaps this is just yet another symptom of my imperfecdt understanding of how the numeric stuff works.
 
-    void swap_array (int *p, int n, int i, int j)
-    /*@ requires take a1 = each(i32 k; 0i32 <= k && k < n) { Owned<unsigned int>(array_shift<unsigned int>(p,k)) };
-                 0i32 <= i && i < n;
-                 0i32 <= j && j < n;
+    void swap_array (int *p, unsigned long n, unsigned long i, unsigned long j)
+    /*@ requires take a1 = each(u64 k; 0u64 <= k && k < n) { Owned<unsigned int>(array_shift<unsigned int>(p,k)) };
+                 0u64 <= i && i < n;
+                 0u64 <= j && j < n;
                  j != i;
                  take xi = Owned<unsigned int>(array_shift(p,i));
                  take xj = Owned<unsigned int>(array_shift(p,j))
-        ensures take a2 = each(i32 k; 0i32 <= k && k < n) { Owned<unsigned int>(array_shift<unsigned int>(p,k)) };
+        ensures take a2 = each(u64 k; 0u64 <= k && k < n) { Owned<unsigned int>(array_shift<unsigned int>(p,k)) };
                 a1[i:xj][j:xi] == a2
     @*/
     {
