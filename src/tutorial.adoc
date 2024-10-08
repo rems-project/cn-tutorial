@@ -1367,6 +1367,174 @@ Now, let's look at the annotations in the function body. These are similar to in
 
 *Exercise*: There are many other functions that one might want to implement for a doubly linked list. For example, one might want to implement a function that appends one list to another, or a function that reverses a list. Try implementing these functions and writing their specifications.
 
+// ======================================================================
+
+=== Double Ended Queues
+
+We have already seen an implementation of a single ended and a doubly linked list in CN. Now we can combine those ideas into a double ended queue. This is a list that allows for O(1) operations for adding or removing elements from either end of the list. Here is the C type definition:
+
+include_example(exercises/Dbl_Queue/c_types.h)
+
+Notice that here we have the same exact `node` type as in the doubly linked list example, paired with an outer `dbl_queue` wrapper similar to the `int_queue` wrapper in the imperative queues example. Just as in the imperative queue example, we will just use `seq` as our representation of the data in the list.
+
+The predicates for this data structure are also a mix of the doubly linked list and imperative queue predicates. We will have a three-tiered predicate structure in the forwards and backwards direction. First, let's look at the forwards direction.
+
+include_example(exercises/Dbl_Queue/preds_fwd.h)
+
+The `Dbl_Queue_Fwd_At` predicate owns the outer queue structure and 
+asserts that the front and back pointers are either both null or both 
+point to a node. It then takes ownership of the nodes in the list in the 
+forwards direction through a call to `Own_Front_Back_Fwds`. It returns 
+a sequence of integers representing the data in the queue.
+
+The `Own_Front_Back_Fwds` predicate owns the front and back nodes in the 
+queue, and then calls `Own_Inner_Fwds` to take ownership of the rest of 
+the nodes in the queue. It asserts that the front node has a null `prev`
+pointer and that the back node has a null `next` pointer. It then returns a sequence of integers representing the data in the queue.
+
+`Own_Inner_Fwds` is a recursive predicate that takes ownership of a
+node in the queue, and includes checks that the queue is properly doubly 
+linked. It also asserts that any node owned in this predicate is not the 
+front or the back node. It calls itself recursively, walking forwards until
+it reaches the last node in the list, which was already owned in the 
+`Own_Front_Back_Fwds` predicate. The base case puts the back node into the sequence, in order to avoid a call to `snoc`. This helps avoid future calls to `unfold`, although this strategy can cause issues in other cases.
+
+Now let's look at the backwards direction.
+
+include_example(exercises/Dbl_Queue/preds_bwd.h)
+
+You may notice that the backwards predicates are almost completely identical, except that they walk backwards through the list. This means that the `seq`
+representation is also backwards. Note that `Own_Front_Back_Fwds` and `Own_Front_Back_Bwds` are exactly the same, and `Own_Front_Back_Fwds` is the same as `Own_Front_Back_Bwds`. The only difference is that they call the forwards or backwards recursive predicate.
+The forwards and backwards predicates being identical to the second layer will help us prove that they are equivalent later on.
+
+The reason for having predicates for the forwards and backwards directions is to solve the issue that every node has multiple pointers to it. By choosing a forwards or backwards direction, we are choosing which pointer to a node can read or write to the node. We will see why this is important later.
+
+As always, we need some boiler plate for allocation and deallocation.
+
+include_example(exercises/Dbl_Queue/malloc_free.h)
+
+// ======================================================================
+
+*Exercise*: Look at the initialization function for an empty queue, and add
+the necessary annotations. Make sure to include postconditions for ownership as well as correctness of the sequence representation.
+
+include_example(exercises/Dbl_Queue/empty.c)
+
+// ======================================================================
+
+Now, let's look at a `push` function for the front of the queue. Here is the un-annotated version:
+
+include_example(exercises/Dbl_Queue/push_front_orig.broken.c)
+
+*Exercise*: Before reading on, see if you can figure out what specifications are needed.
+
+Now, here is the fully annotated version of the `push_front` operation:
+
+include_example(exercises/Dbl_Queue/push_front.c)
+
+Here, we require that the input queue is non null, because we cannot add
+nodes to a queue that does not exist. Note that this is different from saying that the queue is empty. We take ownership of the queue forwards so that we can easily manipulate the `next` pointers in the queue. In this way, we are saying that the `next` pointers are the primary pointers in the list, and the `prev` pointers are just auxiliary. We also ensure that the sequence representation of the queue is correct.
+
+The two `split_case` annotations open up the `Own_Front_Back_Fwds` and `Own_Inner_Fwds` predicates, respectively. CN needs these annotations to see that we haven't lost ownership of the rest of the list.
+
+*Exercise*: Add the necessary annotations to the `push_back` function for the double ended queue.
+
+*Hint*: Remember that the `seq` representation of a queue that we owned backwards is reversed.
+
+include_example(exercises/Dbl_Queue/push_back.c)
+
+// ======================================================================
+
+Now, let's look at the `pop_front` function. Here is the un-annotated version:
+
+include_example(exercises/Dbl_Queue/pop_front_orig.broken.c)
+
+*Exercise*: Before reading on, see if you can figure out what specifications are needed.
+
+Now, here is the fully annotated version of the `pop_front` operation:
+
+include_example(exercises/Dbl_Queue/pop_front.c)
+
+Like before, we require that the input queue is non null, because we cannot remove nodes from a queue that does not exist. We take ownership of the queue forwards so that we can easily manipulate the `next` pointers in the queue. We also require that the queue is not empty. For the postconditions, we ensure that 
+the integers in the queue are the same as before, except for the first one, which is removed. We also ensure that the returned integer was previously the head of the list that we removed.
+
+The first `split_case` annotation helps CN reason that the front of the list cannot be null, as this is the only way the `seq` would be Nil. The second `split_case` annotation helps CN reason that we do have reading and writing access to `front->next->prev`. The last `split_case` annotation helps CN reason that we have the correct resources to return (in other words, that we still have ownership over the rest of the queue).
+
+*Exercise*: Add the necessary annotations to the `pop_back` function for the double ended queue.
+
+include_example(exercises/Dbl_Queue/pop_back.c)
+
+// ======================================================================
+
+Now, consider the following attempt to write a `main` function that uses these functions.
+
+include_example(exercises/Dbl_Queue/main.broken.c)
+
+Note that if you attempt to verify this, you get the following error message:
+
+....
+src/examples/Dbl_Queue/main.broken.c:8:5: error: Missing resource for calling function pop_back
+    pop_back(q);
+    ^~~~~~~~~~~ 
+Resource needed: Dbl_Queue_Bwd_At(call_empty_dbl_queue0
+  .return)
+      src/examples/Dbl_Queue/./functions.c:106:19: (arg Before)
+  which requires: Own_Front_Back_Bwds(unpack_Dbl_Queue_Fwd_At3
+  .L
+  .front
+  , unpack_Dbl_Queue_Fwd_At3.L.back)
+      src/examples/Dbl_Queue/./preds_bwd.h:11:14: (arg inner)
+State file: file:///var/folders/yl/n1rm8_rj7wn0zxwvpr78c2zw0000gn/T/state_fa6abd.html
+....
+
+This is because the postcondition of `push_front` says that we have ownership over the queue in the forwards direction, but the precondition of `pop_back` requires that we have ownership of the queue in the backwards direction. Logically, we know that these are the same thing, but CN does not. So we must prove that `Dbl_Queue_Fwd_At` and `Dbl_Queue_Bwd_At` are equivalent.
+
+We can prove these by writing lemmas in CN itself. The general idea is that we want to use induction to prove that 'Own_Inner_Fwds' and 'Own_Inner_Bwds' are equivalent, since they are recursive. Remember that the other predicates are completely the same except for which recursive predicate they call, so if we can prove the recusrive predicates are equivalent, it is trivial to prove the rest equivalent. Additionally, in order to make the inductive step, we will need a lemma that says that if we own a queue forwards to its second to last element, and we own the last element, then we own the queue forwards to its last element (and equivalent for backwards). 
+
+First, we need to write a lemma that says that if we own a queue forwards to its second to last element, and we own the last element, then we own the queue forwards to its last element. This lemma will be helpful for the induction step later on.
+
+include_example(exercises/Dbl_Queue/fwds_append_lemma.h)
+
+Note that here we are using the `Own_Inner_Fwds` predicate for this lemma, and include any assertions we would get in `Own_Front_Back_Fwds` as a precondition. This helps give necessary context to CN.
+
+*Exercise*: Write an equivalent lemma for the backwards direction.
+
+Now, we can write the lemma that 'Own_Inner_Fwds' and 'Own_Inner_Bwds' are equivalent.
+
+*Exercise*: Before reading on, try writing these lemmas yourself.
+
+include_example(exercises/Dbl_Queue/inner_fwd_eq_bwd_lemma.h)
+
+Notice here that once again, the preconditions include information we get in `Own_front_back_Fwds`. This is also why we own the front and the back in the pre and post condition -- this step is done in the predicate that calls 'Own_Inner_Fwds'. 
+
+We own the inner nodes forwards in the precondition and backwards in the postcondition. Since the queue is not changed in this function, we are showing that the two directions are equivalent. Additionally, we make the claim that the sequence representations are reverses of each other. 
+
+We spell out all of the base cases in the function body explicitly to make it easier to reason about. In the case where `front->next == back`, there are two elements in the list, and we need to include some unfolds to help CN reason that the reverse of [front, back] is [back, front]. The induction step is only necessary when the queue has at least three elements, because this is when `Own_Inner_Fwds` and `Own_Inner_Bwds` actually own parts of the list. 
+
+When we call `Own_Inner_fwds_eq_bwd_lemma(front->next, back)`, we get the information that everything forwards from the second element to the back is equivalent to everything backwards from the back to the second element. So now we own everything backwards to the second element, and we own the first element. This allows us to call `Own_Inner_bwds_append_lemma(front, front->next, back)` for the inductive step. Now, we own everything in the list backwards. The last thing to do is unfold some recursive function definitions so that CN can verify that the sequence representations are the reverse of each other.
+
+*Exercise*: Try writing the equivalent lemma for the other way around.
+
+Now, we can build up the same lemmas for the outer predicates.
+
+*Exercise*: Before reading on, try writing lemmas yourself that `Own_Front_Back_Fwds` and `Own_Front_Back_Bwds` are equivalent, as well as that `Dbl_Queue_Fwd_At` and `Dbl_Queue_Bwd_At` are equivalent.
+
+Now, look at the proof that `Own_Front_Back_Fwds` is equivalent to `Own_Front_Back_Bwds`.
+
+include_example(exercises/Dbl_Queue/own_FB_fwds_eq_Bwds_lemma.h)
+
+Note that once again, we include any information we usually get from the predicate above. The main difficulty in this lemma is unfolding enough to convince CN that the sequence representations are the reverse of each other.
+
+*Exercise*: Try writing the equivalent lemma in the other direction.
+
+*Exercise*: Try writing lemmas that `Dbl_Queue_Fwd_At` and `Dbl_Queue_Bwd_At` are equivalent.
+
+*Exercise*: Use these lemmas to rewrite the `main` function so that it can be verified.
+
+*Exercise*: Explore what would happen if we tried to only use the forwards predicates for the backwards operations. Can you get this to work? Why or why not?
+
+If you get stuck, full verified solutions can be found in `functions.h`, `lemmas.h`, and `verified_examples.c`.
+
 === The Runway
 
 Suppose we have been tasked with writing a program that simulates a runway at an airport. This airport is very small, so it only has one runway that is used for both takeoffs and landings. We want to verify that the runway is always safe by implementing the following specifications into CN:
