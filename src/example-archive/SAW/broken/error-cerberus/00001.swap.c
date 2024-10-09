@@ -75,7 +75,7 @@ let argmin_spec len = do {
 
 // NOTE: Another mistake I made was to use the override below.
 // This works for size a_len, but on the second time through the loop the override
-// doesn't match because the size of the list has changed!  Ultimately need a
+// doesn't match because the size of the ./headers.has changed!  Ultimately need a
 // loop here.
 
 {-/
