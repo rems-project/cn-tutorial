@@ -20,7 +20,6 @@ struct State increment_Runway_Time(struct State s)
   return temp;
 }
 
-
 struct State reset_Runway_Time(struct State s)
 /* --BEGIN-- */
 /*@ requires valid_state(s);
@@ -49,8 +48,10 @@ struct State arrive(struct State s)
              s.ModeA == return.ModeA;
              s.ModeD == return.ModeD;
              s.W_D == return.W_D;
-             s.W_D == 0i32 implies s.Plane_Counter == return.Plane_Counter;
-             s.W_D > 0i32 implies s.Plane_Counter == return.Plane_Counter - 1i32;
+             s.W_D == 0i32 
+               implies s.Plane_Counter == return.Plane_Counter;
+             s.W_D > 0i32 
+               implies s.Plane_Counter == return.Plane_Counter - 1i32;
 @*/
 /* --END-- */
 {
@@ -117,7 +118,6 @@ struct State switch_modes(struct State s)
   return temp;
 }
 
-
 // This function represents what happens every minute at the airport. 
 // One `tick` corresponds to one minute.
 struct State tick(struct State s)
@@ -127,12 +127,13 @@ struct State tick(struct State s)
              (i64) s.W_A < 2147483647i64;
              (i64) s.W_D < 2147483647i64;
     ensures valid_state(return);
-            (s.W_A > 0i32 && s.W_D == 0i32 && s.Runway_Time == 0i32 implies return.ModeA == ACTIVE());
-            (s.W_D > 0i32 && s.W_A == 0i32 && s.Runway_Time == 0i32 implies return.ModeD == ACTIVE());
+            (s.W_A > 0i32 && s.W_D == 0i32 && s.Runway_Time == 0i32 
+               implies return.ModeA == ACTIVE());
+            (s.W_D > 0i32 && s.W_A == 0i32 && s.Runway_Time == 0i32 
+               implies return.ModeD == ACTIVE());
 @*/
 /* --END-- */
 {
-
     // Plane on the runway
     if (s.Runway_Time > 0)
     {
@@ -174,11 +175,9 @@ struct State tick(struct State s)
         s = reset_Plane_Counter(s);
         s = switch_modes(s);
 
-
         // If there are planes waiting to arrive, let one arrive
         if (s.W_A > 0) {
           s = arrive(s);
-          
           s = increment_Runway_Time(s);
         }
         return s;

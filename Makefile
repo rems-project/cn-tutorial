@@ -3,6 +3,7 @@
 MAKEFILE_DIR:=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 default: build exercises build/tutorial.html build/exercises.zip
+all: default
 
 clean:
 	rm -rf build TAGS
@@ -43,6 +44,10 @@ build/solutions/%: src/examples/%
 build/exercises.zip: $(EXERCISES)
 	cd build; zip -r exercises.zip exercises > /dev/null
 
+WORKING=$(wildcard src/examples/list_*.c)
+WORKING_AUX=$(patsubst src/examples/%, build/solutions/%, $(WORKING))
+temp: $(WORKING_AUX) build 
+#     build/tutorial.html 
 
 ##############################################################################
 # Check that the examples all run correctly 
