@@ -34,6 +34,16 @@ datatype BST {
   Node { NodeData data, BST smaller, BST larger }
 }
 
+// A selector for the case when we know that the tree is a `Node`.
+function ({ NodeData data, BST smaller, BST larger }) fromBSTNode(BST node) {
+  match node {
+    Leaf {} => { default<{ NodeData data, BST smaller, BST larger }> }
+    Node { data: data, smaller: smaller, larger: larger } => {
+      { data: data, smaller: smaller, larger: larger }
+    }
+  }
+}
+
 function [rec] (BST) setKey(KEY k, BST root, BST value) {
   match root {
     Leaf {} => { value }

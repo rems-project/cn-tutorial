@@ -51,18 +51,19 @@ requires
   take start = BST(node, anyKey());
 ensures
   take end = BST(node, anyKey());
-  // start == end;
+  start == end;
 @*/
 {
   struct MapNode *cur = node;
 
   /*@ split_case is_null(cur); @*/
+  /*@ unfold setKey(fromBSTNode(start).data.key, Leaf {}, start); @*/
   while (cur)
   /*@
   inv
     {node} unchanged;
     take focus = BSTFocus(node,cur,anyKey());
-    // start == unfocus(focus);
+    start == unfocus(focus);
     let cur_prev = cur;
   @*/
   {

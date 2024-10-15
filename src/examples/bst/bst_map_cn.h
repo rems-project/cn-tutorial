@@ -51,34 +51,36 @@ predicate BST BST(pointer root, Interval range) {
 // Focusing on a node in the tree
 // *****************************************************************************
 
-type_synonym BSTFocus = {
-  // Indicates if we are at a node or a leaf.
-  boolean at_leaf,
+type_synonym BSTNodeFocus =
+  { BST done, struct MapNode node, BST smaller, BST larger }
 
-  // Rest of the tree
-  BST done,
+datatype BSTFocus {
+  AtLeaf { BST tree },
+  AtNode { BST done, struct MapNode node, BST smaller, BST larger }
+}
 
-  // Focused node
-  struct MapNode node,
-  BST smaller,
-  BST larger
+// Access focus data, when we already know that we are at a node.
+function (BSTNodeFocus) fromBSTFocusNode(BSTFocus focus) {
+  match focus {
+    AtLeaf { tree: _ } => { default<BSTNodeFocus> }
+    AtNode { done: done, node: node, smaller: smaller, larger: larger } => {
+      { done: done, node: node, smaller: smaller, larger: larger }
+    }
+  }
 }
 
 predicate BSTFocus BSTFocus(pointer root, pointer child, Interval range) {
   if (is_null(child)) {
     take tree = BST(root, range);
-    return { at_leaf: true, done: tree,
-             node: default<struct MapNode>,
-             smaller: default<BST>,
-             larger: default<BST> };
+    return AtLeaf { tree: tree };
   } else {
     take node    = Owned<struct MapNode>(child);
     take result  = BSTNodeUpTo(root, child, node, range);
     let ranges   = splitInterval(node.key,result.range);
     take smaller = BST(node.smaller, ranges.lower);
     take larger  = BST(node.larger, ranges.upper);
-    return { at_leaf: false, done: result.tree, node: node,
-             smaller: smaller, larger: larger };
+    return AtNode { done: result.tree, node: node,
+                    smaller: smaller, larger: larger };
   }
 }
 
@@ -120,31 +122,24 @@ predicate { BST tree, Interval range }
 }
 
 function (BST) unfocus(BSTFocus focus) {
-  if (focus.at_leaf) {
-    focus.done
-  } else {
-    let node = focus.node;
-    let bst = Node { data: getNodeData(node),
-                     smaller: focus.smaller,
-                     larger: focus.larger
-                    };
-    setKey(node.key, focus.done, bst)
+  match focus {
+    AtLeaf { tree: tree } => { tree }
+    AtNode { done: tree, node: node, smaller: smaller, larger: larger } => {
+      let bst = Node { data: getNodeData(node), smaller: smaller, larger: larger };
+      setKey(node.key, tree, bst)  
+    }
   }
 }
 
-lemma FocusUnfocus(pointer root, pointer cur, Interval range)
-  requires
-    take x = BSTFocus(root,cur,range);
-  ensures
-    take y = BST(root,range);
-    unfocus(x) == y;
+
 
 lemma GoSmaller(pointer root, pointer cur, Interval range)
   requires
     !is_null(cur);
     take focus = BSTFocus(root,cur,range);
   ensures
-    take focus_smaller = BSTFocus(root,focus.node.smaller,range);
+    let node = fromBSTFocusNode(focus).node;
+    take focus_smaller = BSTFocus(root,node.smaller,range);
     unfocus(focus) == unfocus(focus_smaller);
 
 
