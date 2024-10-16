@@ -28,20 +28,45 @@ function (NodeData) getNodeData(struct MapNode node) {
   { key: node.key, value: node.value }
 }
 
+type_synonym RangedBST = { BST tree, Interval range }
+type_synonym RangedNode = {
+  struct MapNode node,
+  BST smaller,
+  BST larger,
+  Interval range
+}
 
-// A binary search tree, where all keys are in the given range.
-predicate BST BST(pointer root, Interval range) {
+function (boolean) validBST(struct MapNode node, Interval smaller, Interval larger) {
+  (smaller.empty || smaller.upper < node.key) &&
+  (larger.empty || node.key < larger.lower)
+}
+
+
+predicate RangedNode RangedNode(pointer root) {
+   take node = Owned<struct MapNode>(root);
+   take smaller = RangedBST(node.smaller);
+   take larger  = RangedBST(node.larger);
+   assert (validBST(node, smaller.range, larger.range));
+   return { node: node, smaller: smaller.tree, larger: larger.tree,
+            range: joinInterval(smaller.range, larger.range) };
+}
+
+// A binary search tree, and the interval for all its keys.
+predicate RangedBST RangedBST(pointer root) {
   if (is_null(root)) {
-    return Leaf {};
+    return { tree: Leaf {}, range: emptyInterval() };
   } else {
-    take node = Owned<struct MapNode>(root);
-    let data = getNodeData(node);
-    assert(inInterval(node.key, range));
-    let ranges = splitInterval(node.key, range);
-    take smaller = BST(node.smaller, ranges.lower);
-    take larger  = BST(node.larger, ranges.upper);
-    return Node { data: data, smaller: smaller, larger: larger };
+    take node = RangedNode(root);
+    let data = getNodeData(node.node);
+    return { tree: Node { data: data, smaller: node.smaller, larger: node.larger },
+             range: node.range };
   }
+}
+
+// An arbitrary binary search tree.
+predicate BST BST(pointer root) {
+  take result = RangedBST(root);
+  return result.tree;
 }
 
 
@@ -59,6 +84,7 @@ datatype BSTFocus {
   AtNode { BST done, struct MapNode node, BST smaller, BST larger }
 }
 
+
 // Access focus data, when we already know that we are at a node.
 function (BSTNodeFocus) fromBSTFocusNode(BSTFocus focus) {
   match focus {
@@ -69,55 +95,51 @@ function (BSTNodeFocus) fromBSTFocusNode(BSTFocus focus) {
   }
 }
 
-predicate BSTFocus BSTFocus(pointer root, pointer child, Interval range) {
+predicate BSTFocus BSTFocus(pointer root, pointer child) {
   if (is_null(child)) {
-    take tree = BST(root, range);
+    take tree = BST(root);
     return AtLeaf { tree: tree };
   } else {
-    take node    = Owned<struct MapNode>(child);
-    take result  = BSTNodeUpTo(root, child, node, range);
-    let ranges   = splitInterval(node.key,result.range);
-    take smaller = BST(node.smaller, ranges.lower);
-    take larger  = BST(node.larger, ranges.upper);
-    return AtNode { done: result.tree, node: node,
-                    smaller: smaller, larger: larger };
+    take node    = RangedNode(child);
+    take result  = BSTNodeUpTo(root, child, node.node, node.range);
+    return AtNode { done: result.tree, node: node.node,
+                    smaller: node.smaller, larger: node.larger };
   }
 }
 
 // Consume parts of the tree starting at `p` until we get to `c`.
 // We do not consume `c`.
 // `child` is the node stored at `c`.
-predicate { BST tree, Interval range }
-  BSTNodeUpTo(pointer p, pointer c, struct MapNode child, Interval range) {
+predicate RangedBST BSTNodeUpTo(pointer p, pointer c, struct MapNode child, Interval range) {
   if (ptr_eq(p,c)) {
     return { tree: Leaf {}, range: range };
   } else {
     take parent = Owned<struct MapNode>(p);
-    assert(inInterval(parent.key, range));
-    let ranges = splitInterval(parent.key, range);
-    take result = BSTNodeChildUpTo(c, child, parent, ranges);
+    take result = BSTNodeChildUpTo(c, child, range, parent);
     return result;
   }
 }
 
 // Starting at a parent with data `data` and children `smaller` and `larger`,
 // we go toward `c`, guided by its value, `target`.
-predicate { BST tree, Interval range }
-  BSTNodeChildUpTo(pointer c, struct MapNode target, struct MapNode parent, Intervals ranges) {
+predicate RangedBST
+  BSTNodeChildUpTo(pointer c, struct MapNode target, Interval range, struct MapNode parent) {
   if (parent.key < target.key) {
-    take small = BST(parent.smaller, ranges.lower);
-    take large = BSTNodeUpTo(parent.larger, c, target, ranges.upper);
-    return { tree: Node { data: getNodeData(parent), smaller: small, larger: large.tree },
-             range: large.range };
+    take small = RangedBST(parent.smaller);
+    take large = BSTNodeUpTo(parent.larger, c, target, range);
+    assert(validBST(parent, small.range, large.range));
+    return { tree: Node { data: getNodeData(parent), smaller: small.tree, larger: large.tree },
+             range: joinInterval(small.range,large.range) };
   } else {
   if (parent.key > target.key) {
-    take small = BSTNodeUpTo(parent.smaller, c, target, ranges.lower);
-    take large = BST(parent.larger, ranges.upper);
-    return { tree: Node { data: getNodeData(parent), smaller: small.tree, larger: large },
-             range: small.range };
+    take small = BSTNodeUpTo(parent.smaller, c, target, range);
+    take large = RangedBST(parent.larger);
+    assert(validBST(parent, small.range, large.range));
+    return { tree: Node { data: getNodeData(parent), smaller: small.tree, larger: large.tree },
+             range: joinInterval(small.range,large.range) };
   } else {
     // We should never get here, but asserting `false` is not allowed
-    return default<{ BST tree, Interval range }>;
+    return default<RangedBST>;
   }}
 }
 
@@ -131,16 +153,40 @@ function (BST) unfocus(BSTFocus focus) {
   }
 }
 
+function (BST) focusDone(BSTFocus focus) {
+  match focus {
+    AtLeaf { tree: tree } => { tree }
+    AtNode { done: tree, node: _, smaller: _, larger: _ } => { tree }
+  }
+}
 
 
-lemma GoSmaller(pointer root, pointer cur, Interval range)
+
+lemma FocusedGo(pointer root, pointer cur, boolean smaller)
   requires
     !is_null(cur);
-    take focus = BSTFocus(root,cur,range);
+    take focus = BSTFocus(root,cur);
   ensures
     let node = fromBSTFocusNode(focus).node;
-    take focus_smaller = BSTFocus(root,node.smaller,range);
-    unfocus(focus) == unfocus(focus_smaller);
+    take new_focus = BSTFocus(root, if (smaller) { node.smaller } else { node.larger });
+    unfocus(focus) == unfocus(new_focus);
+
+
+// It's quite unfortunate that we have to copy the lemma here.
+lemma FocusedGoKey(pointer root, pointer cur, boolean smaller, KEY key)
+  requires
+    !is_null(cur);
+    take focus = BSTFocus(root,cur);
+  ensures
+    let node = fromBSTFocusNode(focus).node;
+    take new_focus = BSTFocus(root, if (smaller) { node.smaller } else { node.larger });
+    unfocus(focus) == unfocus(new_focus);
+
+    if (!member(key, focusDone(focus)) && node.key != key) {
+      !member(key, focusDone(new_focus))
+    } else {
+      true
+    };
 
 
 

@@ -26,31 +26,16 @@ ensures
 }
 #endif
 
+
+
 #if 0
-// Demonstrates a recursive traversal of a tree.
-size_t count(struct MapNode const *node)
-/*@
-requires
-  take before = BST(node);
-ensures
-  take after = BST(node);
-  before == after;
-@*/
-{
-  if (node == NULL) return 0;
-  return (size_t)1 + count(node->smaller) + count(node->larger);
-}
-#endif
-
-
-#if 1
 // A no-op function, just shows hows to traverse a tree with a loop.
 void traverse(struct MapNode *node)
 /*@
 requires
-  take start = BST(node, anyKey());
+  take start = BST(node);
 ensures
-  take end = BST(node, anyKey());
+  take end = BST(node);
   start == end;
 @*/
 {
@@ -62,13 +47,13 @@ ensures
   /*@
   inv
     {node} unchanged;
-    take focus = BSTFocus(node,cur,anyKey());
+    take focus = BSTFocus(node,cur);
     start == unfocus(focus);
     let cur_prev = cur;
   @*/
   {
     cur = cur->smaller;
-    /*@ apply GoSmaller(node,cur_prev,anyKey()); @*/
+    /*@ apply FocusedGo(node,cur_prev,true); @*/
   }
 }
 #endif
@@ -84,36 +69,123 @@ ensures
   tree == final_tree;
 @*/
 {
-  struct MapNode *parent = NULL;
+  struct MapNode *parent = 0;
   struct MapNode *cur = p;
-  while(cur != NULL)
+  /*@ split_case is_null(cur); @*/
+  /*@ unfold setKey(fromBSTNode(tree).data.key, Leaf {}, tree); @*/
+  while(cur)
   /*@
   inv
     {p} unchanged;
-    take front = BSTUpTo(cur,parent);
+    take front = BSTFocus(p,cur);
+    tree == unfocus(front);
+    let cur_prev = cur;
   @*/
   {
     parent = cur;
-    cur = p->smaller;
-    
+    cur = cur->smaller;
+     /*@ apply FocusedGoSmaller(p,cur_prev); @*/
   }
   return parent;
 }
 #endif
 
+#if 1
+/* Look for a node and its parent */
+struct MapNode *findNode(struct MapNode *root, KEY key)
+/*@
+requires
+  take tree = BST(root);
+ensures
+  take focus = BSTFocus(root, return);
+  unfocus(focus) == tree;
+  match focus {
+    AtLeaf { tree: _ } => { !member(key,tree) }
+    AtNode { done: _, node: node, smaller: _, larger: _ } => {
+      node.key == key
+    }
+  };
+@*/
+{
+  struct MapNode *cur = root;
+  /*@ split_case is_null(cur); @*/
+  /*@ unfold setKey(fromBSTNode(tree).data.key, Leaf {}, tree); @*/
+  /*@ unfold member(key, Leaf {}); @*/
+  while (cur)
+  /*@ inv
+  {root} unchanged;
+  {key} unchanged;
+  take focus = BSTFocus(root,cur);
+  unfocus(focus) == tree;
+  !member(key, focusDone(focus));
+  let cur_prev = cur;
+  @*/
+  {
+    KEY k = cur->key;
+    if (k == key) return cur; 
+    cur = k < key? cur->larger : cur->smaller;
+    /*@ apply FocusedGoKey(root, cur_prev, k > key, key); @*/
+  }
+  return 0;
+}
+#endif
+
+
+/*@
+predicate BSTFocus FindParentFocus(pointer tree_ptr,  pointer cur_ptr, pointer parent_ptr, KEY key) {
+  if (is_null(cur_ptr)) {
+    take focus = BSTFocus(tree_ptr, parent_ptr);
+    let tree_after = unfocus(focus);
+    assert(!member(key,tree_after)); // More?
+    return focus;
+  } else {
+    // Found in tree
+    take focus = BSTFocus(tree_ptr, cur_ptr);
+    let at_node = fromBSTFocusNode(focus);
+    assert(at_node.node.key == key);
+    return focus;
+  }
+}
+@*/
+
 
 #if 0
 /* Look for a node and its parent */
 struct MapNode *findParent(struct MapNode **node, KEY key)
+/*@
+requires
+  take tree_ptr = Owned<struct MapNode*>(node);
+  take tree     = BST(tree_ptr);
+ensures
+  take cur_ptr   = Owned<struct MapNode*>(node);
+  let parent_ptr = return;
+  take focus     = FindParentFocus(tree_ptr, parent_ptr, cur_ptr, key);
+  let tree_after = unfocus(focus);
+  tree == tree_after;
+@*/
 {
-  struct MapNode *parent = NULL;
+  struct MapNode *parent = 0;
   struct MapNode *cur = *node;
-  while (cur != NULL)
-  {
+  /*@ split_case is_null(cur); @*/
+  while (cur)
+  /*@ inv
+    {node} unchanged;
+    {key}  unchanged;
+    take node_ptr = Owned<struct MapNode*>(node);
+    ptr_eq(node_ptr,tree_ptr);
+    take focus = BSTFocus(tree_ptr, cur);
+    let cur_prev = cur;
+  @*/
+{
     KEY k = cur->key;
-    if (k == key) { *node = cur; return parent; }
+    if (k == key) {
+      *node = cur;
+      /*@ split_case is_null(cur); @*/
+      return parent;
+    }
     parent = cur;
     cur = k < key? cur->larger : cur->smaller;
+    /*@ apply FocusedGo(tree_ptr, cur_prev, k > key); @*/
   }
   *node = cur;
   return parent;

@@ -8,25 +8,24 @@ type_synonym KEY = i32
 type_synonym VALUE = i64
 type_synonym NodeData = { KEY key, VALUE value }
 
-function (KEY) minKey() { MINi32() }
-function (KEY) maxKey() { MAXi32() }
-function (KEY) incKey(KEY x) { if (x < maxKey()) { x + 1i32 } else { x } }
-function (KEY) decKey(KEY x) { if (x > minKey()) { x - 1i32 } else { x } }
+type_synonym Interval = { KEY lower, KEY upper, boolean empty }
 
-type_synonym Interval = { KEY lower, KEY upper }
-function (Interval) anyKey() {{ lower: minKey(), upper: maxKey() }}
-
-type_synonym Intervals = { Interval lower, Interval upper }
-function (Intervals) splitInterval(KEY x, Interval i) {
-  { lower: { lower: i.lower, upper: decKey(x) },
-    upper: { lower: incKey(x), upper: i.upper }
-  }
+function (Interval) emptyInterval() {
+  { lower: default<KEY>, upper: default<KEY>, empty: true }
 }
 
-function (boolean) inInterval(KEY x, Interval i) {
-  i.lower <= x && x <= i.upper
-}
 
+
+function (Interval) joinInterval(Interval smaller, Interval larger) {
+  if (smaller.empty) {
+    larger
+  } else {
+  if (larger.empty) {
+    smaller
+  } else {
+    { lower: smaller.lower, upper: larger.upper, empty: false }
+  }}
+}
 
 // A binary dearch tree
 datatype BST {
@@ -43,6 +42,41 @@ function ({ NodeData data, BST smaller, BST larger }) fromBSTNode(BST node) {
     }
   }
 }
+
+datatype VALUEOption {
+  VALUENone {},
+  VALUESome { VALUE value }
+}
+
+function [rec] (VALUEOption) lookup(KEY key, BST tree) {
+  match tree {
+    Leaf {} => { VALUENone {} }
+    Node { data: data, smaller: smaller, larger: larger } => {
+      if (data.key == key) {
+        VALUESome { value: data.value }
+      } else {
+        if (data.key < key) {
+          lookup(key,larger)
+        } else {
+          lookup(key,smaller)
+        }
+      }
+    }
+  }
+}
+
+function [rec] (boolean) member(KEY k, BST tree) {
+  match tree {
+    Leaf {} => { false }
+    Node { data: data, smaller: smaller, larger: larger } => {
+      data.key == k ||
+      k < data.key && member(k,smaller) ||
+      k > data.key && member(k,larger)
+    }
+  }
+}
+
+
 
 function [rec] (BST) setKey(KEY k, BST root, BST value) {
   match root {
