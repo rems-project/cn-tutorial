@@ -43,17 +43,13 @@ function ({ NodeData data, BST smaller, BST larger }) fromBSTNode(BST node) {
   }
 }
 
-datatype VALUEOption {
-  VALUENone {},
-  VALUESome { VALUE value }
-}
 
-function [rec] (VALUEOption) lookup(KEY key, BST tree) {
+function [rec] (VALUE) lookup(KEY key, BST tree) {
   match tree {
-    Leaf {} => { VALUENone {} }
+    Leaf {} => { default<VALUE> }
     Node { data: data, smaller: smaller, larger: larger } => {
       if (data.key == key) {
-        VALUESome { value: data.value }
+        data.value
       } else {
         if (data.key < key) {
           lookup(key,larger)
@@ -72,6 +68,23 @@ function [rec] (boolean) member(KEY k, BST tree) {
       data.key == k ||
       k < data.key && member(k,smaller) ||
       k > data.key && member(k,larger)
+    }
+  }
+}
+
+function [rec] (BST) insert(KEY key, VALUE value, BST tree) {
+  match tree {
+    Leaf {} => { Node { data: { key: key, value: value }, smaller: Leaf {}, larger: Leaf {} } }
+    Node { data: data, smaller: smaller, larger: larger } => {
+      if (data.key == key) {
+        Node { data: { key: key, value: value }, smaller: smaller, larger: larger }
+      } else {
+        if (data.key < key) {
+          Node { data: data, smaller: smaller, larger: insert(key,value,larger) }
+        } else {
+          Node { data: data, smaller: insert(key,value,smaller), larger: larger }
+        }
+      }
     }
   }
 }
