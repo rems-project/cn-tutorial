@@ -283,9 +283,6 @@ struct int_list* IntList_rev(struct int_list* xs)
 }
 
 /*@
-datatype SplitDT { 
-   Pair { datatype seq fst, datatype seq snd }
-}
 
 function [rec] ({datatype seq fst, datatype seq snd}) split(datatype seq xs)
 {
