@@ -281,11 +281,25 @@ int top (struct sized_stack *p)
   }
 }
 
-void assert_321(struct sized_stack *p)
+/*@
+
+function [rec] (datatype seq) construct_stack(i32 num_elements) {
+  if (num_elements == 0i32) {
+    Seq_Nil{}
+  } else {
+    let rem_stack = construct_stack(num_elements - 1i32);
+    (Seq_Cons { head: num_elements, tail: rem_stack })
+  }
+}
+
+
+@*/
+
+void assert_stack_structure(struct sized_stack *p, int num_elements)
 /*@ trusted;
     requires take S = SizedStack(p);
-            get_data(S) == Seq_Cons {head: 3i32, tail: Seq_Cons{head:2i32,tail:Seq_Cons{head:1i32,tail: Seq_Nil{}}}};
-            get_size(S) == 3u32;
+            get_data(S) == construct_stack(num_elements);
+            get_size(S) == (u32) num_elements;
     ensures take S2 = SizedStack(p);
             S == S2;
 @*/
@@ -303,21 +317,28 @@ void assert_empty(struct sized_stack *p)
 {
 }
 
+
 int main()
 /*@ trusted; @*/
 {
-    struct sized_stack *s = create();
-    push(s, 1); 
-    push(s, 2); 
-    push(s, 3); 
-    
-    int t = top(s);
-    /*@ assert (t == 3i32); @*/
-    assert_321(s);
+  struct sized_stack *s = create();
+  int num_elements = 3;
 
+  int i = 0;
+  while (i < num_elements) {
+    push(s, i + 1);
+    i++;
+  }
+  
+  int t = top(s);
+  /*@ assert (t == (i32) num_elements); @*/
+  assert_stack_structure(s, num_elements);
+
+  while (i > 1) {
     t = pop(s);
-    t = pop(s);
-    /*@ assert (t == 2i32); @*/
-    t = pop(s);
-    /*@ assert(t == 1i32); @*/
+    i--;
+  }
+  /*@ assert (t == 2i32); @*/
+  t = pop(s);
+  /*@ assert(t == 1i32); @*/
 }
