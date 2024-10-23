@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+CN_INSTALL="$OPAM_SWITCH_PREFIX/lib/cn/runtime"
+
+if [ "$#" != "1" ]
+then
+  echo "USAGE: $0 FILE"
+  exit 1
+fi
+FILE=$1
+BASE=$(basename "$FILE" .c)
+
+BUILD_DIR=$(mktemp -d "cn-test-XXXXXXXX")
+function cleanup {
+  echo "GENERATED: $BUILD_DIR"
+  rm -rf $BUILD_DIR
+}
+trap cleanup EXIT
+
+TEST_FILE="$BUILD_DIR/${BASE}_test.c"
+TGT="$BUILD_DIR/run"
+cn test $1 --no-run --output-dir="$BUILD_DIR" --with-ownership-checking
+cc -g -o"$TGT" -I"$CN_INSTALL/include" -L"$CN_INSTALL" "$TEST_FILE" -lcn
+$TGT
+
+
+
