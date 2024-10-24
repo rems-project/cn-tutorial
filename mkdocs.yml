@@ -94,12 +94,12 @@ markdown_extensions:
 
 # Page tree
 nav:
-  - Home: README.md
   - Getting started:
-    - "What is CN?": getting-started/what-is-cn.md
+    - README.md
     - Installation: getting-started/installation.md
     - "Hello world": getting-started/hello-world.md
     - Tutorials:
+      - getting-started/tutorials/README.md
       - "Basic usage": getting-started/tutorials/basic-usage.md
       - "Pointers and simple ownership": getting-started/tutorials/pointers-and-simple-ownership.md
       - "Ownership of compound objects": getting-started/tutorials/ownership-of-compound-objects.md
@@ -111,7 +111,7 @@ nav:
     - "Case studies":
       - "Imperative queues": getting-started/case-studies/imperative-queues.md
       - "Doubly-linked lists": getting-started/case-studies/doubly-linked-lists.md
-      - "The Runway": getting-started/case-studies/the-runway.md
+      - "Airport Simulation": getting-started/case-studies/the-runway.md
     - "Style guide": 
       - getting-started/style-guide/README.md
   - Specifications:
