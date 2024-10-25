@@ -1,4 +1,5 @@
 site_name: CN Docs
+site_dir: build
 theme:
   name: material
   features:
@@ -75,7 +76,7 @@ markdown_extensions:
   - pymdownx.mark
   - pymdownx.smartsymbols
   - pymdownx.snippets:
-      base_path: ["build"]
+      base_path: ["docs", "build"]
   - pymdownx.striphtml
   - pymdownx.superfences:
       custom_fences:
