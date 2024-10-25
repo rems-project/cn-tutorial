@@ -22,7 +22,7 @@ appreciated!
 
     Build and install CN and get up and running in minutes
 
-    [:octicons-arrow-right-24: Installing CN](getting-started/installation)
+    [:octicons-arrow-right-24: Installing CN](getting-started/installation.md)
 
 -   :fontawesome-brands-markdown:{ .lg .middle } __Your first spec__
 
@@ -31,7 +31,7 @@ appreciated!
     Check out the Hello World tutorial to write, test, and verify your first
     spec
 
-    [:octicons-arrow-right-24: Hello World](getting-started/hello-world)
+    [:octicons-arrow-right-24: Hello World](getting-started/hello-world.md)
 
 -   :material-format-font:{ .lg .middle } __Tutorials__
 
@@ -39,7 +39,7 @@ appreciated!
 
     Find tutorials covering common tasks and introducing CN features
 
-    [:octicons-arrow-right-24: Tutorials](getting-started/tutorials)
+    [:octicons-arrow-right-24: Tutorials](getting-started/tutorials/README.md)
 
 -   :material-scale-balance:{ .lg .middle } __Language reference__
 
@@ -47,7 +47,7 @@ appreciated!
 
     Quick reference for CN specification syntax
 
-    [:octicons-arrow-right-24: Language reference](reference)
+    [:octicons-arrow-right-24: Language reference](reference/README.md)
 
 </div>
 
