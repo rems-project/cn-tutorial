@@ -1,6 +1,11 @@
 #ifndef CN_UTILS
-void *cn_malloc(unsigned long);
-void cn_free_sized(void* p, unsigned long s);
+#include <stdlib.h>
+void *cn_malloc(unsigned long size) {
+    return malloc(size);
+}
+void cn_free_sized(void* p, unsigned long s) {
+    free(p);
+}
 #endif
 
 unsigned int *mallocUnsignedInt()
