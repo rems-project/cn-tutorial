@@ -1,13 +1,9 @@
 // TODO - REVIST - no underscored typedef string found
 
 #ifndef CN_UTILS
-#include <stdlib.h>
-void *cn_malloc(unsigned long size) {
-    return malloc(size);
-}
-void cn_free_sized(void* p, unsigned long s) {
-    free(p);
-}
+void *cn_malloc(unsigned long size);
+void cn_free_sized(void* p, unsigned long s);
+void cn_print_nr_owned_predicates(void);
 #endif
 
 void freeUnsignedInt(unsigned int *p)
@@ -322,6 +318,7 @@ void assert_empty(struct sized_stack *p)
 {
 }
 
+// #define SIZE magic
 
 int main()
 /*@ trusted; @*/
@@ -346,4 +343,5 @@ int main()
   /*@ assert (t == 2i32); @*/
   t = pop(s);
   /*@ assert(t == 1i32); @*/
+  cn_print_nr_owned_predicates();
 }
