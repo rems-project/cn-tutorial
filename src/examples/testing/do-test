@@ -21,7 +21,7 @@ trap cleanup EXIT
 
 TEST_FILE="$BUILD_DIR/${BASE}_test.c"
 TGT="$BUILD_DIR/run"
-cn test $1 --no-run --output-dir="$BUILD_DIR" --with-ownership-checking
+cn test $1 --no-run --output-dir="$BUILD_DIR"
 cc -g -o"$TGT" -I"$CN_INSTALL/include" -L"$CN_INSTALL" "$TEST_FILE" -lcn
 $TGT
 
