@@ -35,22 +35,22 @@ predicate IntList ListSegment(pointer from, pointer to) {
 }
 @*/
 
-// This is a valid spec, even though to verify with CN we'd need a loop invariant.
-int sum(struct List* xs)
+
+void *cn_malloc(unsigned long size);
+
+// This is invalid because we don't preserve the sorted invariant.
+void cons(ELEMENT x, struct List** xs)
 /*@
   requires
-    take l1 = ListSegment(xs,NULL);
+    take list_ptr = Owned<struct List*>(xs);
+    take list = ListSegment(list_ptr,NULL);
   ensures
-    take l2 = ListSegment(xs,NULL);
-    l1 == l2;
-    true;
+    take new_list_ptr = Owned<struct List*>(xs);
+    take new_list = ListSegment(new_list_ptr,NULL);
 @*/
 {
-  int result = 0;
-  while(xs) {
-    result += xs->value;
-    xs = xs->next;
-  }
-  return result;
+  struct List *node = (struct List*) cn_malloc(sizeof(struct List));
+  node->value = x;
+  node->next = *xs;
+  *xs = node;
 }
-
