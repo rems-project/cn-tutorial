@@ -115,11 +115,9 @@ struct list_node *split_even_odd_alt(struct list_node *head)
 trusted; 
 @*/
 {
-  struct list_node evens; 
-  struct list_node *evens_head, *evens_tail; 
+  struct list_node evens, *evens_tail; 
   evens.next = NULL; 
   evens_tail = &evens; 
-  evens_head = evens_tail; 
 
   while (head != NULL && head->next != NULL)
   {
@@ -131,7 +129,7 @@ trusted;
     head = tmp;
   };
 
-  return evens_head->next;
+  return evens.next;
 }
 
 void print_list(struct list_node *list)
