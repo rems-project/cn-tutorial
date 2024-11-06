@@ -12,12 +12,15 @@ fi
 FILE=$1
 BASE=$(basename "$FILE" .c)
 
-BUILD_DIR=$(mktemp -d "cn-test-XXXXXXXX")
+BUILD_DIR=""
 function cleanup {
-  echo "GENERATED: $BUILD_DIR"
-  rm -rf $BUILD_DIR
+  if [ $BUILD_DIR != "" ]; then
+    echo "GENERATED: $BUILD_DIR"
+    rm -rf $BUILD_DIR
+  fi
 }
 trap cleanup EXIT
+BUILD_DIR=$(mktemp -d "cn-test-XXXXXXXX")
 
 TEST_FILE="$BUILD_DIR/${BASE}_test.c"
 TGT="$BUILD_DIR/run"
