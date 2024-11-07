@@ -1,5 +1,6 @@
 #include <stddef.h>
 
+
 #define KEY    int
 #define VALUE  long
 
@@ -377,7 +378,7 @@ ensures
 }
 
 /* Insert an element into a map. Overwrites previous if already present. */
-void map_insert(struct MapNode **root, KEY key, VALUE value)
+void setNodeKey(struct MapNode **root, KEY key, VALUE value)
 /*@
 requires
   take root_ptr = Owned(root);
