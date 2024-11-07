@@ -22,6 +22,10 @@ type_synonym VALUE = i64
 type_synonym NodeData = { KEY key, VALUE value }
 
 function (KEY) defaultKey() { 0i32 }
+function (VALUE) defaultValue() { 0i64 }
+function (NodeData) defaultNodeData() { 
+  { key: defaultKey(), value: defaultValue() }
+}
 
 datatype ValueOption {
   ValueNone {},
@@ -117,6 +121,13 @@ function (boolean) hasRoot(KEY key, BST tree) {
   }
 }
 
+function (boolean) isLeaf(BST tree) {
+  match tree {
+    Leaf {} => { true }
+    Node { data: _, smaller: _, larger: _ } => { false }
+  }
+}
+
 function [rec] (ValueOption) lookup(KEY key, BST tree) {
   match tree {
     Leaf {} => { ValueNone {} }
@@ -174,6 +185,44 @@ function [rec] (BST) setKey(KEY k, BST root, BST value) {
         Node { data: data, smaller: setKey(k, smaller, value), larger: larger }
       } else {
         Node { data: data, smaller: smaller, larger: setKey(k, larger, value) }
+      }
+    }
+  }
+}
+
+function [rec] ({ NodeData data, BST tree }) delLeast(BST root) {
+  match root {
+    Leaf {} => { { data: defaultNodeData(), tree: Leaf {} } }
+    Node { data: data, smaller: smaller, larger: larger } => {
+      if (isLeaf(smaller)) {
+        { data: data, tree: larger }
+      } else {
+         let res = delLeast(smaller);
+         { data: res.data,
+           tree: Node { data: data, smaller: res.tree, larger: larger }
+         }
+      }
+    }
+  }
+}
+
+function [rec] (BST) delKey(KEY key, BST root) {
+  match root {
+    Leaf {} => { Leaf {} }
+    Node { data: data, smaller: smaller, larger: larger } => {
+      if (key == data.key) {
+        let res = delLeast(larger);
+        if (isLeaf(res.tree)) {
+          smaller
+        } else {
+          Node { data: res.data, smaller: smaller, larger: res.tree }
+        }
+      } else {
+        if (key < data.key) {
+          Node { data: data, smaller: delKey(key, smaller), larger: larger }
+        } else {
+          Node { data: data, smaller: smaller, larger: delKey(key, larger) }
+        }
       }
     }
   }
@@ -389,10 +438,12 @@ ensures
   new_tree == insert(key, value, tree);
 @*/
 {
-  struct MapNode *search = *root;
-  struct MapNode *parent = findParent(&search, key);
-  if (search) {
-    search->value = value;
+  struct MapNode *found = *root;
+  struct MapNode *parent = findParent(&found, key);
+
+
+  if (found) {
+    found->value = value;
     return;
   }
 
@@ -407,4 +458,94 @@ ensures
   } else {
     parent->smaller = new_node;
   }
+}
+
+
+void deleteTree(struct MapNode *root)
+/*@ 
+  requires
+    take tree = BST(root);
+  ensures
+     true;
+@*/
+{
+  if (!root) return;
+  deleteTree(root->smaller);
+  deleteTree(root->larger);
+  cn_free_sized(root, sizeof(struct MapNode));
+}
+
+
+/*@
+predicate (void) DeleteSmallest(pointer cur, NodeData data) {
+  if (is_null(cur)) {
+    return;
+  } else {
+    take node = Owned<struct MapNode>(cur);
+    assert(node.key == data.key);
+    assert(node.value == data.value);
+    return;
+  }
+}
+@*/
+
+struct MapNode* deleteSmallest(struct MapNode **root)
+/*@
+  requires
+    take root_ptr = Owned(root);
+    take tree = BST(root_ptr);
+  ensures
+    take new_root = Owned(root);
+    take new_tree = BST(new_root);
+    let res = delLeast(tree);
+    new_tree == res.tree;
+    take unsued = DeleteSmallest(return, res.data);    
+@*/
+{
+  struct MapNode *cur = *root;
+  if (!cur) return 0;
+
+  struct MapNode *parent = 0;
+  while (cur->smaller) {
+    parent = cur;
+    cur = cur->smaller;
+  }
+
+  if (parent) {
+    parent->smaller = cur->larger;
+  }
+  else *root = cur->larger;
+
+  return cur;
+}
+
+
+void deleteKey(struct MapNode **root, KEY key)
+/*@
+requires
+  take root_ptr = Owned(root);
+  take tree = BST(root_ptr);
+ensures
+  take new_ptr = Owned(root);
+  take new_tree = BST(new_ptr);
+  delKey(key, tree) == new_tree;
+@*/
+{
+  struct MapNode *found = *root;
+  struct MapNode *parent = findParent(&found, key);
+
+  if (!found) return;
+  struct MapNode *remove = deleteSmallest(&found->larger);
+  if (remove) {
+    found->key = remove->key;
+    found->value = remove->value;    
+  } else {
+    remove = found;
+    if (parent) {
+      parent->smaller = found->smaller;
+    } else {
+      *root = found->smaller;
+    }
+  }
+  cn_free_sized(remove, sizeof(struct MapNode));
 }
