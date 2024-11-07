@@ -511,10 +511,11 @@ struct MapNode* deleteSmallest(struct MapNode **root)
     cur = cur->smaller;
   }
 
-  if (parent) {
-    parent->smaller = cur->larger;
-  }
+  if (parent) parent->smaller = cur->larger;
+  //!//
   else *root = cur->larger;
+  //!! forget_to_update_root //
+  //!//
 
   return cur;
 }
@@ -541,11 +542,12 @@ ensures
     found->value = remove->value;    
   } else {
     remove = found;
-    if (parent) {
-      parent->smaller = found->smaller;
-    } else {
+    //!//
+    if (parent) parent->smaller = found->smaller;
+    else
+    //!! always_update_root_instead_of_parent //
+    //!//
       *root = found->smaller;
-    }
   }
   cn_free_sized(remove, sizeof(struct MapNode));
 }
