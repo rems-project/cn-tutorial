@@ -16,17 +16,26 @@ BUILD_DIR=""
 function cleanup {
   if [ $BUILD_DIR != "" ]; then
     echo "GENERATED: $BUILD_DIR"
-    rm -rf $BUILD_DIR
+    # rm -rf $BUILD_DIR
   fi
 }
 trap cleanup EXIT
 BUILD_DIR=$(mktemp -d "cn-test-XXXXXXXX")
 
 TEST_FILE="$BUILD_DIR/${BASE}_test.c"
-TGT="$BUILD_DIR/run"
+EXE="run"
+TGT="$BUILD_DIR/$EXE"
 cn test $1 --no-run --output-dir="$BUILD_DIR"
-cc -g -o"$TGT" -I"$CN_INSTALL/include" -L"$CN_INSTALL" "$TEST_FILE" -lcn
-$TGT
+cc -g \
+   -fprofile-arcs -ftest-coverage \
+   -o"$TGT" -I"$CN_INSTALL/include" \
+   -L"$CN_INSTALL" "$TEST_FILE" -lcn
 
+pushd "$BUILD_DIR"
+"./$EXE" || true
+gcov "$EXE-${BASE}_test.c"
+lcov --capture --directory . --output-file "coverage.info"
+genhtml coverage.info --output-director html
+popd
 
 
