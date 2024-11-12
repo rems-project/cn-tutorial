@@ -190,15 +190,16 @@ function [rec] (BST) setKey(KEY k, BST root, BST value) {
   }
 }
 
-function [rec] ({ NodeData data, BST tree }) delLeast(BST root) {
+function [rec] ({ boolean empty, NodeData data, BST tree }) delLeast(BST root) {
   match root {
-    Leaf {} => { { data: defaultNodeData(), tree: Leaf {} } }
+    Leaf {} => { { empty: true, data: defaultNodeData(), tree: Leaf {} } }
     Node { data: data, smaller: smaller, larger: larger } => {
       if (isLeaf(smaller)) {
-        { data: data, tree: larger }
+        { empty: false, data: data, tree: larger }
       } else {
          let res = delLeast(smaller);
-         { data: res.data,
+         { empty: false,
+           data: res.data,
            tree: Node { data: data, smaller: res.tree, larger: larger }
          }
       }
@@ -212,7 +213,7 @@ function [rec] (BST) delKey(KEY key, BST root) {
     Node { data: data, smaller: smaller, larger: larger } => {
       if (key == data.key) {
         let res = delLeast(larger);
-        if (isLeaf(res.tree)) {
+        if (res.empty) {
           smaller
         } else {
           Node { data: res.data, smaller: smaller, larger: res.tree }
@@ -512,10 +513,7 @@ struct MapNode* deleteSmallest(struct MapNode **root)
   }
 
   if (parent) parent->smaller = cur->larger;
-  //!//
   else *root = cur->larger;
-  //!! forget_to_update_root //
-  //!//
 
   return cur;
 }
@@ -535,18 +533,21 @@ ensures
   struct MapNode *found = *root;
   struct MapNode *parent = findParent(&found, key);
 
-  if (!found) return;
+  if (!found) { return; }
   struct MapNode *remove = deleteSmallest(&found->larger);
   if (remove) {
     found->key = remove->key;
     found->value = remove->value;    
   } else {
     remove = found;
-    //!//
-    if (parent) parent->smaller = found->smaller;
+    if (parent) {
+      if (found == parent->smaller) {
+        parent->smaller = found->smaller;
+      } else {
+        parent->larger = found->smaller;
+      }
+    }
     else
-    //!! always_update_root_instead_of_parent //
-    //!//
       *root = found->smaller;
   }
   cn_free_sized(remove, sizeof(struct MapNode));
