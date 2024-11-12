@@ -291,19 +291,21 @@ function [rec] (BST) insert(KEY key, VALUE value, BST tree) {
 }
 
 
-function [rec] ({ NodeData data, BST tree }) delLeast(BST root) {
+function [rec] ({ boolean empty, NodeData data, BST tree }) delLeast(BST root) {
   match root {
     Leaf {} => {
       {
         data: defaultNodeData(),
-        tree: Leaf {}
+        tree: Leaf {},
+        empty: true
       }
     }
     Node { data: data, smaller: smaller, larger: larger } => {
       if (isLeaf(smaller)) {
         {
           data: data,
-          tree: larger
+          tree: larger,
+          empty: false
         }
       } else {
          let res = delLeast(smaller);
@@ -314,7 +316,8 @@ function [rec] ({ NodeData data, BST tree }) delLeast(BST root) {
                data:    data,
                smaller: res.tree,
                larger:  larger
-             }
+             },
+           empty: false
          }
       }
     }
@@ -327,7 +330,7 @@ function [rec] (BST) delKey(KEY key, BST root) {
     Node { data: data, smaller: smaller, larger: larger } => {
       if (key == data.key) {
         let res = delLeast(larger);
-        if (isLeaf(res.tree)) {
+        if (res.empty) {
           smaller
         } else {
           Node {
@@ -448,18 +451,21 @@ ensures
   return parent;
 }
 
-#if 0
 /* Insert an element into a map. Overwrites previous if already present. */
 void setNodeKey(struct MapNode **root, KEY key, VALUE value)
-/*
+/*@
 requires
   take root_ptr = Owned(root);
-  take tree = BST(root_ptr);
+  take mem_tree = BSTMem(root_ptr);
+  let tree = treeValue(mem_tree);
+  validBST(tree);
 ensures
   take new_root = Owned(root);
-  take new_tree = BST(new_root);
+  take new_mem_tree = BSTMem(new_root);
+  let new_tree = treeValue(new_mem_tree);
+  validBST(new_tree);
   new_tree == insert(key, value, tree);
-*/
+@*/
 {
   struct MapNode *found = *root;
   struct MapNode *parent = findParent(&found, key);
@@ -485,12 +491,12 @@ ensures
 
 
 void deleteTree(struct MapNode *root)
-/*
+/*@
   requires
-    take tree = BST(root);
+    take tree = BSTMem(root);
   ensures
      true;
-*/
+@*/
 {
   if (!root) return;
   deleteTree(root->smaller);
@@ -499,7 +505,7 @@ void deleteTree(struct MapNode *root)
 }
 
 
-/*
+/*@
 predicate (void) DeleteSmallest(pointer cur, NodeData data) {
   if (is_null(cur)) {
     return;
@@ -510,20 +516,23 @@ predicate (void) DeleteSmallest(pointer cur, NodeData data) {
     return;
   }
 }
-*/
+@*/
 
 struct MapNode* deleteSmallest(struct MapNode **root)
-/*
+/*@
   requires
     take root_ptr = Owned(root);
-    take tree = BST(root_ptr);
+    take tree_mem = BSTMem(root_ptr);
+    let  tree     = treeValue(tree_mem);
+    validBST(tree);
   ensures
-    take new_root = Owned(root);
-    take new_tree = BST(new_root);
-    let res = delLeast(tree);
+    take new_root      = Owned(root);
+    take new_tree_mem  = BSTMem(new_root);
+    let  new_tree      = treeValue(new_tree_mem);
+    let res            = delLeast(tree);
     new_tree == res.tree;
     take unsued = DeleteSmallest(return, res.data);    
-*/
+@*/
 {
   struct MapNode *cur = *root;
   if (!cur) return 0;
@@ -535,43 +544,49 @@ struct MapNode* deleteSmallest(struct MapNode **root)
   }
 
   if (parent) parent->smaller = cur->larger;
-  //!//
   else *root = cur->larger;
-  //!! forget_to_update_root //
-  //!//
-
   return cur;
 }
 
 
 void deleteKey(struct MapNode **root, KEY key)
-/*
+/*@
 requires
   take root_ptr = Owned(root);
-  take tree = BST(root_ptr);
+  take tree_mem = BSTMem(root_ptr);
+  let  tree     = treeValue(tree_mem);
+  validBST(tree);
 ensures
   take new_ptr = Owned(root);
-  take new_tree = BST(new_ptr);
+  take new_tree_mem = BSTMem(new_ptr);
+  let  new_tree = treeValue(new_tree_mem);
   delKey(key, tree) == new_tree;
-*/
+@*/
 {
   struct MapNode *found = *root;
   struct MapNode *parent = findParent(&found, key);
+  assert(!parent || parent->smaller == found || parent->larger == found);
 
-  if (!found) return;
+  if (!found) { return; }
   struct MapNode *remove = deleteSmallest(&found->larger);
+
   if (remove) {
     found->key = remove->key;
     found->value = remove->value;    
   } else {
     remove = found;
-    //!//
-    if (parent) parent->smaller = found->smaller;
-    else
-    //!! always_update_root_instead_of_parent //
-    //!//
+    if (parent) {
+      if (parent->smaller == found) {
+        parent->smaller = found->smaller;
+      } else {
+        parent->larger = found->smaller;
+      }
+    }
+    else {
       *root = found->smaller;
+    }   
   }
   cn_free_sized(remove, sizeof(struct MapNode));
 }
-#endif
+
+
