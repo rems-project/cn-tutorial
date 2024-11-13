@@ -18,3 +18,19 @@ elaborate separation logic specifications of data structures.
 The source files for all the exercises and examples below can be downloaded
 from [here](link:exercises.zip).
 
+## Tutorials
+
+- [Basic usage](basic-usage.md)
+- [Pointers and simple ownership](pointers-and-simple-ownership.md)
+- [Ownership of compound objects](ownership-of-compound-objects.md)
+- [Arrays and loops](arrays-and-loops.md)
+- [Defining predicates](defining-predicates.md)
+- [Allocating and deallocating memory](allocating-and-deallocating-memory.md)
+- [Lists](lists.md)
+- [Working with external lemmas](external-lemmas.md)
+
+## Case studies
+
+- [Imperative queues](../case-studies/imperative-queues.md)
+- [Doubly-linked lists](../case-studies/doubly-linked-lists.md)
+- [Airport Simulation](../case-studies/the-runway.md)
