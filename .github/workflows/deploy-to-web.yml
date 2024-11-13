@@ -22,22 +22,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          ruby-version: '2.7' 
+          python-version: 3.x
 
-      - name: Install AsciiDoctor
-        run: gem install asciidoctor pygments.rb
+      - name: Install Material for MkDocs
+        run: pip install mkdocs-material
 
       - name: Clean the build directory 
-        run: rm -rf build/* 
+        run: make clean
 
       - name: Build the tutorial 
         run: make 
-
-      - name: Move the tutorial file 
-        run: mv build/tutorial.html build/index.html  
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

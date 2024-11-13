@@ -2,34 +2,33 @@
 
 MAKEFILE_DIR:=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
-default: build exercises build/tutorial.html build/exercises.zip
+default: tutorial
 all: default
 
 clean:
-	rm -rf build TAGS
-
-build:
-	mkdir -p build
-	mkdir -p build/exercises
-	mkdir -p build/solutions
+	rm -rf docs/exercises docs/solutions docs/exercises.zip build TAGS
 
 ##############################################################################
 # Exercises
 
 SRC_EXAMPLES=$(shell find src/examples -type f)
-SOLUTIONS=$(patsubst src/examples/%, build/solutions/%, $(SRC_EXAMPLES))
-EXERCISES=$(patsubst src/examples/%, build/exercises/%, $(SRC_EXAMPLES))
+SOLUTIONS=$(patsubst src/examples/%, docs/solutions/%, $(SRC_EXAMPLES))
+EXERCISES=$(patsubst src/examples/%, docs/exercises/%, $(SRC_EXAMPLES))
 
 CN=cn verify
 
-exercises: $(EXERCISES) $(SOLUTIONS)
+exercises: docs-exercises-dirs $(EXERCISES) $(SOLUTIONS)
 
-build/exercises/%: src/examples/%
+docs-exercises-dirs:
+	mkdir -p docs/exercises
+	mkdir -p docs/solutions
+
+docs/exercises/%: src/examples/%
 	@echo Rebuild $@
 	@-mkdir -p $(dir $@)
 	@sed -E '\|^.*--BEGIN--.*$$|,\|^.*--END--.*$$|d' $< > $@
 
-build/solutions/%: src/examples/%
+docs/solutions/%: src/examples/%
 	@-mkdir -p $(dir $@)
 	@if [ `which cn` ]; then \
 	  if [[ "$<" = *".c"* ]]; then \
@@ -41,16 +40,15 @@ build/solutions/%: src/examples/%
 	@echo Rebuild $@
 	@cat $< | sed '\|^.*--BEGIN--.*$$|d' | sed '\|^.*--END--.*$$|d' > $@
 
-build/exercises.zip: $(EXERCISES)
-	cd build; zip -r exercises.zip exercises > /dev/null
+docs/exercises.zip: $(EXERCISES)
+	cd docs; zip -r exercises.zip exercises > /dev/null
 
 WORKING=$(wildcard src/examples/list_*.c)
-WORKING_AUX=$(patsubst src/examples/%, build/solutions/%, $(WORKING))
-temp: $(WORKING_AUX) build 
-#     build/tutorial.html 
+WORKING_AUX=$(patsubst src/examples/%, docs/solutions/%, $(WORKING))
+temp: $(WORKING_AUX) docs-exercises-dirs
 
 ##############################################################################
-# Check that the examples all run correctly 
+# Check that the examples all run correctly
 
 CN_PATH?=cn verify
 
@@ -62,23 +60,16 @@ check-tutorial:
 	@echo Check tutorial examples
 	@$(MAKEFILE_DIR)/check.sh "$(CN_PATH)"
 
-check: check-tutorial check-archive 
+check: check-tutorial check-archive
 
 ##############################################################################
 # Tutorial document
 
-build/tutorial.adoc build/style.css build/asciidoctor.css: src/tutorial.adoc
-	@echo Create build/tutorial.adoc
-	@sed -E 's/include_example\((.+)\)/.link:\1[\1]\n[source,c]\n----\ninclude::\1\[\]\n----/g' $< > $@
-	@cp src/style.css build
-	@cp src/asciidoctor.css build
+tutorial: exercises mkdocs.yml $(shell find docs -type f)
+	mkdocs build --strict
 
-build/images: src/images
-	cp -r $< $@
-
-build/tutorial.html: build/tutorial.adoc $(SRC_EXAMPLES) build/images
-	asciidoctor --doctype book $< -o $@
-	@rm build/tutorial.adoc
+serve: exercises mkdocs.yml $(shell find docs -type f)
+	mkdocs serve
 
 ##############################################################################
 # Misc

@@ -1,0 +1,29 @@
+name: Test tutorial build
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x 
+
+      - name: Install Material for MkDocs
+        run: pip install mkdocs-material
+
+      - name: Clean the build directory 
+        run: make clean
+
+      - name: Check that the tutorial builds
+        run: make
