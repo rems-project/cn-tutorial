@@ -37,9 +37,14 @@ jobs:
         path: ~/.opam
         key: ${{ matrix.version }}
 
-    - name: Setup opam and install dependencies
+    - name: Setup opam
+      if: steps.cache-opam-restore.outputs.cache-hit != 'true'
+      run: opam init --yes --no-setup --shell=sh --compiler=${{ matrix.version }}
+
+    - name: Install dependencies
       run: |
-        opam init --yes --no-setup --shell=sh --compiler=${{ matrix.version }}
+        opam switch ${{ matrix.version }}
+        eval $(opam env --switch=${{ matrix.version }})
         opam install --deps-only --yes ./cerberus.opam ./cerberus-lib.opam ./cn.opam
     
     - name: Save cached opam
