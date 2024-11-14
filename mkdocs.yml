@@ -98,7 +98,6 @@ nav:
   - Getting started:
     - README.md
     - Installation: getting-started/installation.md
-    - "Hello world": getting-started/hello-world.md
     - Tutorials:
       - getting-started/tutorials/README.md
       - "Basic usage": getting-started/tutorials/basic-usage.md
@@ -131,12 +130,6 @@ nav:
     - Scoping: specifications/scoping.md
     - "Tactics (proof hints)": specifications/tactics.md
     - Interactive theorem proving: specifications/interactive-theorem-proving.md
-  - Testing:
-    - testing/README.md
-  - Verification:
-    - verification/README.md
   - Reference:
     - reference/README.md
-  - Help:
-    - help/README.md
 
