@@ -1,8 +1,5 @@
 # CN Tutorials
 
-_These tutorials were developed by Christopher Pulte and Benjamin C. Pierce,
-with contributions from Elizbeth Austell and Cole Schlesinger._
-
 These tutorials introduce CN through a series of examples, starting with basic
 usage of CN on simple arithmetic functions and slowly moving towards more
 elaborate separation logic specifications of data structures.
