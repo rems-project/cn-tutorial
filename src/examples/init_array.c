@@ -8,7 +8,7 @@ void init_array (char *p, unsigned int n)
 
   while (j < n)
 /* --BEGIN-- */
-  /*@ inv take ai = each(u32 i; i < n) { Owned<char>( array_shift<char>(p, i)) };
+  /*@ inv take ai = each(u32 i; 0u32 <= i && i < n) { Owned<char>( array_shift<char>(p, i)) };
           {p} unchanged; {n} unchanged;
   @*/
 /* --END-- */

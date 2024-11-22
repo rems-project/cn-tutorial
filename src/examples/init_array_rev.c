@@ -9,7 +9,7 @@ void init_array2 (char *p, unsigned int n)
 
   while (j < n)
 /* --BEGIN-- */
-  /*@ inv take al = each(u32 i; i < n-j) { Block<char>( array_shift<char>(p, i)) };
+  /*@ inv take al = each(u32 i; 0u32 <= i && i < n-j) { Block<char>( array_shift<char>(p, i)) };
           take ar = each(u32 i; n-j <= i && i < n) { Owned<char>( array_shift<char>(p, i)) };
           {p} unchanged; {n} unchanged;
           0u32 <= j && j <= n;
