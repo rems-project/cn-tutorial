@@ -326,20 +326,18 @@ int main()
   struct sized_stack *s = create();
   int num_elements = 3;
 
-  int i = 0;
-  while (i < num_elements) {
-    push(s, i + 1);
-    i++;
-  }
+  // int i = 0;
+  push(s, 1);
+  push(s, 2);
+  push(s, 3);
+
   
   int t = top(s);
   /*@ assert (t == (i32) num_elements); @*/
   assert_stack_structure(s, num_elements);
 
-  while (i > 1) {
-    t = pop(s);
-    i--;
-  }
+  t = pop(s);
+  t = pop(s);
   /*@ assert (t == 2i32); @*/
   t = pop(s);
   /*@ assert(t == 1i32); @*/
