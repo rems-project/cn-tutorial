@@ -174,22 +174,22 @@ let usage = "USAGE"
 
 let options =
   [ ("-no_test", Arg.Unit (set_command NoTesting),
-    "Remove all annotations related to testing");
+    "\t\tRemove all annotations related to testing");
 
     ("-etna", Arg.Unit (set_command MutationTesting),
-    "Emit mutation tests in CN Etna notation");
+    "\t\tEmit mutation tests in CN Etna notation");
 
     ("-list-mutants", Arg.Unit (set_command CollectMutants),
-    "Show the names of the mutants in the input");
+    "\tShow the names of the mutants in the input");
 
     ("-mutant", Arg.String (fun name -> set_command (ExecuteMutant name) ()),
-    "Show mutant with the given name");
+    "NAME\t\tShow mutant with the given name");
 
     ("-list-unit", Arg.Unit (set_command CollectUnitTest),
-    "Show the names of the unit tests in the input");
+    "\t\tShow the names of the unit tests in the input");
 
     ("-unit", Arg.String (fun name -> set_command (ExecuteUnitTest name) ()),
-    "Execute unit test with the given name")
+    "NAME\t\tExecute unit test with the given name")
   ]
 
 let () =
