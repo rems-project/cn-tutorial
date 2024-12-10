@@ -28,40 +28,24 @@ let end_named_block = String.starts_with ~prefix:"#endif"
 
 (* -------------------------------------------------------------------------- *)
 
-type named_lines = {
-  start_line: int;        (* starting line number *)
-  name:       string;
-  lines:      string list;
-}
 
-let finish_named_lines (mu: named_lines) =
-  { mu with lines = List.rev mu.lines }
-
-(* Some content and its mutants. *)
-type mutant_block = {
-  start_line: int;               (* starting line number *)
-  orig:       string list;
-  variants:   named_lines list;
-}
-
-type content =
-| Mutants  of mutant_block
-| UnitTest of named_lines
-| Line     of string
-
-type state = 
-| TopLevel
-| InMutantOrig of int
-| InMutant     of int
-| InUnitTest   of (int * string)
-
-(* -------------------------------------------------------------------------- *)
-
+(* How we are processing the file *)
 type mode =
   | NoTesting                 (* Remove testing related lines *)
   | MutationTesting           (* Translate to Etna notation *)
+  | CollectMutants            (* Print only the names of the mutants *)
+  | ExecuteMutant of string   (* Print only this specific mutant *)
   | CollectUnitTest           (* Print only names of unit tests *)
   | ExecuteUnitTest of string (* Print only this specific unit test *)
+
+
+(* The current state of the processor *)
+type state = 
+| TopLevel
+| InMutantOrig of int            (* start line, for error reprorting *)
+| InMutant     of (int * string) (* start line; mutant name *)
+| InUnitTest   of (int * string) (* start line; test name *)
+
 
 let rec process_input mode start_line state =
   let mb_line = try Some (read_line()) with End_of_file -> None in
@@ -72,7 +56,7 @@ let rec process_input mode start_line state =
     match state with
     | TopLevel          -> ()
     | InMutantOrig n    -> mk_error n "Untermianted mutant block"
-    | InMutant n        -> mk_error n "Unterminated mutant block"
+    | InMutant (n,_)    -> mk_error n "Unterminated mutant block"
     | InUnitTest (n,_)  -> mk_error n "Unterminated unit test"
     end
   | Some line ->
@@ -101,10 +85,11 @@ let rec process_input mode start_line state =
           (* ordinary top level line *)
           | None ->
             begin match mode with
-            | CollectUnitTest -> ()
+            | CollectUnitTest
+            | CollectMutants  -> ()
             | _               -> print_endline line
             end;
-            TopLevel (* next state *)
+            state (* next state *)
         end
 
       | InMutantOrig ln ->
@@ -114,45 +99,50 @@ let rec process_input mode start_line state =
         | Some name ->
           begin match mode with
           | MutationTesting -> Printf.printf "//!! %s // //!\n" name
+          | CollectMutants  -> print_endline name
           | _               -> ()
           end;
-          InMutant ln (* next state *)
+          InMutant (ln,name) (* next state *)
 
         (* Original part of a mutation block *) 
         | None ->
           begin match mode with
-          | CollectUnitTest -> ()
+          | CollectUnitTest
+          | CollectMutants 
+          | ExecuteMutant _ -> ()
           | _               -> print_endline line
           end;
-          InMutantOrig ln (* next state *)
+          state (* next state *)
         end
 
       (* End mutant block *)
-      | InMutant ln when end_named_block line ->
+      | InMutant _ when end_named_block line ->
         begin match mode with
         | MutationTesting -> print_endline "//"
         | _               -> ()
         end;
         TopLevel (* next state *)
 
-      | InMutant ln ->
+      | InMutant (ln,name) ->
 
         begin match start_mutant line with
         (* Next mutatant *)
-        | Some name ->
+        | Some new_name ->
             begin match mode with
-            | MutationTesting -> Printf.printf "// //!! %s // //!\n" name
+            | MutationTesting -> Printf.printf "// //!! %s // //!\n" new_name
+            | CollectMutants  -> print_endline new_name
             | _               -> ()
             end;
-            InMutant ln (* next state *)
+            InMutant (ln,new_name) (* next state *)
 
         (* Line in a mutant *)
         | None ->
           begin match mode with
           | MutationTesting -> print_endline line
-          | _               -> ()
+          | ExecuteMutant mu when String.equal mu name -> print_endline line
+          | _ -> ()
           end;
-          InMutant ln (* next state *)
+          state (* next state *)
         end
 
       (* End unit test *)
@@ -169,30 +159,41 @@ let rec process_input mode start_line state =
 
     in process_input mode (start_line + 1) new_state
 
-let show_usage name =
-  Printf.eprintf "USAGE: %s COMMAND\n" name; 
-  Printf.eprintf "\
-Process lines from `stdin` to `stdout` depending on COMMAND\n\
-  Valid comamnds are:\n\
-  * no_test       Remove all annotation related to testing.\n\
-  * etna          Emit mutation tests in CN Etna notation.\n\
-  * list_unit     List names of available unit tests.\n\
-  * UNIT_TEST     Emit content relevant for UNIT_TEST.\n\
-"
 
 
+let command = ref (None : mode option)
 
-let parse_mode str =
-  match str with
-  | "no_test"   -> Some NoTesting
-  | "etna"      -> Some MutationTesting
-  | "list_unit" -> Some CollectUnitTest
-  | _ -> match drop_prefix "CN_TEST" str with
-         | Some t -> Some (ExecuteUnitTest t)
-         | None   -> None
+let set_command cmd () =
+  match !command with
+  | None -> command := Some cmd
+  | Some _ -> raise (Arg.Bad "multiple commands")
+
+let do_command str = raise (Arg.Help "TEST")
+
+let usage = "USAGE"
+
+let options =
+  [ ("-no_test", Arg.Unit (set_command NoTesting),
+    "Remove all annotations related to testing");
+
+    ("-etna", Arg.Unit (set_command MutationTesting),
+    "Emit mutation tests in CN Etna notation");
+
+    ("-list-mutants", Arg.Unit (set_command CollectMutants),
+    "Show the names of the mutants in the input");
+
+    ("-mutant", Arg.String (fun name -> set_command (ExecuteMutant name) ()),
+    "Show mutant with the given name");
+
+    ("-list-unit", Arg.Unit (set_command CollectUnitTest),
+    "Show the names of the unit tests in the input");
+
+    ("-unit", Arg.String (fun name -> set_command (ExecuteUnitTest name) ()),
+    "Execute unit test with the given name")
+  ]
 
 let () =
-  if not (Int.equal (Array.length Sys.argv) 2) then show_usage Sys.argv.(0);
-  match parse_mode Sys.argv.(1) with
+  Arg.parse options do_command usage;
+  match !command with
   | Some mode -> process_input mode 1 TopLevel
-  | None -> show_usage Sys.argv.(0)
+  | None      -> Arg.usage options usage

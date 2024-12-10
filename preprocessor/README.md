@@ -19,7 +19,7 @@ This preprocessor is intended to help with this task.
 To build it run `make`, and optionally `make clean`.  The result
 should be an executable called `preproc_tut`.
 
-Run `preproc_tut help` to see a list of available commands.
+Run `preproc_tut --help` to see a list of available commands.
 
 
 Notation for Mutation Testing
