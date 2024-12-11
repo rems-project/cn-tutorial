@@ -18,7 +18,7 @@ let start_mutant = drop_prefix "#elif"
 
 let start_unit_test line =
   match drop_prefix "#if" line with
-  | Some txt -> drop_prefix "CN_TEST" txt (* XXX: space or underscore separator? *)
+  | Some txt when String.starts_with ~prefix:"CN_TEST" txt -> Some txt
   | _ -> None
 
 (* Ending for mutant blocks and units tests *)
@@ -77,7 +77,7 @@ let rec process_input mode start_line state =
           (* start a unit test *)
           | Some name ->
             begin match mode with
-            | CollectUnitTest -> Printf.printf "CN_TEST%s\n" name
+            | CollectUnitTest -> print_endline name
             | _               -> ()
             end;
             InUnitTest (start_line, name) (* next state *)
@@ -166,30 +166,32 @@ let command = ref (None : mode option)
 let set_command cmd () =
   match !command with
   | None -> command := Some cmd
-  | Some _ -> raise (Arg.Bad "multiple commands")
+  | Some _ -> raise (Arg.Bad "Conflicting command flags")
 
-let do_command str = raise (Arg.Help "TEST")
+let do_command str =
+  raise (Arg.Bad (Printf.sprintf "Unexpected argument: %s" str))
 
-let usage = "USAGE"
+let usage = "USAGE:"
 
 let options =
-  [ ("-no_test", Arg.Unit (set_command NoTesting),
-    "\t\tRemove all annotations related to testing");
+  Arg.align
+  [ ("--no-test", Arg.Unit (set_command NoTesting),
+    "\tRemove all annotations related to testing");
 
-    ("-etna", Arg.Unit (set_command MutationTesting),
-    "\t\tEmit mutation tests in CN Etna notation");
+    ("--etna", Arg.Unit (set_command MutationTesting),
+    "\tEmit mutation tests in CN Etna notation");
 
-    ("-list-mutants", Arg.Unit (set_command CollectMutants),
+    ("--list-mutants", Arg.Unit (set_command CollectMutants),
     "\tShow the names of the mutants in the input");
 
-    ("-mutant", Arg.String (fun name -> set_command (ExecuteMutant name) ()),
-    "NAME\t\tShow mutant with the given name");
+    ("--show-mutant", Arg.String (fun name -> set_command (ExecuteMutant name) ()),
+    "NAME\tShow mutant with the given name");
 
-    ("-list-unit", Arg.Unit (set_command CollectUnitTest),
-    "\t\tShow the names of the unit tests in the input");
+    ("--list-unit", Arg.Unit (set_command CollectUnitTest),
+    "\tShow the names of the unit tests in the input");
 
-    ("-unit", Arg.String (fun name -> set_command (ExecuteUnitTest name) ()),
-    "NAME\t\tExecute unit test with the given name")
+    ("--show-unit", Arg.String (fun name -> set_command (ExecuteUnitTest name) ()),
+    "NAME\tExecute unit test with the given name")
   ]
 
 let () =
