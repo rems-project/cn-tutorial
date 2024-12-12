@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+  echo "USAGE: $0 CFILE"
+  echo "  Run all unit tests and mutants in a single C file."
+  exit 1
+fi
+
+FILE="$1"
+
+SCRIPT_DIR="$(dirname $0)"
+source "$SCRIPT_DIR/config"
+
+for UNIT_TEST in $($PREPROC --list-unit < "$FILE"); do
+  echo $UNIT_TEST
+  $SCRIPT_DIR/run-unit-test "$FILE" "$UNIT_TEST"
+done
+
+for MUTANT in $($PREPROC --list-mutants < "$FILE"); do
+  echo $MUTANT
+  $SCRIPT_DIR/run-mutant "$FILE" "$MUTANT"
+done
+
+
+
+

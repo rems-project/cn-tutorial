@@ -28,7 +28,7 @@ Notation for Mutation Testing
 The pre-processor is line based.  For mutation testing we use a CPP-like
 if-block, as illustrated by the following example:
 ```
-#if !MUTATION
+#if !MUTATION(function_containing_the_mutant)
 Normal
 code
 path
@@ -40,7 +40,6 @@ mutation
 Some other variant
 #endif
 ```
-
 
 If we run the pre-processer to eliminate mutation testing the result would
 be only:
