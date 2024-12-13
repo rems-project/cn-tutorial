@@ -104,24 +104,24 @@ Scripts
 The directory also contains some scripts which use the preprocessor to run
 the test variations in a file:
 
-    * `run-all CFILE [LOG_FILE]`
-       Test all functions in a file, including unit tests, and mutants.
-       If a LOG_FILE is provided the output of the commands is stored
-       there.  This is useful if tests fails.
-       Mutants are considered to succeed if the corresponding test fails
-       (i.e., they found a bug)
-       Unit tests succeed if the result of testing matches the declarations
-       (see `// fails` above)
+  * `run-all CFILE [LOG_FILE]`
+     Test all functions in a file, including unit tests, and mutants.
+     If a LOG_FILE is provided the output of the commands is stored
+     there.  This is useful if tests fails.
+     Mutants are considered to succeed if the corresponding test fails
+     (i.e., they found a bug)
+     Unit tests succeed if the result of testing matches the declarations
+     (see `// fails` above)
 
-    * `config` is a script fragment which defines the locations of external
-       tools
+  * `config` is a script fragment which defines the locations of external
+     tools
 
-    * `run-cn-test` is a script fragment which defines how we run CN tests
+  * `run-cn-test` is a script fragment which defines how we run CN tests
 
-    * `run-unit` can run a single unit test.
-       It just runs the unit test, without checking the expected outcome.
+  * `run-unit` can run a single unit test.
+     It just runs the unit test, without checking the expected outcome.
 
-    * `run-mutant` can run a single mutation.
+  * `run-mutant` can run a single mutation.
 
     * `run-prop-tests` test all "normal" functions (i.e., not unit tests or
       mutants)
