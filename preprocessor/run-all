@@ -34,18 +34,27 @@ function start_test() {
   log_section "$1"
 }
 
-OK_MSG="[\033[1;92mOK\033[0m]"
-FAIL_MSG="[\033[1;91mFAIL\033[0m]"
+FAILURE_COUNT=0
+
+function success() {
+  echo -e "[\033[1;92mOK\033[0m]"
+}
+
+function failure() {
+  echo -e "[\033[1;91mFAIL\033[0m]"
+  FAILURE_COUNT=$(($FAILURE_COUNT + 1))
+}
 
 function end_test() {
   if [ "$1" == "0" ]; then
-    echo -e $2
+    $2
   else
-    echo -e $3
+    $3
   fi
 }
 
 # Testing start from here
+
 
 echo -n "" > "$LOG_FILE"
 log_section "Test start $(date)"
@@ -57,21 +66,21 @@ for UNIT in $("$PREPROC" --list-unit < "$FILE"); do
   "$SCRIPT_DIR/run-unit" "$FILE" "$TEST" >> "$LOG_FILE"
   RESULT=$?
   if [[ "$EXPECT" == "succeeds" ]]
-    then end_test $RESULT $OK_MSG $FAIL_MSG
-    else end_test $RESULT $FAIL_MSG $OK_MSG
+    then end_test $RESULT success failure
+    else end_test $RESULT failure success
   fi
 done
 
 start_test "Checking functions:"
 "$SCRIPT_DIR/run-prop-tests" "$FILE" >> "$LOG_FILE"
-end_test $? $OK_MSG $FAIL_MSG
+end_test $? success failure
 
 for MUTANT in $("$PREPROC" --list-mutants < "$FILE"); do
   start_test "Mutant $MUTANT: "
   "$SCRIPT_DIR/run-mutant" "$FILE" "$MUTANT" >> "$LOG_FILE"
-  end_test $? $FAIL_MSG $OK_MSG
+  end_test $? failure success
 done
 
-
+exit $FAILURE_COUNT
 
 
