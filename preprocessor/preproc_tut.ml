@@ -1,5 +1,5 @@
 
-let drop_prefix prefix str =
+let drop_token prefix str =
   if String.starts_with ~prefix str
     then
       let n = String.length prefix in
@@ -7,30 +7,32 @@ let drop_prefix prefix str =
       Some (String.trim (String.sub str n (l - n)))
     else None
 
-let rec drop_prefixes prefixes str =
+let rec drop_tokens prefixes str =
   match prefixes with
   | [] -> Some str
   | p :: ps ->
-    match drop_prefix p str with
-    | Some rest -> drop_prefixes ps rest
+    match drop_token p str with
+    | Some rest -> drop_tokens ps rest
     | None -> None
 
 (* Should we start a new mutant block *)
-let start_mutant_block line =
-  match drop_prefixes ["#if"; "!"; "MUTATION"; "("] line with
-  | Some res when String.ends_with ~suffix:")" res ->
-    let fu = String.trim (String.sub res 0 (String.length res - 1)) in
-    Some fu
-  | _ -> None
-
+let start_mutant_block = drop_tokens ["#if"; "!"; "CN_MUTATE_"]
 
 (* Does this line start a mutant *)
-let start_mutant = drop_prefix "#elif"
+let start_mutant = drop_token "#elif"
 
+(* Does this line start a unit test *)
 let start_unit_test line =
-  match drop_prefix "#if" line with
-  | Some txt when String.starts_with ~prefix:"CN_TEST" txt -> Some txt
-  | _ -> None
+  match drop_tokens ["#if"; "CN_TEST_"] line with
+  | None -> None
+  | Some name_and_more ->
+    match String.split_on_char '/' name_and_more with
+    | [name; ""; rest] ->
+      let new_name = String.trim name in
+      let fails = String.equal "fails" (String.trim rest) in
+      Some (new_name, fails)
+    | _ -> Some (name_and_more, false)
+
 
 (* Ending for mutant blocks and units tests *)
 let end_named_block = String.starts_with ~prefix:"#endif"
@@ -48,6 +50,7 @@ type mode =
   | ExecuteMutant of string   (* Print only this specific mutant *)
   | CollectUnitTest           (* Print only names of unit tests *)
   | ExecuteUnitTest of string (* Print only this specific unit test *)
+  | ExecuteAllUnitTests       (* No mutants; all unit tests enabled *)
 
 
 (* The current state of the processor *)
@@ -90,9 +93,11 @@ let rec process_input mode start_line state =
            begin match start_unit_test line with
    
              (* start a unit test *)
-             | Some name ->
+             | Some (name,fails) ->
                begin match mode with
-               | CollectUnitTest -> print_endline name
+               | CollectUnitTest ->
+                 Printf.printf "%s/%s\n" name
+                   (if fails then "fails" else "succeeds")
                | _               -> ()
                end;
                InUnitTest (start_line, name) (* next state *)
@@ -168,6 +173,7 @@ let rec process_input mode start_line state =
       (* Line in a unit test *)  
       | InUnitTest (ln,name) ->
         begin match mode with
+        | ExecuteAllUnitTests                        -> print_endline line
         | ExecuteUnitTest t when String.equal name t -> print_endline line
         | _ -> ()
         end;
@@ -204,10 +210,14 @@ let options =
     "NAME\tShow mutant with the given name");
 
     ("--list-unit", Arg.Unit (set_command CollectUnitTest),
-    "\tShow the names of the unit tests in the input");
+    "\tShow unit test names and expected outcome");
 
     ("--show-unit", Arg.String (fun name -> set_command (ExecuteUnitTest name) ()),
-    "NAME\tExecute unit test with the given name")
+    "NAME\tExecute unit test with the given name");
+
+    ("--show-all-unit", Arg.Unit (set_command ExecuteAllUnitTests),
+    "\tExecute all unit tests without mutations");
+
   ]
 
 let () =

@@ -28,7 +28,7 @@ Notation for Mutation Testing
 The pre-processor is line based.  For mutation testing we use a CPP-like
 if-block, as illustrated by the following example:
 ```
-#if !MUTATION(function_containing_the_mutant)
+#if !CN_MUTATE_function_containing_the_mutantion_block
 Normal
 code
 path
@@ -69,15 +69,62 @@ Some other variant
 ```
 
 
-Unit Tests
-==========
+Notation for Unit Tests
+=======================
 
 Unit tests are written as CPP conditionals where the condition is
-an identifier that starts with `CN_TEST`.  For example:
+an identifier that starts with `CN_TEST_` followed by the
+name of the function for the test.  For example:
 
 ```
-#if CN_TEST
-Lines only
-for test
+#if CN_TEST_function_name
+void function_name() {
+  write test here
+}
 #endif
 ```
+
+Sometimes we'd also like to indicate that a test is expected to fail. We can
+do this by adding `// fails` on the line declaring the test.
+
+```
+#if CN_TEST_function_name // fails
+void function_name() {
+  write test here
+}
+#endif
+```
+
+This indicates that we expect this test to fail.
+
+
+Scripts
+=======
+
+The directory also contains some scripts which use the preprocessor to run
+the test variations in a file:
+
+    * `run-all CFILE [LOG_FILE]`
+       Test all functions in a file, including unit tests, and mutants.
+       If a LOG_FILE is provided the output of the commands is stored
+       there.  This is useful if tests fails.
+       Mutants are considered to succeed if the corresponding test fails
+       (i.e., they found a bug)
+       Unit tests succeed if the result of testing matches the declarations
+       (see `// fails` above)
+
+    * `config` is a script fragment which defines the locations of external
+       tools
+
+    * `run-cn-test` is a script fragment which defines how we run CN tests
+
+    * `run-unit` can run a single unit test.
+       It just runs the unit test, without checking the expected outcome.
+
+    * `run-mutant` can run a single mutation.
+
+    * `run-prop-tests` test all "normal" functions (i.e., not unit tests or
+      mutants)
+
+
+

@@ -1,0 +1,16 @@
+# Script fragment for runnin CN tests
+
+source "$SCRIPT_DIR/config"
+
+OUT_DIR=$(mktemp -d /tmp/cn-test-XXXXXX)
+trap 'rm -rf "$OUT_DIR"' EXIT
+
+"$PREPROC" $PREPROC_FLAGS <"$CFILE" >"$OUT_DIR/test-file.c"
+
+pushd "$OUT_DIR" > /dev/null || exit 2
+$CPP "test-file.c" > "test-file.i"
+mv "test-file.i" "test-file.c"
+"$CN" test "test-file.c" --progress-level=0 --output-dir=./run --seed=0 $CN_TEST_FLAGS
+RESULT=$?
+popd > /dev/null || exit 2
+exit $RESULT
