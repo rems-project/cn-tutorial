@@ -123,8 +123,8 @@ the test variations in a file:
 
   * `run-mutant` can run a single mutation.
 
-    * `run-prop-tests` test all "normal" functions (i.e., not unit tests or
-      mutants)
+  * `run-prop-tests` test all "normal" functions (i.e., not unit tests or
+    mutants)
 
 
 
