@@ -38,9 +38,7 @@ solutions/add_0.c
 
 In detail:
 
-- Function specifications are given using special `/*@ ... @*/` comments, placed in-between the function argument list and the function body.
-  <!-- TODO: BCP: We should mention the alternative concrete syntax, when it is decided and implemented. -->
-  <!-- Add CN flag '--magic-comment-char-dollar' to switch CN comment syntax to '/_$ ... $_/'. -->
+- Function specifications are given using special `/*@ ... @*/` comments, placed in-between the function argument list and the function body.<!-- TODO: BCP: We should mention the alternative concrete syntax, when it is decided and implemented. --><!-- Add CN flag '--magic-comment-char-dollar' to switch CN comment syntax to '/_$ ... $_/'. -->
 
 - The keyword `requires` starts the precondition, a list of one or more CN conditions separated by semicolons.
 
@@ -48,9 +46,7 @@ In detail:
 
 - `let Sum = (i64) x + (i64) y` is a let-binding, which defines `Sum` as the value `(i64) x + (i64) y` in the remainder of the function specification.
 
-- Instead of C syntax, CN uses Rust-like syntax for integer types, such as `u32` for 32-bit unsigned integers and `i64` for signed 64-bit integers, to make their sizes unambiguous. Here, `x` and `y`, of C-type `int`, have CN type `i32`.
-  <!-- TODO: BCP: I understand this reasoning, but I wonder whether it introduces more confusion than it avoids -- it means there are two ways of writing everything, and people have to remember whether the particular thing they are writing right now is C or CN... -->
-  <!-- BCP: Hopefully we are moving toward unifying these notations anyway? -->
+- Instead of C syntax, CN uses Rust-like syntax for integer types, such as `u32` for 32-bit unsigned integers and `i64` for signed 64-bit integers, to make their sizes unambiguous. Here, `x` and `y`, of C-type `int`, have CN type `i32`.<!-- TODO: BCP: I understand this reasoning, but I wonder whether it introduces more confusion than it avoids -- it means there are two ways of writing everything, and people have to remember whether the particular thing they are writing right now is C or CN... --><!-- BCP: Hopefully we are moving toward unifying these notations anyway? -->
 
 - To define `Sum` we cast `x` and `y` to the larger `i64` type, using syntax `(i64)`, which is large enough to hold the sum of any two `i32` values.
 

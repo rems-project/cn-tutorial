@@ -5,13 +5,12 @@ Pierce, and Cole Schlesinger, with contributions from Elizbeth Austell._
 
 ??? info "BibTeX"
     ```
-	@misc{cn-tutorial,
-	  author = {Christopher Pulte and Benjamin C. Pierce and Cole Schlesinger and Elizabeth Austell},
-	  title = {{CN tutorial}},
-	  howpublished = "\url{https://rems-project.github.io/cn-tutorial/}",
-	  year = {2024}, 
-	  note = "[Online; accessed 26-October-2024]"
-	}
+    @misc{cn-tutorial,
+      author = {Christopher Pulte and Benjamin C. Pierce and Cole Schlesinger and Elizabeth Austell},
+      title = {{CN Tutorial}},
+      howpublished = "\url{https://rems-project.github.io/cn-tutorial/}",
+      year = {2025},
+    }
     ```
 
 CN is an extension of the C programming language for testing and verifying the
@@ -67,7 +66,7 @@ appreciated!
 
 ## Origins and papers
 CN was first described in [CN: Verifying Systems C Code with Separation-Logic Refinement Types](https://dl.acm.org/doi/10.1145/3571194) by Christopher Pulte, Dhruv C. Makwana, Thomas Sewell, Kayvan Memarian, Peter Sewell, and Neel Krishnaswami, in POPL 2023.
-The Fulminate system for runtime testing of CN specifications was first described in [Fulminate: Testing CN Separation-Logic Specifications in C](http://www.cl.cam.ac.uk/users/pes20/cn-testing-popl2025.pdf), by Rini Banerjee, Kayvan Memarian, Dhruv Makwana, Christopher Pulte, Neel Krishnaswami, and Peter Sewell, in POPL 2025. 
+The Fulminate system for runtime testing of CN specifications was first described in [Fulminate: Testing CN Separation-Logic Specifications in C](http://www.cl.cam.ac.uk/users/pes20/cn-testing-popl2025.pdf), by Rini Banerjee, Kayvan Memarian, Dhruv Makwana, Christopher Pulte, Neel Krishnaswami, and Peter Sewell, in POPL 2025.
 To accurately handle the complex semantics of C, CN builds on the [Cerberus semantics for C](https://github.com/rems-project/cerberus/).
 Some of the examples in this tutorial are adapted from Arthur Charguéraud’s excellent
 [Separation Logic Foundations](https://softwarefoundations.cis.upenn.edu) textbook, and one of the case studies is based on an
