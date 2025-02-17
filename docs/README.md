@@ -44,7 +44,7 @@ appreciated!
     Check out the *Basic Usage* tutorial to write, test, and verify your first
     spec
 
-    [:octicons-arrow-right-24: Basic Usage](getting-started/tutorials/basic-usage.md)
+    [:octicons-arrow-right-24: Basic Usage](getting-started/tutorials/verification/basic-usage.md)
 
 -   :material-format-font:{ .lg .middle } __Tutorials__
 

@@ -100,14 +100,17 @@ nav:
     - Installation: getting-started/installation.md
     - Tutorials:
       - getting-started/tutorials/README.md
-      - "Basic usage": getting-started/tutorials/basic-usage.md
-      - "Pointers and simple ownership": getting-started/tutorials/pointers-and-simple-ownership.md
-      - "Ownership of compound objects": getting-started/tutorials/ownership-of-compound-objects.md
-      - "Arrays and loops": getting-started/tutorials/arrays-and-loops.md
-      - "Defining predicates": getting-started/tutorials/defining-predicates.md
-      - "Allocating and deallocating memory": getting-started/tutorials/allocating-and-deallocating-memory.md
-      - "Lists": getting-started/tutorials/lists.md
-      - "Working with external lemmas": getting-started/tutorials/external-lemmas.md
+      - Testing:
+        - Overview: getting-started/tutorials/testing/overview.md
+      - Verification:
+        - "Basic usage": getting-started/tutorials/verification/basic-usage.md
+        - "Pointers and simple ownership": getting-started/tutorials/verification/pointers-and-simple-ownership.md
+        - "Ownership of compound objects": getting-started/tutorials/verification/ownership-of-compound-objects.md
+        - "Arrays and loops": getting-started/tutorials/verification/arrays-and-loops.md
+        - "Defining predicates": getting-started/tutorials/verification/defining-predicates.md
+        - "Allocating and deallocating memory": getting-started/tutorials/verification/allocating-and-deallocating-memory.md
+        - "Lists": getting-started/tutorials/verification/lists.md
+        - "Working with external lemmas": getting-started/tutorials/verification/external-lemmas.md
     - "Case studies":
       - "Imperative queues": getting-started/case-studies/imperative-queues.md
       - "Doubly-linked lists": getting-started/case-studies/doubly-linked-lists.md

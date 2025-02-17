@@ -17,14 +17,20 @@ from [here](link:exercises.zip).
 
 ## Tutorials
 
-- [Basic usage](basic-usage.md)
-- [Pointers and simple ownership](pointers-and-simple-ownership.md)
-- [Ownership of compound objects](ownership-of-compound-objects.md)
-- [Arrays and loops](arrays-and-loops.md)
-- [Defining predicates](defining-predicates.md)
-- [Allocating and deallocating memory](allocating-and-deallocating-memory.md)
-- [Lists](lists.md)
-- [Working with external lemmas](external-lemmas.md)
+### Testing
+
+- [Overview](testing/overview.md)
+
+### Verification
+
+- [Basic usage](verification/basic-usage.md)
+- [Pointers and simple ownership](verification/pointers-and-simple-ownership.md)
+- [Ownership of compound objects](verification/ownership-of-compound-objects.md)
+- [Arrays and loops](verification/arrays-and-loops.md)
+- [Defining predicates](verification/defining-predicates.md)
+- [Allocating and deallocating memory](verification/allocating-and-deallocating-memory.md)
+- [Lists](verification/lists.md)
+- [Working with external lemmas](verification/external-lemmas.md)
 
 ## Case studies
 
