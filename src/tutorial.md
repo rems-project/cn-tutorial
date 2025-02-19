@@ -239,7 +239,11 @@ We would like to verify this is safe, and that `doubled` returns twice the value
 
 As in the first example, we need to ensure that `n+1` does not overflow and `n-1` does not underflow. Similarly `a+b` has to be representable at `int` type.
 
-include\*example(solutions/slf1_basic_example_let.signed.c)
+```c title="solutions/slf1_basic_example_let.signed.c"
+--8<--
+solutions/slf1_basic_example_let.signed.c
+--8<--
+```
 
 <!-- TODO: BCP: WHy n*+n\_ in some places and n\*2i32 in others? -->
 <!-- Dhruv: Unlikely to be meaningful, either is fine. -->
