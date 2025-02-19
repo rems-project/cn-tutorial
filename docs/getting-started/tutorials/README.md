@@ -13,7 +13,8 @@ elaborate separation logic specifications of data structures.
 ## Source files
 
 The source files for all the exercises and examples below can be downloaded
-from [here](link:exercises.zip).
+from [here](../../exercises.zip).
+<!-- Note: `../../exercises.zip` is meant to be created via `make` -->
 
 ## Tutorials
 
