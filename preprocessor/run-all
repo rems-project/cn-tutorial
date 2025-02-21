@@ -1,0 +1,86 @@
+#!/bin/bash
+# Run all tests and variations in a C file
+
+LOG_FILE=/dev/null
+
+function usage() {
+  echo "USAGE: $0 CFILE [LOG_FILE]"
+  echo "  Run all tests and variations in single C file."
+  exit 1
+}
+
+if (($# > 2)) || (($# < 1)); then
+  usage
+fi
+
+FILE=$1
+shift
+if (($# > 0)); then
+  LOG_FILE=$1
+fi
+
+echo "$FILE"
+SCRIPT_DIR=$(dirname "$0")
+source "$SCRIPT_DIR/config"
+
+function log_section() {
+  echo "+------------------------------------------------------" >> "$LOG_FILE"
+  echo "| $1" >> "$LOG_FILE"
+  echo "+------------------------------------------------------" >> "$LOG_FILE"
+}
+
+function start_test() {
+  echo -n "  $1"
+  log_section "$1"
+}
+
+FAILURE_COUNT=0
+
+function success() {
+  echo -e "[\033[1;92mOK\033[0m]"
+}
+
+function failure() {
+  echo -e "[\033[1;91mFAIL\033[0m]"
+  FAILURE_COUNT=$(($FAILURE_COUNT + 1))
+}
+
+function end_test() {
+  if [ "$1" == "0" ]; then
+    $2
+  else
+    $3
+  fi
+}
+
+# Testing start from here
+
+
+echo -n "" > "$LOG_FILE"
+log_section "Test start $(date)"
+
+for UNIT in $("$PREPROC" --list-unit < "$FILE"); do
+  TEST=$(dirname "$UNIT")
+  EXPECT=$(basename "$UNIT")
+  start_test "Unit test $TEST: "
+  "$SCRIPT_DIR/run-unit" "$FILE" "$TEST" >> "$LOG_FILE"
+  RESULT=$?
+  if [[ "$EXPECT" == "succeeds" ]]
+    then end_test $RESULT success failure
+    else end_test $RESULT failure success
+  fi
+done
+
+start_test "Checking functions:"
+"$SCRIPT_DIR/run-prop-tests" "$FILE" >> "$LOG_FILE"
+end_test $? success failure
+
+for MUTANT in $("$PREPROC" --list-mutants < "$FILE"); do
+  start_test "Mutant $MUTANT: "
+  "$SCRIPT_DIR/run-mutant" "$FILE" "$MUTANT" >> "$LOG_FILE"
+  end_test $? failure success
+done
+
+exit $FAILURE_COUNT
+
+

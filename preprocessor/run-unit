@@ -1,0 +1,19 @@
+#!/bin/bash
+# Do property based testing for a specific unit test
+####################################################
+
+if [ $# -ne 2 ]; then
+  echo "USAGE: $0 CFILE TEST"
+  echo "  Run a unit test."
+  exit 1
+fi
+
+SCRIPT_DIR=$(dirname "$0")
+CFILE=$1
+FUN=$2
+PREPROC_FLAGS="--show-unit $FUN"
+CN_TEST_FLAGS="--only=$FUN"
+source "$SCRIPT_DIR/run-cn-test"
+
+
+

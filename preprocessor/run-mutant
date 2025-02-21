@@ -1,0 +1,18 @@
+#!/bin/bash
+# Do property based testing for a specific mutant
+#################################################
+
+if [ $# -ne 2 ]; then
+  echo "USAGE: $0 CFILE FUN_QUALIFIED_MUTANT_NAME"
+  echo "  Run a single mutant in the given C file."
+  exit 1
+fi
+
+SCRIPT_DIR=$(dirname "$0")
+CFILE=$1
+FUN=$(dirname "$2")
+UNIT_TEST=$(basename "$2")
+PREPROC_FLAGS="--show-mutant $UNIT_TEST"
+CN_TEST_FLAGS="--only=$FUN"
+source "$SCRIPT_DIR/run-cn-test"
+
