@@ -1,4 +1,4 @@
-# CN Testing
+# Property-Based Testing in CN
 
 CN has testing capabilities available via the `cn test` subcommand.
 
@@ -24,11 +24,11 @@ When testing, there are currently two types of tests, constant tests and generat
 For *each function with a body*, CN will create either a constant test or generator-based test.
 
 If a function takes no arguments, does not use accesses on global variables, and is correct, it should always return the same value and free any memory it allocates.
-In this case, a constant test is generated, which runs the function once and uses [Fulminate](FULMINATE_README.md) to check for post-condition violations.
+In this case, a constant test is generated, which runs the function once and uses [Fulminate](overview-fulminate.md) to check for post-condition violations.
 
 In all other cases, it creates generator-based tests, which are in the style of property-based testing.
 A "generator" is created, which randomly generates function arguments, values for globals accessed and heap states, all of which adhere to the given function's pre-condition.
-It calls the function with this input and uses [Fulminate](FULMINATE_README.md) similar to the constant tests.
+It calls the function with this input and uses [Fulminate](overview-fulminate.md) similar to the constant tests.
 
 #### Understanding errors
 

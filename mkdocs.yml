@@ -101,7 +101,9 @@ nav:
     - Tutorials:
       - getting-started/tutorials/README.md
       - Testing:
-        - Overview: getting-started/tutorials/testing/overview.md
+        - "Outline": getting-started/tutorials/testing/outline.md
+        - "Unit testing overview": getting-started/tutorials/testing/overview-fulminate.md
+        - "PBT overview": getting-started/tutorials/testing/overview-pbt.md
       - Verification:
         - "Basic usage": getting-started/tutorials/verification/basic-usage.md
         - "Pointers and simple ownership": getting-started/tutorials/verification/pointers-and-simple-ownership.md
