@@ -4,3 +4,5 @@ check
 **.swp
 docs/exercises
 docs/solutions
+/_opam/
+/_tests/
