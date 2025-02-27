@@ -39,14 +39,45 @@
 
 - Maybe some more examples of very simple C programs (no pointers, no
   UB, ...)
+     - use unsigned arithmetic, to avoid UB!  (This would be good in
+       the verification tutorial too!)
+
+- Testing programs with pointers (but not dynamic storage allocation)
+
+    - read.c
+        - unannotated version fails tests 
+             - need to explain how to figure out WHY testing fails!
+        - explain ownership (copy/move from verification tutorial)
+        - version with proper spec works better!
+        - (lots of useful text)
+        - read.broken.c demonstrates linearity of resource usage
+    - exercises:
+        - quadruple_mem
+        - abs_mem
+    - slf0_basic_incr_signed.c
+        shows the difference between Block and Owned
+    - exercises
+        - zero.c
+        - basic_inplace_double.c involves UB, so skip?
+        - maybe something about swapping pointers?
+
+    - add_read  (but changing it to swapping or something, to avoid UB
+      issues) 
+
+    - everything up through pointers to compound objects seems to work
+      well, except for some of the resource inference stuff
 
 ## Further Topics:
 
 - How to write specs (a huge topic!)
-- Testing programs with pointers (but not dynamic storage allocation)
+- Numeric types, conversions, overflow, etc.
+    - abs.c is a good exercise (probably we'd just move it entirely,
+      along with the paragraph above it)
 - Testing array-manipulating code
 - Testing heap-manipulating code (lists, etc.)
 - Checking for UB
+     - Note that the verification tutorial *begins* with an example that
+       testing doesn't handle at all!
 - Larger case studies
 
 ## Questions and TODOs
@@ -55,4 +86,16 @@
 - When do we introduce unit tests?  Can we do it at the very beginning?
     - I think yes, but the fulminate instructions are currently quite
       hard to follow!
-- The makefile should confirm that broken tests actually fail
+- The makefile should confirm that broken tests actually 
+- VSCode / Copilot gives a lot of hints (some correct)!!
+- The naming of exercises is hideous (esp. the slf ones)
+- Starting with signed overflow, etc., is horrible
+- I think the verification material can be organized so that it can be
+  read either interleaved with the testing tutorial or completely
+  after it.
+
+## CN / VSCode Nits
+- It would be nice if (a) errors were indicated more boldly (e.g., a
+  red slug in the margin, not just red squiggles) and (b) successful
+  verification were visually indicated somehow (green light goes on,
+  or whatever).

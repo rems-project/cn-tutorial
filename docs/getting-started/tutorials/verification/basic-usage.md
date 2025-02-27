@@ -1,6 +1,6 @@
 # Basic usage
 
-The simple arithmetic function: `add` shown below takes two `int` arguments, `x` and `y`, and returns their sum.
+The simple arithmetic function `add` shown below takes `int` arguments `x` and `y` and returns their sum.
 
 ```c title="exercises/add_0.c"
 --8<--
@@ -100,7 +100,6 @@ comprises two sections:
 
 <!-- TODO: BCP: It looks quite different now! -->
 
-_CN error report_
 ![*CN error report*](images/0.error.png)
 
 _Path to error._ The first section contains information about the
@@ -195,11 +194,15 @@ exercises/slf1_basic_example_let.signed.c
 --8<--
 ```
 
-We would like to verify this is safe, and that `doubled` returns twice the value of `n`. Running CN on `doubled` leads to a type error: the increment of `a` has undefined behaviour.
+We would like to verify this is safe and that `doubled` returns twice the value of `n`. Running CN on `doubled` leads to a type error: the increment of `a` has undefined behaviour.
 
 As in the first example, we need to ensure that `n+1` does not overflow and `n-1` does not underflow. Similarly `a+b` has to be representable at `int` type.
 
-include\*example(solutions/slf1_basic_example_let.signed.c)
+```c title="solutions/slf1_basic_example_let.signed.c"
+--8<--
+solutions/slf1_basic_example_let.signed.c
+--8<--
+```
 
 <!-- TODO: BCP: WHy n*+n\_ in some places and n\*2i32 in others? -->
 <!-- Dhruv: Unlikely to be meaningful, either is fine. -->
