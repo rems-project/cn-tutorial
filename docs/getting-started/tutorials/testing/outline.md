@@ -2,11 +2,22 @@
 
 - High-level overview of CN
 
+- Overview of this tutorial; road map; what you're going to learn; how
+  to approach the document, depending on your goals
+     - "I want to improve the coverage of my tests"
+     - "I want to learn how to verify C code"
+     - ...
+
 # Unit Testing
 
 (BCP: I'd like to introduce unit testing at the very start, but the
 Fulminate instructions are currently quite hard to follow!  (When) can
 we improve that?)
+
+(We may actually want to go straight to PBT long term, because unit
+testing will be integrated with build systems, unit testing
+infrastructure, etc., so more complicated to set up.  Hard to predict
+exactly how this will look as we scale.)
 
 - Hello-world example of unit testing
 
@@ -39,13 +50,13 @@ TODO: Complete instructions for running Fulminate on the min3 example.
       --8<--
       ```
 
-- instructions for running PBT 
+- instructions for running PBT
     - an exercise to try it out on min3
     - an exercise to find a bug in a variant of min3
     - couple more (similar, optional) exercises -- e.g., sorting three
-      numbers 
+      numbers
 
-- Some more examples of very simple C programs 
+- Some more examples of very simple C programs
      - use unsigned arithmetic in all the early sections to avoid UB!
      - (convert all the existing examples and exercises to unsigned,
        leaving signed arithmetic and UB to a later section by
@@ -58,12 +69,20 @@ work, but it would have the good effect of focusing everybody's
 attention on specifications and how to think about them, rather than
 the testing process itself.]
 
+Throughout, we want several sorts of exercises:
+- Here's the code; write a spec; now here's a broken version of the
+  code - does your spec catch it?
+- Here's the code; write and validate a spec by breaking it yourself
+- Here's a spec; write the program
+- Here are requirements (with or without test cases); write the spec
+  and the code
+
 # Programs with Pointers
 
 (but not yet dynamic storage allocation)
 
 - read.c
-    - unannotated version fails tests 
+    - unannotated version fails tests
          - need to explain how to figure out WHY testing fails!
     - explain ownership (copy/move from verification tutorial)
     - version with proper spec works better!
@@ -80,7 +99,7 @@ the testing process itself.]
     - maybe something about swapping pointers?
 
 - add_read  (but changing it to swapping or something, to avoid UB
-  issues) 
+  issues)
 
 - everything up through pointers to compound objects seems to work
   well, except for some of the resource inference stuff
@@ -100,10 +119,14 @@ the testing process itself.]
 
 ## Case studies
 
+Case studies drawn from the SUT(s), focused on specs
+    - e.g., system never enters bad state
+    - e.g., code mimics a state machine
+
 Explicit chapters / case studies on each of the "high-value" PBT
 situations that Harry identified in the Jane Street study
     - simple memory safety specs
-    - other simple sanity-check properties
+    - other simple symbolic sanity-check properties
     - round-trip properties
     - model implementations
 
@@ -113,7 +136,7 @@ The current case studies from the verification tutorial
 
 ____________________________________________________________________
 
-# Questions and Discussion Points 
+# Questions and Discussion Points
 
 - The naming of exercises is hideous (esp. the slf ones)
 
