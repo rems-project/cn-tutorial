@@ -1,4 +1,6 @@
-# Introduction
+# CN Tutorial
+
+## Introduction
 
 - High-level overview of CN
 
@@ -8,27 +10,7 @@
      - "I want to learn how to verify C code"
      - ...
 
-# Unit Testing
-
-(BCP: I'd like to introduce unit testing at the very start, but the
-Fulminate instructions are currently quite hard to follow!  (When) can
-we improve that?)
-
-(We may actually want to go straight to PBT long term, because unit
-testing will be integrated with build systems, unit testing
-infrastructure, etc., so more complicated to set up.  Hard to predict
-exactly how this will look as we scale.)
-
-- Hello-world example of unit testing
-
-- instructions for running unit tests themselves
-    - an exercise to try it out on min3
-    - an exercise to find a bug in a variant of min3
-    - couple more (similar, optional) exercises
-
-TODO: Complete instructions for running Fulminate on the min3 example.
-
-# PBT
+## PBT
 
 - Hello-world example of PBT (min3)
     - original version:
@@ -77,7 +59,7 @@ Throughout, we want several sorts of exercises:
 - Here are requirements (with or without test cases); write the spec
   and the code
 
-# Programs with Pointers
+## Programs with Pointers
 
 (but not yet dynamic storage allocation)
 
@@ -116,6 +98,26 @@ Throughout, we want several sorts of exercises:
     - Checking for UB
          - Note that the verification tutorial *begins* with an example that
            testing doesn't handle at all!
+
+# Unit Testing (optional)
+
+(BCP: I'd like to introduce unit testing at the very start, but the
+Fulminate instructions are currently quite hard to follow!  (When) can
+we improve that?)
+
+(We may actually want to go straight to PBT long term, because unit
+testing will be integrated with build systems, unit testing
+infrastructure, etc., so more complicated to set up.  Hard to predict
+exactly how this will look as we scale.)
+
+- Hello-world example of unit testing
+
+- instructions for running unit tests themselves
+    - an exercise to try it out on min3
+    - an exercise to find a bug in a variant of min3
+    - couple more (similar, optional) exercises
+
+TODO: Complete instructions for running Fulminate on the min3 example.
 
 ## Case studies
 
@@ -162,11 +164,14 @@ ____________________________________________________________________
 ____________________________________________________________________
 
 # CN / VSCode Nits
+    
 - It would be nice if (a) errors were indicated more boldly (e.g., a
   red slug in the margin, not just red squiggles) and (b) successful
   verification were visually indicated somehow (green light goes on,
   or whatever).
+
 - VSCode with Copilot currently gives a *lot* of hints (some correct)!!
+  
 - One could imagine that users would sometimes want *both* unit tests
   and PBT.  E.g., if the PBT generator is having trouble hitting some
   parts of the code, they could be covered by hand-written tests.  Or
