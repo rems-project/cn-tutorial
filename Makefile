@@ -35,7 +35,7 @@ docs/solutions/%: src/exercises/%
 	@-mkdir -p _tests
 	@if [ `which cn` ]; then \
 	  if [[ "$<" = *".c"* ]]; then \
-	    if [[ "$<" != *"broken"* ]]; then \
+	    if [[ "$<" != *"broken"* && "$<" != *".DS_Store"* ]]; then \
 	      if [[ "$<" = *".test."*c ]]; then \
 	        echo $(CNTEST) $< && $(CNTEST) test $< --output _tests; \
               else \

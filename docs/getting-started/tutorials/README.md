@@ -1,8 +1,22 @@
-# CN Tutorials
+# CN Tutorial
 
-These tutorials introduce CN through a series of examples, starting with basic
-usage of CN on simple arithmetic functions and slowly moving towards more
-elaborate separation logic specifications of data structures.
+CN is an integrated specification, testing, and verification framework
+for low-level software systems written in ISO C.
+
+This tutorial introduces CN through a series of examples and case
+studies, starting with basic usage of CN on simple arithmetic
+functions and slowly moving towards more elaborate separation logic
+specifications of data structures.
+<!-- TODO: BCP: Once the structure of the tutorial stabilizes, we -->
+<!-- could outline the material it covers in more detail... -->
+
+CN can be used in two distinct ways.  The simpler usage is as a
+framework for writing down formal specifications of C code, in the
+form of logical pre- and post-conditions, and _testing_ that the code
+agrees with the specification on specific examples. This usage mode
+may be sufficient for many purposes.
+- 
+
 
 ## Source files
 
