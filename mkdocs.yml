@@ -101,10 +101,8 @@ nav:
     - Tutorials:
       - getting-started/tutorials/README.md
       - Testing:
-        - "Outline": getting-started/tutorials/testing/outline.md
-        - "First Taste": getting-started/tutorials/first-taste.md
-        - "Unit testing overview": getting-started/tutorials/testing/overview-fulminate.md
-        - "PBT overview": getting-started/tutorials/testing/overview-pbt.md
+        - "A first taste of CN": getting-started/tutorials/first-taste.md
+        - "CN basics": getting-started/tutorials/cn-basics.md
       - Verification:
         - "Basic usage": getting-started/tutorials/verification/basic-usage.md
         - "Pointers and simple ownership": getting-started/tutorials/verification/pointers-and-simple-ownership.md

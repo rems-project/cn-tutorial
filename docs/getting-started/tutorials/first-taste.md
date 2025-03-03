@@ -75,7 +75,7 @@ z = 9
 ```
 (The counterexample you generated is most likely different, due to randomness, but the debugging logic will be the same.)
 
-Given these three inputs, we expect the function enter this branch:
+Given these three inputs, we expect the function to enter this branch:
 
 ```c
     else if (y <= x && y <= z) {
