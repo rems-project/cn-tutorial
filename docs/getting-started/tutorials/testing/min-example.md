@@ -1,39 +1,15 @@
-### Example
+Suppose we are writing a function `min3`, which takes three `int` arguments.
 
-C program (with a bug).
-
-```C
-int min3(int x, int y, int z)
-{
-	if (x <= y && x <= z) {
-		return x;
-	} else if (y <= x && x <= z) {
-		return y;
-	} else {
-		return z;
-	}
-}
+```c title="exercises/min3/min3-orig.c"
+--8<--
+exercises/min3/min3-orig.c
+--8<--
 ```
 
-Specify the expected behavior of this program.
+The desired behavior of `min3` is to return the smallest of the three numbers. That is, the return value shouuld be less than or equal to `x`, to `y`, and to `z`. More formally:
 
-```C
-/*@ ensures return <= x
-			&& return <= y
-			&& return <= z;
-@*/
-```
-
-Run `cn test` and get a counterexample.
-
-```C
-x = 13
-y = 4
-z = 9
-```
-
-Use counterexample to realize and fix the bug.
-
-```C
-else if (y <= x && y <= z) // not x <= z
+```c title="exercises/min3/min3.test.c"
+--8<--
+exercises/min3/min3-orig.c
+--8<--
 ```

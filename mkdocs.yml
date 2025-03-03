@@ -102,6 +102,7 @@ nav:
       - getting-started/tutorials/README.md
       - Testing:
         - "Outline": getting-started/tutorials/testing/outline.md
+        - "Minimal Start": getting-started/tutorials/testing/min-example.md
         - "Unit testing overview": getting-started/tutorials/testing/overview-fulminate.md
         - "PBT overview": getting-started/tutorials/testing/overview-pbt.md
       - Verification:
