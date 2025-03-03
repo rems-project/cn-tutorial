@@ -102,6 +102,7 @@ nav:
       - getting-started/tutorials/README.md
       - Testing:
         - "Outline": getting-started/tutorials/testing/outline.md
+        - "First Taste": getting-started/tutorials/first-taste.md
         - "Unit testing overview": getting-started/tutorials/testing/overview-fulminate.md
         - "PBT overview": getting-started/tutorials/testing/overview-pbt.md
       - Verification:
@@ -117,7 +118,7 @@ nav:
       - "Imperative queues": getting-started/case-studies/imperative-queues.md
       - "Doubly-linked lists": getting-started/case-studies/doubly-linked-lists.md
       - "Airport Simulation": getting-started/case-studies/the-runway.md
-    - "Style guide": 
+    - "Style guide":
       - getting-started/style-guide/README.md
   - Specifications:
     - specifications/README.md
