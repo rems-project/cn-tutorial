@@ -1,16 +1,16 @@
 Suppose we are writing a function `min3`, which takes three `int` arguments.
 
-```c title="exercises/min3/min3.orig.c"
+```c title="exercises/min3/min3.partial.c"
 --8<--
-exercises/min3/min3.orig.c
+exercises/min3/min3.partial.c
 --8<--
 ```
 
 The desired behavior of `min3` is to return the smallest of the three inputs. That is, the return value should be less than or equal to `x` and to `y` and to `z`. More formally:
 
-```c title="exercises/min3/min3.test.c"
+```c title="exercises/min3/min3.test.partial.c"
 --8<--
-exercises/min3/min3.test.c
+exercises/min3/min3.test.partial.c
 --8<--
 ```
 
