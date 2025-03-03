@@ -8,7 +8,7 @@ int min3(int x, int y, int z)
         return x;
     }
     else if (y <= x && y <= z) {
-        return y;
+        return y; // fixed
     }
     else {
         return z;
