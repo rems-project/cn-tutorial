@@ -1,36 +1,22 @@
 # CN Tutorial
 
-CN is an integrated specification, testing, and verification framework
-for low-level software systems written in ISO C.
+- [Welcome](welcome.md)
+- [A first taste of CN](first-taste.md)
+- [CN basics](basics.md)
+- [Working with pointers](pointers.md)
+- [Working with arrays](arrays.md)
+- [Dynamic storage allocation](dynamic.md)
+- [More on numeric types](numeric.md)
 
-This tutorial introduces CN through a series of examples and case
-studies, starting with basic usage of CN on simple arithmetic
-functions and slowly moving towards more elaborate separation logic
-specifications of data structures.
-<!-- TODO: BCP: Once the structure of the tutorial stabilizes, we -->
-<!-- could outline the material it covers in more detail... -->
+## Case studies
 
-CN can be used in two distinct ways.  The simpler usage is as a
-framework for writing down formal specifications of C code, in the
-form of logical pre- and post-conditions, and _testing_ that the code
-agrees with the specification on specific examples. This usage mode
-may be sufficient for many purposes.
-- 
+- [Imperative queues](../case-studies/imperative-queues.md)
+- [Doubly-linked lists](../case-studies/doubly-linked-lists.md)
+- [Airport Simulation](../case-studies/the-runway.md)
 
+## OLD STUFF
 
-## Source files
-
-The source files for all the exercises and examples below can be downloaded
-from [here](link:exercises.zip).
-
-## Tutorials
-
-### Testing
-
-- [Outline](testing/outline.md)
-**More links needed here**
-
-### Verification
+<span style="color:red">*Delete me...*</span>
 
 - [Basic usage](verification/basic-usage.md)
 - [Pointers and simple ownership](verification/pointers-and-simple-ownership.md)
@@ -41,8 +27,6 @@ from [here](link:exercises.zip).
 - [Lists](verification/lists.md)
 - [Working with external lemmas](verification/external-lemmas.md)
 
-## Case studies
 
-- [Imperative queues](../case-studies/imperative-queues.md)
-- [Doubly-linked lists](../case-studies/doubly-linked-lists.md)
-- [Airport Simulation](../case-studies/the-runway.md)
+
+

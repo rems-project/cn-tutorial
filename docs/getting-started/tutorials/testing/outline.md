@@ -1,123 +1,34 @@
 # CN Tutorial
 
-## Introduction
-
-- High-level overview of CN
-
-- Overview of this tutorial; road map; what you're going to learn; how
-  to approach the document, depending on your goals
-     - "I want to improve the coverage of my tests"
-     - "I want to learn how to verify C code"
-     - ...
+<span style="color:red">*Temporary -- stuff is moving to other files...*</span>
 
 ## PBT
 
-- Hello-world example of PBT (min3)
-    - original version:
-      ```c title="exercises/min3/min3.orig.c"
-      --8<--
-      exercises/min3/min3-orig.c
-      --8<--
-      ```
-    - with a specification:
-      ```c title="exercises/min3/min3.test.c"
-      --8<--
-      exercises/min3/min3.test.c
-      --8<--
-      ```
-    - with a spec and a mistake:
-      ```c title="exercises/min3/min3.brokentest.c"
-      --8<--
-      exercises/min3/min3.brokentest.c
-      --8<--
-      ```
+    - Hello-world example of PBT (min3)
+        - original version:
+          ```c title="exercises/min3/min3.orig.c"
+          --8<--
+          exercises/min3/min3-orig.c
+          --8<--
+          ```
+        - with a specification:
+          ```c title="exercises/min3/min3.test.c"
+          --8<--
+          exercises/min3/min3.test.c
+          --8<--
+          ```
+        - with a spec and a mistake:
+          ```c title="exercises/min3/min3.brokentest.c"
+          --8<--
+          exercises/min3/min3.brokentest.c
+          --8<--
+          ```
 
-- instructions for running PBT
-    - an exercise to try it out on min3
-    - an exercise to find a bug in a variant of min3
-    - couple more (similar, optional) exercises -- e.g., sorting three
-      numbers
-
-- Some more examples of very simple C programs
-     - use unsigned arithmetic in all the early sections to avoid UB!
-     - (convert all the existing examples and exercises to unsigned,
-       leaving signed arithmetic and UB to a later section by
-       themselves)
-
-[BCP: In the rest of the tutorial, maybe we could be agnostic
-(somewhat agnostic, at least) about whether people are using unit
-tests or PBT.  I don't have a sense yet of whether that will really
-work, but it would have the good effect of focusing everybody's
-attention on specifications and how to think about them, rather than
-the testing process itself.]
-
-Throughout, we want several sorts of exercises:
-- Here's the code; write a spec; now here's a broken version of the
-  code - does your spec catch it?
-- Here's the code; write and validate a spec by breaking it yourself
-- Here's a spec; write the program
-- Here are requirements (with or without test cases); write the spec
-  and the code
-
-## Programs with Pointers
-
-(but not yet dynamic storage allocation)
-
-- read.c
-    - unannotated version fails tests
-         - need to explain how to figure out WHY testing fails!
-    - explain ownership (copy/move from verification tutorial)
-    - version with proper spec works better!
-    - (lots of useful text)
-    - read.broken.c demonstrates linearity of resource usage
-- exercises:
-    - quadruple_mem
-    - abs_mem
-- slf0_basic_incr_signed.c
-    shows the difference between Block and Owned
-- exercises
-    - zero.c
-    - basic_inplace_double.c involves UB, so skip?
-    - maybe something about swapping pointers?
-
-- add_read  (but changing it to swapping or something, to avoid UB
-  issues)
-
-- everything up through pointers to compound objects seems to work
-  well, except for some of the resource inference stuff
-
-## Arrays
-
-## Dynamic Heap Structures
-
-## Numeric Types
-
-- Signed numeric types, sizes, conversions, overflow, etc.
-    - abs.c is a good exercise (probably we'd just move it entirely,
-      along with the paragraph above it)
-    - Checking for UB
-         - Note that the verification tutorial *begins* with an example that
-           testing doesn't handle at all!
-
-# Unit Testing (optional)
-
-(BCP: I'd like to introduce unit testing at the very start, but the
-Fulminate instructions are currently quite hard to follow!  (When) can
-we improve that?)
-
-(We may actually want to go straight to PBT long term, because unit
-testing will be integrated with build systems, unit testing
-infrastructure, etc., so more complicated to set up.  Hard to predict
-exactly how this will look as we scale.)
-
-- Hello-world example of unit testing
-
-- instructions for running unit tests themselves
-    - an exercise to try it out on min3
-    - an exercise to find a bug in a variant of min3
-    - couple more (similar, optional) exercises
-
-TODO: Complete instructions for running Fulminate on the min3 example.
+    - instructions for running PBT
+        - an exercise to try it out on min3
+        - an exercise to find a bug in a variant of min3
+        - couple more (similar, optional) exercises -- e.g., sorting three
+          numbers
 
 ## Case studies
 
@@ -159,7 +70,18 @@ ____________________________________________________________________
   but the person on the street will not know what we mean by oracle in
   this context.)
 
-- The makefile should confirm that broken tests actually break
+- The Makefile should confirm that broken tests actually break
+
+- The Makefile seems to build two copies of the examples (one in
+  /build, one in /docs).  Is this optimal?
+
+- Throughout, we want several sorts of exercises:
+    - Here's the code; write a spec; now here's a broken version of the
+      code - does your spec catch it?
+    - Here's the code; write and validate a spec by breaking it yourself
+    - Here's a spec; write the program
+    - Here are requirements (with or without test cases); write the spec
+      and the code
 
 ____________________________________________________________________
 
@@ -177,3 +99,4 @@ ____________________________________________________________________
   parts of the code, they could be covered by hand-written tests.  Or
   maybe people start by writing unit tests and later add PBT; it would
   be silly to *not* run the unit tests they've written.
+
