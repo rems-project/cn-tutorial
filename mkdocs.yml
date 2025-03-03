@@ -102,7 +102,7 @@ nav:
       - getting-started/tutorials/README.md
       - Testing:
         - "Outline": getting-started/tutorials/testing/outline.md
-        - "First Taste": getting-started/tutorials/pbt.md
+        - "First Taste": getting-started/tutorials/first-taste.md
         - "Unit testing overview": getting-started/tutorials/testing/overview-fulminate.md
         - "PBT overview": getting-started/tutorials/testing/overview-pbt.md
       - Verification:
