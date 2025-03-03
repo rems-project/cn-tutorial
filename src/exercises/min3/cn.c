@@ -1,0 +1,16 @@
+#include "cn.h"
+
+
+/* GENERATED STRUCT FUNCTIONS */
+
+
+
+/* OWNERSHIP FUNCTIONS */
+
+
+
+
+
+/* CN PREDICATES */
+
+
