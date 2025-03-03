@@ -4,5 +4,5 @@ int min3(int x, int y, int z)
             && return <= z;
 @*/
 {
-    return 0; // not implemented yet
+
 }
