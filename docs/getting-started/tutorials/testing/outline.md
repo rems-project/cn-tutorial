@@ -83,6 +83,10 @@ ____________________________________________________________________
     - Here are requirements (with or without test cases); write the spec
       and the code
 
+- Not sure exactly how to talk about signed arithmetic, etc., in the
+  context of "plain old specification and testing", before we get to
+  verification.
+
 ____________________________________________________________________
 
 # CN / VSCode Nits

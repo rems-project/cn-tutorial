@@ -3,6 +3,7 @@
 - [Welcome](welcome.md)
 - [A first taste of CN](first-taste.md)
 - [CN basics](basics.md)
+- [CN basics (with verification)](basics-with-verification.md)
 - [Working with pointers](pointers.md)
 - [Working with arrays](arrays.md)
 - [Dynamic storage allocation](dynamic.md)
@@ -18,7 +19,6 @@
 
 <span style="color:red">*Delete me...*</span>
 
-- [Basic usage](verification/basic-usage.md)
 - [Pointers and simple ownership](verification/pointers-and-simple-ownership.md)
 - [Ownership of compound objects](verification/ownership-of-compound-objects.md)
 - [Arrays and loops](verification/arrays-and-loops.md)
