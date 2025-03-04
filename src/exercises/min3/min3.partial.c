@@ -1,4 +1,4 @@
-int min3(int x, int y, int z)
+unsigned int min3(unsigned int x, unsigned int y, unsigned int z)
 {
 
 }

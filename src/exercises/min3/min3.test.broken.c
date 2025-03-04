@@ -1,4 +1,4 @@
-int min3(int x, int y, int z)
+unsigned int min3(unsigned int x, unsigned int y, unsigned int z)
 /*@ ensures return <= x
             && return <= y
             && return <= z;
@@ -8,7 +8,7 @@ int min3(int x, int y, int z)
         return x;
     }
     else if (y <= x && y <= z) {
-        return y;
+        return x;
     }
     else {
         return z;

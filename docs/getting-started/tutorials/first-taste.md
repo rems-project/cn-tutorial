@@ -75,7 +75,7 @@ z = 9
 ```
 (The counterexample you generated is most likely different, due to randomness, but the debugging logic will be the same.)
 
-Given these three inputs, we expect the function enter this branch:
+Given these three inputs, we expect the function to enter this branch:
 
 ```c
     else if (y <= x && y <= z) {
@@ -86,9 +86,9 @@ Given these three inputs, we expect the function enter this branch:
 Oops! We made a mistake here. We should `return y`, not `x`, in this case.
 Let's fix the bug:
 
-```c title="exercises/min3/min3.test.c"
+```c title="exercises/min3/min3.fixed.c"
 --8<--
-exercises/min3/min3.test.c
+exercises/min3/min3.fixed.c
 --8<--
 ```
 
