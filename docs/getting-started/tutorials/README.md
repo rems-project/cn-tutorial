@@ -4,7 +4,7 @@
 
 ## A Tour of CN
 - [A first taste of CN](first-taste.md)
-- [CN basics](basics.md)
+- [CN basics](cn-basics.md)
 - [CN basics (with verification)](basics-with-verification.md)
 - [Working with pointers](pointers.md)
 - [Working with arrays](arrays.md)
