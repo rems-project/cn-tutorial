@@ -98,20 +98,19 @@ nav:
   - Getting started:
     - README.md
     - Installation: getting-started/installation.md
-    - Tutorials:
-      - getting-started/tutorials/README.md
-      - Testing:
-        - "A first taste of CN": getting-started/tutorials/first-taste.md
-        - "CN basics": getting-started/tutorials/cn-basics.md
-      - Verification:
-        - "Basic usage": getting-started/tutorials/verification/basic-usage.md
-        - "Pointers and simple ownership": getting-started/tutorials/verification/pointers-and-simple-ownership.md
-        - "Ownership of compound objects": getting-started/tutorials/verification/ownership-of-compound-objects.md
-        - "Arrays and loops": getting-started/tutorials/verification/arrays-and-loops.md
-        - "Defining predicates": getting-started/tutorials/verification/defining-predicates.md
-        - "Allocating and deallocating memory": getting-started/tutorials/verification/allocating-and-deallocating-memory.md
-        - "Lists": getting-started/tutorials/verification/lists.md
-        - "Working with external lemmas": getting-started/tutorials/verification/external-lemmas.md
+    - Tutorial: getting-started/tutorials/README.md
+#      - Testing:
+#        - "A first taste of CN": getting-started/tutorials/first-taste.md
+#        - "CN basics": getting-started/tutorials/cn-basics.md
+#      - Verification:
+#        - "Basic usage": getting-started/tutorials/verification/basic-usage.md
+#        - "Pointers and simple ownership": getting-started/tutorials/verification/pointers-and-simple-ownership.md
+#        - "Ownership of compound objects": getting-started/tutorials/verification/ownership-of-compound-objects.md
+#        - "Arrays and loops": getting-started/tutorials/verification/arrays-and-loops.md
+#        - "Defining predicates": getting-started/tutorials/verification/defining-predicates.md
+#        - "Allocating and deallocating memory": getting-started/tutorials/verification/allocating-and-deallocating-memory.md
+#        - "Lists": getting-started/tutorials/verification/lists.md
+#        - "Working with external lemmas": getting-started/tutorials/verification/external-lemmas.md
     - "Case studies":
       - "Imperative queues": getting-started/case-studies/imperative-queues.md
       - "Doubly-linked lists": getting-started/case-studies/doubly-linked-lists.md

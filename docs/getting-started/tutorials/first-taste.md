@@ -1,3 +1,5 @@
+# A First Taste of CN
+
 Suppose we are writing a function `min3`, which takes three `int` arguments.
 
 ```c title="exercises/min3/min3.partial.c"
@@ -14,11 +16,14 @@ exercises/min3/min3.test.partial.c
 --8<--
 ```
 
-In detail:
+In more detail...
 
-- Function specifications are given using special `/*@ ... @*/` comments, placed in-between the function argument list and the function body.
+- Function specifications are written inside special `/*@ ... @*/`
+  comments, placed between the function argument list and the function
+  body.
 
-- The keyword `ensures` indicates the postcondition.
+- The keyword `ensures` introduces the function's _postcondition_ --
+  that is, a logical statement that should be true when the function returns.
 
 - The keyword `return` refers to the return value.
 
@@ -103,6 +108,14 @@ cases: 1, passed: 1, failed: 0, errored: 0, skipped: 0
 ```
 
 Hooray!
+
+### Exercises
+
+_Refining the specification of `min3`_: The specification we wrote is
+a bit loose: It says the result value should be smaller than `x`, `y`,
+and `z`, but it does not say that it must be equal to one of these.
+For example, a function that always returns `0` would satisfy this
+spec specification. Improve it.
 
 ??? note "(Optional) Verifying `min3`"
     Property-based testing is great for increasing our confidence that the function satisfies its specification, but we might also want to _verify_ this formally. Run `cn verify <filename>` on the buggy version to produce this output:

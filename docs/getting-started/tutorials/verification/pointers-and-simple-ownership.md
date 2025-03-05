@@ -1,4 +1,4 @@
-# Pointer and Simple Ownership
+# Pointers and Simple Ownership
 
 So far we’ve only considered example functions manipulating integer values. Verification becomes more interesting and challenging when _pointers_ are involved, because the safety of memory accesses via pointers has to be verified.
 

@@ -37,22 +37,14 @@ appreciated!
 
     [:octicons-arrow-right-24: Installing CN](getting-started/installation.md)
 
--   :fontawesome-brands-markdown:{ .lg .middle } __Your first spec__
+-   :fontawesome-brands-markdown:{ .lg .middle } __Tutorial__
 
     ---
 
-    Check out the *Basic Usage* tutorial to write, test, and verify your first
+    Check out the tutorial to learn how to write, test, and verify your first
     spec
 
-    [:octicons-arrow-right-24: Basic Usage](getting-started/tutorials/verification/basic-usage.md)
-
--   :material-format-font:{ .lg .middle } __Tutorials__
-
-    ---
-
-    Find tutorials covering common tasks and introducing CN features
-
-    [:octicons-arrow-right-24: Tutorials](getting-started/tutorials/README.md)
+    [:octicons-arrow-right-24: Tutorial](getting-started/tutorials/README.md)
 
 -   :material-scale-balance:{ .lg .middle } __Language reference__
 

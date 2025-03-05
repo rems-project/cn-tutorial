@@ -35,7 +35,7 @@ Install dependencies: [asciidoctor](https://asciidoctor.org/).
 
 ## Tutorial examples
 
-The tutorial examples live in [src/examples](./src/examples).
+The tutorial examples live in [src/exercises](./src/exercises).
 
 As part of building the tutorial, the examples are lightly preprocessed to
 produce solutions and exercises (solutions with the CN specifications removed).

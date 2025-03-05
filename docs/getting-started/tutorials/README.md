@@ -1,6 +1,8 @@
 # CN Tutorial
 
 - [Welcome](welcome.md)
+
+## A Tour of CN
 - [A first taste of CN](first-taste.md)
 - [CN basics](basics.md)
 - [CN basics (with verification)](basics-with-verification.md)
