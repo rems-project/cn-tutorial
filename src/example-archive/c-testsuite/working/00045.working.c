@@ -4,14 +4,14 @@ int *p = &x;
 
 int
 main()
-/*@ accesses x; y; p;  @*/
-/*@ requires 
-			x == 5i32; 
-			y == 6i64; 
-			p == &x; @*/
-/*@ ensures return == 0i32; @*/
+/*@ accesses x, y, p;
+    requires
+			x == 5i32;
+			y == 6i64;
+			p == &x;
+    ensures return == 0i32; @*/
 {
-	if (x != 5) 
+	if (x != 5)
 		return 1;
 	if (y != 6)
 		return 2;

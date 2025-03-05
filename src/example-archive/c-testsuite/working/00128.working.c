@@ -1,4 +1,4 @@
-// TODO: could probably remove some of these requires clauses 
+// TODO: could probably remove some of these requires clauses
 
 int a;
 unsigned b;
@@ -14,25 +14,25 @@ unsigned short k;
 
 int
 main(void)
-/*@ accesses a; b; c; d; e; f; g; h; i; j; k; @*/
+/*@ accesses a, b, c, d, e, f, g, h, i, j, k;
 
-/*@ requires (i128) MINi32() <= (i128) b; (i128) b <= (i128) MAXi32(); @*/
+    requires (i128) MINi32() <= (i128) b; (i128) b <= (i128) MAXi32();
 
-/*@ requires (i128) MINu8() <= (i128) d; (i128) d <= (i128) MAXu8(); @*/
-/*@ requires (i128) MINu8() <= (i128) f; (i128) f <= (i128) MAXu8(); @*/
-/*@ requires (i128) MINu8() <= (i128) h; (i128) h <= (i128) MAXu8(); @*/
-/*@ requires (i128) MINu8() <= (i128) i; (i128) i <= (i128) MAXu8(); @*/
-/*@ requires (i128) MINu8() <= (i128) j; (i128) j <= (i128) MAXu8(); @*/
+             (i128) MINu8() <= (i128) d; (i128) d <= (i128) MAXu8();
+             (i128) MINu8() <= (i128) f; (i128) f <= (i128) MAXu8();
+             (i128) MINu8() <= (i128) h; (i128) h <= (i128) MAXu8();
+             (i128) MINu8() <= (i128) i; (i128) i <= (i128) MAXu8();
+             (i128) MINu8() <= (i128) j; (i128) j <= (i128) MAXu8();
 
-/*@ requires (i128) MINi8() <= (i128) e; (i128) e <= (i128) MAXi8(); @*/
-/*@ requires (i128) MINi8() <= (i128) f; (i128) f <= (i128) MAXi8(); @*/
-/*@ requires (i128) MINi8() <= (i128) g; (i128) g <= (i128) MAXi8(); @*/
-/*@ requires (i128) MINi8() <= (i128) h; (i128) h <= (i128) MAXi8(); @*/
-/*@ requires (i128) MINi8() <= (i128) i; (i128) i <= (i128) MAXi8(); @*/
-/*@ requires (i128) MINi8() <= (i128) j; (i128) j <= (i128) MAXi8(); @*/
-/*@ requires (i128) MINi8() <= (i128) k; (i128) k <= (i128) MAXi8(); @*/
+             (i128) MINi8() <= (i128) e; (i128) e <= (i128) MAXi8();
+             (i128) MINi8() <= (i128) f; (i128) f <= (i128) MAXi8();
+             (i128) MINi8() <= (i128) g; (i128) g <= (i128) MAXi8();
+             (i128) MINi8() <= (i128) h; (i128) h <= (i128) MAXi8();
+             (i128) MINi8() <= (i128) i; (i128) i <= (i128) MAXi8();
+             (i128) MINi8() <= (i128) j; (i128) j <= (i128) MAXi8();
+             (i128) MINi8() <= (i128) k; (i128) k <= (i128) MAXi8();
 
-/*@ ensures return == 0i32; @*/
+    ensures return == 0i32; @*/
 {
 	a = b;
 	a = c;

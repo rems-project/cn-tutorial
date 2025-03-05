@@ -72,10 +72,10 @@ check: check-tutorial check-archive
 ##############################################################################
 # Tutorial document
 
-tutorial: exercises mkdocs.yml $(shell find docs -type f)
+tutorial: exercises docs/exercises.zip mkdocs.yml $(shell find docs -type f)
 	mkdocs build --strict
 
-serve: exercises mkdocs.yml $(shell find docs -type f)
+serve: exercises docs/exercises.zip mkdocs.yml $(shell find docs -type f)
 	mkdocs serve
 
 ##############################################################################
