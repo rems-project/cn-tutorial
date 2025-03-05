@@ -1,7 +1,7 @@
-int read (unsigned *p)
+unsigned read (unsigned *p)
 /* --BEGIN-- */
-/*@ requires take P = Owned<int>(p);
-    ensures take P_post = Owned<int>(p);
+/*@ requires take P = Owned<unsigned>(p);
+    ensures take P_post = Owned<unsigned>(p);
 @*/
 /* --END-- */
 {
