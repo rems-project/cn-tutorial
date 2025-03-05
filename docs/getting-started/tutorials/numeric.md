@@ -102,12 +102,39 @@ producing detailed error information, in the form of an HTML error
 report.
 
 Let’s return to the type error from earlier -- `add` without
-precondition -- and take a closer look at this report. It
-comprises two sections:
+precondition -- and take a closer look at this report.
 
-<!-- TODO: BCP: It looks quite different now! -->
+_CN error report_
+![*CN error report: 0*](images/0_error.png)
 
-![*CN error report*](images/0.error.png)
+_Definitions and constraints not handled automatically_
+
+CN checks that the code matches its specification with the help of an SMT
+solver. CN passes a set of constraints along with program context to the SMT
+solver, which either confirms that a given constraint will always hold in
+that program context, provides a counterexample in which the constraint does
+not hold, or times out. To avoid timeouts, CN avoids passing some definitions
+to the solver, including recursive functions, some predicates with branching,
+and constraints with `forall`. The error file displays in this section which
+definitions and constraints CN did not pass to the solver.
+
+_Resources that do not satisfy predicate definitions_
+
+Because CN does not pass certain definitions to the solver, it may return
+spurious counterexamples that do not respect those definitions. Consider this
+example:
+
+![*CN error report: string*](images/string_error.png)
+
+`String` is a predicate representing a null-terminated string.
+In general, CN does not know how much to unfold the mutually recursive
+predicates `String` and `StringAux`, so it does not pass their full
+definition to the solver. This leads to a spurious counterexample: `sIn` is the
+singleton string containing exactly the null character `0u8`. This is
+impossible; the predicate leaves out the null when constructing the logical
+representation of a string. To make clear that this is a bad counterexample,
+the error file lists `String(s) (sIn)` under _Resources that do not satisfy
+predicate definitions_.
 
 _Path to error._ The first section contains information about the
 control-flow path leading to the error.
