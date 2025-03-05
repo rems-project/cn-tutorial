@@ -28,9 +28,12 @@ For the read `*p` to be safe, ownership of a resource is missing: a resource `Ow
 
 ### Owned resources
 
-<!-- TODO: BCP: Perhaps this is a good time for one last discussion of the keyword "Owned", which I have never found very helpful: the resource itself isn't owned -- it's a description of something that _can_ be owned. (It's "take" that does the owning.) Moreover, "Owned" and "Block" are badly non-parallel, both grammatically and semantically. I suggest "Resource" instead of "Owned". (We can keep "Block" -- it's not too bad, IMO.) -->
+<span style="color:red">
+ TODO: BCP: Perhaps this is a good time for one last discussion of the keyword "Owned", which I have never found very helpful: the resource itself isn't owned -- it's a description of something that _can_ be owned. (It's "take" that does the owning.) Moreover, "Owned" and "Block" are badly non-parallel, both grammatically and semantically. I suggest "Resource" instead of "Owned". (We can keep "Block" -- it's not too bad, IMO.) 
+</span>
 
-<!--
+<span style="color:red">
+
 Dhruv:
 We use the word "resources" to describe any "resource predicate" owned, or user-defined, (and eventually live allocations and locks) so I'm not sure that suggestion works any better. It is just a points-to with read and write permissions, so perhaps a RW(p)? (or ReadWrite(p)?).
 
@@ -40,7 +43,8 @@ Both of these are better than Owned!
 (And then Block can become WriteOnly.)
 
 BCP: I think this discussion is reflected in the GitHub exchange
--->
+
+</span>
 
 Given a C-type `T` and pointer `p`, the resource `Owned<T>(p)` asserts ownership of a memory cell at location `p` of the size of C-type `T`. It is CN’s equivalent of a points-to assertion in separation logic (indexed by C-types `T`).
 
@@ -62,18 +66,28 @@ This specification means that:
 
 A caller of `read` may also wish to know that `read` actually returns the correct value, the pointee of `p`, and also that it does not change memory at location `p`. To phrase both we need a way to refer to the pointee of `p`.
 
-<!-- TODO: BCP: The idea that "resources have outputs" is very mind-boggling to many new users, _especially_ folks with some separation logic background. Needs to be explained very carefully. Also, there's some semantic muddle in the terminology: Is a resource (1) a thing in the heap, (2) a thing in the heap that one is currently holding, or (3) the act of holding a thing in the heap? These are definitely not at all the same thing, but our language at different points suggests all three! To me, (1) is the natural sense of the word "resource"; (2) is somewhat awkward, and (3) is extremely awkward. -->
+<span style="color:red">
+ TODO: BCP: The idea that "resources have outputs" is very mind-boggling to many new users, _especially_ folks with some separation logic background. Needs to be explained very carefully. Also, there's some semantic muddle in the terminology: Is a resource (1) a thing in the heap, (2) a thing in the heap that one is currently holding, or (3) the act of holding a thing in the heap? These are definitely not at all the same thing, but our language at different points suggests all three! To me, (1) is the natural sense of the word "resource"; (2) is somewhat awkward, and (3) is extremely awkward. 
+</span>
 
 In CN, resources have _outputs_. Each resource outputs the information that can be derived from ownership of the resource. What information is returned is specific to the type of resource. A resource `Owned<T>(p)` (for some C-type `T`) outputs the _pointee value_ of `p`, since that can be derived from the resource ownership: assume you have a pointer `p` and the associated ownership, then this uniquely determines the pointee value of `p`.
 
-<!-- TODO: BCP: ... in a given heap! (The real problem here is that "and the associated ownership" is pretty vague.) -->
-<!-- Dhruv: Perhaps mentioning sub-heaps will help? -->
+<span style="color:red">
+ TODO: BCP: ... in a given heap! (The real problem here is that "and the associated ownership" is pretty vague.) 
+</span>
+<span style="color:red">
+Dhruv: Perhaps mentioning sub-heaps will help? 
+</span>
 
 CN uses the `take`-notation seen in the example above to bind the output of a resource to a new name. The precondition `take P = Owned<int>(p)` does two things: (1) it assert ownership of resource `Owned<int>(p)`, and (2) it binds the name `P` to the resource output, here the pointee value of `p` at the start of the function. Similarly, the postcondition introduces the name `P_post` for the pointee value on function return.
 
-<!-- TODO: BCP: But, as we've discussed, the word "take" in the postcondition is quite confusing: What it's doing is precisely the _opposite_ of "taking" the resournce, not taking it but giving it back!! It would be much better if we could choose a more neutral word that doesn't imply either taking or giving. E.g. "resource". -->
+<span style="color:red">
+ TODO: BCP: But, as we've discussed, the word "take" in the postcondition is quite confusing: What it's doing is precisely the _opposite_ of "taking" the resournce, not taking it but giving it back!! It would be much better if we could choose a more neutral word that doesn't imply either taking or giving. E.g. "resource". 
+</span>
 
-<!-- TODO: BCP: This might be a good place for a comment on naming conventions. Plus a pointer to a longer discussion if needed -->
+<span style="color:red">
+ TODO: BCP: This might be a good place for a comment on naming conventions. Plus a pointer to a longer discussion if needed 
+</span>
 
 That means we can use the resource outputs from the pre- and postcondition to strengthen the specification of `read` as planned. We add two new postconditions specifying
 
@@ -88,9 +102,13 @@ exercises/read2.c
 
 _Aside._ In standard separation logic, the equivalent specification for `read` could have been phrased as follows (where `\return` binds the return value in the postcondition):
 
-<!-- TODO: Sainati: as a separation logic noob, I would love a more detailed explanation about what is going on here. -->
+<span style="color:red">
+ TODO: Sainati: as a separation logic noob, I would love a more detailed explanation about what is going on here. 
+</span>
 
-<!-- Why do we need to have v2 existentially quantified, for example, when p is only pointing to a single value? -->
+<span style="color:red">
+ Why do we need to have v2 existentially quantified, for example, when p is only pointing to a single value? 
+</span>
 
 ```
 ∀p.
@@ -182,7 +200,9 @@ are fine). The write consumes ownership of the `Block` resource
 value written as the output. This means the resource returned from a
 write records the fact that this memory cell is now initialised and
 can be read from.
-<!-- TODO: BCP: Not sure I understand "returns a new resource `Owned<T>(p)` with the value written as the output" -- perhaps in part because I don't understand what the output of a resource means when the resource is not in the context o a take expression. -->
+<span style="color:red">
+ TODO: BCP: Not sure I understand "returns a new resource `Owned<T>(p)` with the value written as the output" -- perhaps in part because I don't understand what the output of a resource means when the resource is not in the context o a take expression. 
+</span>
 
 Since `Owned` carries the same ownership as `Block`, just with the
 additional information that the `Owned` memory is initalised, a
@@ -246,8 +266,12 @@ The `Owned<int>(p)` resource required for reading is missing, since, per the pre
   information for location `&ARG0`; this is related to CN’s
   memory-object semantics, which we ignore for the moment.
 
-<!-- TODO: BCP: These bullet points are all a bit mysterious and maybe TMI. More generally, we should double check that this is actually the information displayed in the current HTML output... -->
-<!-- Dhruv: It is displayed, but hidden. And perhaps TMI right now, but once the memory model lands properly, will sadly be the price of entry to writing verifiable (semantically well-defined) C. -->
+<span style="color:red">
+ TODO: BCP: These bullet points are all a bit mysterious and maybe TMI. More generally, we should double check that this is actually the information displayed in the current HTML output... 
+</span>
+<span style="color:red">
+Dhruv: It is displayed, but hidden. And perhaps TMI right now, but once the memory model lands properly, will sadly be the price of entry to writing verifiable (semantically well-defined) C. 
+</span>
 
 ### Exercises
 
@@ -280,7 +304,9 @@ accessing two different pointers by a function `add`, which reads
 two `int` values in memory, at locations `p` and `q`, and
 returns their sum.
 
-<!-- TODO: BCP: Hmmm -- I'm not very sure that the way I've been naming things is actually working that well. The problem is that in examples like this we computer "thing pointed to by p" at both C and CN levels. At the C level, the thing pointed to by p obviously cannot also be called p, so it doesn't make sense for it to be called P at the CN level, right? Maybe we need to think again, but hoinestly I am not certain that it is _not_ working either. So I'm going to opush on for now... -->
+<span style="color:red">
+ TODO: BCP: Hmmm -- I'm not very sure that the way I've been naming things is actually working that well. The problem is that in examples like this we computer "thing pointed to by p" at both C and CN levels. At the C level, the thing pointed to by p obviously cannot also be called p, so it doesn't make sense for it to be called P at the CN level, right? Maybe we need to think again, but hoinestly I am not certain that it is _not_ working either. So I'm going to opush on for now... 
+</span>
 
 ```c title="exercises/add_read.c"
 --8<--
@@ -294,9 +320,15 @@ The CN variables `P` and `Q` (resp. `P_post` and `Q_post`) for the pointee value
 
 Hence, the postcondition `return == P + Q` holds also when the sum of `P` and `Q` is greater than the maximal `unsigned int` value.
 
-<!-- TODO: BCP: I wonder whether we should uniformly use i32 integers everywhere in the tutorial (just mentioning in the bullet list below that there are other integer types, and using i64 for calculations that may overflow). Forgetting which integer type I was using was a common (and silly) failure mode when I was first working through the tutorial. -->
-<!-- Dhruv: Sensible. -->
-<!-- BCP: ... On second thought, maybe settling on u32 instead of i32 in most places is better (fewer things to prove). Or maybe it doesn't matter much. For the start of the tutorial, i32 is important because the examples are all about overflow. But after that we could go either way. -->
+<span style="color:red">
+ TODO: BCP: I wonder whether we should uniformly use i32 integers everywhere in the tutorial (just mentioning in the bullet list below that there are other integer types, and using i64 for calculations that may overflow). Forgetting which integer type I was using was a common (and silly) failure mode when I was first working through the tutorial. 
+</span>
+<span style="color:red">
+Dhruv: Sensible. 
+</span>
+<span style="color:red">
+ BCP: ... On second thought, maybe settling on u32 instead of i32 in most places is better (fewer things to prove). Or maybe it doesn't matter much. For the start of the tutorial, i32 is important because the examples are all about overflow. But after that we could go either way. 
+</span>
 
 In the following we will sometimes use unsigned integer types to focus on specifying memory ownership, rather than the conditions necessary to show absence of C arithmetic undefined behaviour.
 

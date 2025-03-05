@@ -4,7 +4,9 @@ Another common datatype in C is arrays. Reasoning about memory ownership for arr
 
 To support reasoning about code manipulating arrays and computed pointers, CN has _iterated resources_. For instance, to specify ownership of an `int` array with 10 cells starting at pointer `p`, CN uses the following iterated resource:
 
-<!-- TODO: BCP: Another tricky naming / capitalization puzzle: The index of an "each" has CN type i32, so strictly speaking I believe it should be written with a capital "I". But insisting on this feels like insisting on a distinction that most CN programmers would never even notice, much less be confused by. I think this is another instance of the way C and CN integer types are partly but not completely squished together. -->
+<span style="color:red">
+BCP: Another tricky naming / capitalization puzzle: The index of an "each" has CN type i32, so strictly speaking I believe it should be written with a capital "I". But insisting on this feels like insisting on a distinction that most CN programmers would never even notice, much less be confused by. I think this is another instance of the way C and CN integer types are partly but not completely squished together. 
+</span>
 
 ```c
 each (i32 i; 0i32 <= i && i < 10i32)
@@ -127,7 +129,9 @@ the same — and that the value returned is `A[i]`.
 
 _Array read two._ Specify and verify the following function, `array_read_two`, which takes the base pointer `p` of an `unsigned int` array, the array length `n`, and two indices `i` and `j`. Assuming `i` and `j` are different, it returns the sum of the values at these two indices.
 
-<!-- TODO: BCP: When we get around to renaming files in the examples directory, we should call this one array_swap or something else beginning with "array". -->
+<span style="color:red">
+BCP: When we get around to renaming files in the examples directory, we should call this one array_swap or something else beginning with "array". 
+</span>
 
 ```c title="exercises/add_two_array.c"
 --8<--
@@ -135,11 +139,13 @@ exercises/add_two_array.c
 --8<--
 ```
 
-<!--
+<span style="color:red">
+
 TODO: BCP: In this one I got quite tangled up in different kinds of integers, then got tangled up in (I think) putting the extract declarations in the wrong place. (I didn't save the not-working version, I'm afraid.)
 
 TODO: Sainati: I think it would be useful to have a int array version of this exercise as a worked example; I am not sure, for example, how one would express bounds requirements on the contents of an array in CN, as you would need to do here to ensure that p[i] + p[j] doesn’t overflow if p's contents are signed ints
--->
+
+</span>
 
 _Swap array._ Specify and verify `swap_array`, which swaps the values of two cells of an `int` array. Assume again that `i` and `j` are different, and describe the effect of `swap_array` on the array value using the CN map update expression `a[i:v]`, which denotes the same map as `a`, except with index `i` updated to `v`.
 
@@ -149,7 +155,8 @@ exercises/swap_array.c
 --8<--
 ```
 
-<!--
+<span style="color:red">
+
 TODO: BCP: I wrote this, which seemed natural but did not work -- I still don't fully understand why. I think this section will need some more examples / exercises to be fully digestible, or perhaps this is just yet another symptom of my imperfecdt understanding of how the numeric stuff works.
 
     void swap_array (int *p, int n, int i, int j)
@@ -170,7 +177,8 @@ TODO: BCP: I wrote this, which seemed natural but did not work -- I still don't 
       p[j] = tmp;
     }
 
--->
+
+</span>
 
 ### Loops
 
@@ -180,7 +188,9 @@ In order to verify code with loops, CN requires the user to supply loop invarian
 
 Let's take a look at a simple first example. The following function, `init_array`, takes the base pointer `p` of a `char` array and the array length `n` and writes `0` to each array cell.
 
-<!-- TODO: BCP: Rename to array_init.c -->
+<span style="color:red">
+BCP: Rename to array_init.c 
+</span>
 
 ```c title="exercises/init_array.c"
 --8<--
@@ -198,9 +208,11 @@ solutions/init_array.c
 --8<--
 ```
 
-<!--
+<span style="color:red">
+
 TODO: BCP: Concrete syntax: Why not write something like "unchanged {p,n}" or "unchanged: p,n"?
--->
+
+</span>
 
 The main condition here is unsurprising: we specify ownership of an iterated resource for an array just like in the the pre- and postcondition.
 
@@ -208,9 +220,11 @@ The second thing we need to do, however, is less straightforward. Recall that, a
 
 **Note.** If we forget to specify `unchanged`, this can lead to confusing errors. In this example, for instance, CN would verify the loop against the loop invariant, but would be unable to prove a function postcondition seemingly directly implied by the loop invariant (lacking the information that the postcondition's `p` and `n` are the same as the loop invariant's). Future CN versions may handle loop invariants differently and treat variables as immutable by default.
 
-<!--
+<span style="color:red">
+
 TODO: BCP: This seems like a good idea!
--->
+
+</span>
 
 The final piece needed in the verification is an `extract` statement, as used in the previous examples: to separate the individual `Owned<char>` resource for index `j` out of the iterated `Owned` resource and make it available to the resource inference, we specify `extract Owned<char>, j;`.
 
@@ -260,8 +274,12 @@ As before, we also have to instruct CN to `extract` ownership of individual arra
 
 - finally, we add `extract Owned<char>, j;` to allow CN to "`attach`" this resource to the iterated `Owned` resource. CN issues a warning, because nothing is, in fact, extracted: we are using `extract` only for the "`reverse`" direction.
 
-<!-- TODO: BCP: That last bit is mysterious. -->
-<!-- Dhruv: See long explanation and issue here: rems-project/cerberus#498 -->
+<span style="color:red">
+BCP: That last bit is mysterious. 
+</span>
+<span style="color:red">
+Dhruv: See long explanation and issue here: rems-project/cerberus#498 
+</span>
 
 ### Exercises
 
@@ -273,9 +291,12 @@ exercises/init_array_rev.c
 --8<--
 ```
 
-<!-- TODO: BCP: The transition to the next section is awkward. Needs a sentence or two to signal that we're changing topics. Some better visual indication would also be nice. -->
+<span style="color:red">
+BCP: The transition to the next section is awkward. Needs a sentence or two to signal that we're changing topics. Some better visual indication would also be nice. 
+</span>
 
-<!--
+<span style="color:red">
+
 
 ---
 
@@ -288,6 +309,7 @@ exercises/init_array_rev.c
 ---
 
 TODO: BCP: I'll put my new stuff below here...
--->
+
+</span>
 
 

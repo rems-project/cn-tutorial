@@ -1,13 +1,17 @@
 # Lists
 
-<!-- TODO: BCP: Better intro needed -->
+<span style="color:red">
+BCP: Better intro needed 
+</span>
 
 Now it's time to look at some more interesting heap structures.
 
 To begin with, here is a C definition for linked list cells, together
 with allocation and deallocation functions:
 
-<!-- TODO: BCP: Here and in several other places, we should use the "take \_ = ..." syntax when the owned value is not used. And we should explain it the first time we use it. -->
+<span style="color:red">
+BCP: Here and in several other places, we should use the "take \_ = ..." syntax when the owned value is not used. And we should explain it the first time we use it. 
+</span>
 
 ```c title="exercises/list/c_types.h"
 --8<--
@@ -15,9 +19,15 @@ exercises/list/c_types.h
 --8<--
 ```
 
-<!-- TODO: BCP: Per discussion with Christopher, Cassia, and Daniel, the word "predicate" is quite confusing for newcomers (in logic, predicates do not return things!). A more neutral word might make for significantly easier onboarding. -->
-<!-- Dhruv: Or no keyword? rems-project/cerberus#304 How about traversal? -->
-<!-- BCP: No keyword sounds even better. But "traversal" in the interim is not bad. Or maybe "extractor" or something like that? -->
+<span style="color:red">
+BCP: Per discussion with Christopher, Cassia, and Daniel, the word "predicate" is quite confusing for newcomers (in logic, predicates do not return things!). A more neutral word might make for significantly easier onboarding. 
+</span>
+<span style="color:red">
+Dhruv: Or no keyword? rems-project/cerberus#304 How about traversal? 
+</span>
+<span style="color:red">
+ BCP: No keyword sounds even better. But "traversal" in the interim is not bad. Or maybe "extractor" or something like that? 
+</span>
 
 To write specifications for C functions that manipulate lists, we need
 to define a CN "predicate" that describes specification-level list
@@ -63,11 +73,13 @@ exercises/list/headers.h
 --8<--
 ```
 
-<!--
+<span style="color:red">
+
 TODO: BCP: The 'return != NULL' should not be needed, but to remove it
 we need to change the callers of all the allocation functions to check
 for NULL and exit (which requires adding a spec for exit).
--->
+
+</span>
 
 ### Append
 
@@ -88,7 +100,9 @@ of the `unfold` annotation in the body, which are needed to help the
 CN typechecker. The `unfold` annotation is an instruction to CN to replace a call to a recursive (CN) function (in this case `append`)
 with its definition, and is necessary because CN is unable to automatically determine when and where to expand recursive definitions on its own.
 
-<!-- TODO: BCP: Can someone add a more technical explanation of why they are needed and exactly what they do? -->
+<span style="color:red">
+BCP: Can someone add a more technical explanation of why they are needed and exactly what they do? 
+</span>
 
 ```c title="exercises/list/append.c"
 --8<--
@@ -109,16 +123,22 @@ exercises/list/copy.c
 
 ### Merge sort
 
-<!-- TODO: BCP: This could use a gentler explanation (probably in pieces) -->
+<span style="color:red">
+BCP: This could use a gentler explanation (probably in pieces) 
+</span>
 
 Finally, here is a slightly tricky in-place version of merge sort that
 avoids allocating any new list cells in the splitting step by taking
 alternate cells from the original list and linking them together into
 two new lists of roughly equal lengths.
 
-<!-- TODO: BCP: We've heard from more than one reader that this example is particularly hard to digest without some additional help -->
+<span style="color:red">
+BCP: We've heard from more than one reader that this example is particularly hard to digest without some additional help 
+</span>
 
-<!-- TODO: BCP: Nit: Merge multiple requires and ensures clauses into one -->
+<span style="color:red">
+BCP: Nit: Merge multiple requires and ensures clauses into one 
+</span>
 
 ```c title="exercises/list/mergesort.c"
 --8<--
@@ -160,12 +180,22 @@ exercises/list/free.c
 
 _Length with an accumulator_. Add annotations as appropriate:
 
-<!-- TODO: BCP: Removing / forgetting the unfold in this one gives a truly -->
-<!-- bizarre error message saying that the constraint "n == (n + length(L1))" -->
-<!-- is unsatisfiable... -->
+<span style="color:red">
+BCP: Removing / forgetting the unfold in this one gives a truly 
+</span>
+<span style="color:red">
+ bizarre error message saying that the constraint "n == (n + length(L1))" 
+</span>
+<span style="color:red">
+ is unsatisfiable... 
+</span>
 
-<!-- TODO: Sainati: when I went through the tutorial, the file provided for this exercise was already "complete" in that -->
-<!-- it already had all the necessary annotations present for CN to verify it -->
+<span style="color:red">
+Sainati: when I went through the tutorial, the file provided for this exercise was already "complete" in that 
+</span>
+<span style="color:red">
+ it already had all the necessary annotations present for CN to verify it 
+</span>
 
 ```c title="exercises/slf_length_acc.c"
 --8<--

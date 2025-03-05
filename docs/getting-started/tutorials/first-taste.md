@@ -109,13 +109,27 @@ cases: 1, passed: 1, failed: 0, errored: 0, skipped: 0
 
 Hooray!
 
-### Exercises
+## Exercises
 
 _Refining the specification of `min3`_: The specification we wrote is
 a bit loose: It says the result value should be smaller than `x`, `y`,
 and `z`, but it does not say that it must be equal to one of these.
 For example, a function that always returns `0` would satisfy this
 spec specification. Improve it.
+
+_Exercise._ Practice the workflow of specifying and testing the function `add`.
+
+- Write a specification with the postcondition that `add` should
+  return the sum of its inputs. Remember that CN supports standard
+  arithmetic and boolean operators such as `+` and `==`. 
+- Write an _incorrect_ implementation of `add` and check that `cn test` fails.
+- Write a _correct_ implementation and check that `cn test` succeeds.
+
+```c title="exercises/add.partial.c"
+--8<--
+exercises/add.partial.c
+--8<--
+```
 
 ??? note "(Optional) Verifying `min3`"
     Property-based testing is great for increasing our confidence that the function satisfies its specification, but we might also want to _verify_ this formally. Run `cn verify <filename>` on the buggy version to produce this output:

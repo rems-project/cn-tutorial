@@ -8,6 +8,8 @@ all: default
 clean:
 	rm -rf docs/exercises docs/solutions docs/exercises.zip \
 	    build TAGS _tests
+#	find . -type f -regex 'cn.*' -delete
+#	find . -type f -regex '*-exec.*' -delete
 
 ##############################################################################
 # Exercises

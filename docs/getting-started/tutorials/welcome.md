@@ -7,8 +7,12 @@ This tutorial introduces CN through a series of examples and case
 studies, starting with basic usage of CN on simple arithmetic
 functions and slowly moving towards more elaborate separation logic
 specifications of data structures.
-<!-- TODO: BCP: Once the structure of the tutorial stabilizes, we -->
-<!-- could outline the material it covers in more detail... -->
+<span style="color:red">
+BCP: Once the structure of the tutorial stabilizes, we 
+</span>
+<span style="color:red">
+ could outline the material it covers in more detail... 
+</span>
 
 CN can be used in two distinct ways:
 - The simpler way is as a framework for writing down formal

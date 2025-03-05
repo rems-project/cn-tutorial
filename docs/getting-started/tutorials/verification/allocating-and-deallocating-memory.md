@@ -1,6 +1,8 @@
 # Allocating and Deallocating Memory
 
-<!-- TODO: BCP: Again, more text is needed to set up this discussion. -->
+<span style="color:red">
+BCP: Again, more text is needed to set up this discussion. 
+</span>
 
 At the moment, CN does not understand the `malloc` and `free`
 functions. They are a bit tricky because they rely on a bit of
@@ -49,9 +51,11 @@ exercises/ref.h
 --8<--
 ```
 
-<!--
+<span style="color:red">
+
 TODO: BCP: This example is a bit broken: the file `slf0_basic_incr.c` does not appear at all in the tutorial, though a slightly different version (with signed numbers) does...
--->
+
+</span>
 
 ```c title="exercises/slf16_basic_succ_using_incr.c"
 --8<--
@@ -61,7 +65,9 @@ exercises/slf16_basic_succ_using_incr.c
 
 ### Exercises
 
-<!-- TODO: BCP: There should be a non-ref-using version of this earlier, for comparison. -->
+<span style="color:red">
+BCP: There should be a non-ref-using version of this earlier, for comparison. 
+</span>
 
 Prove a specification for the following program that reveals _only_
 that it returns a pointer to a number that is greater than the number
@@ -78,9 +84,11 @@ exercises/slf_ref_greater.c
 Here is another syntax for external / unknown
 functions, together with an example of a loose specification:
 
-<!--
+<span style="color:red">
+
 TODO: BCP: This is a bit random -- it's not clear people need to know about this alternate syntax, and it's awkwardly mixed with a semi-interesting example that's not relevant to this section. Also awkwardly placed, right here.
--->
+
+</span>
 
 ```c title="exercises/slf18_two_dice.c"
 --8<--
