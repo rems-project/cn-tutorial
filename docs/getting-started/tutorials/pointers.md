@@ -69,6 +69,8 @@ represented by a _resource_ `Owned<unsigned int>(p)`.
 
 ### Owned resources
 
+================ BCP STOPPED HERE =================
+
 Given a C-type `T` and pointer `p`, the resource `Owned<T>(p)` asserts ownership of a memory cell at location `p` of the size of C-type `T`. It is CN’s equivalent of a points-to assertion in separation logic (indexed by C-types `T`).
 
 In this example we can ensure the safe execution of `read` by adding a precondition that requires ownership of `Owned<int>(p)`, as shown below. For now ignore the notation `take ... = Owned<int>(p)`. Since reading the pointer does not disturb its value, we also add a corresponding postcondition, whereby `read` returns ownership of `p` after it is finished executing, in the form of another `Owned<int>(p)` resource.
