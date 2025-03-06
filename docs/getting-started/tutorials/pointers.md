@@ -71,7 +71,9 @@ For the read `*p` to be safe, we need to know that the function has
 permission to access the memory pointed to by `p`.  This permission is
 represented by a _resource_ `Owned<unsigned>(p)`.
 <span style="color:red">
-BCP: Is that right?? Should it be just Owned<unsigned int>(p)? Or just Owned(p)?? 
+BCP: Is that right?? Should it be just Owned<unsigned int>(p)? Or just
+Owned(p)?? (I think just Owned(p) is OK, and we should use that
+everywhere it's OK!)
 </span>
 
 ## Owned resources
@@ -298,13 +300,11 @@ exercises/slf3_basic_inplace_double.c
 
 ## Multiple owned pointers
 
-======================= BCP STOPPED HERE ====================
-
-When functions manipulate multiple pointers, we can assert their
-ownership just like before. However
-pointer ownership in CN is unique -- that is, simultaneously owning
+When functions manipulate multiple pointers, we can assert 
+ownership of each one, just like before. But there is an additional
+twist: pointer ownership in CN is _unique_ -- that is, simultaneously owning
 resources for two pointers implies that these
-pointers are disjoint.
+pointers refer to _disjoint_ regions of memory.
 
 The following example shows the use of two `Owned` resources for
 accessing two different pointers by a function `add`, which reads
@@ -313,11 +313,10 @@ returns their sum.
 
 <span style="color:red">
 BCP: The way I've been naming things is not working that well
-here. The problem is that in examples like this we computer "thing
+here. The problem is that in examples like this we compute "thing
 pointed to by p" at both C and CN levels. At the C level, the thing
 pointed to by p obviously cannot also be called p, so it doesn't make
-sense for it to be called P at the CN level, right? This should be
-fixed by the proposed `$p` syntax.
+sense for it to be called P at the CN level, right?
 </span>
 
 <span style="color:red">
@@ -332,12 +331,10 @@ exercises/add_read.c
 ```
 
 <span style="color:red">
-BCP: Does this belong here?
+BCP: Does this belong here?  Could it go in the later section on numeric types?
 </span>
 The CN variables `P` and `Q` (resp. `P_post` and `Q_post`) for the pointee values of `p` and `q` before (resp. after) the execution of `add` have CN basetype `u32`, so unsigned 32-bit integers, matching the C `unsigned` type. Like C’s unsigned integer arithmetic, CN unsigned values wrap around when exceeding the value range of the type.
 Hence, the postcondition `return == P + Q` holds also when the sum of `P` and `Q` is greater than the maximal `unsigned int` value.
-
-In the following we will sometimes use unsigned integer types to focus on specifying memory ownership, rather than the conditions necessary to show absence of C arithmetic undefined behaviour.
 
 ## Exercises
 
@@ -356,5 +353,3 @@ _Transfer._ Write a specification for the function `transfer`, shown below.
 exercises/slf8_basic_transfer.c
 --8<--
 ```
-
-

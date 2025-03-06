@@ -1,34 +1,4 @@
-# CN Tutorial
-
-<span style="color:red">*Temporary -- stuff is moving to other files...*</span>
-
-## PBT
-
-    - Hello-world example of PBT (min3)
-        - original version:
-          ```c title="exercises/min3/min3.orig.c"
-          --8<--
-          exercises/min3/min3-orig.c
-          --8<--
-          ```
-        - with a specification:
-          ```c title="exercises/min3/min3.test.c"
-          --8<--
-          exercises/min3/min3.test.c
-          --8<--
-          ```
-        - with a spec and a mistake:
-          ```c title="exercises/min3/min3.brokentest.c"
-          --8<--
-          exercises/min3/min3.brokentest.c
-          --8<--
-          ```
-
-    - instructions for running PBT
-        - an exercise to try it out on min3
-        - an exercise to find a bug in a variant of min3
-        - couple more (similar, optional) exercises -- e.g., sorting three
-          numbers
+# Things to do
 
 ## Case studies
 
@@ -47,9 +17,7 @@ The current case studies from the verification tutorial
   - make a testing variant and an optional verification variant of
     each of them
 
-____________________________________________________________________
-
-# Questions and Discussion Points
+## Questions and Discussion Points
 
 - The naming of exercises is hideous (esp. the slf ones)
 
@@ -87,9 +55,7 @@ ____________________________________________________________________
   context of "plain old specification and testing", before we get to
   verification.
 
-____________________________________________________________________
-
-# CN / VSCode Nits
+## CN / VSCode Nits
     
 - It would be nice if (a) errors were indicated more boldly (e.g., a
   red slug in the margin, not just red squiggles) and (b) successful

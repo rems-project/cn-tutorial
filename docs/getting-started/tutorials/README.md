@@ -17,9 +17,12 @@
 - [Doubly-linked lists](../case-studies/doubly-linked-lists.md)
 - [Airport Simulation](../case-studies/the-runway.md)
 
-## OLD STUFF
+<span style="color:red">
+## TODOs
 
-<span style="color:red">*Delete me...*</span>
+- [TODO list and discussion](todo.md)
+
+## OLD STUFF
 
 - [Pointers and simple ownership](verification/pointers-and-simple-ownership.md)
 - [Ownership of compound objects](verification/ownership-of-compound-objects.md)
@@ -28,6 +31,7 @@
 - [Allocating and deallocating memory](verification/allocating-and-deallocating-memory.md)
 - [Lists](verification/lists.md)
 - [Working with external lemmas](verification/external-lemmas.md)
+</span>
 
 
 
