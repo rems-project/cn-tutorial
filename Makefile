@@ -56,6 +56,8 @@ WORKING=$(wildcard src/exercises/list_*.c)
 WORKING_AUX=$(patsubst src/exercises/%, docs/solutions/%, $(WORKING))
 temp: $(WORKING_AUX) docs-exercises-dirs
 
+# cn test --output-dir=$(HOME)/tmp --replicas read.broken.c 	
+
 ##############################################################################
 # Check that the examples all run correctly
 
