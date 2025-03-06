@@ -1,4 +1,4 @@
-struct point { int x; int y; };
+struct point { unsigned x; unsigned y; };
 
 void transpose (struct point *p) 
 /*@ requires take P = Owned<struct point>(p);
@@ -7,8 +7,8 @@ void transpose (struct point *p)
             P_post.y == P.x;
 @*/
 {
-  int temp_x = p->x;
-  int temp_y = p->y;
+  unsigned temp_x = p->x;
+  unsigned temp_y = p->y;
   /*@ assert(false); @*/
   p->x = temp_y;
   p->y = temp_x;

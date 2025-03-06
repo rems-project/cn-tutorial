@@ -13,7 +13,8 @@ Things to do:
         - read.broken.c demonstrates linearity of resource usage
     - exercises:
         - quadruple_mem
-        - abs_mem
+        - abs_mem (doesn't work, but we can use the other examples
+          from the previous section)
     - slf0_basic_incr_signed.c
         shows the difference between Block and Owned
     - exercises
@@ -27,10 +28,10 @@ Things to do:
     - everything up through pointers to compound objects seems to work
       well, except for some of the resource inference stuff
 
-So far we’ve only considered functions manipulating integer
-values. Specifications become more interesting and challenging when
-_pointers_ are involved, because the safety of memory accesses via
-pointers has to be taken into account.
+So far we’ve only considered functions manipulating numeric
+values. Specifications become more interesting when _pointers_ are
+involved, because the safety of memory accesses via pointers has to be
+taken into account.
 
 CN uses _separation logic resources_ and the concept of _ownership_ to
 reason about memory accesses. A resource is the permission to access a
@@ -262,10 +263,51 @@ exercises/abs_mem.c
 --8<--
 ```
 
+## Block resources
+
+Aside from the `Owned` resources seen so far, CN has another
+built-in type of resource called `Block`. Given a C-type `T` and
+pointer `p`, `Block<T>(p)` asserts the same ownership as
+`Owned<T>(p)` — ownership of a memory cell at `p` the size of type
+`T` — but, in contrast to `Owned`, `Block` memory is not assumed
+to be initialised.
+
+CN uses this distinction to prevent reads from uninitialised memory:
+
+- A read at C-type `T` and pointer `p` requires a resource
+  `Owned<T>(p)`, i.e., ownership of _initialised_ memory at the
+  right C-type. The load returns the `Owned` resource unchanged.
+
+- A write at C-type `T` and pointer `p` needs only a
+`Block<T>(p)` (so, unlike reads, writes to uninitialised memory
+are fine). The write consumes ownership of the `Block` resource
+(it destroys it) and returns a new resource `Owned<T>(p)` with the
+value written as the output. This means the resource returned from a
+write records the fact that this memory cell is now initialised and
+can be read from.
+<span style="color:red">
+BCP: Not sure I understand "returns a new resource `Owned<T>(p)` with the value written as the output" -- perhaps in part because I don't understand what the output of a resource means when the resource is not in the context o a take expression. 
+</span>
+
+Since `Owned` carries the same ownership as `Block`, just with the
+additional information that the `Owned` memory is initalised, a
+resource `Owned<T>(p)` is "at least as good" as `Block<T>(p)` —
+an `Owned<T>(p)` resource can be used whenever `Block<T>(p)` is
+needed. For instance CN’s type checking of a write to `p` requires a
+`Block<T>(p)`, but if an `Owned<T>(p)` resource is what is
+available, this can be used just the same. This allows an
+already-initialised memory cell to be over-written again.
+
+Unlike `Owned`, whose output is the pointee value, `Block` has no meaningful output.
+
 ## Writing through pointers
 
 Let’s explore resources and their outputs in another example. The C function `incr` takes an `unsigned` pointer `p` and increments the value in the memory cell that it poinbts to.
 
+<span style="color:red">
+BCP: unsigned! (there are both signed and unsigned versions at the
+moment -- how do they relate?)
+</span>
 ```c title="exercises/slf0_basic_incr.signed.c"
 --8<--
 exercises/slf0_basic_incr.signed.c
@@ -279,6 +321,32 @@ the function so as not to overflow when incremented. The postcondition
 asserts ownership of `p` with output `P_post`, as before, and uses
 this to express that the value `p` points to is incremented by
 `incr`: `P_post == P + 1i32`.
+
+If we incorrectly tweaked this specification and used `Block<unsigned>(p)` instead of `Owned<unsigned>(p)` in the precondition, as below, then CN would reject the program.
+
+<span style="color:red">
+BCP: change it to unsigned...
+</span>
+
+
+```c title="exercises/slf0_basic_incr.signed.broken.c"
+--8<--
+exercises/slf0_basic_incr.signed.broken.c
+--8<--
+```
+
+CN reports:
+<span style="color:red">
+BCP: fix it...
+</span>
+
+```
+build/solutions/slf0_basic_incr.signed.broken.c:6:11: error: Missing resource for reading
+int n = \*p;
+^~
+Resource needed: Owned<signed int>(p)
+Consider the state in /var/folders/\_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_5da0f3.html
+```
 
 ## Exercises
 

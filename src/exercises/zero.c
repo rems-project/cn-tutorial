@@ -1,8 +1,8 @@
-void zero (int *p)
+void zero (unsigned *p)
 /* --BEGIN-- */
-/*@ requires take P = Block<int>(p);
-    ensures take P_post = Owned<int>(p);
-            P_post == 0i32;
+/*@ requires take P = Block<unsigned>(p);
+    ensures take P_post = Owned<unsigned>(p);
+            P_post == 0u32;
 @*/
 /* --END-- */
 {
