@@ -7,47 +7,65 @@ all: default
 
 clean:
 	rm -rf docs/exercises docs/solutions docs/exercises.zip \
-	    build TAGS _tests
+	    build TAGS _temp
 #	find . -type f -regex 'cn.*' -delete
 #	find . -type f -regex '*-exec.*' -delete
 
 ##############################################################################
 # Exercises
 
-SRC_EXERCISES=$(shell find src/exercises -type f)
-SOLUTIONS=$(patsubst src/exercises/%, docs/solutions/%, $(SRC_EXERCISES))
-EXERCISES=$(patsubst src/exercises/%, docs/exercises/%, $(SRC_EXERCISES))
+EXCLUDE = cn.c cn.h run_tests.sh *-exec.c *_test.c
+
+H = $(shell find src/exercises -type f -name *.h)
+C = $(shell find src/exercises -type f -name *.c)
+ALL = $(H) $(C)
+NOTBROKEN = $(filter-out %broken%, $(C))
+
+SOLUTIONS=$(patsubst src/exercises/%, docs/solutions/%, $(ALL))
+EXERCISES=$(patsubst src/exercises/%, docs/exercises/%, $(ALL))
+VERIFIED=$(patsubst src/exercises/%, _temp/verified/%, $(NOTBROKEN))
+TESTED=$(patsubst src/exercises/%, _temp/tested/%, $(NOTBROKEN))
+
+exercises: $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES) 
 
 CN=cn verify
-CNTEST=cn test
+# make sure to add --output _temp again
+CNTEST=cn test --replicas --trace-granularity=none
+# CNTEST=cn test --replicas --output _temp --trace-granularity=none
+# The --trace-granularity=none part can be deleted soon
 
-exercises: docs-exercises-dirs $(EXERCISES) $(SOLUTIONS)
+V=@
 
-docs-exercises-dirs:
-	mkdir -p docs/exercises
-	mkdir -p docs/solutions
+_temp/tested/% : src/exercises/%
+	$(V)echo Testing $<
+	$(V)-mkdir -p $(dir $@)
+	$(V)# Next line should be reverted!
+	$(V)(cd src/exercises; $(CNTEST) ../../$<   2>&1 | tee ../../$@.test.out)
+	$(V)#$(CNTEST) $<   2>&1 | tee $@.test.out
+	$(V)# Next line should go away!
+	$(V)(cd src/exercises; rm -f cn.c cn.h run_tests.sh *-exec.c *_test.c)
+	$(V)-grep PASSED $@.test.out || true
+	$(V)-grep FAILED $@.test.out || true
+	$(V)if grep -q "fatal error" $@.test.out; then \
+              exit 1; \
+	    fi
+	$(V)touch $@
+
+_temp/verified/% : src/exercises/%
+	$(V)@echo Verify $@
+	$(V)echo Verifying $<
+	$(V)@-mkdir -p $(dir $@)
+	$(V)$(CN) $<   2>&1 | tee $@.verif.out
 
 docs/exercises/%: src/exercises/%
-	@echo Rebuild $@
-	@-mkdir -p $(dir $@)
-	@sed -E '\|^.*--BEGIN--.*$$|,\|^.*--END--.*$$|d' $< > $@
+	$(V)echo Rebuild $@
+	$(V)-mkdir -p $(dir $@)
+	$(V)sed -E '\|^.*--BEGIN--.*$$|,\|^.*--END--.*$$|d' $< > $@
 
 docs/solutions/%: src/exercises/%
-	@-mkdir -p $(dir $@)
-	@-mkdir -p _tests
-	@if [ `which cn` ]; then \
-	  if [[ "$<" = *".c"* ]]; then \
-	    if [[ "$<" != *"broken"* && "$<" != *"partial"* && "$<" != *".DS_Store"* ]]; then \
-	      if [[ "$<" = *".test."*c ]]; then \
-	        echo $(CNTEST) $< && $(CNTEST) test $< --output _tests; \
-              else \
-	        echo $(CN) $< && $(CN) $<; \
-	      fi; \
-            fi; \
-	  fi \
-	fi
-	@echo Rebuild $@
-	@cat $< | sed '\|^.*--BEGIN--.*$$|d' | sed '\|^.*--END--.*$$|d' > $@
+	$(V)echo Rebuild $@
+	$(V)-mkdir -p $(dir $@)
+	$(V)cat $< | sed '\|^.*--BEGIN--.*$$|d' | sed '\|^.*--END--.*$$|d' > $@
 
 docs/exercises.zip: $(EXERCISES)
 	cd docs; zip -r exercises.zip exercises > /dev/null
@@ -57,6 +75,24 @@ WORKING_AUX=$(patsubst src/exercises/%, docs/solutions/%, $(WORKING))
 temp: $(WORKING_AUX) docs-exercises-dirs
 
 # cn test --output-dir=$(HOME)/tmp --replicas read.broken.c 	
+
+# OLD
+# docs/solutions/%: src/exercises/%
+# 	@-mkdir -p $(dir $@)
+# 	@-mkdir -p _tests
+# 	@if [ `which cn` ]; then \
+# 	  if [[ "$<" = *".c"* ]]; then \
+# 	    if [[ "$<" != *"broken"* && "$<" != *"partial"* && "$<" != *".DS_Store"* ]]; then \
+# 	      if [[ "$<" = *".test."*c ]]; then \
+# 	        echo $(CNTEST) $< && $(CNTEST) $< --output _tests; \
+#               else \
+# 	        echo $(CN) $< && $(CN) $<; \
+# 	      fi; \
+#             fi; \
+# 	  fi \
+# 	fi
+# 	@echo Rebuild $@
+# 	@cat $< | sed '\|^.*--BEGIN--.*$$|d' | sed '\|^.*--END--.*$$|d' > $@
 
 ##############################################################################
 # Check that the examples all run correctly
