@@ -42,9 +42,8 @@ exercises: $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES)
 
 CN=cn verify
 # make sure to add --output _temp again once CN testing is cleaned up
-CNTEST=cn test --replicas --trace-granularity=none
-# CNTEST=cn test --replicas --output _temp --trace-granularity=none
-# (The --trace-granularity=none part can be deleted soon too)
+CNTEST=cn test
+# CNTEST=cn test --output _temp
 
 V=@
 
@@ -87,7 +86,7 @@ WORKING=$(wildcard src/exercises/list_*.c)
 WORKING_AUX=$(patsubst src/exercises/%, docs/solutions/%, $(WORKING))
 temp: $(WORKING_AUX) docs-exercises-dirs
 
-# cn test --output-dir=$(HOME)/tmp --replicas read.broken.c 	
+# cn test --output-dir=$(HOME)/tmp read.broken.c 	
 
 # OLD
 # docs/solutions/%: src/exercises/%
