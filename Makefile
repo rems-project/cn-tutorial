@@ -25,40 +25,79 @@ ALL = $(H) $(C)
 BROKEN = $(shell find src/exercises -type f -name *broken*)
 NOTBROKEN = $(filter-out $(BROKEN), $(C))
 
-test:
-	@echo $(NOTBROKEN)
-
-test1:
-	@echo $(filter-out foo food, baz food foo bar)
-
-
-
 SOLUTIONS=$(patsubst src/exercises/%, docs/solutions/%, $(ALL))
 EXERCISES=$(patsubst src/exercises/%, docs/exercises/%, $(ALL))
 VERIFIED=$(patsubst src/exercises/%, _temp/verified/%, $(NOTBROKEN))
-TESTED=$(patsubst src/exercises/%, _temp/tested/%, $(NOTBROKEN))
+
+#TESTED=$(patsubst src/exercises/%, _temp/tested/%, $(NOTBROKEN))
+# TEMPORARY:
+TESTED = \
+  _temp/tested/abs_mem_struct.c \
+  _temp/tested/bcp_framerule.c \
+  _temp/tested/slf_quadruple_mem.c \
+  _temp/tested/_temp/funcs2-exec.c \
+  _temp/tested/_temp/const_example-exec.c \
+  _temp/tested/const_example_lessgood.c \
+  _temp/tested/transpose2.c \
+  _temp/tested/slf2_basic_quadruple.signed.c \
+  _temp/tested/add_read.c \
+  _temp/tested/slf8_basic_transfer.c \
+  _temp/tested/slf3_basic_inplace_double.c \
+  _temp/tested/add_1.c \
+  _temp/tested/array_load.c \
+  _temp/tested/slf0_basic_incr.c \
+  _temp/tested/runway/funcs2.c \
+  _temp/tested/zero.c \
+  _temp/tested/slf_incr2_noalias.c \
+  _temp/tested/slf10_basic_ref.c \
+  _temp/tested/add_2.c \
+  _temp/tested/add_two_array.c \
+  _temp/tested/transpose.c \
+  _temp/tested/read2.c \
+  _temp/tested/read.c \
+  _temp/tested/slf1_basic_example_let.c \
+  _temp/tested/slf_incr2_alias.c \
+  _temp/tested/abs_mem.c \
+  _temp/tested/swap_array.c \
+  _temp/tested/const_example.c \
+  _temp/tested/add.partial.c \
+  _temp/tested/init_point.c \
+  _temp/tested/min3/min3.fixed.c \
+  _temp/tested/min3/min3.test.partial.c \
+  _temp/tested/min3/min3.partial.c \
+  _temp/tested/slf_incr2.c \
+  _temp/tested/id_by_div.fixed.c \
+  _temp/tested/slf2_basic_quadruple.c \
+  _temp/tested/slf18_two_dice.c \
+  _temp/tested/swap.c \
+  _temp/tested/slf1_basic_example_let.signed.c \
+  _temp/tested/slf9_basic_transfer_aliased.c \
+  _temp/tested/array_load2.c \
+  _temp/tested/add_0.c \
+  _temp/tested/abs.c \
+  _temp/tested/slf0_basic_incr.signed.c \
+  _temp/tested/slf15_basic_succ_using_incr_attempt_.c 
 
 exercises: $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES) 
 
 CN=cn verify
-# make sure to add --output _temp again once CN testing is cleaned up
-CNTEST=cn test 
+CNTEST=cn test --output ../../_temp
 # CNTEST=cn test --output _temp
 
+# Control verbosity (run make with V= to show everything that's happening)
 V=@
 
 _temp/tested/% : src/exercises/%
 	$(V)echo Testing $<
 	$(V)-mkdir -p $(dir $@)
-	$(V)# Next line should be reverted!
 	$(V)(cd src/exercises; $(CNTEST) ../../$<   2>&1 | tee ../../$@.test.out)
-	$(V)#$(CNTEST) $<   2>&1 | tee $@.test.out
-	$(V)# Next line should go away!
-	$(V)(cd src/exercises; rm -f cn.c cn.h run_tests.sh *-exec.c *_test.c) 
 	$(V)-grep PASSED $@.test.out || true
 	$(V)-grep FAILED $@.test.out || true
-	$(V)if grep -q "fatal error" $@.test.out; then \
+	@# This should not be needed!
+	$(V)if grep -q "fatal error\\|Failed to compile" $@.test.out; then \
               exit 1; \
+	      else \
+	      echo NO FAIL $@; \
 	    fi
 	$(V)touch $@
 
@@ -85,7 +124,7 @@ WORKING=$(wildcard src/exercises/list_*.c)
 WORKING_AUX=$(patsubst src/exercises/%, docs/solutions/%, $(WORKING))
 temp: $(WORKING_AUX) docs-exercises-dirs
 
-# cn test --output-dir=$(HOME)/tmp --replicas read.broken.c 	
+# cn test --output-dir=$(HOME)/tmp read.broken.c 	
 
 # OLD
 # docs/solutions/%: src/exercises/%
