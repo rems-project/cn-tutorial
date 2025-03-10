@@ -1,12 +1,12 @@
-void zero (unsigned *coord) 
-/*@ requires take Coord = Block<unsigned>(coord);
-    ensures take Coord_post = Owned<unsigned>(coord);
+void zero (unsigned int *coord) 
+/*@ requires take Coord = Block<unsigned int>(coord);
+    ensures take Coord_post = Owned<unsigned int>(coord);
             Coord_post == 0u32; @*/
 {
   *coord = 0;
 }
 
-struct point { unsigned x; unsigned y; };
+struct point { unsigned int x; unsigned int y; };
 
 void init_point(struct point *p) 
 /*@ requires take P = Block<struct point>(p);

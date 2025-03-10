@@ -62,7 +62,7 @@ BCP: Is this relevant to testing?
 </span>
 To handle code that manipulates pointers into parts of a struct object, CN can automatically decompose a struct resource into the member resources, and it can recompose the struct later, as needed. The following example illustrates this.
 
-Recall the function `zero` from our earlier exercise. It takes an `unsigned` pointer to uninitialised memory, with `Block<unsigned>` ownership, and initialises the value to zero, returning an `Owned<unsigned>` resource with output `0`.
+Recall the function `zero` from our earlier exercise. It takes an `unsigned int` pointer to uninitialised memory, with `Block<unsigned int>` ownership, and initialises the value to zero, returning an `Owned<unsigned int>` resource with output `0`.
 
 Now consider the function `init_point`, shown below, which takes a pointer `p` to a `struct point` and zero-initialises its members by calling `zero` twice, once with a pointer to struct member `x`, and once with a pointer to `y`.
 
@@ -72,9 +72,9 @@ exercises/init_point.c
 --8<--
 ```
 
-As stated in its precondition, `init_point` receives ownership `Block<struct point>(p)`. The `zero` function, however, works on `unsigned` pointers and requires `Block<unsigned>` ownership.
+As stated in its precondition, `init_point` receives ownership `Block<struct point>(p)`. The `zero` function, however, works on `unsigned int` pointers and requires `Block<unsigned int>` ownership.
 
-CN can prove the calls to `zero` with `&p->x` and `&p->y` are safe because it decomposes the `Block<struct point>(p)` into a `Block<unsigned>` for member `x` and a `Block<unsigned>` for member `y`. Later, the reverse happens: following the two calls to `zero`, as per `zero`’s precondition, `init_point` has ownership of two adjacent `Owned<unsigned>` resources – ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `init_point` requires ownership `Owned<struct point>(p)`, CN combines these back into a compound resource. The resulting `Owned<point struct>` resource has for an output the struct value `P_post` that is composed of the zeroed member values for `x` and `y`.
+CN can prove the calls to `zero` with `&p->x` and `&p->y` are safe because it decomposes the `Block<struct point>(p)` into a `Block<unsigned int>` for member `x` and a `Block<unsigned int>` for member `y`. Later, the reverse happens: following the two calls to `zero`, as per `zero`’s precondition, `init_point` has ownership of two adjacent `Owned<unsigned int>` resources – ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `init_point` requires ownership `Owned<struct point>(p)`, CN combines these back into a compound resource. The resulting `Owned<point struct>` resource has for an output the struct value `P_post` that is composed of the zeroed member values for `x` and `y`.
 
 ### Resource inference
 
@@ -94,9 +94,9 @@ exercises/transpose.broken.c
 
 The precondition of `transpose` asserts ownership of an `Owned<struct point>(p)` resource. The error report now instead lists under "`Available resources`" two resources:
 
-- `Owned<unsigned>(member_shift<point>(p, x))` with output `P.x` and
+- `Owned<unsigned int>(member_shift<point>(p, x))` with output `P.x` and
 
-- `Owned<unsigned>(member_shift<point>(p, y))` with output `P.y`
+- `Owned<unsigned int>(member_shift<point>(p, y))` with output `P.y`
 
 <span style="color:red">
 BCP: We should verify that it really does say this. 
@@ -114,7 +114,7 @@ BCP: That's just for verification.
 </span>
 
 
-_Transpose (again)._ Recreate the transpose function from before, now using the swap function verified earlier (for `struct upoint`, with unsigned member values).
+_Transpose (again)._ Recreate the transpose function from before, now using the swap function verified earlier (for `struct upoint`, with unsigned int member values).
 <span style="color:red">
 BCP: No need for upoint now...
 </span>

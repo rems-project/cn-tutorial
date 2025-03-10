@@ -593,7 +593,9 @@ exercises/add_read.c
 --8<--
 ```
 
-This time we use C’s `unsigned int` type. In C, over- and underflow of unsigned integers is not undefined behaviour, so we do not need any special preconditions to rule this out. Instead, when an arithmetic operation at unsigned type goes outside the representable range, the value "`wraps around`".
+OUTDATED:
+
+This time we use C’s `unsigned int` type. In C, over- and underflow of unsigned integers is not undefined behaviour, so we do not need any special preconditions to rule this out. Instead, when an arithmetic operation at `unsigned int` type goes outside the representable range, the value "`wraps around`".
 
 The CN variables `P` and `Q` (resp. `P_post` and `Q_post`) for the pointee values of `p` and `q` before (resp. after) the execution of `add` have CN basetype `u32`, so unsigned 32-bit integers, matching the C `unsigned int` type. Like C’s unsigned integer arithmetic, CN unsigned int values wrap around when exceeding the value range of the type.
 
@@ -708,6 +710,8 @@ When the function returns, the two member resources are recombined "`on demand`"
 _Init point._ Insert CN `assert(false)` statements in different statement positions of `init_point` and check how the available resources evolve.
 
 _Transpose (again)._ Recreate the transpose function from before, now using the swap function verified earlier (for `struct upoint`, with unsigned member values).
+
+BCP: FIX!!
 
 ```c title="exercises/transpose2.c"
 --8<--

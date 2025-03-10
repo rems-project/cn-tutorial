@@ -66,7 +66,7 @@ cases: 1, passed: 0, failed: 1, errored: 0, skipped: 0
 
 For the read `*p` to be safe, we need to know that the function has
 permission to access the memory pointed to by `p`.  This permission is
-represented by a _resource_ `Owned<unsigned>(p)`.
+represented by a _resource_ `Owned<unsigned int>(p)`.
 <span style="color:red">
 BCP: Is that right?? Should it be just Owned<unsigned int>(p)? Or just
 Owned(p)?? (I think just Owned(p) is OK, and we should use that
@@ -83,11 +83,11 @@ _ownership_ of a memory region at location `p` of the size of the C type
 <!-- TODO: BCP: Maybe the T argument can be postponed for a while...? -->
 
 In this example, we can ensure the safe execution of `read` by adding
-a precondition that requires ownership of `Owned<unsigned>(p)`, as
+a precondition that requires ownership of `Owned<unsigned int>(p)`, as
 shown below. (For now ignore the `take ... =` part.) Since reading the pointer does not disturb its value,
 we can also add a corresponding postcondition, whereby `read` returns
 ownership of `p` after it is finished executing, in the form of
-another `Owned<unsigned>(p)` resource.
+another `Owned<unsigned int>(p)` resource.
 
 ```c title="solutions/read.c"
 --8<--
@@ -98,9 +98,9 @@ solutions/read.c
 This specification can be read as follows:
 
 - any function calling `read` has to be able to provide a resource
-  `Owned<unsigned>(p)` to pass into `read`, and 
+  `Owned<unsigned int>(p)` to pass into `read`, and 
 
-- the caller will receive back a resource `Owned<unsigned>(p)` when
+- the caller will receive back a resource `Owned<unsigned int>(p)` when
   `read` returns. 
 
 <span style="color:red">
@@ -143,8 +143,8 @@ Dhruv: Perhaps mentioning sub-heaps will help?
 
 CN uses the `take` notation seen in the example above to bind the
 output of a resource to a new name. The precondition `take P =
-Owned<unsigned>(p)` does two things: (1) it assert ownership of resource
-`Owned<unsigned>(p)`, and (2) it binds the name `P` to the resource output,
+Owned<unsigned int>(p)` does two things: (1) it assert ownership of resource
+`Owned<unsigned int>(p)`, and (2) it binds the name `P` to the resource output,
 here the pointee value of `p` at the start of the function. Similarly,
 the postcondition introduces the name `P_post` for the pointee value
 on function return.
@@ -222,7 +222,7 @@ BCP: Explain what that means.  Update if the output format changes.
 </span>
 
 CN has typechecked the function and verified (1) that it is safe to
-execute under the precondition (given ownership `Owned<unsigned>(p)`)
+execute under the precondition (given ownership `Owned<unsigned int>(p)`)
 and (2) that the function (vacuously) satisfies its postcondition. But
 following the check of the postcondition it finds that not all
 resources have been "used up".
@@ -242,7 +242,7 @@ resources back to the caller.
 
 _Quadruple_. Specify the function `quadruple_mem`, which is similar to
 the earlier `quadruple` function, except that the input is passed as a
-pointer to an `unsigned`. Write a specification that takes ownership
+pointer to an `unsigned int`. Write a specification that takes ownership
 of this pointer on entry and returns this ownership on exit, leaving
 the pointee value unchanged.
 
@@ -301,7 +301,7 @@ Unlike `Owned`, whose output is the pointee value, `Block` has no meaningful out
 
 ## Writing through pointers
 
-Let’s explore resources and their outputs in another example. The C function `incr` takes an `unsigned` pointer `p` and increments the value in the memory cell that it poinbts to.
+Let’s explore resources and their outputs in another example. The C function `incr` takes an `unsigned int` pointer `p` and increments the value in the memory cell that it poinbts to.
 
 <span style="color:red">
 BCP: unsigned! (there are both signed and unsigned versions at the
@@ -313,7 +313,7 @@ exercises/slf0_basic_incr.signed.c
 --8<--
 ```
 
-In the precondition we assert ownership of resource `Owned<unsigned>(p)`,
+In the precondition we assert ownership of resource `Owned<unsigned int>(p)`,
 binding its output/pointee value to `P`, and use `P` to specify
 that `p` must point to a sufficiently small value at the start of
 the function so as not to overflow when incremented. The postcondition
@@ -321,7 +321,7 @@ asserts ownership of `p` with output `P_post`, as before, and uses
 this to express that the value `p` points to is incremented by
 `incr`: `P_post == P + 1i32`.
 
-If we incorrectly tweaked this specification and used `Block<unsigned>(p)` instead of `Owned<unsigned>(p)` in the precondition, as below, then CN would reject the program.
+If we incorrectly tweaked this specification and used `Block<unsigned int>(p)` instead of `Owned<unsigned int>(p)` in the precondition, as below, then CN would reject the program.
 
 <span style="color:red">
 BCP: change it to unsigned...
@@ -357,7 +357,7 @@ exercises/zero.c
 --8<--
 ```
 
-_In-place double._ Give a specification for the function `inplace_double`, which takes an `unsigned` pointer `p` and doubles the pointee value: specify the precondition needed to guarantee safe execution and a postcondition that captures the function’s behaviour.
+_In-place double._ Give a specification for the function `inplace_double`, which takes an `unsigned int` pointer `p` and doubles the pointee value: specify the precondition needed to guarantee safe execution and a postcondition that captures the function’s behaviour.
 
 ```c title="exercises/slf3_basic_inplace_double.c"
 --8<--
@@ -375,7 +375,7 @@ pointers refer to _disjoint_ regions of memory.
 
 The following example shows the use of two `Owned` resources for
 accessing two different pointers by a function `add`, which reads
-two `unsigned` values in memory, at locations `p` and `q`, and
+two `unsigned int` values in memory, at locations `p` and `q`, and
 returns their sum.
 
 <span style="color:red">
@@ -384,11 +384,6 @@ here. The problem is that in examples like this we compute "thing
 pointed to by p" at both C and CN levels. At the C level, the thing
 pointed to by p obviously cannot also be called p, so it doesn't make
 sense for it to be called P at the CN level, right?
-</span>
-
-<span style="color:red">
-BCP: Is there a difference between `unsigned int` and `unsigned`?  Not
-sure which I should be using.
 </span>
 
 ```c title="exercises/add_read.c"
@@ -400,7 +395,7 @@ exercises/add_read.c
 <span style="color:red">
 BCP: Does this belong here?  Could it go in the later section on numeric types?
 </span>
-The CN variables `P` and `Q` (resp. `P_post` and `Q_post`) for the pointee values of `p` and `q` before (resp. after) the execution of `add` have CN basetype `u32`, so unsigned 32-bit integers, matching the C `unsigned` type. Like C’s unsigned integer arithmetic, CN unsigned values wrap around when exceeding the value range of the type.
+The CN variables `P` and `Q` (resp. `P_post` and `Q_post`) for the pointee values of `p` and `q` before (resp. after) the execution of `add` have CN basetype `u32`, so unsigned 32-bit integers, matching the C `unsigned int` type. Like C’s unsigned integer arithmetic, CN unsigned int values wrap around when exceeding the value range of the type.
 Hence, the postcondition `return == P + Q` holds also when the sum of `P` and `Q` is greater than the maximal `unsigned int` value.
 
 ## Exercises

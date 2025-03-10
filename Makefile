@@ -7,17 +7,14 @@ all: default
 
 clean: tidy
 	rm -rf docs/exercises docs/solutions docs/exercises.zip \
-	    build TAGS _temp
-#	find . -type f -regex 'cn.*' -delete
-#	find . -type f -regex '*-exec.*' -delete
+	    build TAGS _temp _tests
+	find . -type f -regex '*.tmp' -delete
 
 tidy:
 	(cd src/exercises; rm -rf cn.c cn.h *-exec.* *_gen.* *_test.* tests.out cn.o constructors.h)
 
 ##############################################################################
 # Exercises
-
-EXCLUDE = cn.c cn.h run_tests.sh *-exec.c *_test.c
 
 H = $(shell find src/exercises -type f -name *.h)
 C = $(shell find src/exercises -type f -name *.c)
@@ -161,10 +158,10 @@ check: check-tutorial check-archive
 
 # BCP: This runs mkdocs every time we run make, which is a little
 #      noisy -- would be nicer to run it only when other things change
-tutorial: docs/exercises.zip mkdocs.yml $(shell find docs -type f) 
+tutorial: exercises docs/exercises.zip mkdocs.yml $(shell find docs -type f) 
 	mkdocs build --strict
 
-serve: docs/exercises.zip mkdocs.yml $(shell find docs -type f)
+serve: exercises docs/exercises.zip mkdocs.yml $(shell find docs -type f)
 	mkdocs serve
 
 ##############################################################################
