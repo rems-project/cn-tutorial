@@ -1,4 +1,4 @@
-# Preconditions
+# Specifications with Preconditions
 
 Next, let's walk through an example that will introduce a few more CN
 specification features. Here's a silly way of writing a function that

@@ -1,8 +1,13 @@
 # Things to do
 
+## Things to clean up at the end
+
+-   Format exercises consistently throughout
+
 ## General notes
 
-- good pedagogical practice: "given a spec, show both examples and counterexamples"
+- good pedagogical practice: "given a spec, show both examples and
+  counterexamples" 
 
 ## Case studies
 

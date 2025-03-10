@@ -61,8 +61,8 @@ TESTED = \
   _temp/tested/add.partial.c \
   _temp/tested/init_point.c \
   _temp/tested/min3/min3.fixed.c \
-  _temp/tested/min3/min3.test.partial.c \
   _temp/tested/min3/min3.partial.c \
+  _temp/tested/min3/min3.partial1.c \
   _temp/tested/slf_incr2.c \
   _temp/tested/id_by_div.fixed.c \
   _temp/tested/slf2_basic_quadruple.c \
@@ -100,10 +100,10 @@ _temp/tested/% : src/exercises/%
 	$(V)touch $@
 
 _temp/verified/% : src/exercises/%
-	$(V)@echo Verify $@
 	$(V)echo Verifying $<
-	$(V)@-mkdir -p $(dir $@)
+	$(V)-mkdir -p $(dir $@)
 	$(V)$(CN) $<   2>&1 | tee $@.verif.out
+	$(V)touch $@
 
 docs/exercises/%: src/exercises/%
 	$(V)echo Rebuild $@
@@ -159,10 +159,12 @@ check: check-tutorial check-archive
 ##############################################################################
 # Tutorial document
 
-tutorial: exercises docs/exercises.zip mkdocs.yml $(shell find docs -type f)
+# BCP: This runs mkdocs every time we run make, which is a little
+#      noisy -- would be nicer to run it only when other things change
+tutorial: docs/exercises.zip mkdocs.yml $(shell find docs -type f) 
 	mkdocs build --strict
 
-serve: exercises docs/exercises.zip mkdocs.yml $(shell find docs -type f)
+serve: docs/exercises.zip mkdocs.yml $(shell find docs -type f)
 	mkdocs serve
 
 ##############################################################################
