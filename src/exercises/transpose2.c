@@ -12,12 +12,12 @@ void swap (unsigned int *p, unsigned int *q)
   *q = m;
 }
 
-struct upoint { unsigned int x; unsigned int y; };
+struct point { unsigned int x; unsigned int y; };
 
-void transpose2 (struct upoint *p)
+void transpose2 (struct point *p)
 /* --BEGIN-- */
-/*@ requires take P = Owned<struct upoint>(p);
-    ensures take P_post = Owned<struct upoint>(p);
+/*@ requires take P = Owned<struct point>(p);
+    ensures take P_post = Owned<struct point>(p);
             P_post.x == P.y;
             P_post.y == P.x;
 @*/

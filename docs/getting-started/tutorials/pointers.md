@@ -1,25 +1,23 @@
 # Pointers and Simple Ownership
 
-<span style="color:red">
-Things to do:
-</span>
+    Rough notes / updated outline:
 
     - read.c
         - unannotated version fails tests
              - need to explain how to figure out WHY testing fails!
         - explain ownership (copy/move from verification tutorial)
         - version with proper spec works better!
-        - (lots of useful text)
         - read.broken.c demonstrates linearity of resource usage
     - exercises:
         - quadruple_mem
-        - abs_mem (doesn't work, but we can use the other examples
-          from the previous section)
+        - abs_mem (this doesn't work with unsigned ints, but we can
+          use the other examples from the previous section)
     - slf0_basic_incr_signed.c
         shows the difference between Block and Owned
     - exercises
         - zero.c
-        - basic_inplace_double.c involves UB, so skip?
+        - basic_inplace_double.c involves UB, so skip it or (maybe
+          better) replace with something that doesn't
         - maybe something about swapping pointers?
 
     - add_read  (but changing it to swapping or something, to avoid UB
@@ -67,12 +65,6 @@ cases: 1, passed: 0, failed: 1, errored: 0, skipped: 0
 For the read `*p` to be safe, we need to know that the function has
 permission to access the memory pointed to by `p`.  This permission is
 represented by a _resource_ `Owned<unsigned int>(p)`.
-<span style="color:red">
-BCP: Is that right?? Should it be just Owned<unsigned int>(p)? Or just
-Owned(p)?? (I think just Owned(p) is OK, and we should use that
-everywhere it's OK!  We'll need a bit of explanation when we reach the
-first place where it is _not_ OK.)
-</span>
 
 ## Owned resources
 
@@ -80,7 +72,9 @@ Given a C-type `T` and pointer `p`, the resource `Owned<T>(p)` asserts
 _ownership_ of a memory region at location `p` of the size of the C type
 `T`.  If `T` is a single-word type, then `<T>` can be omitted.
 <!-- TODO: BCP: Do we mean 32-bit word here?? -->
-<!-- TODO: BCP: Maybe the T argument can be postponed for a while...? -->
+<!-- TODO: BCP: Maybe the description of the T argument can be 
+     postponed for a while, if we remove the <unsigned int 
+     annotations...? -->
 
 In this example, we can ensure the safe execution of `read` by adding
 a precondition that requires ownership of `Owned<unsigned int>(p)`, as
@@ -415,3 +409,38 @@ _Transfer._ Write a specification for the function `transfer`, shown below.
 exercises/slf8_basic_transfer.c
 --8<--
 ```
+
+## Ownership of Structured Objects
+
+So far, our examples have worked with just integers and pointers, but
+larger programs typically also manipulate compound values, often
+represented using C `struct`s. Specifying functions manipulating
+structs works in much the same way as with basic types.
+
+For instance, the following example uses a `struct` `point` to
+represent a point in two-dimensional space. The function `transpose`
+swaps a point’s `x` and `y` coordinates.
+
+```c title="exercises/transpose.c"
+--8<--
+exercises/transpose.c
+--8<--
+```
+
+Here the precondition asserts ownership for `p`, at type `struct
+point`; the output `P_post` is a value of type `struct point`, i.e. a
+record with members `x` and `y`. The postcondition similarly asserts
+ownership of `p`, with output `P_post`, and asserts the coordinates
+have been swapped, by referring to the members of `P` and `P_post`
+individually.
+
+The reason `Owned` needs a C-type annotation is so that it can (a)
+figure out the size of the sub-heap being claimed and (b) figure out
+how one may need to destructure the type (unions, struct fields and
+padding, arrays). The relationship is that for `take x =
+Owned<ct>(expr)` we have `expr : pointer, x : to_basetype(ct)`.
+
+<span style="color:red">
+There is a design decision to consider here rems-project/cerberus#349
+</span>
+

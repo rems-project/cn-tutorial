@@ -15,6 +15,9 @@
     - (but even if we do this, we need to name the verification
       chapters so that people can distinguish them from specification
       chapters) 
+- rename `unsigned int` to `unsigned` globally?
+- rewrite `Owned<unsigned int>` to `Owned` globally (and similar for
+  other single-word types)
 
 ## General notes
 

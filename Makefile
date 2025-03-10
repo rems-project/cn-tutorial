@@ -22,9 +22,13 @@ ALL = $(H) $(C)
 BROKEN = $(shell find src/exercises -type f -name *broken*)
 NOTBROKEN = $(filter-out $(BROKEN), $(C))
 
+NOVERIF = $(shell find src/exercises -type f -name *noverif*) \
+          $(BROKEN)
+VERIF = $(filter-out $(NOVERIF), $(C))
+
 SOLUTIONS=$(patsubst src/exercises/%, docs/solutions/%, $(ALL))
 EXERCISES=$(patsubst src/exercises/%, docs/exercises/%, $(ALL))
-VERIFIED=$(patsubst src/exercises/%, _temp/verified/%, $(NOTBROKEN))
+VERIFIED=$(patsubst src/exercises/%, _temp/verified/%, $(VERIF))
 
 #TESTED=$(patsubst src/exercises/%, _temp/tested/%, $(NOTBROKEN))
 # TEMPORARY:
