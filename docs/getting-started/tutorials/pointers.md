@@ -34,9 +34,8 @@ involved, because the safety of memory accesses via pointers has to be
 taken into account.
 
 CN uses _separation logic resources_ and the concept of _ownership_ to
-reason about memory accesses. A resource is the permission to access a
-region of memory. Unlike logical constraints, resource ownership is
-_unique_, meaning resources cannot be duplicated.
+reason about memory accesses. A _resource_, intuitively, represents
+the permission to access a region of memory. 
 
 Let’s look at a simple example. The function `read` takes an integer
 pointer `p` and returns the pointee value. 
@@ -49,9 +48,6 @@ exercises/read.c
 
 Running CN on this example produces the following error:
 
-<span style="color:red">
-BCP: This output needs updated.
-</span>
 ```
 cn test read.c
 Compiled 'read_test.c'.
@@ -74,14 +70,17 @@ represented by a _resource_ `Owned<unsigned>(p)`.
 <span style="color:red">
 BCP: Is that right?? Should it be just Owned<unsigned int>(p)? Or just
 Owned(p)?? (I think just Owned(p) is OK, and we should use that
-everywhere it's OK!)
+everywhere it's OK!  We'll need a bit of explanation when we reach the
+first place where it is _not_ OK.)
 </span>
 
 ## Owned resources
 
 Given a C-type `T` and pointer `p`, the resource `Owned<T>(p)` asserts
-_ownership_ of a memory cell at location `p` of the size of C-type
-`T`.
+_ownership_ of a memory region at location `p` of the size of the C type
+`T`.  If `T` is a single-word type, then `<T>` can be omitted.
+<!-- TODO: BCP: Do we mean 32-bit word here?? -->
+<!-- TODO: BCP: Maybe the T argument can be postponed for a while...? -->
 
 In this example, we can ensure the safe execution of `read` by adding
 a precondition that requires ownership of `Owned<unsigned>(p)`, as

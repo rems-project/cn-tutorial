@@ -1,8 +1,20 @@
 # Things to do
 
-## Things to clean up at the end
+## Things to clean up later (but before releasing to newbies!)
 
--   Format exercises consistently throughout
+- Make a pass through the whole document and refresh all the displayed
+  outputs from the system
+- Format exercises consistently throughout
+- Rename exercise files sensibly / consistently and organize them into
+  subdirectories 
+- Fix the top-level README.md with correct names for chapters
+- Figure out how to separate specification stuff from verification
+  stuff 
+    - e.g., make a whole separate TOC for the verification flow, with
+      extra chapters as appropriate
+    - (but even if we do this, we need to name the verification
+      chapters so that people can distinguish them from specification
+      chapters) 
 
 ## General notes
 

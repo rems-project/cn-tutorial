@@ -64,7 +64,7 @@ TESTED = \
   _temp/tested/min3/min3.partial.c \
   _temp/tested/min3/min3.partial1.c \
   _temp/tested/slf_incr2.c \
-  _temp/tested/id_by_div.fixed.c \
+  _temp/tested/id_by_div/id_by_div.fixed.c \
   _temp/tested/slf2_basic_quadruple.c \
   _temp/tested/slf18_two_dice.c \
   _temp/tested/swap.c \
