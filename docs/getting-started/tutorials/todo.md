@@ -1,5 +1,9 @@
 # Things to do
 
+## General notes
+
+- good pedagogical practice: "given a spec, show both examples and counterexamples"
+
 ## Case studies
 
 Case studies drawn from the SUT(s), focused on specs

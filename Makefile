@@ -42,9 +42,8 @@ exercises: $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES)
 
 CN=cn verify
 # make sure to add --output _temp again once CN testing is cleaned up
-CNTEST=cn test --replicas --trace-granularity=none
-# CNTEST=cn test --replicas --output _temp --trace-granularity=none
-# (The --trace-granularity=none part can be deleted soon too)
+CNTEST=cn test 
+# CNTEST=cn test --output _temp
 
 V=@
 
@@ -55,11 +54,10 @@ _temp/tested/% : src/exercises/%
 	$(V)(cd src/exercises; $(CNTEST) ../../$<   2>&1 | tee ../../$@.test.out)
 	$(V)#$(CNTEST) $<   2>&1 | tee $@.test.out
 	$(V)# Next line should go away!
-	$(V)(cd src/exercises; rm -f cn.c cn.h run_tests.sh *-exec.c *_test.c) 2>&1 | tee $@.test.out
+	$(V)(cd src/exercises; rm -f cn.c cn.h run_tests.sh *-exec.c *_test.c) 
 	$(V)-grep PASSED $@.test.out || true
 	$(V)-grep FAILED $@.test.out || true
-	$(V)#Reinstate this check!
-	$(V)#if grep -q "fatal error" $@.test.out; then \
+	$(V)if grep -q "fatal error" $@.test.out; then \
               exit 1; \
 	    fi
 	$(V)touch $@
