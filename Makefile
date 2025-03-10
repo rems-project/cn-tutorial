@@ -35,8 +35,6 @@ TESTED = \
   _temp/tested/abs_mem_struct.c \
   _temp/tested/bcp_framerule.c \
   _temp/tested/slf_quadruple_mem.c \
-  _temp/tested/_temp/funcs2-exec.c \
-  _temp/tested/_temp/const_example-exec.c \
   _temp/tested/const_example_lessgood.c \
   _temp/tested/transpose2.c \
   _temp/tested/slf2_basic_quadruple.signed.c \
@@ -78,11 +76,13 @@ TESTED = \
   _temp/tested/slf0_basic_incr.signed.c \
   _temp/tested/slf15_basic_succ_using_incr_attempt_.c 
 
+temp: 
+	@echo $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES) 
+
 exercises: $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES) 
 
 CN=cn verify
-CNTEST=cn test --output ../../_temp
-# CNTEST=cn test --output _temp
+CNTEST=cn test --output _temp
 
 # Control verbosity (run make with V= to show everything that's happening)
 V=@
@@ -90,14 +90,12 @@ V=@
 _temp/tested/% : src/exercises/%
 	$(V)echo Testing $<
 	$(V)-mkdir -p $(dir $@)
-	$(V)(cd src/exercises; $(CNTEST) ../../$<   2>&1 | tee ../../$@.test.out)
+	$(V)$(CNTEST) $<   2>&1 | tee $@.test.out
 	$(V)-grep PASSED $@.test.out || true
 	$(V)-grep FAILED $@.test.out || true
-	@# This should not be needed!
+	@# Next line should not be needed!
 	$(V)if grep -q "fatal error\\|Failed to compile" $@.test.out; then \
               exit 1; \
-	      else \
-	      echo NO FAIL $@; \
 	    fi
 	$(V)touch $@
 
@@ -122,7 +120,6 @@ docs/exercises.zip: $(EXERCISES)
 
 WORKING=$(wildcard src/exercises/list_*.c)
 WORKING_AUX=$(patsubst src/exercises/%, docs/solutions/%, $(WORKING))
-temp: $(WORKING_AUX) docs-exercises-dirs
 
 # cn test --output-dir=$(HOME)/tmp read.broken.c 	
 
