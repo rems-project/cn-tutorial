@@ -51,6 +51,9 @@ and just include the output excerpt, but do say Running `cn test` intead of
 running CN. I just think that achieves the same effect of avoiding ambiguity
 about what is run without having to worry about filename syncing etc.
 </span>
+<span style="color:red">
+BCP: That's fine.  I've also asked Zain to streamline the CN outputs.
+</span>
 
 ```
 Testing read::read:
@@ -78,14 +81,33 @@ I don't know what a "single-word type" is and
 I think type annotations that are sometimes optional and sometimes not
 are less confusingly presented as always required? -->
 
+<!-- BCP: I feel torn about this.  On one hand, the CN specs we are
+     asking people to read and write are pretty long and verbose,
+     impeding understanding, and removing all these type annotations
+     would streamline some of them significantly.  Moreover, I don't
+     find it hard to explain to a C programmer that when the type is
+     represented in 32 bits it can be omitted.  On the other hand, I
+     do agree that there is *some* overhead to telling people that the
+     annotation can be omitted. I can see a couple stable alternatives:
+       - Keep the annotations everywhere
+       - Delete them everywhere they can be deleted (i.e., for 
+         one-word types) and explain, either here or when we get to the
+         first multi-word pointer target, that we need the annotation
+         there. 
+     I mildly prefer the second. But I wonder whether the decision
+     should be informed by some data about whether pointers to single
+     words are common in real C code...
+-->
+
 <!-- TODO: BCP: Do we mean 32-bit word here?? -->
 <!-- TODO: BCP: Maybe the description of the T argument can be
-     postponed for a while, if we remove the <unsigned int
+     postponed for a while, if we remove the <unsigned int>
      annotations...? -->
 
 In this example, we can ensure the safe execution of `read` by adding
 a precondition that requires ownership of `Owned<unsigned int>(p)`, as
-shown below. (For now ignore the `take ... =` part.) Since reading the pointer does not disturb its value,
+shown below. (The `take ... =` part will be explained shortly.) Since
+reading the pointer does not disturb its value, 
 we can also add a corresponding postcondition, whereby `read` returns
 ownership of `p` after it is finished executing, in the form of
 another `Owned<unsigned int>(p)` resource.
@@ -103,14 +125,6 @@ This specification can be read as follows:
 
 - the caller will receive back a resource `Owned<unsigned int>(p)` when
   `read` returns.
-
-<span style="color:red">
-BCP: Is this going slowly enough for "real-world
-engineers"? Where do we need more detail?
-</span>
-<span style="color:blue">
-JWS: I think this is plenty slow...
-</span>
 
 ## Resource outputs
 
