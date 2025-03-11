@@ -3,17 +3,24 @@
 - [Welcome](welcome.md)
 
 ## A Tour of CN
-- [A first taste of CN](first-taste.md)
+- [Specifications](first-taste.md)
 - [Preconditions](preconditions.md)
-- [V: A first taste of verification](basics-with-verification.md)
+- [<span style="color:black">(Verification)</span>
+   A first taste of verification](verif-basics.md)
 - [Working with pointers](pointers.md)
-- [V: Verification with pointers to structured objects](compound.md)
+- [<span style="color:black">(Verification)</span>
+   Pointers to structured objects, verified](compound.md)
 - [Arrays and loops](arrays.md)
-- [V: Verifying programs with arrays and loops](verif-arrays.md)
-- [Allocating and deallocating 
-  memory](alloc.md)
-- [Dynamic storage allocation](dynamic.md)
+- [<span style="color:black">(Verification)</span>
+   Arrays and loops, verified](verif-arrays.md)
+- [Allocating and deallocating memory](alloc.md)
 - [More on numeric types](numeric.md)
+- [Defining predicates](predicates.md)
+- [Lists](lists.md)
+- [<span style="color:black">(Verification)</span>
+   Case analysis](verif-splitcase.md)
+- [<span style="color:black">(Verification)</span>
+   Working with external lemmas](verif-external.md)
 
 ## Case studies
 
@@ -27,9 +34,6 @@
 
 ## OLD STUFF
 
-- [Defining predicates](verification/defining-predicates.md)
-- [Lists](verification/lists.md)
-- [Working with external lemmas](verification/external-lemmas.md)
 
 
 

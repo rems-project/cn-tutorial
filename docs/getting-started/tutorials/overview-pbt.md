@@ -32,6 +32,9 @@ It calls the function with this input and uses [Fulminate](overview-fulminate.md
 
 #### Understanding errors
 
+<span style="color:red">
+BCP: This is out of date:
+</span>
 Currently, the tool does not print out counterexamples, but this is [planned](https://github.com/rems-project/cerberus/issues/841).
 Until then, `tests.out` can be run with the `--trap` flag in a debugger.
 Since seeds are printed each time the tool runs, `--seed <seed>` can be used to reproduce the test case.

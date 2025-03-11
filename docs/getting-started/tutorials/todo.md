@@ -18,6 +18,13 @@
 - rename `unsigned int` to `unsigned` globally?
 - rewrite `Owned<unsigned int>` to `Owned` globally (and similar for
   other single-word types)
+- Write a section on how to do unit testing, once the process is a
+  little more user-friendly (see `overview-fulminate.md`).  Make sure
+  this is also reflected in the reference manual (or that the manual
+  links back to here).
+- The file `overview-pbt.md` is mostly subsumed by other text here,
+  but there are some more specific instructions that probably belong
+  in the reference manual.
 
 ## General notes
 

@@ -1,5 +1,5 @@
 .PHONY: default check-archive check-tutorial check clean tidy \
-        exercises rebuild tutorial
+	exercises rebuild tutorial
 
 MAKEFILE_DIR:=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -23,9 +23,8 @@ ALL = $(H) $(C)
 BROKEN = $(shell find src/exercises -type f -name *broken*)
 NOTBROKEN = $(filter-out $(BROKEN), $(C))
 
-NOVERIF = $(shell find src/exercises -type f -name *noverif*) \
-          $(BROKEN)
-VERIF = $(filter-out $(NOVERIF), $(C))
+NOVERIF = $(shell find src/exercises -type f -name *noverif*)
+VERIF = $(filter-out $(BROKEN) $(NOVERIF), $(C))
 
 SOLUTIONS=$(patsubst src/exercises/%, docs/solutions/%, $(ALL))
 EXERCISES=$(patsubst src/exercises/%, docs/exercises/%, $(ALL))
@@ -33,7 +32,7 @@ VERIFIED=$(patsubst src/exercises/%, _temp/verified/%, $(VERIF))
 
 #TESTED=$(patsubst src/exercises/%, _temp/tested/%, $(NOTBROKEN))
 # TEMPORARY:
-TESTED = \
+TESTED = $(NOVERIF) \
   _temp/tested/abs_mem_struct.c \
   _temp/tested/bcp_framerule.c \
   _temp/tested/slf_quadruple_mem.c \
@@ -76,12 +75,12 @@ TESTED = \
   _temp/tested/add_0.c \
   _temp/tested/abs.c \
   _temp/tested/slf0_basic_incr.signed.c \
-  _temp/tested/slf15_basic_succ_using_incr_attempt_.c 
+  _temp/tested/slf15_basic_succ_using_incr_attempt_.c
 
-temp: 
-	@echo $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES) 
+temp:
+	@echo $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES)
 
-exercises: $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES) 
+exercises: $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES)
 
 CN=cn verify
 CNTEST=cn test --output _temp
@@ -89,17 +88,33 @@ CNTEST=cn test --output _temp
 # Control verbosity (run make with V= to show everything that's happening)
 V=@
 
+# BCP: This is a temporary hack to use gcc to preprocess #includes
+#      because CN doesn't handle them right.
 _temp/tested/% : src/exercises/%
 	$(V)echo Testing $<
 	$(V)-mkdir -p $(dir $@)
-	$(V)$(CNTEST) $<   2>&1 | tee $@.test.out
-	$(V)-grep PASSED $@.test.out || true
-	$(V)-grep FAILED $@.test.out || true
+	$(V)-mkdir -p $(dir _temp/$<.combined.c)
+	$(V)gcc -E -CC  -P $<   > _temp/$<.combined.c
+	$(V)$(CNTEST) _temp/$<.combined.c   2>&1 | tee $@.test.out
+	$(V)-grep "PASSED\\|FAILED" $@.test.out || true
 	@# Next line should not be needed!
 	$(V)if grep -q "fatal error\\|Failed to compile" $@.test.out; then \
-              exit 1; \
+	      exit 1; \
 	    fi
 	$(V)touch $@
+
+## BCP: Better version...
+#
+# _temp/tested/% : src/exercises/%
+#	$(V)echo Testing $<
+#	$(V)-mkdir -p $(dir $@)
+#	$(V)$(CNTEST) $<   2>&1 | tee $@.test.out
+#	$(V)-grep "PASSED\\|FAILED" $@.test.out || true
+#	@# Next line should not be needed!
+#	$(V)if grep -q "fatal error\\|Failed to compile" $@.test.out; then \
+#               exit 1; \
+#	    fi
+#	$(V)touch $@
 
 _temp/verified/% : src/exercises/%
 	$(V)echo Verifying $<
@@ -123,25 +138,25 @@ docs/exercises.zip: $(EXERCISES)
 WORKING=$(wildcard src/exercises/list_*.c)
 WORKING_AUX=$(patsubst src/exercises/%, docs/solutions/%, $(WORKING))
 
-# cn test --output-dir=$(HOME)/tmp read.broken.c 	
+# cn test --output-dir=$(HOME)/tmp read.broken.c
 
 # OLD
 # docs/solutions/%: src/exercises/%
-# 	@-mkdir -p $(dir $@)
-# 	@-mkdir -p _tests
-# 	@if [ `which cn` ]; then \
-# 	  if [[ "$<" = *".c"* ]]; then \
-# 	    if [[ "$<" != *"broken"* && "$<" != *"partial"* && "$<" != *".DS_Store"* ]]; then \
-# 	      if [[ "$<" = *".test."*c ]]; then \
-# 	        echo $(CNTEST) $< && $(CNTEST) $< --output _tests; \
+#	@-mkdir -p $(dir $@)
+#	@-mkdir -p _tests
+#	@if [ `which cn` ]; then \
+#	  if [[ "$<" = *".c"* ]]; then \
+#	    if [[ "$<" != *"broken"* && "$<" != *"partial"* && "$<" != *".DS_Store"* ]]; then \
+#	      if [[ "$<" = *".test."*c ]]; then \
+#		echo $(CNTEST) $< && $(CNTEST) $< --output _tests; \
 #               else \
-# 	        echo $(CN) $< && $(CN) $<; \
-# 	      fi; \
+#		echo $(CN) $< && $(CN) $<; \
+#	      fi; \
 #             fi; \
-# 	  fi \
-# 	fi
-# 	@echo Rebuild $@
-# 	@cat $< | sed '\|^.*--BEGIN--.*$$|d' | sed '\|^.*--END--.*$$|d' > $@
+#	  fi \
+#	fi
+#	@echo Rebuild $@
+#	@cat $< | sed '\|^.*--BEGIN--.*$$|d' | sed '\|^.*--END--.*$$|d' > $@
 
 ##############################################################################
 # Check that the examples all run correctly

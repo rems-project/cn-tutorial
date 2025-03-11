@@ -2,9 +2,9 @@
 
 Fulminate is a tool for translating CN specifications into C runtime assertions, which can then be checked using concrete test inputs.
 
-## Installation 
+## Installation
 
-Fulminate is installed as part of the CN toolchain - see [README.md](../../installation.md) for instructions.
+Fulminate is installed as part of the CN toolchain - see the [README.md](../installation.md) for instructions.
 
 ## Running Fulminate
 
@@ -16,7 +16,7 @@ To produce a file instrumented with CN runtime assertions, run:
 cn instrument <your-file>.c
 ```
 
-This will produce three files: 
+This will produce three files:
 
 * `<your-file>-exec.c`, the instrumented source
 * `cn.h`, a header file containing various definitions and prototypes, including C struct definitions representing CN datatypes, structs and records, as well as function prototypes for the various translated top-level CN functions and predicates.
@@ -44,4 +44,3 @@ $CHECK_SCRIPT <your-file>.c
 This runs the `cn-runtime-single-file.sh` script from the CN runtime library on `<your-file>.c`, which generates the executable specification files, compiles and links these, and then runs the produced binary. This script is configurable with the `-n` option for disabling dynamic ownership checking and/or the `-q` option for running the script in quiet mode. This script can be found in `runtime/libcn/libexec` if you are interested in seeing the compile and link commands.
 
 The compile command includes the `-g` flag for collecting debug information, which means gdb or lldb can be run on the produced binary for setting breakpoints, stepping in and out of functions in a given run, printing concrete variable values at specific points in the program run, etc. gdb can cause problems on Mac due to some certification-related issues, so for Mac users we recommend you use lldb.
-

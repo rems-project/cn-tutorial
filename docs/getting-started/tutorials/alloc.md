@@ -52,9 +52,7 @@ exercises/ref.h
 ```
 
 <span style="color:red">
-
 TODO: BCP: This example is a bit broken: the file `slf0_basic_incr.c` does not appear at all in the tutorial, though a slightly different version (with signed numbers) does...
-
 </span>
 
 ```c title="exercises/slf16_basic_succ_using_incr.c"
@@ -81,14 +79,12 @@ exercises/slf_ref_greater.c
 
 ### Side note
 
+<span style="color:red">
+TODO: BCP: This is a bit random -- it's not clear people need to know about this alternate syntax, and it's awkwardly mixed with a semi-interesting example that's not relevant to this section. 
+</span>
+
 Here is another syntax for external / unknown
 functions, together with an example of a loose specification:
-
-<span style="color:red">
-
-TODO: BCP: This is a bit random -- it's not clear people need to know about this alternate syntax, and it's awkwardly mixed with a semi-interesting example that's not relevant to this section. Also awkwardly placed, right here.
-
-</span>
 
 ```c title="exercises/slf18_two_dice.c"
 --8<--
