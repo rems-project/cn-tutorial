@@ -1,4 +1,5 @@
-.PHONY: default check-archive check-tutorial check clean exercises
+.PHONY: default check-archive check-tutorial check clean tidy \
+        exercises rebuild tutorial
 
 MAKEFILE_DIR:=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -160,13 +161,13 @@ check: check-tutorial check-archive
 ##############################################################################
 # Tutorial document
 
-# BCP: This runs mkdocs every time we run make, which is a little
-#      noisy -- would be nicer to run it only when other things change
-tutorial: exercises docs/exercises.zip mkdocs.yml $(shell find docs -type f) 
+tutorial: rebuild
 	mkdocs build --strict
 
-serve: exercises docs/exercises.zip mkdocs.yml $(shell find docs -type f)
+serve: rebuild
 	mkdocs serve
+
+rebuild: exercises docs/exercises.zip mkdocs.yml $(shell find docs -type f)
 
 ##############################################################################
 # Misc

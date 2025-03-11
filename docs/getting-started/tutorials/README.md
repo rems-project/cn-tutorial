@@ -8,8 +8,10 @@
 - [V: A first taste of verification](basics-with-verification.md)
 - [Working with pointers](pointers.md)
 - [V: Verification with pointers to structured objects](compound.md)
-- [Arrays and Loops](arrays.md)
-- [V: Verifying Programs with Arrays and Loops](verif-arrays.md)
+- [Arrays and loops](arrays.md)
+- [V: Verifying programs with arrays and loops](verif-arrays.md)
+- [Allocating and deallocating 
+  memory](alloc.md)
 - [Dynamic storage allocation](dynamic.md)
 - [More on numeric types](numeric.md)
 
@@ -26,7 +28,6 @@
 ## OLD STUFF
 
 - [Defining predicates](verification/defining-predicates.md)
-- [Allocating and deallocating memory](verification/allocating-and-deallocating-memory.md)
 - [Lists](verification/lists.md)
 - [Working with external lemmas](verification/external-lemmas.md)
 
