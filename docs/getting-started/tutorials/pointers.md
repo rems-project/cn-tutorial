@@ -33,10 +33,10 @@ taken into account.
 
 CN uses _separation logic resources_ and the concept of _ownership_ to
 reason about memory accesses. A _resource_, intuitively, represents
-the permission to access a region of memory. 
+the permission to access a region of memory.
 
 Let’s look at a simple example. The function `read` takes an integer
-pointer `p` and returns the pointee value. 
+pointer `p` and returns the pointee value.
 
 ```c title="exercises/read.c"
 --8<--
@@ -44,36 +44,43 @@ exercises/read.c
 --8<--
 ```
 
-Running CN on this example produces the following error:
+Running `cn test` on this example produces an error that looks like this:
+<span style="color:blue">
+JWS: I propose a stylistic convention where we omit the `$ cn test filename`
+and just include the output excerpt, but do say Running `cn test` intead of
+running CN. I just think that achieves the same effect of avoiding ambiguity
+about what is run without having to worry about filename syncing etc.
+</span>
 
 ```
-cn test read.c
-Compiled 'read_test.c'.
-Compiled 'read-exec.c'.
-Compiled 'cn.c'.
-
-Linked C *.o files.
-
-Using seed: 65a9c0d1f79889a9
 Testing read::read:
 FAILED
-
-Testing Summary:
-cases: 1, passed: 0, failed: 1, errored: 0, skipped: 0
+function read, file ./read-exec.c, line 18
+************************************************************
+function read, file ./read-exec.c, line 18
+Load failed.
+  ==> 0x122592a09[0] (0x122592a09) not owned
 ```
 
-For the read `*p` to be safe, we need to know that the function has
-permission to access the memory pointed to by `p`.  This permission is
-represented by a _resource_ `Owned<unsigned int>(p)`.
+For the read `*p` to be safe, we need to know that the function has permission
+to access the memory pointed to by `p`. We next explain how to represent this
+permission.
 
 ## Owned resources
 
 Given a C-type `T` and pointer `p`, the resource `Owned<T>(p)` asserts
 _ownership_ of a memory region at location `p` of the size of the C type
-`T`.  If `T` is a single-word type, then `<T>` can be omitted.
+`T`.
+
+<!-- If `T` is a single-word type, then `<T>` can be omitted. -->
+<!-- JWS: ^I propose that we cut this sentence, since
+I don't know what a "single-word type" is and
+I think type annotations that are sometimes optional and sometimes not
+are less confusingly presented as always required? -->
+
 <!-- TODO: BCP: Do we mean 32-bit word here?? -->
-<!-- TODO: BCP: Maybe the description of the T argument can be 
-     postponed for a while, if we remove the <unsigned int 
+<!-- TODO: BCP: Maybe the description of the T argument can be
+     postponed for a while, if we remove the <unsigned int
      annotations...? -->
 
 In this example, we can ensure the safe execution of `read` by adding
@@ -92,17 +99,35 @@ solutions/read.c
 This specification can be read as follows:
 
 - any function calling `read` has to be able to provide a resource
-  `Owned<unsigned int>(p)` to pass into `read`, and 
+  `Owned<unsigned int>(p)` to pass into `read`, and
 
 - the caller will receive back a resource `Owned<unsigned int>(p)` when
-  `read` returns. 
+  `read` returns.
 
 <span style="color:red">
 BCP: Is this going slowly enough for "real-world
-engineers"? Where do we need more detail? 
+engineers"? Where do we need more detail?
+</span>
+<span style="color:blue">
+JWS: I think this is plenty slow...
 </span>
 
 ## Resource outputs
+
+<span style="color:blue"> JWS: Is it actually necessary to explain all this? To
+me in this section a super intuitive thing is being explained in very complicated
+terms. I think `take ...` is super intuitive: we want to be able to write
+conditions on the acutal value at the pointer. I understand there might be some
+technical nuances, but naively I would expect the next few paragraphs to be
+reducable to two sentences, e.g. I propose to replace everything until "JWS:
+continue here" with:
+</span>
+
+<span style="color:blue">
+In addition to reasoning about memory accesed by pointers, we likely also want
+to reason about the actual values that the pointers point to. The `take P =` in
+the precondition assigns the name `P` to the pointee value of `p`.
+</span>
 
 <span style="color:red"> BCP: The idea that "resources have outputs"
 is very mind-boggling to many new users, _especially_ folks with some
@@ -129,10 +154,10 @@ have a pointer `p` and the associated ownership, then this uniquely
 determines the pointee value of `p`.
 
 <span style="color:red">
-BCP: ... in a given heap! (The real problem here is that "and the associated ownership" is pretty vague.) 
+BCP: ... in a given heap! (The real problem here is that "and the associated ownership" is pretty vague.)
 </span>
 <span style="color:red">
-Dhruv: Perhaps mentioning sub-heaps will help? 
+Dhruv: Perhaps mentioning sub-heaps will help?
 </span>
 
 CN uses the `take` notation seen in the example above to bind the
@@ -154,7 +179,11 @@ something like this in the last round of syntax changes...)
 
 <span style="color:red">
 BCP: This might be a good place for a comment on naming
-conventions. Plus a pointer to a longer discussion if needed.  
+conventions. Plus a pointer to a longer discussion if needed.
+</span>
+
+<span style="color:blue">
+JWS: continue here
 </span>
 
 That means we can use the resource outputs from the pre- and postcondition to strengthen the specification of `read` as planned. We add two new postconditions specifying
@@ -172,11 +201,11 @@ exercises/read2.c
     _Aside._ In standard separation logic, the equivalent specification for `read` could have been phrased as follows (where `\return` binds the return value in the postcondition):
 
     <span style="color:red">
-    Sainati: as a separation logic noob, I would love a more detailed explanation about what is going on here. 
+    Sainati: as a separation logic noob, I would love a more detailed explanation about what is going on here.
     </span>
 
     <span style="color:red">
-     Why do we need to have v2 existentially quantified, for example, when p is only pointing to a single value? 
+     Why do we need to have v2 existentially quantified, for example, when p is only pointing to a single value?
     </span>
 
     ```
@@ -193,7 +222,7 @@ exercises/read2.c
 
 In the specifications we have written so far, functions that receive resources as part of their precondition also return this ownership in their postcondition.
 
-Let’s try the `read` example from earlier again, but with a postcondition that does not return the ownership:
+Let’s try the `read` example from earlier again, but without such a postcondition:
 
 ```c title="exercises/read.broken.c"
 --8<--
@@ -202,7 +231,6 @@ exercises/read.broken.c
 ```
 
 CN rejects this program with the following message:
-
 ```
 > cn test exercises/read.broken.c
 ...
@@ -215,22 +243,27 @@ Postcondition leak check failed, ownership leaked for pointer 0x1243d8a82
 BCP: Explain what that means.  Update if the output format changes.
 </span>
 
-CN has typechecked the function and verified (1) that it is safe to
+<!-- CN has typechecked the function and verified (1) that it is safe to
 execute under the precondition (given ownership `Owned<unsigned int>(p)`)
 and (2) that the function (vacuously) satisfies its postcondition. But
 following the check of the postcondition it finds that not all
-resources have been "used up".
+resources have been "used up". -->
+<!-- JWS: I propose that this paragraph is cut, seems less clear all around than the paragraph below-->
 
-Indeed, given the above specification, `read` leaks memory: it takes ownership, does not return it, but also does not deallocate the owned memory or otherwise dispose of it. In CN this is a type error.
+Given the above specification, `read` leaks memory: it takes ownership, does not return it, but also does not deallocate the owned memory or otherwise dispose of it. In CN this is a type error.
 
-CN’s resources are _linear_. This means not only that resources cannot be duplicated, but also that resources cannot simply be dropped or "forgotten". Every resource passed into a function has to be either _returned_ to the caller or else _destroyed_ by deallocating the owned area of memory (as we shall see later).
-
+CN’s resources are _linear_. <!-- This means not only that resources cannot be duplicated, but also that resources cannot simply be dropped or "forgotten".  -->
+Every resource passed into a function has to be either _returned_ to the caller or else _destroyed_ by deallocating the owned area of memory (as we shall see later).
 CN’s motivation for linear tracking of resources is its focus on
 low-level systems software in which memory is managed manually; in
-this context, memory leaks are typically very undesirable. As a
-consequence, function specifications have to do precise bookkeeping of
-their resource footprint and, in particular, return any unused
-resources back to the caller.
+this context, memory leaks are typically very undesirable.
+<!-- As a consequence, function specifications have to do precise bookkeeping of
+their resource footprint and, in particular, return any unused resources back to
+the caller. -->
+
+<span style="color:blue">
+JWS notes to self that I stopped here
+</span>
 
 ## Exercises
 
@@ -279,7 +312,7 @@ value written as the output. This means the resource returned from a
 write records the fact that this memory cell is now initialised and
 can be read from.
 <span style="color:red">
-BCP: Not sure I understand "returns a new resource `Owned<T>(p)` with the value written as the output" -- perhaps in part because I don't understand what the output of a resource means when the resource is not in the context o a take expression. 
+BCP: Not sure I understand "returns a new resource `Owned<T>(p)` with the value written as the output" -- perhaps in part because I don't understand what the output of a resource means when the resource is not in the context o a take expression.
 </span>
 
 Since `Owned` carries the same ownership as `Block`, just with the
@@ -361,7 +394,7 @@ exercises/slf3_basic_inplace_double.c
 
 ## Multiple owned pointers
 
-When functions manipulate multiple pointers, we can assert 
+When functions manipulate multiple pointers, we can assert
 ownership of each one, just like before. But there is an additional
 twist: pointer ownership in CN is _unique_ -- that is, simultaneously owning
 resources for two pointers implies that these
