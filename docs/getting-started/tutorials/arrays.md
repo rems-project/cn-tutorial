@@ -43,9 +43,9 @@ comprising three parts:
 
 Let’s see how this applies to a simple array-manipulating function. Function `read` takes three arguments: the base pointer `p` of an `unsigned int` array, the length `n` of the array, and an index `i` into the array; `read` then returns the value of the `i`-th array cell.
 
-```c title="exercises/array_load.noverif.c"
+```c title="exercises/array_load.test.c"
 --8<--
-exercises/array_load.noverif.c
+exercises/array_load.test.c
 --8<--
 ```
 

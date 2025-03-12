@@ -53,9 +53,9 @@ the definition of BothOwned here, how is CN able to prove that `take
 pv = Owned<unsigned int>(p);` type checks, since all we know about `p`
 in the definition of the predicate is that it's a pointer?  </span>
 
-```c title="exercises/slf_incr2.noverif.c"
+```c title="exercises/slf_incr2.test.c"
 --8<--
-exercises/slf_incr2.noverif.c
+exercises/slf_incr2.test.c
 --8<--
 ```
 

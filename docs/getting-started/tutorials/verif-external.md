@@ -13,13 +13,11 @@ BCP: This needs to be filled in urgently!!
 </span>
 
 <span style="color:red">
-
 TODO: BCP:
 think about capitalization, etc., for lemma names
 push_lemma should be Push_lemma, I guess? Or lemma_push?
 snoc_facts should be lemma_Snoc or something
 others?
-
 </span>
 
 ### List reverse
@@ -55,12 +53,10 @@ proof of `IntList_rev`. Note the two places where `apply` is used
 to tell the SMT solver where to pay attention to the lemmas.
 
 <span style="color:red">
-
 TODO: BCP: Why can't it always pay attention to them? (I guess
 "performance", but at least it would be nice to be able to declare a
 general scope where a given set of lemmas might be needed, rather than
 specifying exactly where to use them.)
-
 </span>
 
 ```c title="exercises/list/rev.c"
@@ -100,16 +96,13 @@ exercises/slf_sized_stack.c
  ====================================================================== 
 </span>
 
-<span style="color:red">
 
 
 ## More on CN Annotations
 
-_TODO_:
-
-- Introduce all the different sorts of CN annotations (e.g.,
+<span style="color:red">
+TODO: Introduce all the different sorts of CN annotations (e.g.,
   `split_case`) individually with small examples and exercises.
-
 </span>
 
 

@@ -18,6 +18,8 @@
 - [Defining predicates](predicates.md)
 - [Lists](lists.md)
 - [<span style="color:black">(Verification)</span>
+   Lists](verif-lists.md)
+- [<span style="color:black">(Verification)</span>
    Case analysis](verif-splitcase.md)
 - [<span style="color:black">(Verification)</span>
    Working with external lemmas](verif-external.md)
@@ -25,6 +27,8 @@
 ## Case studies
 
 - [Imperative queues](../case-studies/imperative-queues.md)
+- [<span style="color:black">(Verification)</span>
+   Verifying imperative queues](../case-studies/verif-imperative-queues.md)
 - [Doubly-linked lists](../case-studies/doubly-linked-lists.md)
 - [Airport Simulation](../case-studies/the-runway.md)
 

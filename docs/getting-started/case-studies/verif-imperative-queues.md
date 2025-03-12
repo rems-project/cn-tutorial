@@ -1,4 +1,4 @@
-# Imperative Queues
+# Verifying Imperative Queues
 
 A queue is a linked list with O(1) operations for adding things to one
 end (the "back") and removing them from the other (the "front"). Here
@@ -24,8 +24,6 @@ exercises/queue/cn_types_1.h
 --8<--
 ```
 
-<span style="color:red">BCP: Explain the asserts if needed.</span>
-
 Given a pointer to a `queue` struct, this predicate grabs ownership
 of the struct, asserts that the `front` and `back` pointers must
 either both be NULL or both be non-NULL, and then hands off to an
@@ -36,7 +34,7 @@ between a queue and a singly or doubly linked list is simply one of
 concrete representation.
 
 `QueueFB` is where the interesting part starts. (Conceptually,
-it is part of `QueuePTR`, but CN currently allows
+`QueueFB` is part of `QueuePTR`, but CN currently allows
 conditional expressions only at the beginning of predicate
 definitions, not after a `take`, so we need to make a separate
 auxiliary predicate.)
@@ -60,7 +58,7 @@ get to it at the end of the recursion starting from the `front`.
 Second, and relatedly, there will be two pointers to this final list
 cell -- one from the `back` field and one from the `next` field of
 the second to last cell (or the `front` pointer, if there is only
-one cell in the list), and we need to be careful not to `take` this
+one cell in the list), so we need to be careful not to `take` this
 cell twice.
 
 Accordingly, we begin by `take`-ing the tail cell and passing it
@@ -69,12 +67,25 @@ walking down the cells from the front and gathering all the rest of
 them into a sequence. We take the result from `QueueAux` and
 `snoc` on the very last element.
 
+The `assert (is_null(B.next))` here gives the CN verifier a crucial
+piece of information about an invariant of the representation: The
+`back` pointer always points to the very last cell in the list, so
+its `next` field will always be NULL.
+
+<span style="color:red">BCP: First point where testing and
+verification split.  Remove most of the material above here.</span>
+
+<span style="color:red">BCP: What about the second assert? </span>
+
+<span style="color:red">BCP: How to help people guess that these are
+needed?? </span>
+
 Finally, the `QueueAux` predicate recurses down the list of
 cells and returns a list of their contents.
 
-```c title="exercises/queue/cn_types_3.test.h"
+```c title="exercises/queue/cn_types_3.verif.h"
 --8<--
-exercises/queue/cn_types_3.test.h
+exercises/queue/cn_types_3.verif.h
 --8<--
 ```
 
@@ -278,6 +289,8 @@ unfolding.)
 
 <span style="color:red">BCP: Ugh. </span>
 
+## Exercises
+
 _Exercise_:
 Investigate what happens when you make each of the following changes
 to the queue definitions. What error does CN report? Where are the
@@ -310,7 +323,5 @@ Can you generalize the `snoc_facts` lemma to handle both cases? You
 can get past the dereference with a `split_case` but formulating the
 lemma before the `return` will be a bit more complicated.
 
-<!-- -->
-
-_Note_: Again, this has not been shown to be possible, but Dhruv
-believes it should be!
+<span style="color:red">BCP: Again, this has not been shown to be
+possible, but Dhruv believes it should be!  </span>

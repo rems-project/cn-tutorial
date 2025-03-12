@@ -13,15 +13,21 @@ Now it's time to look at some more interesting heap structures.
 To begin with, here is a C definition for linked list cells, together
 with allocation and deallocation functions:
 
-<span style="color:red">
-BCP: break sllist out into its own separate .h file and look at it first
-</span>
-
-```c title="exercises/list/c_types.test.h"
+```c title="exercises/list/c_types.verif.h"
 --8<--
-exercises/list/c_types.test.h
+exercises/list/c_types.verif.h
 --8<--
 ```
+
+<span style="color:red">
+BCP: Per discussion with Christopher, Cassia, and Daniel, the word "predicate" is quite confusing for newcomers (in logic, predicates do not return things!). A more neutral word might make for significantly easier onboarding.
+</span>
+<span style="color:red">
+Dhruv: Or no keyword? rems-project/cerberus#304 How about traversal?
+</span>
+<span style="color:red">
+ BCP: No keyword sounds even better. But "traversal" in the interim is not bad. Or maybe "extractor" or something like that?
+</span>
 
 To write specifications for C functions that manipulate lists, we need
 to define a CN "predicate" that describes specification-level list
@@ -41,10 +47,6 @@ exercises/list/cn_types.h
 We can also write _functions_ on CN-level lists by ordinary functional
 programming (in a slightly strange, unholy-union-of-C-and-Rust
 syntax):
-<span style="color:red">
-BCP: Surely we've made that point already?
-</span>
-
 
 ```c title="exercises/list/hdtl.h"
 --8<--
@@ -65,9 +67,9 @@ Finally, we can collect all this stuff into a single header file. (We
 add the usual C `#ifndef` gorp to avoid complaints from the compiler
 if it happens to get included twice from the same source file later.)
 
-```c title="exercises/list/headers.test.h"
+```c title="exercises/list/headers.verif.h"
 --8<--
-exercises/list/headers.test.h
+exercises/list/headers.verif.h
 --8<--
 ```
 
@@ -91,21 +93,30 @@ exercises/list/append.h
 --8<--
 ```
 
-Here is a simple destructive `append` function.
+<span style="color:red">
+BCP: Here's the first place where the verification version differs.
+Tidy the file above and below!
+</span>
 
-```c title="exercises/list/append.test.c"
+Here is a simple destructive `append` function. Note the two uses
+of the `unfold` annotation in the body, which are needed to help the
+CN typechecker. The `unfold` annotation is an instruction to CN to replace a call to a recursive (CN) function (in this case `append`)
+with its definition, and is necessary because CN is unable to automatically determine when and where to expand recursive definitions on its own.
+
+<span style="color:red">
+BCP: Can someone add a more technical explanation of why they are needed and exactly what they do?
+</span>
+
+```c title="exercises/list/append.verif.c"
 --8<--
-exercises/list/append.test.c
+exercises/list/append.verif.c
 --8<--
 ```
 
 ### List copy
 
-Here is an allocating list copy function.
-
-<span style="color:red">
-BCP: `L_` should probably be `L_post`
-</span>
+Here is an allocating list copy function with a pleasantly light
+annotation burden.
 
 ```c title="exercises/list/copy.c"
 --8<--
@@ -132,9 +143,9 @@ BCP: We've heard from more than one reader that this example is particularly har
 BCP: Nit: Merge multiple requires and ensures clauses into one
 </span>
 
-```c title="exercises/list/mergesort.test.c"
+```c title="exercises/list/mergesort.c"
 --8<--
-exercises/list/mergesort.test.c
+exercises/list/mergesort.c
 --8<--
 ```
 

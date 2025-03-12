@@ -1,6 +1,6 @@
 # Doubly-linked Lists
 
-<!-- TODO: BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions. -->
+<span style="color:red">BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions. </span>
 
 A doubly linked list is a linked list where each node has a pointer
 to both the next node and the previous node. This allows for O(1)
@@ -38,7 +38,7 @@ we first own the node that is passed in. Then we follow all of the
 all the `next` pointers to own everything forwards from the node, to
 construct the `left` and `right` fields.
 
-<!-- TODO: BCP: Maybe rethink the Own_Forwards / Backwards naming -- would something like Queue_At_Left and Queue_At_Right be clearer?? -->
+<span style="color:red">BCP: Maybe rethink the Own_Forwards / Backwards naming -- would something like Queue_At_Left and Queue_At_Right be clearer?? </span>
 
 ```c title="exercises/dll/predicates.h"
 --8<--
@@ -112,7 +112,7 @@ exercises/dll/add_orig.broken.c
 _Exercise_: Before reading on, see if you can figure out what
 specification is appropriate and what other are needed.
 
-<!-- TODO: BCP: I rather doubt they are going to be able to come up with this specification on their own! We need to set it up earlier with a simpler example (maybe in a whoile earlier section) showing how to use conditionals in specs. -->
+<span style="color:red">BCP: I rather doubt they are going to be able to come up with this specification on their own! We need to set it up earlier with a simpler example (maybe in a whoile earlier section) showing how to use conditionals in specs. </span>
 
 Now, here is the annotated version of the `add` operation:
 
@@ -173,7 +173,7 @@ exercises/dll/remove_orig.broken.c
 _Exercise_: Before reading on, see if you can figure out what
 specification is appropriate and what annotations are needed.
 
-<!-- TODO: BCP: Again, unlikely the reader is going to be able to figure this out without help. We need some hints. -->
+<span style="color:red">BCP: Again, unlikely the reader is going to be able to figure this out without help. We need some hints. </span>
 
 Now, here is the fully annotated version of the `remove` operation:
 

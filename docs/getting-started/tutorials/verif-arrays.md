@@ -170,9 +170,7 @@ solutions/init_array.c
 ```
 
 <span style="color:red">
-
 TODO: BCP: Concrete syntax: Why not write something like "unchanged {p,n}" or "unchanged: p,n"?
-
 </span>
 
 The main condition here is unsurprising: we specify ownership of an iterated resource for an array just like in the the pre- and postcondition.
@@ -182,9 +180,7 @@ The second thing we need to do, however, is less straightforward. Recall that, a
 **Note.** If we forget to specify `unchanged`, this can lead to confusing errors. In this example, for instance, CN would verify the loop against the loop invariant, but would be unable to prove a function postcondition seemingly directly implied by the loop invariant (lacking the information that the postcondition's `p` and `n` are the same as the loop invariant's). Future CN versions may handle loop invariants differently and treat variables as immutable by default.
 
 <span style="color:red">
-
 TODO: BCP: This seems like a good idea!
-
 </span>
 
 The final piece needed in the verification is an `extract` statement, as used in the previous examples: to separate the individual `Owned<char>` resource for index `j` out of the iterated `Owned` resource and make it available to the resource inference, we specify `extract Owned<char>, j;`.

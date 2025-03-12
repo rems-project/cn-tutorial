@@ -20,22 +20,21 @@ tidy:
 H = $(shell find src/exercises -type f -name *.h)
 C = $(shell find src/exercises -type f -name *.c)
 ALL = $(H) $(C)
-BROKEN = $(shell find src/exercises -type f -name *broken*)
-NOTBROKEN = $(filter-out $(BROKEN), $(C))
 
-NOVERIF = $(shell find src/exercises -type f -name *noverif*)
-VERIF = $(filter-out $(BROKEN) $(NOVERIF), $(C))
+TESTONLY = $(shell find src/exercises -type f -name *.test*.c)
+VERIFONLY = $(shell find src/exercises -type f -name *.verif*.c)
+
+BROKEN = $(shell find src/exercises -type f -name *broken* -or -name *partial*)
+VERIF = $(filter-out $(BROKEN) $(TESTONLY), $(C))
+TEST = $(filter-out $(BROKEN) $(VERIFONLY), $(C))
 
 SOLUTIONS=$(patsubst src/exercises/%, docs/solutions/%, $(ALL))
 EXERCISES=$(patsubst src/exercises/%, docs/exercises/%, $(ALL))
 VERIFIED=$(patsubst src/exercises/%, _temp/verified/%, $(VERIF))
 
-MD = $(shell find docs -type f -name "*.md")
-CONSISTENT=$(patsubst %, _temp/consistent/%, $(MD))
-
-#TESTED=$(patsubst src/exercises/%, _temp/tested/%, $(NOTBROKEN))
+#TESTED=$(patsubst src/exercises/%, _temp/tested/%, $(TEST))
 # TEMPORARY:
-TESTED = $(NOVERIF) \
+TESTED = $(patsubst src/exercises/%, _temp/tested/%, $(TESTONLY)) \
   _temp/tested/abs_mem_struct.c \
   _temp/tested/bcp_framerule.c \
   _temp/tested/slf_quadruple_mem.c \
@@ -70,7 +69,6 @@ TESTED = $(NOVERIF) \
   _temp/tested/slf_incr2.c \
   _temp/tested/id_by_div/id_by_div.fixed.c \
   _temp/tested/slf2_basic_quadruple.c \
-  _temp/tested/slf18_two_dice.c \
   _temp/tested/swap.c \
   _temp/tested/slf1_basic_example_let.signed.c \
   _temp/tested/slf9_basic_transfer_aliased.c \
@@ -80,7 +78,14 @@ TESTED = $(NOVERIF) \
   _temp/tested/slf0_basic_incr.signed.c \
   _temp/tested/slf15_basic_succ_using_incr_attempt_.c
 
-exercises: $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES) $(CONSISTENT)
+# NOT WORKING?
+#  _temp/tested/slf18_two_dice.c \
+
+
+MD = $(shell find docs -type f -name "*.md")
+CONSISTENT=$(patsubst %, _temp/consistent/%, $(MD))
+
+exercises: $(EXERCISES) $(SOLUTIONS) $(TESTED) $(VERIFIED) $(CONSISTENT)
 
 CN=cn verify
 CNTEST=cn test --output _temp
@@ -98,7 +103,7 @@ _temp/tested/% : src/exercises/%
 	$(V)$(CNTEST) _temp/$<.combined.c   2>&1 | tee $@.test.out
 	$(V)-grep "PASSED\\|FAILED" $@.test.out || true
 	@# Next line should not be needed!
-	$(V)if grep -q "fatal error\\|Failed to compile" $@.test.out; then \
+	$(V)if grep -q "fatal error\\|Failed to compile\\|Failed to link\\|: error:" $@.test.out; then \
 	      exit 1; \
 	    fi
 	$(V)touch $@
@@ -120,6 +125,9 @@ _temp/verified/% : src/exercises/%
 	$(V)echo Verifying $<
 	$(V)-mkdir -p $(dir $@)
 	$(V)$(CN) $<   2>&1 | tee $@.verif.out
+	$(V)if grep -q "fatal error\\|Failed to compile\\|Failed to link\\|: error:" $@.verif.out; then \
+	      exit 1; \
+	    fi
 	$(V)touch $@
 
 docs/exercises/%: src/exercises/%

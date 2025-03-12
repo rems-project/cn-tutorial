@@ -93,7 +93,7 @@ are less confusingly presented as always required? -->
      words are common in real C code...
 -->
 
-<!-- TODO: BCP: Do we mean 32-bit word here?? -->
+<span style="color:red">BCP: Do we mean 32-bit word here?? </span>
 <!-- TODO: BCP: Maybe the description of the T argument can be
      postponed for a while, if we remove the <unsigned int>
      annotations...? -->

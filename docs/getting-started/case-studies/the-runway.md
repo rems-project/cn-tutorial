@@ -1,6 +1,6 @@
 # Airport Simulation
 
-<!-- TODO: BCP: I'm nervous about this case study -- it is not nearly as well debugged as the others, and it seems potentially quite confusing. I propose deleting it, but if other like it we can try to whip it into better shape... -->
+<span style="color:red">BCP: I'm nervous about this case study -- it is not nearly as well debugged as the others, and it seems potentially quite confusing. I propose deleting it, but if other like it we can try to whip it into better shape... </span>
 
 Suppose we have been tasked with writing a program that simulates a
 runway at an airport. This airport is very small, so it only has one
@@ -11,7 +11,7 @@ following informal specification:
 1. The runway has two modes: departure mode and arrival mode. The two
 modes can never be active at the same time. Neither mode is active
 at the beginning of the day.
-<!-- TODO: BCP: Would it be simpler to say it is in arrival mode at the beginning of the day? What difference would that make? (Saying there are two modes and then immediately introducing a third one is a bit confusing.) -->
+<span style="color:red">BCP: Would it be simpler to say it is in arrival mode at the beginning of the day? What difference would that make? (Saying there are two modes and then immediately introducing a third one is a bit confusing.) </span>
 
 2. At any given moment, there is a waiting list of planes that need to
    land at the airport and planes that need to leave the
