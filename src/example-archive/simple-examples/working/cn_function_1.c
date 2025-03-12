@@ -1,5 +1,5 @@
 // Example of the `cn_function` feature for extracting spec-level functions.
-// This example extracts a ternary bitwise-OR 
+// This example focuss a ternary bitwise-OR 
 
 // Give the CN-level signature for bitwise-OR 
 /*@

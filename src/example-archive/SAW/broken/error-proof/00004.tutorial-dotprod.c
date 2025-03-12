@@ -48,10 +48,10 @@ function [rec] (u32) dotprod_spec(map<u32, u32> x,map<u32, u32> y, uint32_t size
 @*/
 
 uint32_t dotprod(uint32_t *x, uint32_t *y, uint32_t size)
-/*@ requires take ax0 = each(u32 j; 0u32 <= j && j < size) { Owned<uint32_t>(array_shift<uint32_t>(x,j)) };
-             take ay0 = each(u32 j; 0u32 <= j && j < size) { Owned<uint32_t>(array_shift<uint32_t>(y,j)) }
-    ensures  take ax1 = each(u32 j; 0u32 <= j && j < size) { Owned<uint32_t>(array_shift<uint32_t>(x,j)) };
-             take ay1 = each(u32 j; 0u32 <= j && j < size) { Owned<uint32_t>(array_shift<uint32_t>(y,j)) };
+/*@ requires take ax0 = each(u32 j; 0u32 <= j && j < size) { RW<uint32_t>(array_shift<uint32_t>(x,j)) };
+             take ay0 = each(u32 j; 0u32 <= j && j < size) { RW<uint32_t>(array_shift<uint32_t>(y,j)) }
+    ensures  take ax1 = each(u32 j; 0u32 <= j && j < size) { RW<uint32_t>(array_shift<uint32_t>(x,j)) };
+             take ay1 = each(u32 j; 0u32 <= j && j < size) { RW<uint32_t>(array_shift<uint32_t>(y,j)) };
 	     return == dotprod_spec(ax1,ay1,size)
 @*/
 {
@@ -59,14 +59,14 @@ uint32_t dotprod(uint32_t *x, uint32_t *y, uint32_t size)
     /*@ unfold dotprod_spec(ax0,ay0,0u32); @*/
     /*@ assert(0u32 == dotprod_spec(ax0,ay0,0u32)); @*/
     for(size_t i = 0; i < size; i++)
-      /*@ inv take axi = each(u32 j; 0u32 <= j && j < size) { Owned<uint32_t>(array_shift<uint32_t>(x,j)) };
-              take ayi = each(u32 j; 0u32 <= j && j < size) { Owned<uint32_t>(array_shift<uint32_t>(y,j)) };
+      /*@ inv take axi = each(u32 j; 0u32 <= j && j < size) { RW<uint32_t>(array_shift<uint32_t>(x,j)) };
+              take ayi = each(u32 j; 0u32 <= j && j < size) { RW<uint32_t>(array_shift<uint32_t>(y,j)) };
 	      {x} unchanged; {y} unchanged;
 	      0u64<=i;
 	      res == dotprod_spec(axi,ayi,(u32)i)
       @*/
       {
-	/*@ extract Owned<uint32_t>, i; @*/
+	/*@ focus RW<uint32_t>, i; @*/
         res += x[i] * y[i];
 	/*@ unfold dotprod_spec(axi,ayi,(u32)i); @*/
     }

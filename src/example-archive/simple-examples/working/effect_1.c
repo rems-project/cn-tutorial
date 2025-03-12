@@ -7,9 +7,9 @@ int g;
 void
 write_g_to_1()
 /*@ requires 
-        take Pre = Block<int>(&g); @*/
+        take Pre = W<int>(&g); @*/
 /*@ ensures 
-        take Post = Owned<int>(&g); 
+        take Post = RW<int>(&g); 
         Post == 1i32; @*/
 {
 	g = 1;
@@ -19,9 +19,9 @@ write_g_to_1()
 int
 effect_1()
 /*@ requires 
-      take Pre = Block<int>(&g); @*/
+      take Pre = W<int>(&g); @*/
 /*@ ensures 
-      take Post = Owned<int>(&g); 
+      take Post = RW<int>(&g); 
       return == 1i32; @*/
 {
   int x;

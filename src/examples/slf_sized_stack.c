@@ -11,7 +11,7 @@ struct sized_stack
 type_synonym SizedStack = {u32 Size, datatype List Data}
 
 predicate (SizedStack) SizedStack_At (pointer p) {
-    take P = Owned<struct sized_stack>(p);
+    take P = RW<struct sized_stack>(p);
     take D = SLList_At(P.data);
     assert(P.size == Length(D));
     return { Size: P.size, Data: D };
@@ -22,13 +22,13 @@ extern struct sized_stack *malloc__sized_stack();
 /*@
 spec malloc__sized_stack();
      requires true;
-     ensures take R = Block<struct sized_stack>(return);
+     ensures take R = W<struct sized_stack>(return);
 @*/
 
 extern void *free__sized_stack(struct sized_stack *s);
 /*@
 spec free__sized_stack(pointer s);
-     requires take R = Block<struct sized_stack>(s);
+     requires take R = W<struct sized_stack>(s);
      ensures true;
 @*/
 

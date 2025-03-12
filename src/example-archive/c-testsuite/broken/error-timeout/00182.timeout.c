@@ -182,7 +182,7 @@ void print_led(unsigned long x, char *buf)
    static int d[MAX_DIGITS];
 
 
-   /* extract digits from x */
+   /* focus digits from x */
 
    n = ( x == 0L ? 1 : 0 );  /* 0 is a digit, hence a special case */
 

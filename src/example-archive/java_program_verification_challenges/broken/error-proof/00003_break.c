@@ -53,8 +53,8 @@ void negateFirst() {
 }
 
 int main()
-  /*@ requires take vl0 = Owned<int>(&ia_length)
-      ensures take vp1 = Owned<int>(&ia_length)
+  /*@ requires take vl0 = RW<int>(&ia_length)
+      ensures take vp1 = RW<int>(&ia_length)
   @*/
   {
     // Example usage

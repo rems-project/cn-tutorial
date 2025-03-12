@@ -78,10 +78,10 @@ void initialize() {
  * @ ensures result1 && !result2 && result3 && result4
  */
 void m()
-  /*@ requires take vbl0 = Owned<bool>(bl);
-               take vdl0 = Owned<bool>(dl);
-	       take vb20 = Owned<bool>(b2);
-	       take vd20 = Owned<bool>(d2)
+  /*@ requires take vbl0 = RW<bool>(bl);
+               take vdl0 = RW<bool>(dl);
+	       take vb20 = RW<bool>(b2);
+	       take vd20 = RW<bool>(d2)
       ensures true
   @*/
   {

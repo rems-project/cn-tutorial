@@ -2,10 +2,10 @@
 
 unsigned int *ref_greater (unsigned int *p)
 /* --BEGIN-- */
-/*@ requires take n1 = Owned(p);
+/*@ requires take n1 = RW(p);
              n1 < n1 + 1u32;
-    ensures  take n2 = Owned(p);
-             take m2 = Owned(return);
+    ensures  take n2 = RW(p);
+             take m2 = RW(return);
              n2 == n1;
              m2 > n1;
 @*/

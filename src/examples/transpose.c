@@ -1,8 +1,8 @@
 struct point { int x; int y; };
 
 void transpose (struct point *p) 
-/*@ requires take P = Owned<struct point>(p);
-    ensures take P_post = Owned<struct point>(p);
+/*@ requires take P = RW<struct point>(p);
+    ensures take P_post = RW<struct point>(p);
             P_post.x == P.y;
             P_post.y == P.x;
 @*/

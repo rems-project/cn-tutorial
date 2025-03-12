@@ -1,9 +1,9 @@
 void transfer (unsigned int *p, unsigned int *q)
 /* --BEGIN-- */
-/*@ requires take P = Owned(p);
-             take Q = Owned(q);
-    ensures  take P_post = Owned(p);
-             take Q_post = Owned(q);
+/*@ requires take P = RW(p);
+             take Q = RW(q);
+    ensures  take P_post = RW(p);
+             take Q_post = RW(q);
              P_post == P + Q;
              Q_post == 0u32;
 @*/

@@ -12,9 +12,9 @@ main()
 			@*/
 /*@ ensures return == 0i32; @*/
 {
-	/*@ extract Owned<int>, 0u64; @*/
-	/*@ extract Owned<int>, 1u64; @*/
-	/*@ extract Owned<int>, 2u64; @*/
+	/*@ focus RW<int>, 0u64; @*/
+	/*@ focus RW<int>, 1u64; @*/
+	/*@ focus RW<int>, 2u64; @*/
 	if (a[0] != 0)
 		return 1;
 	if (a[1] != 1)

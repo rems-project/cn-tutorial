@@ -3,9 +3,9 @@ int g;
 int
 effect()
 /*@ requires 
-        take Pre = Owned<int>(&g); @*/
+        take Pre = RW<int>(&g); @*/
 /*@ ensures 
-        take Post = Owned<int>(&g); 
+        take Post = RW<int>(&g); 
         Post == 1i32;  
         return == 1i32; @*/
 {
@@ -16,9 +16,9 @@ effect()
 int
 main()
 /*@ requires 
-        take Pre = Owned<int>(&g); @*/
+        take Pre = RW<int>(&g); @*/
 /*@ ensures 
-        take Post = Owned<int>(&g); @*/
+        take Post = RW<int>(&g); @*/
 /*@ ensures return == 0i32; @*/
 {
     int x;
