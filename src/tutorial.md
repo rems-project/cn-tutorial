@@ -186,7 +186,7 @@ statement, CN lists the typechecked sub-expressions, and the memory
 accesses and function calls within these.
 
 In our example, there is only one possible control-flow path: entering
-the function body (section "`function body`") and executing the block
+the function body (section "`function body`") and executing the W
 from lines 2 to 4, followed by the return statement at line 3. The
 entry for the latter contains the sequence of sub-expressions in the
 return statement, including reads of the variables `x` and `y`.
@@ -325,31 +325,17 @@ cn verify exercises/read.c
 exercises/read.c:3:10: error: Missing resource for reading
 return \*p;
 ^~
-Resource needed: Owned<signed int>(p)
+Resource needed: RW<signed int>(p)
 Consider the state in /var/folders/\_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_403624.html
 ```
 
-For the read `*p` to be safe, ownership of a resource is missing: a resource `Owned<signed int>(p)`.
+For the read `*p` to be safe, ownership of a resource is missing: a resource `RW<signed int>(p)`.
 
-### Owned resources
+### RW resources
 
-<!-- TODO: BCP: Perhaps this is a good time for one last discussion of the keyword "Owned", which I have never found very helpful: the resource itself isn't owned -- it's a description of something that _can_ be owned. (It's "take" that does the owning.) Moreover, "Owned" and "Block" are badly non-parallel, both grammatically and semantically. I suggest "Resource" instead of "Owned". (We can keep "Block" -- it's not too bad, IMO.) -->
+Given a C-type `T` and pointer `p`, the resource `RW<T>(p)` asserts the ability to read and write that memory cell at location `p` of the size of C-type `T`. It is CN’s equivalent of a points-to assertion in separation logic (indexed by C-types `T`).
 
-<!--
-Dhruv:
-We use the word "resources" to describe any "resource predicate" owned, or user-defined, (and eventually live allocations and locks) so I'm not sure that suggestion works any better. It is just a points-to with read and write permissions, so perhaps a RW(p)? (or ReadWrite(p)?).
-
-@bcpierce00
-Both of these are better than Owned!
-
-(And then Block can become WriteOnly.)
-
-BCP: I think this discussion is reflected in the GitHub exchange
--->
-
-Given a C-type `T` and pointer `p`, the resource `Owned<T>(p)` asserts ownership of a memory cell at location `p` of the size of C-type `T`. It is CN’s equivalent of a points-to assertion in separation logic (indexed by C-types `T`).
-
-In this example we can ensure the safe execution of `read` by adding a precondition that requires ownership of `Owned<int>(p)`, as shown below. For now ignore the notation `take ... = Owned<int>(p)`. Since reading the pointer does not disturb its value, we also add a corresponding postcondition, whereby `read` returns ownership of `p` after it is finished executing, in the form of another `Owned<int>(p)` resource.
+In this example we can ensure the safe execution of `read` by adding a precondition that requires ownership of `RW<int>(p)`, as shown below. For now ignore the notation `take ... = RW<int>(p)`. Since reading the pointer does not disturb its value, we also add a corresponding postcondition, whereby `read` returns ownership of `p` after it is finished executing, in the form of another `RW<int>(p)` resource.
 
 ```c title="solutions/read.c"
 --8<--
@@ -359,9 +345,9 @@ solutions/read.c
 
 This specification means that:
 
-- any function calling `read` has to be able to provide a resource `Owned<int>(p)` to pass into `read`, and
+- any function calling `read` has to be able to provide a resource `RW<int>(p)` to pass into `read`, and
 
-- the caller will receive back a resource `Owned<int>(p)` when `read` returns.
+- the caller will receive back a resource `RW<int>(p)` when `read` returns.
 
 ### Resource outputs
 
@@ -369,12 +355,12 @@ A caller of `read` may also wish to know that `read` actually returns the correc
 
 <!-- TODO: BCP: The idea that "resources have outputs" is very mind-boggling to many new users, _especially_ folks with some separation logic background. Needs to be explained very carefully. Also, there's some semantic muddle in the terminology: Is a resource (1) a thing in the heap, (2) a thing in the heap that one is currently holding, or (3) the act of holding a thing in the heap? These are definitely not at all the same thing, but our language at different points suggests all three! To me, (1) is the natural sense of the word "resource"; (2) is somewhat awkward, and (3) is extremely awkward. -->
 
-In CN, resources have _outputs_. Each resource outputs the information that can be derived from ownership of the resource. What information is returned is specific to the type of resource. A resource `Owned<T>(p)` (for some C-type `T`) outputs the _pointee value_ of `p`, since that can be derived from the resource ownership: assume you have a pointer `p` and the associated ownership, then this uniquely determines the pointee value of `p`.
+In CN, resources have _outputs_. Each resource outputs the information that can be derived from ownership of the resource. What information is returned is specific to the type of resource. A resource `RW<T>(p)` (for some C-type `T`) outputs the _pointee value_ of `p`, since that can be derived from the resource ownership: assume you have a pointer `p` and the associated ownership, then this uniquely determines the pointee value of `p`.
 
 <!-- TODO: BCP: ... in a given heap! (The real problem here is that "and the associated ownership" is pretty vague.) -->
 <!-- Dhruv: Perhaps mentioning sub-heaps will help? -->
 
-CN uses the `take`-notation seen in the example above to bind the output of a resource to a new name. The precondition `take P = Owned<int>(p)` does two things: (1) it assert ownership of resource `Owned<int>(p)`, and (2) it binds the name `P` to the resource output, here the pointee value of `p` at the start of the function. Similarly, the postcondition introduces the name `P_post` for the pointee value on function return.
+CN uses the `take`-notation seen in the example above to bind the output of a resource to a new name. The precondition `take P = RW<int>(p)` does two things: (1) it assert ownership of resource `RW<int>(p)`, and (2) it binds the name `P` to the resource output, here the pointee value of `p` at the start of the function. Similarly, the postcondition introduces the name `P_post` for the pointee value on function return.
 
 <!-- TODO: BCP: But, as we've discussed, the word "take" in the postcondition is quite confusing: What it's doing is precisely the _opposite_ of "taking" the resournce, not taking it but giving it back!! It would be much better if we could choose a more neutral word that doesn't imply either taking or giving. E.g. "resource". -->
 
@@ -424,14 +410,14 @@ CN rejects this program with the following message:
 ```
 cn verify exercises/read.broken.c
 [1/1]: read
-build/exercises/read.broken.c:4:3: error: Left_Sublist-over unused resource 'Owned<signed int>(p)(v1)'
+build/exercises/read.broken.c:4:3: error: Left_Sublist-over unused resource 'RW<signed int>(p)(v1)'
 return \*p;
 ^~~~~~~~~~
 Consider the state in /var/folders/\_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_17eb4a.html
 ```
 
 CN has typechecked the function and verified (1) that it is safe to
-execute under the precondition (given ownership `Owned<int>(p)`)
+execute under the precondition (given ownership `RW<int>(p)`)
 and (2) that the function (vacuously) satisfies its postcondition. But
 following the check of the postcondition it finds that not all
 resources have been "`used up`".
@@ -465,40 +451,40 @@ exercises/abs_mem.c
 --8<--
 ```
 
-### Block resources
+### W resources
 
-Aside from the `Owned` resources seen so far, CN has another
-built-in type of resource called `Block`. Given a C-type `T` and
-pointer `p`, `Block<T>(p)` asserts the same ownership as
-`Owned<T>(p)` — ownership of a memory cell at `p` the size of type
-`T` — but, in contrast to `Owned`, `Block` memory is not assumed
-to be initialised.
+Aside from the `RW` resources seen so far, CN has another
+built-in type of resource called `W`. Given a C-type `T` and
+pointer `p`, `W<T>(p)` is similar to
+`RW<T>(p)` — referring to a memory cell at `p` the size of type
+`T` — but, in contrast to `RW`, `W` memory is not assumed
+to be initialised, and thus is write-only.
 
 CN uses this distinction to prevent reads from uninitialised memory:
 
 - A read at C-type `T` and pointer `p` requires a resource
-  `Owned<T>(p)`, i.e., ownership of _initialised_ memory at the
-  right C-type. The load returns the `Owned` resource unchanged.
+  `RW<T>(p)`, i.e., ownership of _initialised_ memory at the
+  right C-type. The load returns the `RW` resource unchanged.
 
 - A write at C-type `T` and pointer `p` needs only a
-`Block<T>(p)` (so, unlike reads, writes to uninitialised memory
-are fine). The write consumes ownership of the `Block` resource
-(it destroys it) and returns a new resource `Owned<T>(p)` with the
-value written as the output. This means the resource returned from a
+`W<T>(p)` (so, unlike reads, writes to uninitialised memory
+are fine). The write consumes ownership of the `W` resource
+(it destroys it) and returns a new resource `RW<T>(p)` with the
+value written as its output. This means the resource returned from a
 write records the fact that this memory cell is now initialised and
 can be read from.
-<!-- TODO: BCP: Not sure I understand "returns a new resource `Owned<T>(p)` with the value written as the output" -- perhaps in part because I don't understand what the output of a resource means when the resource is not in the context o a take expression. -->
+<!-- TODO: BCP: Not sure I understand "returns a new resource `RW<T>(p)` with the value written as the output" -- perhaps in part because I don't understand what the output of a resource means when the resource is not in the context o a take expression. -->
 
-Since `Owned` carries the same ownership as `Block`, just with the
-additional information that the `Owned` memory is initalised, a
-resource `Owned<T>(p)` is "`at least as good`" as `Block<T>(p)` —
-an `Owned<T>(p)` resource can be used whenever `Block<T>(p)` is
+Since `RW` carries the same ownership as `W`, just with the
+additional information that the `RW` memory is initalised, a
+resource `RW<T>(p)` is "`at least as good`" as `W<T>(p)` —
+an `RW<T>(p)` resource can be used whenever `W<T>(p)` is
 needed. For instance CN’s type checking of a write to `p` requires a
-`Block<T>(p)`, but if an `Owned<T>(p)` resource is what is
+`W<T>(p)`, but if an `RW<T>(p)` resource is what is
 available, this can be used just the same. This allows an
 already-initialised memory cell to be over-written again.
 
-Unlike `Owned`, whose output is the pointee value, `Block` has no meaningful output.
+Unlike `RW`, whose output is the pointee value, `W` has no meaningful output.
 
 ### Writing through pointers
 
@@ -510,7 +496,7 @@ exercises/slf0_basic_incr.signed.c
 --8<--
 ```
 
-In the precondition we assert ownership of resource `Owned<int>(p)`,
+In the precondition we assert ownership of resource `RW<int>(p)`,
 binding its output/pointee value to `P`, and use `P` to specify
 that `p` must point to a sufficiently small value at the start of
 the function so as not to overflow when incremented. The postcondition
@@ -518,7 +504,7 @@ asserts ownership of `p` with output `P_post`, as before, and uses
 this to express that the value `p` points to is incremented by
 `incr`: `P_post == P + 1i32`.
 
-If we incorrectly tweaked this specification and used `Block<int>(p)` instead of `Owned<int>(p)` in the precondition, as below, then CN would reject the program.
+If we incorrectly tweaked this specification and used `W<int>(p)` instead of `RW<int>(p)` in the precondition, as below, then CN would reject the program.
 
 ```c title="exercises/slf0_basic_incr.signed.broken.c"
 --8<--
@@ -532,17 +518,17 @@ CN reports:
 build/solutions/slf0_basic_incr.signed.broken.c:6:11: error: Missing resource for reading
 int n = \*p;
 ^~
-Resource needed: Owned<signed int>(p)
+Resource needed: RW<signed int>(p)
 Consider the state in /var/folders/\_v/ndl32wpj4bb3y9dg11rvc8ph0000gn/T/state_5da0f3.html
 ```
 
-The `Owned<int>(p)` resource required for reading is missing, since, per the precondition, only `Block<int>(p)` is available. Checking the linked HTML file confirms this. Here the section "`Available resources`" lists all resource ownership at the point of the failure:
+The `RW<int>(p)` resource required for reading is missing, since, per the precondition, only `W<int>(p)` is available. Checking the linked HTML file confirms this. Here the section "`Available resources`" lists all resource ownership at the point of the failure:
 
-- `Block<signed int>(p)(u)`, i.e., ownership of uninitialised memory
+- `W<signed int>(p)(u)`, i.e., ownership of uninitialised memory
   at location `p`; the output is a `void`/`unit` value `u`
   (specified in the second pair of parentheses)
 
-- `Owned<signed int*>(&ARG0)(p)`, the ownership of (initialised)
+- `RW<signed int*>(&ARG0)(p)`, the ownership of (initialised)
   memory at location `&ARG0`, i.e., the memory location where the
   first function argument is stored; its output is the pointer `p`
   (not to be confused with the pointee of `p`); and finally
@@ -577,10 +563,10 @@ exercises/slf3_basic_inplace_double.c
 When functions manipulate multiple pointers, we can assert their
 ownership just like before. However
 pointer ownership in CN is unique -- that is, simultaneously owning
-`Owned` or `Block` resources for two pointers implies that these
+`RW` or `W` resources for two pointers implies that these
 pointers are disjoint.
 
-The following example shows the use of two `Owned` resources for
+The following example shows the use of two `RW` resources for
 accessing two different pointers by a function `add`, which reads
 two `int` values in memory, at locations `p` and `q`, and
 returns their sum.
@@ -646,24 +632,24 @@ the members of `P` and `P_post` individually.
 
 <!--
 -- Dhruv:
-C supports strong updates in certain situations and so take _ = Owned<ct>(p) in the requires clause could very well have a different C type than take _ = Owned<ct2>(p) in the ensures clause.
+C supports strong updates in certain situations and so take _ = RW<ct>(p) in the requires clause could very well have a different C type than take _ = RW<ct2>(p) in the ensures clause.
 
-The reason Owned needs a C-type is so that it can (a) figure out the size of the sub-heap being claimed and (b) figure out how one may need to destructure the type (unions, struct fields and padding, arrays). The relationship is that for take x = Owned<ct>(expr), expr : pointer, x : to_basetype(ct).
+The reason RW needs a C-type is so that it can (a) figure out the size of the sub-heap being claimed and (b) figure out how one may need to destructure the type (unions, struct fields and padding, arrays). The relationship is that for take x = RW<ct>(expr), expr : pointer, x : to_basetype(ct).
 
 There is a design decision to consider here rems-project/cerberus#349
 -->
 
-### Compound Owned and Block resources
+### Compound RW and W resources
 
 While one might like to think of a struct as a single (compound) object that is manipulated as a whole, C permits more flexible struct manipulation: given a struct pointer, programmers can construct pointers to _individual struct members_ and manipulate these as values, including even passing them to other functions.
 
-CN therefore cannot treat resources for compound C types like structs as primitive, indivisible units. Instead, `Owned<T>` and `Block<T>` are defined inductively on the structure of the C-type `T`.
+CN therefore cannot treat resources for compound C types like structs as primitive, indivisible units. Instead, `RW<T>` and `W<T>` are defined inductively on the structure of the C-type `T`.
 
-For struct types `T`, the `Owned<T>` resource is defined as the collection of `Owned` resources for its members (as well as `Block` resources for any padding bytes in-between them). The resource `Block<T>`, similarly, is made up of `Block` resources for all members (and padding bytes).
+For struct types `T`, the `RW<T>` resource is defined as the collection of `RW` resources for its members (as well as `W` resources for any padding bytes in-between them). The resource `W<T>`, similarly, is made up of `W` resources for all members (and padding bytes).
 
 To handle code that manipulates pointers into parts of a struct object, CN can automatically decompose a struct resource into the member resources, and it can recompose the struct later, as needed. The following example illustrates this.
 
-Recall the function `zero` from our earlier exercise. It takes an `int` pointer to uninitialised memory, with `Block<int>` ownership, and initialises the value to zero, returning an `Owned<int>` resource with output `0`.
+Recall the function `zero` from our earlier exercise. It takes an `int` pointer to uninitialised memory, with `W<int>` ownership, and initialises the value to zero, returning an `RW<int>` resource with output `0`.
 
 Now consider the function `init_point`, shown below, which takes a pointer `p` to a `struct point` and zero-initialises its members by calling `zero` twice, once with a pointer to struct member `x`, and once with a pointer to `y`.
 
@@ -673,9 +659,9 @@ exercises/init_point.c
 --8<--
 ```
 
-As stated in its precondition, `init_point` receives ownership `Block<struct point>(p)`. The `zero` function, however, works on `int` pointers and requires `Block<int>` ownership.
+As stated in its precondition, `init_point` receives ownership `W<struct point>(p)`. The `zero` function, however, works on `int` pointers and requires `W<int>` ownership.
 
-CN can prove the calls to `zero` with `&p->x` and `&p->y` are safe because it decomposes the `Block<struct point>(p)` into a `Block<int>` for member `x` and a `Block<int>` for member `y`. Later, the reverse happens: following the two calls to `zero`, as per `zero`’s precondition, `init_point` has ownership of two adjacent `Owned<int>` resources – ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `init_point` requires ownership `Owned<struct point>(p)`, CN combines these back into a compound resource. The resulting `Owned<point struct>` resource has for an output the struct value `P_post` that is composed of the zeroed member values for `x` and `y`.
+CN can prove the calls to `zero` with `&p->x` and `&p->y` are safe because it decomposes the `W<struct point>(p)` into a `W<int>` for member `x` and a `W<int>` for member `y`. Later, the reverse happens: following the two calls to `zero`, as per `zero`’s precondition, `init_point` has ownership of two adjacent `RW<int>` resources – ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `init_point` requires ownership `RW<struct point>(p)`, CN combines these back into a compound resource. The resulting `RW<point struct>` resource has for an output the struct value `P_post` that is composed of the zeroed member values for `x` and `y`.
 
 ### Resource inference
 
@@ -691,17 +677,17 @@ exercises/transpose.broken.c
 --8<--
 ```
 
-The precondition of `transpose` asserts ownership of an `Owned<struct point>(p)` resource. The error report now instead lists under "`Available resources`" two resources:
+The precondition of `transpose` asserts ownership of an `RW<struct point>(p)` resource. The error report now instead lists under "`Available resources`" two resources:
 
-- `Owned<signed int>(member_shift<point>(p, x))` with output `P.x` and
+- `RW<signed int>(member_shift<point>(p, x))` with output `P.x` and
 
-- `Owned<signed int>(member_shift<point>(p, y))` with output `P.y`
+- `RW<signed int>(member_shift<point>(p, y))` with output `P.y`
 
 <!-- TODO: BCP: We should verify that it really does say this. -->
 
 Here `member_shift<s>(p,m)` is the CN expression that constructs, from a `struct s` pointer `p`, the "`shifted`" pointer for its member `m`.
 
-When the function returns, the two member resources are recombined "`on demand`" to satisfy the postcondition `Owned<struct point>(p)`.
+When the function returns, the two member resources are recombined "`on demand`" to satisfy the postcondition `RW<struct point>(p)`.
 
 ### Exercises
 
@@ -733,7 +719,7 @@ To support reasoning about code manipulating arrays and computed pointers, CN ha
 
 ```c
 each (i32 i; 0i32 <= i && i < 10i32)
-{ Owned<int>(array_shift<int>(p,i)) }
+{ RW<int>(array_shift<int>(p,i)) }
 ```
 
 In detail, this can be read as follows:
@@ -742,7 +728,7 @@ In detail, this can be read as follows:
 
 - if `i` is between `0` and `10`, …
 
-- assert ownership of a resource `Owned<int>` …
+- assert ownership of a resource `RW<int>` …
 
 - for cell `i` of the array with base-address `p`.
 
@@ -774,7 +760,7 @@ exercises/array_load.broken.c
 
 The CN precondition requires
 
-- ownership of the array on entry — one `Owned<int>` resource for each array index between `0` and `n` — and
+- ownership of the array on entry — one `RW<int>` resource for each array index between `0` and `n` — and
 - that `i` lies within the range of owned indices.
 
 On exit the array ownership is returned again.
@@ -787,12 +773,12 @@ cn verify solutions/array_load.broken.c
 build/solutions/array_load.broken.c:5:10: error: Missing resource for reading
 return p[i];
 ^~~~
-Resource needed: Owned<signed int>(array_shift<signed int>(p, (u64)i))
+Resource needed: RW<signed int>(array_shift<signed int>(p, (u64)i))
 ```
 
-The reason is that, when searching for a required resource, such as the `Owned` resource for `p[i]` here, CN’s resource inference does not consider iterated resources. Quantifiers, as used by iterated resources, can make verification undecidable, so, in order to maintain predictable type checking, CN delegates this aspect of the reasoning to the user.
+The reason is that, when searching for a required resource, such as the `RW` resource for `p[i]` here, CN’s resource inference does not consider iterated resources. Quantifiers, as used by iterated resources, can make verification undecidable, so, in order to maintain predictable type checking, CN delegates this aspect of the reasoning to the user.
 
-To make the `Owned` resource required for accessing `p[i]` available to CN’s resource inference we have to explicitly "`extract`" ownership for index `i` out of the iterated resource.
+To make the `RW` resource required for accessing `p[i]` available to CN’s resource inference we have to explicitly "`focus`" ownership for index `i` out of the iterated resource.
 
 ```c title="exercises/array_load.c"
 --8<--
@@ -800,10 +786,10 @@ exercises/array_load.c
 --8<--
 ```
 
-Here the CN comment `/*@ extract Owned<int>, i; @*/` is a proof hint in the form of a "`ghost statement`" that instructs CN to instantiate any available iterated `Owned<int>` resource for index `i`. In our example this operation splits the iterated resource into two:
+Here the CN comment `/*@ focus RW<int>, i; @*/` is a proof hint in the form of a "`ghost statement`" that instructs CN to instantiate any available iterated `RW<int>` resource for index `i`. In our example this operation splits the iterated resource into two:
 
 ```c
-each(i32 j; 0i32 <= j && j < n) { Owned<int>(array_shift<int>(p,j)) }
+each(i32 j; 0i32 <= j && j < n) { RW<int>(array_shift<int>(p,j)) }
 ```
 
 is split into
@@ -811,19 +797,19 @@ is split into
 1. the instantiation of the iterated resource at `i`
 
 ```c
-Owned<int>(array_shift<int>(p,i))
+RW<int>(array_shift<int>(p,i))
 ```
 
 2. the remainder of the iterated resource, the ownership for all indices except `i`
 
 ```c
   each(i32 j; 0i32 <= j && j < n && j != i)
-  { Owned<int>(array_shift<int>(p,j)) }
+  { RW<int>(array_shift<int>(p,j)) }
 ```
 
-After this extraction step, CN can use the (former) extracted resource to justify the access `p[i]`. Note that an `extract` statement's second argument can be any arithmetic expression, not just a single identifier like in this example.
+After this focusion step, CN can use the (former) focused resource to justify the access `p[i]`. Note that an `focus` statement's second argument can be any arithmetic expression, not just a single identifier like in this example.
 
-Following an `extract` statement, CN remembers the extracted index and can automatically "`reverse`" the extraction when needed: after type checking the access `p[i]` CN must ensure the function’s postcondition holds, which needs the full array ownership again (including the extracted index `i`); remembering the index `i`, CN then automatically merges resources (1) and (2) again to obtain the required full array ownership, and completes the verification of the function.
+Following an `focus` statement, CN remembers the focused index and can automatically "`reverse`" the focusion when needed: after type checking the access `p[i]` CN must ensure the function’s postcondition holds, which needs the full array ownership again (including the focused index `i`); remembering the index `i`, CN then automatically merges resources (1) and (2) again to obtain the required full array ownership, and completes the verification of the function.
 
 So far the specification only guarantees safe execution but does not
 specify the behaviour of `read`. To address this, let’s return to
@@ -831,9 +817,9 @@ the iterated resources in the function specification. When we specify
 `take A = each ...` here, what is `A`? In CN, the output of an
 iterated resource is a _map_ from indices to resource outputs. In this
 example, where index `j` has CN type `i32` and the iterated
-resource is `Owned<int>`, the output `A` is a map from `i32`
+resource is `RW<int>`, the output `A` is a map from `i32`
 indices to `i32` values — CN type `map<i32,i32>`. If the type of
-`j` was `i64` and the resource `Owned<char>`, `A` would have
+`j` was `i64` and the resource `RW<char>`, `A` would have
 type `map<i64,u8>`.
 
 We can use this to refine our specification with information about the functional behaviour of `read`.
@@ -844,7 +830,7 @@ exercises/array_load2.c
 --8<--
 ```
 
-We specify that `read` does not change the array — the outputs of `Owned`,
+We specify that `read` does not change the array — the outputs of `RW`,
 `A` and `A_post`, taken before and after running the function, are
 the same — and that the value returned is `A[i]`.
 
@@ -861,7 +847,7 @@ exercises/add_two_array.c
 ```
 
 <!--
-TODO: BCP: In this one I got quite tangled up in different kinds of integers, then got tangled up in (I think) putting the extract declarations in the wrong place. (I didn't save the not-working version, I'm afraid.)
+TODO: BCP: In this one I got quite tangled up in different kinds of integers, then got tangled up in (I think) putting the focus declarations in the wrong place. (I didn't save the not-working version, I'm afraid.)
 
 TODO: Sainati: I think it would be useful to have a int array version of this exercise as a worked example; I am not sure, for example, how one would express bounds requirements on the contents of an array in CN, as you would need to do here to ensure that p[i] + p[j] doesn’t overflow if p's contents are signed ints
 -->
@@ -878,18 +864,18 @@ exercises/swap_array.c
 TODO: BCP: I wrote this, which seemed natural but did not work -- I still don't fully understand why. I think this section will need some more examples / exercises to be fully digestible, or perhaps this is just yet another symptom of my imperfecdt understanding of how the numeric stuff works.
 
     void swap_array (int *p, int n, int i, int j)
-    /*@ requires take a1 = each(i32 k; 0i32 <= k && k < n) { Owned<unsigned int>(array_shift<unsigned int>(p,k)) };
+    /*@ requires take a1 = each(i32 k; 0i32 <= k && k < n) { RW<unsigned int>(array_shift<unsigned int>(p,k)) };
                  0i32 <= i && i < n;
                  0i32 <= j && j < n;
                  j != i;
-                 take xi = Owned<unsigned int>(array_shift(p,i));
-                 take xj = Owned<unsigned int>(array_shift(p,j))
-        ensures take a2 = each(i32 k; 0i32 <= k && k < n) { Owned<unsigned int>(array_shift<unsigned int>(p,k)) };
+                 take xi = RW<unsigned int>(array_shift(p,i));
+                 take xj = RW<unsigned int>(array_shift(p,j))
+        ensures take a2 = each(i32 k; 0i32 <= k && k < n) { RW<unsigned int>(array_shift<unsigned int>(p,k)) };
                 a1[i:xj][j:xi] == a2
     @*/
     {
-      extract Owned<unsigned int>, i;
-      extract Owned<unsigned int>, j;
+      focus RW<unsigned int>, i;
+      focus RW<unsigned int>, j;
       int tmp = p[i];
       p[i] = p[j];
       p[j] = tmp;
@@ -913,7 +899,7 @@ exercises/init_array.c
 --8<--
 ```
 
-If, for the moment, we focus just on proving safe execution of `init_array`, ignoring its functional behaviour, a specification might look as above: on entry, `init_array` takes ownership of an iterated `Owned<char>` resource -- one `Owned` resource for each index `i` of type `u32` (so necessarily greater or equal to `0`) up to `n`; on exit `init_array` returns the ownership.
+If, for the moment, we focus just on proving safe execution of `init_array`, ignoring its functional behaviour, a specification might look as above: on entry, `init_array` takes ownership of an iterated `RW<char>` resource -- one `RW` resource for each index `i` of type `u32` (so necessarily greater or equal to `0`) up to `n`; on exit `init_array` returns the ownership.
 
 To verify this, we have to supply a loop invariant that specifies all resource ownership and the necessary constraints that hold before and after each iteration of the loop. Loop invariants are specified using the keyword `inv`, followed by CN specifications using the same syntax as in function pre- and postconditions. The variables in scope for loop invariants are all in-scope C variables, as well as CN variables introduced in the function precondition. _In loop invariants, the name of a C variable refers to its current value_ (more on this shortly).
 
@@ -937,13 +923,13 @@ The second thing we need to do, however, is less straightforward. Recall that, a
 TODO: BCP: This seems like a good idea!
 -->
 
-The final piece needed in the verification is an `extract` statement, as used in the previous examples: to separate the individual `Owned<char>` resource for index `j` out of the iterated `Owned` resource and make it available to the resource inference, we specify `extract Owned<char>, j;`.
+The final piece needed in the verification is an `focus` statement, as used in the previous examples: to separate the individual `RW<char>` resource for index `j` out of the iterated `RW` resource and make it available to the resource inference, we specify `focus RW<char>, j;`.
 
-With the `inv` and `extract` statements in place, CN accepts the function.
+With the `inv` and `focus` statements in place, CN accepts the function.
 
 ### Second loop example
 
-The specification of `init_array` is overly strong: it requires an iterated `Owned` resource for the array on entry. If, as the name suggests, the purpose of `init_array` is to initialise the array, then a precondition asserting only an iterated `Block` resource for the array should also be sufficient. The modified specification is then as follows.
+The specification of `init_array` is overly strong: it requires an iterated `RW` resource for the array on entry. If, as the name suggests, the purpose of `init_array` is to initialise the array, then a precondition asserting only an iterated `W` resource for the array should also be sufficient. The modified specification is then as follows.
 
 ```c title="exercises/init_array2.c"
 --8<--
@@ -951,7 +937,7 @@ exercises/init_array2.c
 --8<--
 ```
 
-This specification _should_ hold: assuming ownership of an uninitialised array on entry, each iteration of the loop initialises one cell of the array, moving it from `Block` to `Owned` "`state`", so that on function return the full array is initialised. (Recall that stores only require `Block` ownership of the written memory location, i.e., ownership of not-necessarily-initialised memory.)
+This specification _should_ hold: assuming ownership of an uninitialised array on entry, each iteration of the loop initialises one cell of the array, moving it from `W` to `RW` "`state`", so that on function return the full array is initialised. (Recall that stores only require `W` ownership of the written memory location, i.e., ownership of not-necessarily-initialised memory.)
 
 To verify this modified example we again need a loop Invariant. But
 this time the loop invariant is more involved: since each iteration of
@@ -959,7 +945,7 @@ the loop initialises one more array cell, the loop invariant has to do
 precise book-keeping of the initialisation status of the different
 sections of the array.
 
-To do this, we partition the array ownership into two parts: for each index of the array the loop has already visited, we have an `Owned` resource, for all other array indices we have the (unchanged) `Block` ownership.
+To do this, we partition the array ownership into two parts: for each index of the array the loop has already visited, we have an `RW` resource, for all other array indices we have the (unchanged) `W` ownership.
 
 ```c title="solutions/init_array2.c"
 --8<--
@@ -969,21 +955,21 @@ solutions/init_array2.c
 
 Let's go through this line-by-line:
 
-- We assert ownership of an iterated `Owned` resource, one for each index `i` strictly smaller than loop variable `j`.
+- We assert ownership of an iterated `RW` resource, one for each index `i` strictly smaller than loop variable `j`.
 
-- All remaining indices `i`, between `j` and `n` are still uninitialised, so part of the iterated `Block` resource.
+- All remaining indices `i`, between `j` and `n` are still uninitialised, so part of the iterated `W` resource.
 
 - As in the previous example, we assert `p` and `n` are unchanged.
 
-- Finally, unlike in the previous example, this loop invariant involves `j`. We therefore also need to know that `j` does not exceed the array length `n`. Otherwise CN would not be able to prove that, on completing the last loop iteration, `j=n` holds. This, in turn, is needed to show that, when the function returns, ownership of the iterated `Owned` resource --- as specified in the loop invariant --- is fully consumed by the function's post-condition and there is no left-over unused resource.
+- Finally, unlike in the previous example, this loop invariant involves `j`. We therefore also need to know that `j` does not exceed the array length `n`. Otherwise CN would not be able to prove that, on completing the last loop iteration, `j=n` holds. This, in turn, is needed to show that, when the function returns, ownership of the iterated `RW` resource --- as specified in the loop invariant --- is fully consumed by the function's post-condition and there is no left-over unused resource.
 
-As before, we also have to instruct CN to `extract` ownership of individual array cells out of the iterated resources:
+As before, we also have to instruct CN to `focus` ownership of individual array cells out of the iterated resources:
 
-- to allow CN to extract the individual `Block` to be written, we use `extract Block<char>, j;`;
+- to allow CN to focus the individual `W` to be written, we use `focus W<char>, j;`;
 
-- the store returns a matching `Owned<char>` resource for index `j`;
+- the store returns a matching `RW<char>` resource for index `j`;
 
-- finally, we add `extract Owned<char>, j;` to allow CN to "`attach`" this resource to the iterated `Owned` resource. CN issues a warning, because nothing is, in fact, extracted: we are using `extract` only for the "`reverse`" direction.
+- finally, we add `focus RW<char>, j;` to allow CN to "`attach`" this resource to the iterated `RW` resource. CN issues a warning, because nothing is, in fact, focused: we are using `focus` only for the "`reverse`" direction.
 
 <!-- TODO: BCP: That last bit is mysterious. -->
 <!-- Dhruv: See long explanation and issue here: rems-project/cerberus#498 -->
@@ -1049,7 +1035,7 @@ exercises/slf_incr2_alias.c
 This version does correctly state that the final values of `p` and `q` are,m respectively, `3` and `1` more than their original values. But the way we got there -- by duplicating the whole function `incr2`, is horrible.
 
 <!-- TODO: Sainati: I think it would be useful here to add an explanation for how CN's type checking works. -->
-<!-- For example, in the definition of BothOwned here, how is CN able to prove that `take pv = Owned<unsigned int>(p);` -->
+<!-- For example, in the definition of BothRW here, how is CN able to prove that `take pv = RW<unsigned int>(p);` -->
 <!-- type checks, since all we know about `p` in the definition of the predicate is that it's a pointer? -->
 
 A better way is to define a _predicate_ that captures both the aliased
@@ -1057,7 +1043,7 @@ and the non-aliased cases together and use it in the pre- and
 postconditions:
 
 <!-- TODO: Sainati: I think it would be useful here to add an explanation for how CN's type checking works. -->
-<!-- For example, in the definition of BothOwned here, how is CN able to prove that `take pv = Owned<unsigned int>(p);` -->
+<!-- For example, in the definition of BothRW here, how is CN able to prove that `take pv = RW<unsigned int>(p);` -->
 <!-- type checks, since all we know about `p` in the definition of the predicate is that it's a pointer? -->
 
 ```c title="exercises/slf_incr2.c"
@@ -1066,7 +1052,7 @@ exercises/slf_incr2.c
 --8<--
 ```
 
-<!-- TODO: BCP: "BothOwned" is a pretty awkward name. -->
+<!-- TODO: BCP: "BothRW" is a pretty awkward name. -->
 <!-- TODO: BCP: We haven't introduced CN records. In particular, C programmers may be surprised that we don't have to pre-declare record types. -->
 <!-- TODO: BCP: the annotation on incr2 needs some unpacking for readers!! -->
 <!-- TODO: BCP: first use of the "split_case" annotation -->
@@ -1180,7 +1166,7 @@ exercises/list/c_types.h
 
 <!-- TODO: BCP: Per discussion with Christopher, Cassia, and Daniel, the word "predicate" is quite confusing for newcomers (in logic, predicates do not return things!). A more neutral word might make for significantly easier onboarding. -->
 <!-- Dhruv: Or no keyword? rems-project/cerberus#304 How about traversal? -->
-<!-- BCP: No keyword sounds even better. But "traversal" in the interim is not bad. Or maybe "extractor" or something like that? -->
+<!-- BCP: No keyword sounds even better. But "traversal" in the interim is not bad. Or maybe "focusor" or something like that? -->
 
 To write specifications for C functions that manipulate lists, we need
 to define a CN "predicate" that describes specification-level list
@@ -1188,7 +1174,7 @@ structures, as one would do in ML, Haskell, or Coq. We use the
 datatype `List` for CN-level lists.
 
 Intuitively, the `SLList_At` predicate walks over a singly-linked
-pointer structure in the C heap and extracts an `Owned` version of
+pointer structure in the C heap and focuss an `RW` version of
 the CN-level list that it represents.
 
 ```c title="exercises/list/cn_types.h"
@@ -2263,5 +2249,5 @@ alternative: [](https://www.sphinx-doc.org/en/master/index.html)
 
 Misc notes:
 
-- Nb: take V = Owned<t>(p) === p |-t-> V
+- Nb: take V = RW<t>(p) === p |-t-> V
 -->
