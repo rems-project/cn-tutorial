@@ -80,9 +80,9 @@ exercises/dll/malloc_free.h
 
 For convenience, we gather all of these files into a single header file.
 
-```c title="exercises/dll/headers.h"
+```c title="exercises/dll/headers.verif.h"
 --8<--
-exercises/dll/headers.h
+exercises/dll/headers.verif.h
 --8<--
 ```
 

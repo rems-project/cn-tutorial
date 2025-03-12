@@ -1,4 +1,4 @@
-#include "./headers.h" 
+#include "./headers.verif.h" 
 #include "./push_lemma.h" 
 
 void push_queue (int x, struct queue *q)

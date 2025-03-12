@@ -1224,9 +1224,9 @@ Finally, we can collect all this stuff into a single header file. (We
 add the usual C `#ifndef` gorp to avoid complaints from the compiler
 if it happens to get included twice from the same source file later.)
 
-```c title="exercises/list/headers.h"
+```c title="exercises/list/headers.verif.h"
 --8<--
-exercises/list/headers.h
+exercises/list/headers.verif.h
 --8<--
 ```
 
@@ -1603,9 +1603,9 @@ Now we need a bit of boilerplate: just as with linked lists, we need
 to be able to allocate and deallocate queues and queue cells. There
 are no interesting novelties here.
 
-```c title="exercises/queue/allocation.h"
+```c title="exercises/queue/allocation.verif.h"
 --8<--
-exercises/queue/allocation.h
+exercises/queue/allocation.verif.h
 --8<--
 ```
 
@@ -1907,9 +1907,9 @@ exercises/dll/malloc_free.h
 
 For convenience, we gather all of these files into a single header file.
 
-```c title="exercises/dll/headers.h"
+```c title="exercises/dll/headers.verif.h"
 --8<--
-exercises/dll/headers.h
+exercises/dll/headers.verif.h
 --8<--
 ```
 

@@ -1,4 +1,4 @@
-#include "./headers.h"
+#include "./headers.verif.h"
 #include "./pop_lemma.h"
 
 int pop_queue (struct queue *q)

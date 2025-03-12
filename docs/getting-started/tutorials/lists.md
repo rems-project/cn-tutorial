@@ -67,9 +67,9 @@ Finally, we can collect all this stuff into a single header file. (We
 add the usual C `#ifndef` gorp to avoid complaints from the compiler
 if it happens to get included twice from the same source file later.)
 
-```c title="exercises/list/headers.h"
+```c title="exercises/list/headers.verif.h"
 --8<--
-exercises/list/headers.h
+exercises/list/headers.verif.h
 --8<--
 ```
 

@@ -102,9 +102,9 @@ Now we need a bit of boilerplate: just as with linked lists, we need
 to be able to allocate and deallocate queues and queue cells. There
 are no interesting novelties here.
 
-```c title="exercises/queue/allocation.h"
+```c title="exercises/queue/allocation.verif.h"
 --8<--
-exercises/queue/allocation.h
+exercises/queue/allocation.verif.h
 --8<--
 ```
 
