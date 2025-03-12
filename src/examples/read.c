@@ -1,7 +1,7 @@
 int read (int *p)
 /* --BEGIN-- */
-/*@ requires take P = Owned<int>(p);
-    ensures take P_post = Owned<int>(p);
+/*@ requires take P = RW<int>(p);
+    ensures take P_post = RW<int>(p);
 @*/
 /* --END-- */
 {

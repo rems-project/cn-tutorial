@@ -11,7 +11,7 @@ predicate (datatype seq) IntListSegVal(pointer p, pointer tail, i32 tval) {
   if (addr_eq(p,tail)) {
     return Seq_Nil{};
   } else {
-    take H = Owned<struct list_node>(p);
+    take H = RW<struct list_node>(p);
     assert (is_null(H.next) || H.next != NULL);
     assert (H.val == tval); 
     take tl = IntListSeg(H.next, tail);
@@ -22,7 +22,7 @@ predicate (datatype seq) IntListSegVal(pointer p, pointer tail, i32 tval) {
 /*@
 lemma IntListSeqSnocVal(pointer p, pointer tail, i32 tval)
   requires take l1 = IntListSegVal(p, tail, tval);
-           take v = Owned<struct list_node>(tail);
+           take v = RW<struct list_node>(tail);
            v.val == tval; 
   ensures take l2 = IntListSegVal(p, v.next, tval);
           l2 == append(l1, Seq_Cons { val: v.val, next: Seq_Nil {} }); 

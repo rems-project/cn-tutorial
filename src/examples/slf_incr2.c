@@ -1,21 +1,21 @@
 /*@
-predicate { u32 P, u32 Q } BothOwned (pointer p, pointer q)
+predicate { u32 P, u32 Q } BothRW (pointer p, pointer q)
 {
   if (ptr_eq(p,q)) {
-    take PX = Owned<unsigned int>(p);
+    take PX = RW<unsigned int>(p);
     return {P: PX, Q: PX};
   }
   else {
-    take PX = Owned<unsigned int>(p);
-    take QX = Owned<unsigned int>(q);
+    take PX = RW<unsigned int>(p);
+    take QX = RW<unsigned int>(q);
     return {P: PX, Q: QX};
   }
 }
 @*/
 
 void incr2(unsigned int *p, unsigned int *q)
-/*@ requires take PQ = BothOwned(p,q);
-    ensures take PQ_post = BothOwned(p,q);
+/*@ requires take PQ = BothRW(p,q);
+    ensures take PQ_post = BothRW(p,q);
             PQ_post.P == (!ptr_eq(p,q) ? (PQ.P + 1u32) : (PQ.P + 2u32));
             PQ_post.Q == (!ptr_eq(p,q) ? (PQ.Q + 1u32) : PQ_post.P);
 @*/
@@ -30,11 +30,11 @@ void incr2(unsigned int *p, unsigned int *q)
 }
 
 void call_both_better(unsigned int *p, unsigned int *q)
-/*@ requires take P = Owned<unsigned int>(p);
-             take Q = Owned<unsigned int>(q);
+/*@ requires take P = RW<unsigned int>(p);
+             take Q = RW<unsigned int>(q);
              !ptr_eq(p,q);
-    ensures take P_post = Owned<unsigned int>(p);
-            take Q_post = Owned<unsigned int>(q);
+    ensures take P_post = RW<unsigned int>(p);
+            take Q_post = RW<unsigned int>(q);
             P_post == P + 3u32;
             Q_post == Q + 1u32;
 @*/

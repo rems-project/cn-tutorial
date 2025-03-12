@@ -38,10 +38,10 @@ int m; // Global variable m
  *           && m == \old(m) + 10;
  */
 int returnfinally(int d)
-  /*@ requires take vp0 = Owned<int>(&m);
+  /*@ requires take vp0 = RW<int>(&m);
                let m10 = (i64)vp0 + 10i64;
                m10 <= 2147483647i64; 
-      ensures take vp1 = Owned<int>(&m); 
+      ensures take vp1 = RW<int>(&m); 
   @*/
   {
     int result;
@@ -58,8 +58,8 @@ int returnfinally(int d)
 }
 
 int main()
-  /*@ requires take vp0 = Owned<int>(&m); 
-      ensures take vp1 = Block<int>(&m);
+  /*@ requires take vp0 = RW<int>(&m); 
+      ensures take vp1 = W<int>(&m);
 	      return == 0i32; 
   @*/
 {

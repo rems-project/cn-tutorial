@@ -32,8 +32,8 @@ fn borrow<'a>(input: &'a i32) -> &'a i32 {
 int global_int = 0;
 
 int* borrow(const int* input)
-  /*@ requires take v1 = Owned<int>(input); 
-      ensures take v2 = Owned<int>(input);
+  /*@ requires take v1 = RW<int>(input); 
+      ensures take v2 = RW<int>(input);
               return == input; 
   @*/
 {

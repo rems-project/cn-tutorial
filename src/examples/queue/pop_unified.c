@@ -7,7 +7,7 @@ predicate (result) Queue_pop_lemma(pointer front, pointer back, i32 popped) {
   if (is_null(front)) {
     return { after: Nil{}, before: Snoc(Nil{}, popped) };
   } else {
-    take B = Owned<struct queue_cell>(back);
+    take B = RW<struct queue_cell>(back);
     assert (is_null(B.next));
     take L = QueueAux (front, back);
     return { after: Snoc(L, B.first), before: Snoc(Cons {Head: popped, Tail: L}, B.first) };
@@ -19,10 +19,10 @@ void snoc_fact(struct queue_cell *front, struct queue_cell *back, int x)
 /*@
 requires
     take Q = QueueAux(front, back);
-    take B = Owned<struct queue_cell>(back);
+    take B = RW<struct queue_cell>(back);
 ensures
     take Q_post = QueueAux(front, back);
-    take B_post = Owned<struct queue_cell>(back);
+    take B_post = RW<struct queue_cell>(back);
     Q == Q_post; B == B_post;
     let L = Snoc (Cons{Head: x, Tail: Q}, B.first);
     Hd(L) == x;

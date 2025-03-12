@@ -2,9 +2,9 @@
 
 
 void incr_two (unsigned int *p, unsigned int *q)
-/*@ requires take n1 = Owned(p);
+/*@ requires take n1 = RW(p);
              ptr_eq(q,p);
-    ensures take n2 = Owned(p);
+    ensures take n2 = RW(p);
             n2 == n1 + 2u32;
 @*/
 {
@@ -15,8 +15,8 @@ void incr_two (unsigned int *p, unsigned int *q)
 
 
 void aliased_call (unsigned int *p)
-/*@ requires take n1 = Owned(p);
-    ensures  take n2 = Owned(p);
+/*@ requires take n1 = RW(p);
+    ensures  take n2 = RW(p);
              n2 == n1 + 2u32;
 @*/
 {

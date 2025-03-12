@@ -1,6 +1,6 @@
 void incr (unsigned int *p)
-/*@ requires take n1 = Owned<unsigned int>(p);
-    ensures take n2 = Owned<unsigned int>(p);
+/*@ requires take n1 = RW<unsigned int>(p);
+    ensures take n2 = RW<unsigned int>(p);
             n2 == n1 + 1u32;
 @*/
 {

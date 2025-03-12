@@ -1,7 +1,7 @@
 void transfer (unsigned int *p, unsigned int *q)
-/*@ requires take n1 = Owned(p);
+/*@ requires take n1 = RW(p);
              ptr_eq(p,q);
-    ensures  take n2 = Owned(p);
+    ensures  take n2 = RW(p);
              n2 == 0u32;
 @*/
 {

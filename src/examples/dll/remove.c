@@ -7,7 +7,7 @@ struct dllist_and_int *remove(struct dllist *n)
 /*@ requires !is_null(n);
              take Before = Dll_at(n);
              let Del = Node(Before);
-    ensures  take Ret = Owned<struct dllist_and_int>(return);
+    ensures  take Ret = RW<struct dllist_and_int>(return);
              take After = Dll_at(Ret.dllist);
              Ret.data == Del.data;
              (is_null(Del.prev) && is_null(Del.next)) 

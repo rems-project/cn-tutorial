@@ -1,7 +1,7 @@
 void zero (int *p)
 /* --BEGIN-- */
-/*@ requires take P = Block<int>(p);
-    ensures take P_post = Owned<int>(p);
+/*@ requires take P = W<int>(p);
+    ensures take P_post = RW<int>(p);
             P_post == 0i32;
 @*/
 /* --END-- */

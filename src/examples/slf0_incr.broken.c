@@ -1,7 +1,7 @@
 void incr (int *p)
 /* --BEGIN-- */
-/*@ requires take v1 = Block<int>(p);
-    ensures take v2 = Owned<int>(p);
+/*@ requires take v1 = W<int>(p);
+    ensures take v2 = RW<int>(p);
             v2 == v1+1i32; @*/
 /* --END-- */
 {

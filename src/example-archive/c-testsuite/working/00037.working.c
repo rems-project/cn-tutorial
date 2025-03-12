@@ -4,7 +4,7 @@ main()
 {
 	int x[2];
 	int *p;
-	/*@ extract Block<int>, 1u64; @*/
+	/*@ focus W<int>, 1u64; @*/
 	x[1] = 7;
 	p = &x[0];
 	p = p + 1;
