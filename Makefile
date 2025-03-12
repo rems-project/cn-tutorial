@@ -30,6 +30,9 @@ SOLUTIONS=$(patsubst src/exercises/%, docs/solutions/%, $(ALL))
 EXERCISES=$(patsubst src/exercises/%, docs/exercises/%, $(ALL))
 VERIFIED=$(patsubst src/exercises/%, _temp/verified/%, $(VERIF))
 
+MD = $(shell find docs -type f -name "*.md")
+CONSISTENT=$(patsubst %, _temp/consistent/%, $(MD))
+
 #TESTED=$(patsubst src/exercises/%, _temp/tested/%, $(NOTBROKEN))
 # TEMPORARY:
 TESTED = $(NOVERIF) \
@@ -77,10 +80,7 @@ TESTED = $(NOVERIF) \
   _temp/tested/slf0_basic_incr.signed.c \
   _temp/tested/slf15_basic_succ_using_incr_attempt_.c
 
-temp:
-	@echo $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES)
-
-exercises: $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES)
+exercises: $(TESTED) $(VERIFIED) $(SOLUTIONS) $(EXERCISES) $(CONSISTENT)
 
 CN=cn verify
 CNTEST=cn test --output _temp
@@ -172,6 +172,20 @@ check-tutorial:
 	@$(MAKEFILE_DIR)/check.sh "$(CN_PATH)"
 
 check: check-tutorial check-archive
+
+##############################################################################
+# Check for inconsistent exercise names / paths
+
+_temp/consistent/% : %
+	$(V)perl -0777 -ne \
+	   'while (/c title=\"(.+)\"\n.+\n(.+)\n/g) { \
+	     if ($$1 ne $$2) { \
+	       print "Bad .md file ($<): $$1 does not match $$2\n"; \
+	       exit 1;  \
+	   } }' \
+	   $<
+	$(V)-mkdir -p $(dir $@)
+	$(V)touch $@
 
 ##############################################################################
 # Tutorial document

@@ -419,20 +419,10 @@ accessing two different pointers by a function `add`, which reads
 two `unsigned int` values in memory, at locations `p` and `q`, and
 returns their sum.
 
-<span style="color:red">
-BCP: The way I've been naming things is not working that well
-here. The problem is that in examples like this we compute "thing
-pointed to by p" at both C and CN levels. At the C level, the thing
-pointed to by p obviously cannot also be called p, so it doesn't make
-sense for it to be called P at the CN level, right?
-</span>
-
-```c title="exercises/add_read.c"
 --8<--
 exercises/add_read.c
 --8<--
 ```
-
 <span style="color:red">
 BCP: Does this belong here?  Could it go in the later section on numeric types?
 </span>

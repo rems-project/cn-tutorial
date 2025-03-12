@@ -2,19 +2,25 @@
 
 ## Things to clean up later (but before releasing to newbies!)
 
+- Figure out how to separate specification stuff from verification
+  stuff
+    - e.g., make a whole separate TOC for the verification flow, with
+      extra chapters as appropriate
+    - (but even if we do this, we need to name the verification
+      chapters so that people can distinguish them from specification
+      chapters)
+    - Maybe the simple color scheme that is used at the moment is
+      fine?
+
 - Make a pass through the whole document and refresh all the displayed
   outputs from the system
 - Format exercises consistently throughout
 - Rename exercise files sensibly / consistently and organize them into
   subdirectories 
+     - Someplace early on, we should explain the naming conventions
+       (for exercise names, but especially for extensions)
 - Fix the top-level README.md with correct names for chapters
-- Figure out how to separate specification stuff from verification
-  stuff 
-    - e.g., make a whole separate TOC for the verification flow, with
-      extra chapters as appropriate
-    - (but even if we do this, we need to name the verification
-      chapters so that people can distinguish them from specification
-      chapters) 
+     - And add chapters to the top-level nav file
 - rename `unsigned int` to `unsigned` globally?
 - rewrite `Owned<unsigned int>` to `Owned` globally (and similar for
   other single-word types)

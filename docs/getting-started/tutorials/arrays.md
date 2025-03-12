@@ -45,7 +45,7 @@ Let’s see how this applies to a simple array-manipulating function. Function `
 
 ```c title="exercises/array_load.noverif.c"
 --8<--
-exercises/array_load.broken.c
+exercises/array_load.noverif.c
 --8<--
 ```
 
@@ -57,6 +57,5 @@ The CN precondition requires
 On exit the array ownership is returned again.
 
 <span style="color:red"> BCP: Do several more
-examples (e.g., maybe working up to sorting?).  
+examples (e.g., maybe working up to sorting?).
 </span>
-

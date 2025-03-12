@@ -1,6 +1,6 @@
 # Specifications
 
-Suppose we are writing a function `min3`, which takes three `int` arguments.
+Suppose we are writing a function `min3`, which takes three `unsigned int` arguments.
 
 ```c title="exercises/min3/min3.partial.c"
 --8<--
@@ -10,11 +10,11 @@ exercises/min3/min3.partial.c
 
 The desired behavior of `min3` is to return the smallest of the three
 inputs. We expect, then, that the return value should be less
-than or equal to `x` and to `y` and to `z`. More formally: 
+than or equal to `x` and to `y` and to `z`. More formally:
 
 ```c title="exercises/min3/min3.partial1.c"
 --8<--
-exercises/min3/min3.test.partial.c
+exercises/min3/min3.partial1.c
 --8<--
 ```
 
@@ -25,9 +25,11 @@ In more detail...
   body.
 
 - The keyword `ensures` introduces the function's _postcondition_ --
-  that is, a logical statement that should be true when the function returns.
+  that is, a logical statement that we expect should be true when the
+  function returns.
 
-- The keyword `return` refers to the return value.
+- The keyword `return` refers to the function's return value in the
+  postcondition.
 
 - CN provides a variety of arithmetic and logical operators, which we
   use here to state that the return value should be less than or equal
@@ -35,8 +37,8 @@ In more detail...
 
 - Each clause of the specification concludes with a semicolon.
 
-Next, suppose we have implemented `min3` (not quite correctly) as
-shown below. 
+Next, suppose we have implemented `min3` (a little incorrectly) as
+shown below.
 
 ```c title="exercises/min3/min3.broken.c"
 --8<--
@@ -44,9 +46,11 @@ exercises/min3/min3.broken.c
 --8<--
 ```
 
-How can we figure out if our implementation satisfies our
-specification? We can test it! Run the command `cn test <filename>` to
-produce an output along these lines:
+How can we find out whether our implementation satisfies our
+specification? We can test it!
+
+Running the command `cn test <filename>` will produce an output along
+these lines:
 
 <span style="color:red">
 BCP: Refresh this:
@@ -153,7 +157,7 @@ _Exercise._ Practice the workflow of specifying and testing the function `add`.
 
 - Write a specification with the postcondition that `add` should
   return the sum of its inputs. Remember that CN supports standard
-  arithmetic and boolean operators such as `+` and `==`. 
+  arithmetic and boolean operators such as `+` and `==`.
 - Write an _incorrect_ implementation of `add` and check that `cn test` fails.
 - Write a _correct_ implementation and check that `cn test` succeeds.
 
@@ -162,4 +166,3 @@ _Exercise._ Practice the workflow of specifying and testing the function `add`.
 exercises/add.partial.c
 --8<--
 ```
-
