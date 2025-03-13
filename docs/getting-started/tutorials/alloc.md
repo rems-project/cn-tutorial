@@ -1,5 +1,9 @@
 # Allocating and Deallocating Memory
 
+<span style="color:red">
+BCP: Needs testing and verification variants.
+</span>
+
 XXXXXXXXXXXXXXXXXXX intro needed
 
 ## W resources

@@ -1,4 +1,4 @@
-# Airport Simulation
+# Airport Simulation, Verified
 
 <span style="color:red">BCP: I'm nervous about this case study -- it is not nearly as well debugged as the others, and it seems potentially quite confusing. I propose deleting it, but if other like it we can try to whip it into better shape... </span>
 

@@ -1,4 +1,4 @@
-# Doubly-linked Lists
+# Doubly-linked Lists, Verified
 
 <span style="color:red">Need updating after testing/verif split.</span>
 

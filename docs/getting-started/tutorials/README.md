@@ -28,13 +28,13 @@
 
 - [Imperative queues](../case-studies/imperative-queues.md)
 - [<span style="color:black">(Verification)</span>
-   Verifying imperative queues](../case-studies/verif-imperative-queues.md)
+   Imperative queues, verified](../case-studies/verif-imperative-queues.md)
 - [Doubly-linked lists](../case-studies/doubly-linked-lists.md)
 - [<span style="color:black">(Verification)</span>
-   Verifying doubly-linked lists](../case-studies/verif-doubly-linked-lists.md)
+   Doubly-linked lists, verified](../case-studies/verif-doubly-linked-lists.md)
 - [Airport simulation](../case-studies/the-runway.md)
 - [<span style="color:black">(Verification)</span>
-   Verifying the airport simulation](../case-studies/verif-the-runway.md)
+   Airport simulation, verified](../case-studies/verif-the-runway.md)
 
 ## TODOs
 

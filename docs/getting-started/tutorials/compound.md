@@ -50,7 +50,8 @@ The precondition of `transpose` asserts ownership of an `RW<struct point>(p)` re
 - `RW<unsigned int>(member_shift<point>(p, y))` with output `P.y`
 
 <span style="color:red">
-BCP: We should verify that it really does say this. 
+BCP: We should verify that it really does say this.   (It certainly
+does not, after recent syntax changes...)
 </span>
 
 Here `member_shift<s>(p,m)` is the CN expression that constructs, from a `struct s` pointer `p`, the "`shifted`" pointer for its member `m`.
