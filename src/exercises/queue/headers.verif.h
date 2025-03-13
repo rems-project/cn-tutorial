@@ -5,7 +5,7 @@
 
 #include "./c_types.h"
 #include "./cn_types_1.h"
-#include "./cn_types_2.h"
+#include "./cn_types_2.verif.h"
 #include "./cn_types_3.verif.h"
 
 #include "./allocation.verif.h"
