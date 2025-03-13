@@ -3,7 +3,7 @@
 
 /*@ 
 predicate (i32) TestMemoryEqZero_1(pointer p) {
-  take PVal = Owned<int>(p); 
+  take PVal = RW<int>(p); 
   if (PVal == 0i32) {
     return 1i32; 
   } else {
@@ -14,7 +14,7 @@ predicate (i32) TestMemoryEqZero_1(pointer p) {
 
 void pred_1(int *p) 
 /*@ requires 
-      take PreP = Owned<int>(p); 
+      take PreP = RW<int>(p); 
       PreP == 0i32; @*/
 /*@ ensures 
       take TestP = TestMemoryEqZero_1(p); 

@@ -205,5 +205,5 @@ alternative: [](https://www.sphinx-doc.org/en/master/index.html)
 
 Misc notes:
 
-- Nb: take V = Owned<t>(p) === p |-t-> V
+- Nb: take V = RW<t>(p) === p |-t-> V
 -->

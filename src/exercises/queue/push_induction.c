@@ -7,13 +7,13 @@ void push_induction(struct queue_cell* front
   requires
       ptr_eq(front, second_last) || !addr_eq(front, second_last);
       take Q = QueueAux(front, second_last);
-      take Second_last = Owned(second_last);
+      take Second_last = RW(second_last);
       ptr_eq(Second_last.next, last);
-      take Last = Owned(last);
+      take Last = RW(last);
   ensures
       ptr_eq(front, last) || !addr_eq(front, last);
       take Q_post = QueueAux(front, last);
-      take Last2 = Owned(last);
+      take Last2 = RW(last);
       Q_post == Snoc(Q, Second_last.first);
       Last == Last2;
 @*/

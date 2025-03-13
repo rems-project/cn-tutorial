@@ -3,17 +3,17 @@
 Verifying CN programs involving structured objects raises a number
 of new issues.
 
-## Compound Owned and Block resources
+## Compound RW and W resources
 
 While one might like to think of a struct as a single (compound) object that is manipulated as a whole, C permits more flexible struct manipulation: given a struct pointer, programmers can construct pointers to _individual struct members_ and manipulate these as values, including even passing them to other functions.
 
-CN therefore cannot treat resources for compound C types like structs as primitive, indivisible units. Instead, `Owned<T>` and `Block<T>` are defined inductively on the structure of the C-type `T`.
+CN therefore cannot treat resources for compound C types like structs as primitive, indivisible units. Instead, `RW<T>` and `W<T>` are defined inductively on the structure of the C-type `T`.
 
-For struct types `T`, the `Owned<T>` resource is defined as the collection of `Owned` resources for its members (as well as `Block` resources for any padding bytes in-between them). The resource `Block<T>`, similarly, is made up of `Block` resources for all members (and padding bytes).
+For struct types `T`, the `RW<T>` resource is defined as the collection of `RW` resources for its members (as well as `W` resources for any padding bytes in-between them). The resource `W<T>`, similarly, is made up of `W` resources for all members (and padding bytes).
 
 To handle code that manipulates pointers into parts of a struct object, CN can automatically decompose a struct resource into the member resources, and it can recompose the struct later, as needed. The following example illustrates this.
 
-Recall the function `zero` from our earlier exercise. It takes an `unsigned int` pointer to uninitialised memory, with `Block<unsigned int>` ownership, and initialises the value to zero, returning an `Owned<unsigned int>` resource with output `0`.
+Recall the function `zero` from our earlier exercise. It takes an `unsigned int` pointer to uninitialised memory, with `W<unsigned int>` ownership, and initialises the value to zero, returning an `RW<unsigned int>` resource with output `0`.
 
 Now consider the function `init_point`, shown below, which takes a pointer `p` to a `struct point` and zero-initialises its members by calling `zero` twice, once with a pointer to struct member `x`, and once with a pointer to `y`.
 
@@ -23,9 +23,9 @@ exercises/init_point.c
 --8<--
 ```
 
-As stated in its precondition, `init_point` receives ownership `Block<struct point>(p)`. The `zero` function, however, works on `unsigned int` pointers and requires `Block<unsigned int>` ownership.
+As stated in its precondition, `init_point` receives ownership `W<struct point>(p)`. The `zero` function, however, works on `unsigned int` pointers and requires `W<unsigned int>` ownership.
 
-CN can prove the calls to `zero` with `&p->x` and `&p->y` are safe because it decomposes the `Block<struct point>(p)` into a `Block<unsigned int>` for member `x` and a `Block<unsigned int>` for member `y`. Later, the reverse happens: following the two calls to `zero`, as per `zero`’s precondition, `init_point` has ownership of two adjacent `Owned<unsigned int>` resources – ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `init_point` requires ownership `Owned<struct point>(p)`, CN combines these back into a compound resource. The resulting `Owned<point struct>` resource has for an output the struct value `P_post` that is composed of the zeroed member values for `x` and `y`.
+CN can prove the calls to `zero` with `&p->x` and `&p->y` are safe because it decomposes the `W<struct point>(p)` into a `W<unsigned int>` for member `x` and a `W<unsigned int>` for member `y`. Later, the reverse happens: following the two calls to `zero`, as per `zero`’s precondition, `init_point` has ownership of two adjacent `RW<unsigned int>` resources – ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `init_point` requires ownership `RW<struct point>(p)`, CN combines these back into a compound resource. The resulting `RW<point struct>` resource has for an output the struct value `P_post` that is composed of the zeroed member values for `x` and `y`.
 
 ## Resource inference
 
@@ -43,11 +43,11 @@ exercises/transpose.broken.c
 --8<--
 ```
 
-The precondition of `transpose` asserts ownership of an `Owned<struct point>(p)` resource. The error report now instead lists under "`Available resources`" two resources:
+The precondition of `transpose` asserts ownership of an `RW<struct point>(p)` resource. The error report now instead lists under "`Available resources`" two resources:
 
-- `Owned<unsigned int>(member_shift<point>(p, x))` with output `P.x` and
+- `RW<unsigned int>(member_shift<point>(p, x))` with output `P.x` and
 
-- `Owned<unsigned int>(member_shift<point>(p, y))` with output `P.y`
+- `RW<unsigned int>(member_shift<point>(p, y))` with output `P.y`
 
 <span style="color:red">
 BCP: We should verify that it really does say this. 
@@ -55,7 +55,7 @@ BCP: We should verify that it really does say this.
 
 Here `member_shift<s>(p,m)` is the CN expression that constructs, from a `struct s` pointer `p`, the "`shifted`" pointer for its member `m`.
 
-When the function returns, the two member resources are recombined "`on demand`" to satisfy the postcondition `Owned<struct point>(p)`.
+When the function returns, the two member resources are recombined "`on demand`" to satisfy the postcondition `RW<struct point>(p)`.
 
 ### Exercises
 

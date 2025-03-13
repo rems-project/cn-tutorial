@@ -39,12 +39,12 @@ processing a method invocation at compile-time ([13, Section
 predicate { u32 pv, u32 qv } BothOwned (pointer p, pointer q)
 {
   if (p == q) {
-    take pv = Owned<Point>(p);
+    take pv = RW<Point>(p);
     return {pv: pv, qv: pv};
   }
   else {
-    take pv = Owned<Point>(p);
-    take qv = Owned<Point>(q);
+    take pv = RW<Point>(p);
+    take qv = RW<Point>(q);
     return {pv: pv, qv: qv};
   }
 }

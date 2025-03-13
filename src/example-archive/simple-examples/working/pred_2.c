@@ -4,7 +4,7 @@
 // Variant 1 - this works: 
 /*@ 
 predicate (i32) TestMemoryEqZero_2_var1(pointer p) {
-  take PVal = Owned<int>(p); 
+  take PVal = RW<int>(p); 
   let rval = test_if_zero(PVal); 
   return rval; 
 }
@@ -20,7 +20,7 @@ function (i32) test_if_zero(i32 x) {
 
 void pred_2_var1(int *p) 
 /*@ requires 
-      take PreP = Owned<int>(p); 
+      take PreP = RW<int>(p); 
       PreP == 0i32; @*/
 /*@ ensures 
       take TestP = TestMemoryEqZero_2_var1(p); 
@@ -32,7 +32,7 @@ void pred_2_var1(int *p)
 // Variant 2 - this works: 
 /*@ 
 predicate (i32) TestMemoryEqZero_2_var2(pointer p) {
-  take PVal = Owned<int>(p); 
+  take PVal = RW<int>(p); 
   take rval = TestMemoryEqZero_2_Helper(p, PVal); 
   return rval; 
 }
@@ -48,7 +48,7 @@ predicate (i32) TestMemoryEqZero_2_Helper(pointer p, i32 x) {
 
 void pred_2_var2(int *p) 
 /*@ requires 
-      take PreP = Owned<int>(p); 
+      take PreP = RW<int>(p); 
       PreP == 0i32; @*/
 /*@ ensures 
       take TestP = TestMemoryEqZero_2_var2(p); 
@@ -60,7 +60,7 @@ void pred_2_var2(int *p)
 // Variant 3 - this works: 
 /*@ 
 predicate (i32) TestMemoryEqZero_2_var3(pointer p) {
-  take PVal = Owned<int>(p); 
+  take PVal = RW<int>(p); 
   let rval = (PVal == 0i32 ? 1i32 : 0i32); 
   return rval; 
 }
@@ -68,7 +68,7 @@ predicate (i32) TestMemoryEqZero_2_var3(pointer p) {
 
 void pred_2_var3(int *p) 
 /*@ requires 
-      take PreP = Owned<int>(p); 
+      take PreP = RW<int>(p); 
       PreP == 0i32; @*/
 /*@ ensures 
       take TestP = TestMemoryEqZero_2_var3(p); 

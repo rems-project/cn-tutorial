@@ -40,12 +40,12 @@ int f(int *p)
 /*@
   requires
     // p is not NULL and can be read and written by this function.
-    Owned(p);
+    RW(p);
 
   ensures
     // Ownership of p is returned to the caller.  p remains non-NULL
     // and can be read and written by the caller. 
-    take v = Owned(p);
+    take v = RW(p);
 
     // The value returned by this function is equal to the contents of p.
     return == v;
@@ -76,10 +76,10 @@ int f1()
 int f2()
 /*@
   requires
-    take glob_in = Owned<int>(&glob);
+    take glob_in = RW<int>(&glob);
 
   ensures
-    take glob_out = Owned<int>(&glob);
+    take glob_out = RW<int>(&glob);
 @*/
 {
     return glob;
@@ -122,19 +122,19 @@ int library_function(int *p);
 /*@
   spec library_function(pointer p);
   requires
-    take p_in = Owned(p);
+    take p_in = RW(p);
   ensures
-    take p_out = Owned(p);
+    take p_out = RW(p);
     return == p_out;
 @*/
 
 int inc(int *p)
 /*@
   requires
-    take p_in = Owned(p);
+    take p_in = RW(p);
 
   ensures
-    take p_out = Owned(p);
+    take p_out = RW(p);
     return == p_in + 1;
 @*/
 {
@@ -162,10 +162,10 @@ int whoops(int *p)
   trusted;
 
   requires
-    take p_in = Owned(p);
+    take p_in = RW(p);
 
   ensures
-    take p_out = Owned(p);
+    take p_out = RW(p);
     return == p_out;
 @*/
 {

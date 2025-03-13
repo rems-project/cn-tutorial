@@ -6,7 +6,7 @@ To support reasoning about code manipulating arrays and computed pointers, CN ha
 
 ```c
 each (i32 i; 0i32 <= i && i < 10i32)
-{ Owned<unsigned int>(array_shift<unsigned int>(p,i)) }
+{ RW<unsigned int>(array_shift<unsigned int>(p,i)) }
 ```
 
 In detail, this can be read as follows:
@@ -15,7 +15,7 @@ In detail, this can be read as follows:
 
 - if `i` is between `0` and `10`, …
 
-- assert ownership of a resource `Owned<unsigned int>` …
+- assert ownership of a resource `RW<unsigned int>` …
 
 - for cell `i` of the array with base-address `p`.
 
@@ -51,8 +51,8 @@ exercises/array_load.test.c
 
 The CN precondition requires
 
-- ownership of the array on entry — one `Owned<unsigned int>` resource for each array index between `0` and `n` — and
-- that `i` lies within the range of owned indices.
+- ownership of the array on entry — one `RW<unsigned int>` resource for each array index between `0` and `n` — and
+- that `i` lies within the range of RW indices.
 
 On exit the array ownership is returned again.
 

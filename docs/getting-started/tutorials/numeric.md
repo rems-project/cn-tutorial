@@ -159,7 +159,7 @@ statement, CN lists the typechecked sub-expressions, and the memory
 accesses and function calls within these.
 
 In our example, there is only one possible control-flow path: entering
-the function body (section "`function body`") and executing the block
+the function body (section "`function body`") and executing the W
 from lines 2 to 4, followed by the return statement at line 3. The
 entry for the latter contains the sequence of sub-expressions in the
 return statement, including reads of the variables `x` and `y`.
@@ -196,7 +196,7 @@ whatever installed on your system.)
 
 _Proof context._ The second section, below the error trace, lists the proof context CN has reached along this control-flow path.
 
-"`Available resources`" lists the owned resources, as discussed in later sections.
+"`Available resources`" lists the RW resources, as discussed in later sections.
 
 "`Variables`" lists counterexample values for program variables and pointers. In addition to `x` and `y`, assigned the same values as above, this includes values for their memory locations `&ARG0` and `&ARG1`, function pointers in scope, and the `__cn_alloc_history`, all of which we ignore for now.
 

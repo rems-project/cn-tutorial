@@ -17,7 +17,7 @@ November 5-8, 2002, Revised Lectures 1. Springer Berlin Heidelberg,
 and catching. They require a suitable control flow semantics. Special care is
 needed for the ‘finally’ part of a try-catch-finally construction. Figure 4 contains
 a simple example (adapted from [17]) that combines many aspects. The subtle
-point is that the assignment m+=10 in the finally block will still be executed,
+point is that the assignment m+=10 in the finally W will still be executed,
 despite the earlier return statements, but has no effect on the value that is
 returned. The reason is that this value is bound earlier.
 */
@@ -53,8 +53,8 @@ void negateFirst() {
 }
 
 int main()
-  /*@ requires take vl0 = Owned<int>(&ia_length)
-      ensures take vp1 = Owned<int>(&ia_length)
+  /*@ requires take vl0 = RW<int>(&ia_length)
+      ensures take vp1 = RW<int>(&ia_length)
   @*/
   {
     // Example usage

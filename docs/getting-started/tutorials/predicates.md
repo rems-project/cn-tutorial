@@ -37,7 +37,7 @@ This version does correctly state that the final values of `p` and `q` are,m res
 Sainati: I think it would be useful here to add an explanation for how CN's type checking works. 
 </span>
 <span style="color:red">
- For example, in the definition of BothOwned here, how is CN able to prove that `take pv = Owned<unsigned int>(p);` 
+ For example, in the definition of BothOwned here, how is CN able to prove that `take pv = RW<unsigned int>(p);` 
 </span>
 <span style="color:red">
  type checks, since all we know about `p` in the definition of the predicate is that it's a pointer? 
@@ -50,7 +50,7 @@ postconditions:
 <span style="color:red"> Sainati: I think it would be useful here to
 add an explanation for how CN's type checking works.  For example, in
 the definition of BothOwned here, how is CN able to prove that `take
-pv = Owned<unsigned int>(p);` type checks, since all we know about `p`
+pv = RW<unsigned int>(p);` type checks, since all we know about `p`
 in the definition of the predicate is that it's a pointer?  </span>
 
 ```c title="exercises/slf_incr2.test.c"

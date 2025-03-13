@@ -3,7 +3,7 @@ int head(int *arr, unsigned long len)
 /*@
 requires
     take arr_in = each(u64 i; i < len) {
-        Owned(array_shift<int>(arr, i))
+        RW(array_shift<int>(arr, i))
     };
     each(u64 i; i < len) {
         arr_in[i] == 0i32
@@ -12,7 +12,7 @@ requires
 
 ensures
     take arr_out = each(u64 i; i < len) {
-        Owned(array_shift<int>(arr, i))
+        RW(array_shift<int>(arr, i))
     };
     each(u64 i; i < len) {
         arr_out[i] == 0i32
@@ -22,10 +22,10 @@ ensures
 {
     unsigned long idx = 0;
     
-    // First, we apply `extract` to direct CN to the relevant element of the
+    // First, we apply `focus` to direct CN to the relevant element of the
     // iterated resource `arr_in`, which it needs in order to verify the
     // following read:
-    /*@ extract Owned<int>, idx; @*/
+    /*@ focus RW<int>, idx; @*/
 
     int hd = arr[idx];
 

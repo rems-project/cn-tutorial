@@ -17,9 +17,9 @@ function [rec] (u32) length(datatype List xs) {
 
 void IntList_length_acc_aux (struct sllist *xs, unsigned int *p)
 /*@ requires take L1 = SLList_At(xs);
-             take P = Owned<unsigned int>(p);
+             take P = RW<unsigned int>(p);
     ensures take L1_post = SLList_At(xs);
-            take P_post = Owned<unsigned int>(p);
+            take P_post = RW<unsigned int>(p);
             L1 == L1_post;
             P_post == P + length(L1);
 @*/

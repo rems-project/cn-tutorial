@@ -25,13 +25,13 @@ int find(int k, int arr[], int len)
 /*@
   requires
     take arr_in = each (i32 j; 0i32 <= j && j < len) {
-      Owned(arr + j)
+      RW(arr + j)
     };
     0i32 <= len;
 
   ensures
     take arr_out = each (i32 j; 0i32 <= j && j < len) {
-      Owned(arr + j)
+      RW(arr + j)
     };
     0i32 <= return && return < len || return == -1i32;
 @*/
@@ -46,11 +46,11 @@ int find(int k, int arr[], int len)
       {k} unchanged;
 
       take arr_inv = each (i32 j; 0i32 <= j && j < len) {
-        Owned(arr + j)
+        RW(arr + j)
       };
   @*/
   {
-    /*@ extract Owned<int>, i; @*/
+    /*@ focus RW<int>, i; @*/
     if (arr[i] == k)
     {
       return i;

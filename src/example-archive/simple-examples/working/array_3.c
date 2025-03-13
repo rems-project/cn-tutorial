@@ -5,9 +5,9 @@
 void array_3(int *arr, int n)
 /*@ requires 
       0i32 < n;
-      take arrayStart = each (i32 j; 0i32 <= j && j < n) {Owned<int>(arr + j)}; @*/
+      take arrayStart = each (i32 j; 0i32 <= j && j < n) {RW<int>(arr + j)}; @*/
 /*@ ensures 
-      take arrayEnd = each (i32 j; 0i32 <= j && j < n) {Owned<int>(arr + j)};
+      take arrayEnd = each (i32 j; 0i32 <= j && j < n) {RW<int>(arr + j)};
       each (i32 j; 0i32 <= j && j < n) {arrayEnd[j] == 7i32}; @*/
 {
   int i = 0;
@@ -16,10 +16,10 @@ void array_3(int *arr, int n)
           {arr}unchanged;
           0i32 <= i; 
           i <= n;
-          take arrayInv = each (i32 j; 0i32 <= j && j < n) {Owned<int>(arr + j)};
+          take arrayInv = each (i32 j; 0i32 <= j && j < n) {RW<int>(arr + j)};
           each (i32 j; 0i32 <= j && j < i) {arrayInv[j] == 7i32}; @*/ 
   {
-    /*@ extract Owned<int>, i; @*/
+    /*@ focus RW<int>, i; @*/
     *(arr + i) = 7;
     i++;
   };

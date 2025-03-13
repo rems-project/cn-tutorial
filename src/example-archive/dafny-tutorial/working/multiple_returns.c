@@ -13,13 +13,13 @@ void multiple_returns(int x, int y, struct int_pair *ret)
       let MAXi32 = (i64) 2147483647i64; 
       let MINi32 = (i64) -2147483647i64;
 
-      take PairPre = Owned<struct int_pair>(ret);
+      take PairPre = RW<struct int_pair>(ret);
       MINi32 <= (i64) x + (i64) y; 
       (i64) x + (i64) y <= MAXi32;
       MINi32 <= (i64) x - (i64) y; 
       (i64) x - (i64) y <= MAXi32;  @*/
 /*@ ensures 
-      take PairPost = Owned<struct int_pair>(ret);
+      take PairPost = RW<struct int_pair>(ret);
       PairPost.fst == x + y;
       PairPost.snd == x - y; @*/
 {

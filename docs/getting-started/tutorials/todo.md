@@ -22,7 +22,7 @@
 - Fix the top-level README.md with correct names for chapters
      - And add chapters to the top-level nav file
 - rename `unsigned int` to `unsigned` globally?
-- rewrite `Owned<unsigned int>` to `Owned` globally (and similar for
+- rewrite `RW<unsigned int>` to `RW` globally (and similar for
   other single-word types)
 - Write a section on how to do unit testing, once the process is a
   little more user-friendly (see `overview-fulminate.md`).  Make sure

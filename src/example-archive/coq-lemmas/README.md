@@ -46,7 +46,7 @@ From this folder, to export lemmas from example `path/to/EXAMPLENAME.c`, do the 
   copies a template build folder that conveniently contains a
   `_CoqProject` file and the CN coq library `CN_Lib.v`. If the folder
   already exists, `rsync` just updates the files.
-2. Extract the lemmas with 
+2. focus the lemmas with 
   
   `cn --lemmata=path/to/EXAMPLENAME-build/theories/ExportedLemmas.v path/to/EXAMPLENAME.c`
   

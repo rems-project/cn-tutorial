@@ -44,7 +44,7 @@ by hand.
    ```
 1. Convert indented list items
    ```
-   * list item with the following indented code block
+   * list item with the following indented code W
    +
    [source,c]
    ----

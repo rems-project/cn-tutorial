@@ -1,6 +1,6 @@
 void incr_first (unsigned int *p, unsigned int *q)
-/*@ requires take pv = Owned<unsigned int>(p);
-    ensures take pv_ = Owned<unsigned int>(p);
+/*@ requires take pv = RW<unsigned int>(p);
+    ensures take pv_ = RW<unsigned int>(p);
             pv_ == pv + 1u32;
 @*/
 {
@@ -10,10 +10,10 @@ void incr_first (unsigned int *p, unsigned int *q)
 }
 
 void incr_first_frame (unsigned int *p, unsigned int *q)
-/*@ requires take pv = Owned<unsigned int>(p);
-             take qv = Owned<unsigned int>(q);
-    ensures take pv_ = Owned<unsigned int>(p);
-            take qv_ = Owned<unsigned int>(q);
+/*@ requires take pv = RW<unsigned int>(p);
+             take qv = RW<unsigned int>(q);
+    ensures take pv_ = RW<unsigned int>(p);
+            take qv_ = RW<unsigned int>(q);
             pv_ == pv + 1u32;
             qv_ == qv;
 @*/

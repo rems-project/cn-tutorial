@@ -1,12 +1,12 @@
 extern int *mallocInt ();
 /*@ spec mallocInt();
     requires true;
-    ensures take R = Block<int>(return);
+    ensures take R = W<int>(return);
 @*/
 
 extern unsigned int *mallocUnsignedInt ();
 /*@ spec mallocUnsignedInt();
     requires true;
-    ensures take R = Block<unsigned int>(return);
+    ensures take R = W<unsigned int>(return);
 @*/
 

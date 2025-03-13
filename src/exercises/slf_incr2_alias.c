@@ -1,9 +1,9 @@
 // Increment two different pointers (same as above)
 void incr2a (unsigned int *p, unsigned int *q)
-/*@ requires take P = Owned<unsigned int>(p);
-             take Q = Owned<unsigned int>(q);
-    ensures take P_post = Owned<unsigned int>(p);
-            take Q_post = Owned<unsigned int>(q);
+/*@ requires take P = RW<unsigned int>(p);
+             take Q = RW<unsigned int>(q);
+    ensures take P_post = RW<unsigned int>(p);
+            take Q_post = RW<unsigned int>(q);
             P_post == P + 1u32;
             Q_post == Q + 1u32;
 @*/
@@ -18,9 +18,9 @@ void incr2a (unsigned int *p, unsigned int *q)
 
 // Increment the same pointer twice
 void incr2b (unsigned int *p, unsigned int *q)
-/*@ requires take P = Owned<unsigned int>(p);
+/*@ requires take P = RW<unsigned int>(p);
              ptr_eq(q,p);
-    ensures take P_post = Owned<unsigned int>(p);
+    ensures take P_post = RW<unsigned int>(p);
             ptr_eq(q,p);
             P_post == P + 2u32;
 @*/
@@ -34,10 +34,10 @@ void incr2b (unsigned int *p, unsigned int *q)
 }
 
 void call_both (unsigned int *p, unsigned int *q)
-/*@ requires take pv = Owned<unsigned int>(p);
-             take qv = Owned<unsigned int>(q);
-    ensures take pv_ = Owned<unsigned int>(p);
-            take qv_ = Owned<unsigned int>(q);
+/*@ requires take pv = RW<unsigned int>(p);
+             take qv = RW<unsigned int>(q);
+    ensures take pv_ = RW<unsigned int>(p);
+            take qv_ = RW<unsigned int>(q);
             pv_ == pv + 3u32;
             qv_ == qv + 1u32;
 @*/

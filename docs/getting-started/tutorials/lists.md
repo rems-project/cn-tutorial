@@ -29,7 +29,7 @@ structures, as one would do in ML, Haskell, or Coq. We use the
 datatype `List` for CN-level lists.
 
 Intuitively, the `SLList_At` predicate walks over a singly-linked
-pointer structure in the C heap and extracts an `Owned` version of
+pointer structure in the C heap and extracts an `RW` version of
 the CN-level list that it represents.
 
 ```c title="exercises/list/cn_types.h"

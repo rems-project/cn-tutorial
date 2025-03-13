@@ -148,7 +148,7 @@ list before we return, and will claim we are missing a resource for
 returning. The `split_case` on `is_null(n->next->next)` is similar,
 but for unpacking the `Own_Forwards` predicate. Note that we have to
 go one more node forward to make sure that everything past `n->next`
-is still owned at the end of the function.
+is still RW at the end of the function.
 
 Now let's look at the `remove` operation. Traditionally, a `remove`
 operation for a list returns the integer that was removed. However we

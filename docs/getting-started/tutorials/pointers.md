@@ -16,7 +16,7 @@
         - abs_mem (this doesn't work with unsigned ints, but we can
           use the other examples from the previous section)
     - slf0_basic_incr_signed.c
-        shows the difference between Block and Owned
+        shows the difference between W and RW
     - exercises
         - zero.c
         - basic_inplace_double.c involves UB, so skip it or (maybe
@@ -56,16 +56,16 @@ function read, file ./read-exec.c, line 18
 ************************************************************
 function read, file ./read-exec.c, line 18
 Load failed.
-  ==> 0x122592a09[0] (0x122592a09) not owned
+  ==> 0x122592a09[0] (0x122592a09) not RW
 ```
 
 For the read `*p` to be safe, we need to know that the function has permission
 to access the memory pointed to by `p`. We next explain how to represent this
 permission.
 
-## Owned resources
+## RW resources
 
-Given a C-type `T` and pointer `p`, the resource `Owned<T>(p)` asserts
+Given a C-type `T` and pointer `p`, the resource `RW<T>(p)` asserts
 _ownership_ of a memory region at location `p` of the size of the C type
 `T`.
 
@@ -99,12 +99,12 @@ are less confusingly presented as always required? -->
      annotations...? -->
 
 In this example, we can ensure the safe execution of `read` by adding
-a precondition that requires ownership of `Owned<unsigned int>(p)`, as
+a precondition that requires ownership of `RW<unsigned int>(p)`, as
 shown below. (The `take ... =` part will be explained shortly.) Since
 reading the pointer does not disturb its value,
 we can also add a corresponding postcondition, whereby `read` returns
 ownership of `p` after it is finished executing, in the form of
-another `Owned<unsigned int>(p)` resource.
+another `RW<unsigned int>(p)` resource.
 
 ```c title="solutions/read.c"
 --8<--
@@ -115,9 +115,9 @@ solutions/read.c
 This specification can be read as follows:
 
 - any function calling `read` has to be able to provide a resource
-  `Owned<unsigned int>(p)` to pass into `read`, and
+  `RW<unsigned int>(p)` to pass into `read`, and
 
-- the caller will receive back a resource `Owned<unsigned int>(p)` when
+- the caller will receive back a resource `RW<unsigned int>(p)` when
   `read` returns.
 
 ## Pointee values
@@ -177,7 +177,7 @@ exercises/slf0_basic_incr.signed.c
 --8<--
 ```
 
-In the precondition we assert ownership of resource `Owned<unsigned int>(p)`,
+In the precondition we assert ownership of resource `RW<unsigned int>(p)`,
 binding its output/pointee value to `P`, and use `P` to specify
 that `p` must point to a sufficiently small value at the start of
 the function so as not to overflow when incremented. The postcondition
@@ -223,16 +223,16 @@ BCP: Explain what that means.  Update if the output format changes.
 </span>
 
 <!-- CN has typechecked the function and verified (1) that it is safe to
-execute under the precondition (given ownership `Owned<unsigned int>(p)`)
+execute under the precondition (given ownership `RW<unsigned int>(p)`)
 and (2) that the function (vacuously) satisfies its postcondition. But
 following the check of the postcondition it finds that not all
 resources have been "used up". -->
 <!-- JWS: I propose that this paragraph is cut, seems less clear all around than the paragraph below-->
 
-Given the above specification, `read` leaks memory: it takes ownership, does not return it, but also does not deallocate the owned memory or otherwise dispose of it. In CN this is a type error.
+Given the above specification, `read` leaks memory: it takes ownership, does not return it, but also does not deallocate the RW memory or otherwise dispose of it. In CN this is a type error.
 
 CN requires that every resource passed into a function has to be either
-_returned_ to the caller or else _destroyed_ by deallocating the owned area of
+_returned_ to the caller or else _destroyed_ by deallocating the RW area of
 memory (as we shall see later). CN’s motivation for this choice is its focus on
 low-level systems software in which memory is managed manually; in this context,
 memory leaks are typically very undesirable.
@@ -283,11 +283,11 @@ ownership of `p`, with output `P_post`, and asserts the coordinates
 have been swapped, by referring to the members of `P` and `P_post`
 individually.
 
-The reason `Owned` needs a C-type annotation is so that it can (a)
+The reason `RW` needs a C-type annotation is so that it can (a)
 figure out the size of the sub-heap being claimed and (b) figure out
 how one may need to destructure the type (unions, struct fields and
 padding, arrays). The relationship is that for `take x =
-Owned<ct>(expr)` we have `expr : pointer, x : to_basetype(ct)`.
+RW<ct>(expr)` we have `expr : pointer, x : to_basetype(ct)`.
 
 <span style="color:red">
 There is a design decision to consider here rems-project/cerberus#349

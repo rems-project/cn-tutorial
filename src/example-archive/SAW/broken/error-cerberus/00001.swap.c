@@ -140,10 +140,10 @@ llvm_verify swapmod "wacky_sort"
 #include <stdio.h>
 
 void swap(uint32_t *x, uint32_t *y)
-/*@ requires take xv0 = Owned<uint32_t>(x);
-             take yv0 = Owned<uint32_t>(y); 
-    ensures  take xv1 = Owned<uint32_t>(x);
-             take yv1 = Owned<uint32_t>(y);
+/*@ requires take xv0 = RW<uint32_t>(x);
+             take yv0 = RW<uint32_t>(y); 
+    ensures  take xv1 = RW<uint32_t>(x);
+             take yv1 = RW<uint32_t>(y);
 	     xv1 == yv0;
 	     yv1 == xv0; 
 @*/
@@ -154,10 +154,10 @@ void swap(uint32_t *x, uint32_t *y)
 }
 
 void xor_swap(uint32_t *x, uint32_t *y)
-/*@ requires take xv0 = Owned<uint32_t>(x);
-             take yv0 = Owned<uint32_t>(y); 
-    ensures  take xv1 = Owned<uint32_t>(x);
-             take yv1 = Owned<uint32_t>(y);
+/*@ requires take xv0 = RW<uint32_t>(x);
+             take yv0 = RW<uint32_t>(y); 
+    ensures  take xv1 = RW<uint32_t>(x);
+             take yv1 = RW<uint32_t>(y);
 	     xv1 == yv0;
 	     yv1 == xv0; 
 @*/
@@ -169,22 +169,22 @@ void xor_swap(uint32_t *x, uint32_t *y)
 
 // selection sort
 void selection_sort(uint32_t *a, size_t len)
-/*@ requires take av0 = each(size_t  j; 0u64 <= j && j < len) { Owned<int>(array_shift<int>(a,j)) }; 
-    ensures  take av1 = each(size_t  j; 0u64 <= j && j < len) { Owned<int>(array_shift<int>(a,j)) }; 
+/*@ requires take av0 = each(size_t  j; 0u64 <= j && j < len) { RW<int>(array_shift<int>(a,j)) }; 
+    ensures  take av1 = each(size_t  j; 0u64 <= j && j < len) { RW<int>(array_shift<int>(a,j)) }; 
 @*/
 {
     for (size_t i = 0; i < len - 1; ++i)
-      /*@ inv take avl = each(u64 k; 0u64 <= k && k < i) { Owned<int>(array_shift<int>(a,k)) };
-	      take avr = each(u64 k; i <= k && k < len) { Owned<int>(array_shift<int>(a,k)) } ;
+      /*@ inv take avl = each(u64 k; 0u64 <= k && k < i) { RW<int>(array_shift<int>(a,k)) };
+	      take avr = each(u64 k; i <= k && k < len) { RW<int>(array_shift<int>(a,k)) } ;
 	      {a} unchanged; {len} unchanged;
 	      i <= len; 
       @*/
       {
         size_t j_min = i;
         for (size_t j = i; j < len; ++j)
-	  /*@ inv take avl = each(u64 k; 0u64 <= k && k < i) { Owned<int>(array_shift<int>(a,k)) };
-	          take avr = each(u64 k; i <= k && k < j)    { Owned<int>(array_shift<int>(a,k)) };
-		  take avr = each(u64 k; j <= k && k < len) { Owned<int>(array_shift<int>(a,k)) };
+	  /*@ inv take avl = each(u64 k; 0u64 <= k && k < i) { RW<int>(array_shift<int>(a,k)) };
+	          take avr = each(u64 k; i <= k && k < j)    { RW<int>(array_shift<int>(a,k)) };
+		  take avr = each(u64 k; j <= k && k < len) { RW<int>(array_shift<int>(a,k)) };
 		  {a} unchanged; {len} unchanged;
 		  j <= len; 
 		  @*/

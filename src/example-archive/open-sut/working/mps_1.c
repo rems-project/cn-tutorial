@@ -35,19 +35,19 @@ typedef uint8_t w8;
 w1 Coincidence_2_4(w8 trips[4])
 /*@
   requires
-    take ta = Owned<uint8_t>(array_shift<uint8_t>(trips, 0i32));
-    take tb = Owned<uint8_t>(array_shift<uint8_t>(trips, 1i32));
-    take tc = Owned<uint8_t>(array_shift<uint8_t>(trips, 2i32));
-    take td = Owned<uint8_t>(array_shift<uint8_t>(trips, 3i32));
+    take ta = RW<uint8_t>(array_shift<uint8_t>(trips, 0i32));
+    take tb = RW<uint8_t>(array_shift<uint8_t>(trips, 1i32));
+    take tc = RW<uint8_t>(array_shift<uint8_t>(trips, 2i32));
+    take td = RW<uint8_t>(array_shift<uint8_t>(trips, 3i32));
     let a = ta != 0u8;
     let b = tb != 0u8;
     let c = tc != 0u8;
     let d = td != 0u8;
   ensures
-    take ta_out = Owned<uint8_t>(array_shift<uint8_t>(trips, 0i32));
-    take tb_out = Owned<uint8_t>(array_shift<uint8_t>(trips, 1i32));
-    take tc_out = Owned<uint8_t>(array_shift<uint8_t>(trips, 2i32));
-    take td_out = Owned<uint8_t>(array_shift<uint8_t>(trips, 3i32));
+    take ta_out = RW<uint8_t>(array_shift<uint8_t>(trips, 0i32));
+    take tb_out = RW<uint8_t>(array_shift<uint8_t>(trips, 1i32));
+    take tc_out = RW<uint8_t>(array_shift<uint8_t>(trips, 2i32));
+    take td_out = RW<uint8_t>(array_shift<uint8_t>(trips, 3i32));
     return == Bool_to_u8(P_Coincidence_2_4(a, b, c, d));
 @*/
 {
