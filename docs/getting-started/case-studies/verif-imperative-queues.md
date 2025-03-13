@@ -1,5 +1,7 @@
 # Verifying Imperative Queues
 
+<span style="color:red">Need updating after testing/verif split.</span>
+
 A queue is a linked list with O(1) operations for adding things to one
 end (the "back") and removing them from the other (the "front"). Here
 are the C type definitions:

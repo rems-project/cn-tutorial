@@ -8,7 +8,7 @@ void push_queue (int x, struct queue *q)
 @*/
 /* --END-- */
 {
-  struct queue_cell *c = malloc_queue_cell();
+  struct queue_cell *c = malloc__queue_cell();
   c->first = x;
   c->next = 0;
   if (q->back == 0) {

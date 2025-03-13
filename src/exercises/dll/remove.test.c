@@ -1,9 +1,10 @@
-#include "./headers.verif.h"
-#include "./dllist_and_int.h"
+#include "./headers.test.h"
+#include "./dllist_and_int.test.h"
 
 // Remove the given node from the list and returns another pointer 
 // to somewhere in the list, or a null pointer if the list is empty
-struct dllist_and_int *remove(struct dllist *n)
+struct dllist_and_int *remove_current(struct dllist *n)
+/* --BEGIN-- */
 /*@ requires !is_null(n);
              take Before = Dll_at(n);
              let Del = Node(Before);
@@ -20,15 +21,14 @@ struct dllist_and_int *remove(struct dllist *n)
                                             curr: Node(After), 
                                             right: Right_Sublist(Before)});
 @*/
+/* --END-- */
 {
     struct dllist *temp = 0;
     if (n->prev != 0) {
-        /*@ split_case(is_null(n->prev->prev)); @*/
         n->prev->next = n->next;
         temp = n->prev;
     }
     if (n->next != 0) {
-        /*@ split_case(is_null(n->next->next)); @*/
         n->next->prev = n->prev;
         temp = n->next;
     }

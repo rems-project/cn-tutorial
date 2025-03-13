@@ -107,3 +107,74 @@ The current case studies from the verification tutorial
   maybe people start by writing unit tests and later add PBT; it would
   be silly to *not* run the unit tests they've written.
 
+## Older notes
+
+Further topics:
+
+- doubly linked lists
+- Trees: - deep copy - sum - maybe the accumulating sum
+- cn_function
+- pack
+- bitwise functions (operators are not present in the logical language)
+- "ownership" in Rust vs. CN
+- tips amnd tricks --
+  cf. [](https://dafny.org/dafny/DafnyRef/DafnyRef.html#sec-verification)
+- more data structures to try out
+  [](https://www.geeksforgeeks.org/data-structures/#most-popular-data-structures)
+- Maybe add some explanation of -- or at least a pointer to --
+  Dhruv's Iris-in-C examples:
+  pop_queue_lemma_stages.c
+  push_queue_induction.c
+  pop_queue_unified.c
+
+Further exercises:
+
+- Some exercises that get THEM to write predicates, datatype
+  declarations, etc.
+
+Misc things to do:
+
+- replace 0 with NULL in specs
+
+- naming issues - rename == to ptr_eq everywhere in specs - rename list to List in filenames. or go more radical and rename List to cnlist - consider renaming SLList_At to just List (and sllist to just list,
+  etc.) everywhere (since we are only dealing with one kind of list
+  in the tutorial, the extra pedantry is not getting us much; and
+  this simplification would avoid trying to fix conventions that all
+  CN code should use everywhere...)
+
+  - related: the name Cons is awkward for several reasons:
+    - long / verbose (nothing to do about that, I guess)
+    - Seq is capitalized, but it means List
+    - most important part is buried in the middle
+    - What are the established C conventions here??
+
+- some of the examples use int while the exercises that follow use
+  unsigned int. This is a needless source of potential confusion.
+
+- everyplace we do storage allocation, we should really allow the
+  malloc call to return NULL if it wants to; the caller should
+  explicitly check that it didn't get back NULL. This requires
+  defining an "exit" function" with trivial pre- and postconditions
+  (true / false).
+
+- In queue.c, when I tried /_@ unfold QueueAux (F.front, F.back,
+  B.first); @_/ I was confused by "the specification function
+  `QueueAux' is not declared". I guess this is, again, the
+  distinction between functions and predicates...?
+
+- In debugging the queue example, The fact that some of the
+  constraints in the error report are forced while others are random
+  values filled in by the SMT solver is pretty problematic...
+
+For later:
+
+Alternative formatting tools to consider at some point (not now!):
+probably the best fit:
+[](https://myst-parser.readthedocs.io/en/latest/)
+another very standard one to consider:
+alternative: [](https://www.sphinx-doc.org/en/master/index.html)
+
+Misc notes:
+
+- Nb: take V = RW<t>(p) === p |-t-> V
+

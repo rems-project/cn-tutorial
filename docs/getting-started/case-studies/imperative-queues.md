@@ -1,8 +1,8 @@
 # Imperative Queues
 
-A queue is a linked list with O(1) operations for adding things to one
-end (the "back") and removing them from the other (the "front"). Here
-are the C type definitions:
+A queue is a linked list with constant-time operations for adding
+things to one end (the "back") and removing them from the other (the
+"front"). Here are the C type definitions:
 
 ```c title="exercises/queue/c_types.h"
 --8<--
@@ -163,8 +163,7 @@ exercises/queue/pop_orig.broken.c
 ```
 
 _Exercise_: Again, before reading on, see if you can write down a
-plausible top-level specification. (For extra credit, see how far you
-can get with verifying it!)
+plausible top-level specification and test its correctness.
 
 Here is the annotated `pop` code:
 
@@ -174,4 +173,4 @@ exercises/queue/pop.c
 --8<--
 ```
 
-<span style="color:red">BCP: Need some exercises.</span>
+<span style="color:red">BCP: Needs some more exercises?</span>

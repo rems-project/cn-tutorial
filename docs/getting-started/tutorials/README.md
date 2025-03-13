@@ -30,7 +30,11 @@
 - [<span style="color:black">(Verification)</span>
    Verifying imperative queues](../case-studies/verif-imperative-queues.md)
 - [Doubly-linked lists](../case-studies/doubly-linked-lists.md)
-- [Airport Simulation](../case-studies/the-runway.md)
+- [<span style="color:black">(Verification)</span>
+   Verifying doubly-linked lists](../case-studies/verif-doubly-linked-lists.md)
+- [Airport simulation](../case-studies/the-runway.md)
+- [<span style="color:black">(Verification)</span>
+   Verifying the airport simulation](../case-studies/verif-the-runway.md)
 
 ## TODOs
 

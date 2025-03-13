@@ -1,19 +1,17 @@
 # Doubly-linked Lists
 
+<span style="color:red">Need updating after testing/verif split.</span>
+
 <span style="color:red">BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions. </span>
 
 A doubly linked list is a linked list where each node has a pointer
-to both the next node and the previous node. This allows for constant-time
+to both the next node and the previous node. This allows for O(1)
 operations for adding or removing nodes anywhere in the list.
 
 Because of all the sharing in this data structure, the separation
 reasoning is a bit tricky. We'll give you the core definitions and
 then invite you to help fill in the annotations for some of the
 functions that manipulate doubly linked lists.
-
-## Types
-
-<span style="color:red">BCP: Does that work for testing?</span>
 
 First, here is the C type definition:
 
@@ -54,9 +52,6 @@ Note that `Dll_at` takes ownership of the node passed in, and then
 calls `Own_Backwards` and `Own_Forwards`, which recursively take
 ownership of the rest of the list.
 
-<span style="color:red">BCP: Has ptr_eq been explained?  It's useful
--- should be! </span>
-
 Also, notice that `Own_Forwards` and `Own_Backwards` include `ptr_eq`
 assertions for the `prev` and `next` pointers. This is to ensure that
 the nodes in the list are correctly doubly linked. For example, the
@@ -77,68 +72,59 @@ exercises/dll/getters.h
 --8<--
 ```
 
-We also need the usual boilerplate for allocation and deallocation.
+We also need some boilerplate for allocation and deallocation.
 
-```c title="exercises/dll/allocation.test.h"
+```c title="exercises/dll/malloc_free.h"
 --8<--
-exercises/dll/allocation.test.h
+exercises/dll/malloc_free.h
 --8<--
 ```
 
 For convenience, we gather all of these files into a single header file.
 
-```c title="exercises/dll/headers.test.h"
+```c title="exercises/dll/headers.verif.h"
 --8<--
-exercises/dll/headers.test.h
+exercises/dll/headers.verif.h
 --8<--
 ```
 
 <!-- ====================================================================== -->
-
-## Singleton
 
 Now we can move on to an initialization function. Since an empty list
 is represented as a null pointer, we will look at initializing a
 singleton list (or in other words, a list with only one item).
 
-```c title="exercises/dll/singleton.test.c"
+```c title="exercises/dll/singleton.c"
 --8<--
-exercises/dll/singleton.test.c
+exercises/dll/singleton.c
 --8<--
 ```
 
 <!-- ====================================================================== -->
 
-## Add
-
 The `add` and `remove` functions are where it gets a little tricker.
 Let's start with `add`. Here is the unannotated version:
 
-```c title="exercises/dll/add.test.c"
+```c title="exercises/dll/add_orig.broken.c"
 --8<--
-exercises/dll/add.test.c
+exercises/dll/add_orig.broken.c
 --8<--
 ```
 
 _Exercise_: Before reading on, see if you can figure out what
-specification is appropriate.
+specification is appropriate and what other are needed.
 
 <span style="color:red">BCP: I rather doubt they are going to be able to come up with this specification on their own! We need to set it up earlier with a simpler example (maybe in a whoile earlier section) showing how to use conditionals in specs. </span>
 
 Now, here is the annotated version of the `add` operation:
 
-<span style="color:red">BCP: If we're not going to _discuss_ the
-solution, there's no need to include it here in-line, since people
-already know where to find the file. (But, of course, we should
-discuss it!) </span>
-
-```c title="solutions/dll/add.c"
+```c title="exercises/dll/add.c"
 --8<--
-solutions/dll/add.c
+exercises/dll/add.c
 --8<--
 ```
 
-The `requires`
+First, let's look at the pre- and post-conditions. The `requires`
 clause is straightforward. We need to own the list centered around
 the node that `n` points to. `Before` is a `Dll`
 that is either empty, or it has a List to the left,
@@ -155,9 +141,18 @@ list. Otherwise, the left left part of the list now has the data from
 the old `curr` node, the new `curr` node is the added node, and the
 right part of the list is the same as before.
 
-## Remove
+Now, let's look at the annotations in the function body. CN can
+figure out the empty list case for itself, but it needs some help with
+the non-empty list case. The `split_case` on `is_null(n->prev)`
+tells CN to unpack the `Own_Backwards` predicate. Without this
+annotation, CN cannot reason that we didn't lose the left half of the
+list before we return, and will claim we are missing a resource for
+returning. The `split_case` on `is_null(n->next->next)` is similar,
+but for unpacking the `Own_Forwards` predicate. Note that we have to
+go one more node forward to make sure that everything past `n->next`
+is still RW at the end of the function.
 
-Finally, let's look at the `remove` operation. Traditionally, a `remove`
+Now let's look at the `remove` operation. Traditionally, a `remove`
 operation for a list returns the integer that was removed. However we
 also want all of our functions to return a pointer to the
 list. Because of this, we define a `struct` that includes an `int`
@@ -171,22 +166,22 @@ exercises/dll/dllist_and_int.h
 
 Now we can look at the code for the `remove` operation. Here is the un-annotated version:
 
-```c title="exercises/dll/remove.test.c"
+```c title="exercises/dll/remove_orig.broken.c"
 --8<--
-exercises/dll/remove.test.c
+exercises/dll/remove_orig.broken.c
 --8<--
 ```
 
 _Exercise_: Before reading on, see if you can figure out what
-specification is appropriate.
+specification is appropriate and what annotations are needed.
 
 <span style="color:red">BCP: Again, unlikely the reader is going to be able to figure this out without help. We need some hints. </span>
 
-Now, here is the annotated version of the `remove` operation:
+Now, here is the fully annotated version of the `remove` operation:
 
-```c title="solutions/dll/remove.test.c"
+```c title="exercises/dll/remove.c"
 --8<--
-solutions/dll/remove.test.c
+exercises/dll/remove.c
 --8<--
 ```
 
@@ -218,7 +213,14 @@ Left_Sublist(Before), curr: Node(After), right: Tl(Right(Before))}`.
   the tail, as seen shown in `After == Dll{left:
 Tl(Left_Sublist(Before)), curr: Node(After), right: Right(Before)};`
 
-## Exercises
+The annotations in the function body are similar to in the `add`
+function. Both of these `split_case` annotations are needed to unpack
+the `Own_Forwards` and `Own_Backwards` predicates. Without them, CN
+will not be able to reason that we didn't lose the left or right half
+of the list before we return and will claim we are missing a resource
+for returning.
+
+<!-- ====================================================================== -->
 
 _Exercise_: There are many other functions that one might want to
 implement for a doubly linked list. For example, one might want to
