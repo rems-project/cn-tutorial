@@ -127,17 +127,14 @@ exercises/list/copy.c
 ### Merge sort
 
 <span style="color:red">
-BCP: This could use a gentler explanation (probably in pieces)
+BCP: This could use a gentler explanation (probably in pieces).  But
+much of it will be in lists.md, not here.
 </span>
 
 Finally, here is a slightly tricky in-place version of merge sort that
 avoids allocating any new list cells in the splitting step by taking
 alternate cells from the original list and linking them together into
 two new lists of roughly equal lengths.
-
-<span style="color:red">
-BCP: We've heard from more than one reader that this example is particularly hard to digest without some additional help
-</span>
 
 <span style="color:red">
 BCP: Nit: Merge multiple requires and ensures clauses into one

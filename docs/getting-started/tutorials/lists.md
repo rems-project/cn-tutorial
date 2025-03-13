@@ -115,22 +115,15 @@ exercises/list/copy.c
 
 ### Merge sort
 
-<span style="color:red">
-BCP: This could use a gentler explanation (probably in pieces)
+<span style="color:red"> BCP: This could use a gentler explanation
+(probably in pieces) We've heard from more than one reader that this
+example is particularly hard to digest without some additional help
 </span>
 
 Finally, here is a slightly tricky in-place version of merge sort that
 avoids allocating any new list cells in the splitting step by taking
 alternate cells from the original list and linking them together into
 two new lists of roughly equal lengths.
-
-<span style="color:red">
-BCP: We've heard from more than one reader that this example is particularly hard to digest without some additional help
-</span>
-
-<span style="color:red">
-BCP: Nit: Merge multiple requires and ensures clauses into one
-</span>
 
 ```c title="exercises/list/mergesort.test.c"
 --8<--
@@ -140,9 +133,8 @@ exercises/list/mergesort.test.c
 
 ### Exercises
 
-_Allocating append_. Fill in the CN annotations on
-`IntList_append2`. (You will need some in the body as well as at
-the top.)
+_Allocating append_. Fill in an appropriate specification for
+`IntList_append2`.
 
 ```c title="exercises/list/append2.c"
 --8<--
