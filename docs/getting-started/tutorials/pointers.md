@@ -157,25 +157,25 @@ exercises/read2.c
 
     CN’s `take` notation is just an alternative syntax for quantification over the values of resources, but a useful one: the `take` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
 
-_Exercise._ Write a specification for `double`, which takes a pointer `p` and
+_Exercise._ Write a specification for `double_it`, which takes a pointer `p` and
 returns double the pointee value. Running `cn test` on this correct
 implementation should succeed,
-```c title="exercises/double.c"
+```c title="exercises/double_it.c"
 --8<--
-exercises/double.c
+exercises/double_it.c
 --8<--
 ```
 while running `cn test` on this incorrect implementation
 ```C
-  int n = *p;
-  int m = n + n;
+  unsigned int n = *p;
+  unsigned int m = n + n;
   *p = 0;
   return m;
 ```
-and this incorrect implementation
+or this incorrect implementation
 ```C
-  int n = *p;
-  int m = n + n + n;
+  unsigned int n = *p;
+  unsigned int m = n + n + n;
   return m;
 ```
 should fail.

@@ -1,4 +1,10 @@
-# Specifications
+# A First Taste of CN: Specification and Testing
+
+This section introduces the most basic features of CN: a notation for
+writing _specifications_ of C functions and a tool for _testing_ the
+behavior of the code against those specifications.
+
+## A First Specification
 
 Suppose we are writing a function `min3`, which takes three `unsigned int` arguments.
 
@@ -45,6 +51,8 @@ shown below.
 exercises/min3/min3.broken.c
 --8<--
 ```
+
+## Testing
 
 How can we find out whether our implementation satisfies our
 specification? We can test it!
@@ -158,11 +166,62 @@ _Exercise._ Practice the workflow of specifying and testing the function `add`.
 - Write a specification with the postcondition that `add` should
   return the sum of its inputs. Remember that CN supports standard
   arithmetic and boolean operators such as `+` and `==`.
-- Write an _incorrect_ implementation of `add` and check that `cn test` fails.
 - Write a _correct_ implementation and check that `cn test` succeeds.
+- Write an _incorrect_ implementation of `add` and check that `cn test` fails.
+- Extra credit: Can you find a way to write an incorrect
+  implementation of `add` for which testing will (incorrectly) succeed
+  -- i.e., such that `cn test` cannot find a counterexample after 100
+  tests?
 
 ```c title="exercises/add.partial.c"
 --8<--
 exercises/add.partial.c
+--8<--
+```
+
+## Specifications with Preconditions
+
+Here's a silly way of writing a function that
+returns whatever number it is given as input:
+
+```c title="exercises/id_by_div/id_by_div.broken.c"
+--8<--
+exercises/id_by_div/id_by_div.broken.c
+--8<--
+```
+
+If we try to `cn test` this function, however, we will get a counterexample such as this one:
+```
+x = 7
+```
+
+Oh! Because integer division is truncating, our silly function will
+only work as desired when the input `x` is even. We can add this
+requirement as a _precondition_, using the `requires` keyword.
+
+```c title="exercises/id_by_div/id_by_div.fixed.c"
+--8<--
+exercises/id_by_div/id_by_div.fixed.c
+--8<--
+```
+
+A specification with both preconditions and postconditions says that, if
+the preconditions hold at the point where the function is called, then the
+postconditions will hold when the function returns.
+
+The other new piece of syntax here is the `u32` type annotations. In
+CN specifications, numeric types need to be annotated explicitly, and
+we use `u32` for `unsigned int`.  Try removing the annotations to see
+the error message that results.
+
+## Exercises
+
+_Exercise._ Without changing the postcondition or implementation, fix
+the specification in the following example by adding a precondition on
+the inputs `x` and `n`. Check that `cn test` succeeds.
+
+```c title="exercises/id_by_div/id_by_div_n.broken.c"
+--8<--
+exercises/id_by_div/id_by_div_n.broken.c
 --8<--
 ```

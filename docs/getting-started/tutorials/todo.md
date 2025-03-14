@@ -31,6 +31,7 @@
 - The file `overview-pbt.md` is mostly subsumed by other text here,
   but there are some more specific instructions that probably belong
   in the reference manual.
+- rename some .broken files to .partial?
 
 ## General notes
 

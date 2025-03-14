@@ -3,7 +3,7 @@ unsigned int five_six(unsigned int *p, unsigned int *q)
 		     take Q = RW<unsigned int>(q);
     ensures  take P_post = RW<unsigned int>(p);
     		 take Q_post = RW<unsigned int>(q);
-             return == 5;
+             return == 5u32;
 @*/
 {
 	*p = 5;

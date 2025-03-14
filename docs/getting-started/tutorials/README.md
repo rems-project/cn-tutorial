@@ -3,8 +3,7 @@
 - [Welcome](welcome.md)
 
 ## A Tour of CN
-- [Specifications](first-taste.md)
-- [Preconditions](preconditions.md)
+- [A first taste of CN: Specification and testing](first-taste.md)
 - [<span style="color:black">(Verification)</span>
    A first taste of verification](verif-basics.md)
 - [Working with pointers](pointers.md)

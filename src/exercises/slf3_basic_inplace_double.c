@@ -6,7 +6,7 @@ void inplace_double (unsigned int *p)
 @*/
 /* --END-- */
 {
-  int n = *p;
-  int m = n + n;
+  unsigned int n = *p;
+  unsigned int m = n + n;
   *p = m;
 }
