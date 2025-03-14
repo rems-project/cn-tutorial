@@ -1,7 +1,5 @@
 # Pointers and Simple Ownership
 
-<span style="color:blue">JWS is in the middle of editing this section</span>
-
 <!--
     Rough notes / updated outline:
 
@@ -93,7 +91,7 @@ are less confusingly presented as always required? -->
      words are common in real C code...
 -->
 
-<span style="color:red">BCP: Do we mean 32-bit word here?? </span>
+<!-- <span style="color:red">BCP: Do we mean 32-bit word here?? </span> -->
 <!-- TODO: BCP: Maybe the description of the T argument can be
      postponed for a while, if we remove the <unsigned int>
      annotations...? -->
@@ -159,37 +157,52 @@ exercises/read2.c
 
     CN’s `take` notation is just an alternative syntax for quantification over the values of resources, but a useful one: the `take` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
 
-_Exercise._ <span style="color:blue">JWS: TODO, probably double</span>
+_Exercise._ Write a specification for `double`, which takes a pointer `p` and
+returns double the pointee value. Running `cn test` on this correct
+implementation should succeed,
+```c title="exercises/double.c"
+--8<--
+exercises/double.c
+--8<--
+```
+while running `cn test` on this incorrect implementation
+```C
+  int n = *p;
+  int m = n + n;
+  *p = 0;
+  return m;
+```
+and this incorrect implementation
+```C
+  int n = *p;
+  int m = n + n + n;
+  return m;
+```
+should fail.
 
 ## Writing through pointers
 
-Let’s explore resources and their outputs in another example. The C function
-`incr` takes an `unsigned int` pointer `p` and increments the value in the
-memory cell that it points to.
+We next have an example where data is written to a pointer. The function
+`incr` takes a pointer `p` and increments the value in the memory cell that it
+points to.
 
-<span style="color:red">
+<!-- <span style="color:red">
 BCP: unsigned! (there are both signed and unsigned versions at the
 moment -- how do they relate?)
-</span>
-```c title="exercises/slf0_basic_incr.signed.c"
+</span> -->
+```c title="exercises/slf0_basic_incr.c"
 --8<--
-exercises/slf0_basic_incr.signed.c
+exercises/slf0_basic_incr.c
 --8<--
 ```
 
-In the precondition we assert ownership of resource `RW<unsigned int>(p)`,
-binding its output/pointee value to `P`, and use `P` to specify
-that `p` must point to a sufficiently small value at the start of
-the function so as not to overflow when incremented. The postcondition
-asserts ownership of `p` with output `P_post`, as before, and uses
-this to express that the value `p` points to is incremented by
-`incr`: `P_post == P + 1i32`.
+The precondition binds the initial pointee value to `P`. The postcondition binds
+the value _after_ function execution to `P_post`, and uses this to express that
+the value `p` points to is incremented by `incr`: `P_post == P + 1i32`.
 
 _Exercise._ Write a specification for `inplace_double`, which takes a pointer
 `p` and doubles the pointee value. Make sure your postcondition captures the
 function's intended behavior.
-
-<span style="color:blue">JWS: TODO make these unsigned int</span>
 
 ```c title="exercises/slf3_basic_inplace_double.c"
 --8<--
@@ -240,8 +253,6 @@ memory leaks are typically very undesirable.
 their resource footprint and, in particular, return any unused resources back to
 the caller. -->
 
-_Exercise._ <span style="color:blue">JWS: TODO</span>
-
 ## Disjoint memory regions
 
 When functions manipulate multiple pointers, we can assert ownership of each
@@ -249,7 +260,18 @@ one, just like before. But there is an additional twist: simultaneously owning
 resources for two pointers implies that these pointers refer to _disjoint_
 regions of memory.
 
-<span style="color:blue">JWS: TODO five/six example</span>
+Consider this example to see when disjointness matters:
+
+```c title="exercises/five_six.c"
+--8<--
+exercises/five_six.c
+--8<--
+```
+
+The postcondition claims that the function returns `5`. Observe that this is
+only true when `p` and `q` are disjoint; otherwise, the write to `q` would
+override the write to `p`. In CN, we can make this assumption for free — no
+extra work is needed to assert that the pointers are disjoint.
 
 _Exercise._ Write a specification for the function `transfer`, shown below.
 
@@ -266,7 +288,7 @@ larger programs typically also manipulate compound values, often
 represented using C `struct`s. Specifying functions manipulating
 structs works in much the same way as with basic types.
 
-For instance, the following example uses a `struct` `point` to
+For instance, the following example uses a `struct point` to
 represent a point in two-dimensional space. The function `transpose`
 swaps a point’s `x` and `y` coordinates.
 
@@ -276,21 +298,21 @@ exercises/transpose.c
 --8<--
 ```
 
-Here the precondition asserts ownership for `p`, at type `struct
-point`; the output `P_post` is a value of type `struct point`, i.e. a
-record with members `x` and `y`. The postcondition similarly asserts
-ownership of `p`, with output `P_post`, and asserts the coordinates
-have been swapped, by referring to the members of `P` and `P_post`
+Here we have `RW<struct point>(p)` resources, with the appropriate type of `p`
+filled in. Accordingly, `P` and `P_post` are values with type `struct point`,
+i.e., they are records with members `x` and `y`. The postcondition asserts the
+coordinates have been swapped by referring to the members of `P` and `P_post`
 individually.
 
-The reason `RW` needs a C-type annotation is so that it can (a)
+<!-- The reason `RW` needs a C-type annotation is so that it can (a)
 figure out the size of the sub-heap being claimed and (b) figure out
 how one may need to destructure the type (unions, struct fields and
 padding, arrays). The relationship is that for `take x =
-RW<ct>(expr)` we have `expr : pointer, x : to_basetype(ct)`.
+RW<ct>(expr)` we have `expr : pointer, x : to_basetype(ct)`. -->
 
 <span style="color:red">
 There is a design decision to consider here rems-project/cerberus#349
 </span>
 
-_Exercise._ <span style="color:blue">JWS: TODO</span>
+_Exercise._ <span style="color:blue">TODO (it would be nice to actually find a
+bug!)</span>

@@ -1,7 +1,7 @@
 void incr (unsigned int *p)
-/*@ requires take n1 = RW<unsigned int>(p);
-    ensures take n2 = RW<unsigned int>(p);
-            n2 == n1 + 1u32;
+/*@ requires take P = RW<unsigned int>(p);
+    ensures take P_post = RW<unsigned int>(p);
+            P_post == P + 1u32;
 @*/
 {
   unsigned int n = *p;
