@@ -153,7 +153,7 @@ cases: 1, passed: 1, failed: 0, errored: 0, skipped: 0
 
 Hooray!
 
-## Exercises
+### Exercises
 
 _Refining the specification of `min3`_: The specification we wrote is
 a bit loose: It says the result value should be smaller than `x`, `y`,
@@ -214,7 +214,7 @@ CN specifications, numeric types need to be annotated explicitly, and
 we use `u32` for `unsigned int`.  Try removing the annotations to see
 the error message that results.
 
-## Exercises
+### Exercises
 
 _Exercise._ Without changing the postcondition or implementation, fix
 the specification in the following example by adding a precondition on
