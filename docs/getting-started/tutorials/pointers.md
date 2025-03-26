@@ -39,22 +39,25 @@ the permission to access a region of memory.
 Let’s look at a simple example. The function `read` takes an integer
 pointer `p` and returns the pointee value.
 
-```c title="exercises/read.c"
+```c title="exercises/read.broken.c"
 --8<--
 exercises/read.c
 --8<--
 ```
 
 Running `cn test` on this example produces an error that looks like this:
-
 ```
 Testing read::read:
 FAILED
-function read, file ./read-exec.c, line 18
-************************************************************
-function read, file ./read-exec.c, line 18
+
+************************ Failed at *************************
+function read, file ./read-exec.c, line 19
 Load failed.
-  ==> 0x122592a09[0] (0x122592a09) not RW
+  ==> 0x12294ca70[0] (0x12294ca70) not owned
+********************** Failing input ***********************
+
+unsigned int* p = (unsigned int*)(12294ca70);
+read(p);
 ```
 
 For the read `*p` to be safe, we need to know that the function has permission
@@ -224,15 +227,22 @@ exercises/read.broken.c
 
 CN rejects this program with the following message:
 ```
-> cn test exercises/read.broken.c
-...
+Testing read::read:
 FAILED
-...
-Postcondition leak check failed, ownership leaked for pointer 0x1243d8a82
-...
+
+************************ Failed at *************************
+function read, file ./read.broken-exec.c, line 26
+Postcondition leak check failed, ownership leaked for pointer 0x1201e8a78
+
+********************** Failing input ***********************
+
+void* p0 = malloc(4);
+*((unsigned int*)p0) = 17;
+unsigned int* p = (unsigned int*)(p0);
+read(p);
 ```
 <span style="color:red">
-BCP: Explain what that means.  Update if the output format changes.
+BCP: Explain what that means.
 </span>
 
 <!-- CN has typechecked the function and verified (1) that it is safe to
@@ -310,9 +320,5 @@ how one may need to destructure the type (unions, struct fields and
 padding, arrays). The relationship is that for `take x =
 RW<ct>(expr)` we have `expr : pointer, x : to_basetype(ct)`. -->
 
-<span style="color:red">
-There is a design decision to consider here rems-project/cerberus#349
-</span>
-
-_Exercise._ <span style="color:blue">TODO (it would be nice to actually find a
-bug!)</span>
+_Exercise._ <span style="color:red">TODO: it would be nice to add an
+exercise that involves using the error messages to find a bug...</span>

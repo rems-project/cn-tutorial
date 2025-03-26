@@ -3,16 +3,6 @@
 _These tutorials and docs were developed by Christopher Pulte, Benjamin C.
 Pierce, and Cole Schlesinger, with contributions from Elizbeth Austell._
 
-??? info "BibTeX"
-    ```
-    @misc{cn-tutorial,
-      author = {Christopher Pulte and Benjamin C. Pierce and Cole Schlesinger and Elizabeth Austell},
-      title = {{CN Tutorial}},
-      howpublished = "\url{https://rems-project.github.io/cn-tutorial/}",
-      year = {2025},
-    }
-    ```
-
 CN is an extension of the C programming language for testing and verifying the
 correctness of C code, especially on low-level systems code. Compared to
 standard C, CN checks not only that expressions and statements follow the
@@ -63,6 +53,16 @@ To accurately handle the complex semantics of C, CN builds on the [Cerberus sema
 Some of the examples in this tutorial are adapted from Arthur Charguéraud’s excellent
 [Separation Logic Foundations](https://softwarefoundations.cis.upenn.edu) textbook, and one of the case studies is based on an
 extended exercise due to Bryan Parno.
+
+??? info "BibTeX citation"
+    ```
+    @misc{cn-tutorial,
+      author = {Christopher Pulte and Benjamin C. Pierce and Cole Schlesinger and Elizabeth Austell},
+      title = {{CN Tutorial}},
+      howpublished = "\url{https://rems-project.github.io/cn-tutorial/}",
+      year = {2025},
+    }
+    ```
 
 ## Acknowledgment of Support and Disclaimer
 This material is based upon work supported by the Air Force Research Laboratory (AFRL) and Defense Advanced Research Projects Agencies (DARPA) under Contract No. FA8750-24-C-B044, a European Research Council (ERC) Advanced Grant “ELVER” under the European Union’s Horizon 2020 research and innovation programme (grant agreement no. 789108), and additional funding from Google. The opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the Air Force Research Laboratory (AFRL).

@@ -57,35 +57,31 @@ exercises/min3/min3.broken.c
 How can we find out whether our implementation satisfies our
 specification? We can test it!
 
-Running the command `cn test <filename>` will produce an output along
-these lines:
-
-<span style="color:red">
-BCP: Refresh this:
-</span>
+Running the command `cn test <filename>` in a terminal will produce an output along
+the following lines.  To open a terminal inside VSCode (which will
+ensure your paths are set up correctly, etc.), use `View > Terminal`.
 
 ```
 $ cn test min3.broken.c
 
-Compiled 'min3_test.c'.
-Compiled 'min3-exec.c'.
-Compiled 'cn.c'.
-
-Linked C *.o files.
-
-Using seed: 50c34e798b33622c
-Testing min3::min3: 2 runs
+Testing min3::min3: 1 runs
 FAILED
 
-...
-
+************************ Failed at *************************
+function min3, file ./min3.broken-exec.c, line 55
 original source location:
 /*@ ensures return <= x
-            ^~~~~~~~~~~ min3.c:2:13-4:28
-CN assertion failed.
+            ^~~~~~~~~~~ min3/min3.broken.c:2:13-4:28
 
+********************** Failing input ***********************
 
-Testing Summary:
+unsigned int x = (unsigned int)(10);
+unsigned int y = (unsigned int)(2);
+unsigned int z = (unsigned int)(14);
+min3(x, y, z);
+
+************************************************************
+
 cases: 1, passed: 0, failed: 1, errored: 0, skipped: 0
 ```
 
@@ -108,17 +104,9 @@ Here, `cn test` generates three integer inputs, runs `min3` on these
 inputs, and checks that the output satisfies the postcondition. It
 repeats this process until either some number (by default, 100) of
 tests succeed or else a failing test, called a _counterexample_, is
-encountered.
-
-We can do <span style="color:red">
-(what do we need to do??)
-</span>
-to see our counterexample inputs:
-```
-x = 13
-y = 4
-z = 9
-```
+encountered.  In this case, the counterexample is printed out in
+the form of a snipped of C code that will recreate the failing
+situation.
 
 (The counterexample you will see if you run the tests yourself will
 most likely be different, due to randomness, but the debugging logic
@@ -146,9 +134,6 @@ Now, if we run `cn test` again, the output should end with this message that the
 ```
 Testing min3::min3: 100 runs
 PASSED
-
-Testing Summary:
-cases: 1, passed: 1, failed: 0, errored: 0, skipped: 0
 ```
 
 Hooray!

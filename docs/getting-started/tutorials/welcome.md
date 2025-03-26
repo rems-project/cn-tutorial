@@ -41,7 +41,12 @@ examples; these can be downloaded from [here](link:exercises.zip).
 
 ## Acknowledgment of Support and Disclaimer
 
-This material is based upon work supported by the Air Force Research Laboratory (AFRL) and Defense Advanced Research Projects Agencies (DARPA) under Contract No. FA8750-24-C-B044, a European Research Council (ERC) Advanced Grant “ELVER” under the European Union’s Horizon 2020 research and innovation programme (grant agreement no. 789108), and additional funding from Google. The opinions, findings, and conclusions or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the Air Force Research Laboratory (AFRL).
-<span style="color:red">
-Or DARPA?
-</span>
+This material is based upon work supported by the Air Force Research
+Laboratory (AFRL) and Defense Advanced Research Projects Agencies
+(DARPA) under Contract No. FA8750-24-C-B044, a European Research
+Council (ERC) Advanced Grant “ELVER” under the European Union’s
+Horizon 2020 research and innovation programme (grant agreement
+no. 789108), and additional funding from Google. The opinions,
+findings, and conclusions or recommendations expressed in this
+material are those of the authors and do not necessarily reflect the
+views of AFRL or DARPA.

@@ -5,7 +5,7 @@
 Property-based testing is great for increasing our confidence that
 the function satisfies its specification, but we might also want
 to _verify_ this formally. Run `cn verify <filename>` on the buggy
-version to produce this output: 
+version to produce this output:
 
 ```
 [1/1]: min3 -- fail
@@ -27,11 +27,8 @@ Whereas `cn test` treats the function body as a black box, `cn
 verify` analyzes it directly, examining all possible paths through
 the code until it either succeeds in constructing a formal proof
 that the function satisfies the specification, or it encounters a
-constraint that cannot be satisfied. 
-
-## More stuff
+constraint that cannot be satisfied.
 
 <span style="color:red">
-Write me...
+TODO: What else do we need to talk about in this introductory section?
 </span>
-

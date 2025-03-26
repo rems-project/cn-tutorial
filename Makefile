@@ -81,7 +81,6 @@ TESTED = $(patsubst src/exercises/%, _temp/tested/%, $(TESTONLY)) \
 # NOT WORKING?
 #  _temp/tested/slf18_two_dice.c \
 
-
 MD = $(shell find docs -type f -name "*.md")
 CONSISTENT=$(patsubst %, _temp/consistent/%, $(MD))
 
