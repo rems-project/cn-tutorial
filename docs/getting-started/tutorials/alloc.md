@@ -1,10 +1,6 @@
 # Allocating and Deallocating Memory
 
-<span style="color:red">
-BCP: Needs testing and verification variants.
-</span>
-
-XXXXXXXXXXXXXXXXXXX intro needed
+Our next topic is programs that use dynamically allocated heap memory.
 
 ## W resources
 
@@ -22,15 +18,18 @@ CN uses this distinction to prevent reads from uninitialised memory:
   right C-type. The load returns the `RW` resource unchanged.
 
 - A write at C-type `T` and pointer `p` needs only a
-`W<T>(p)` (so, unlike reads, writes to uninitialised memory
-are fine). The write consumes ownership of the `W` resource
-(it destroys it) and returns a new resource `RW<T>(p)` with the
-value written as the output. This means the resource returned from a
-write records the fact that this memory cell is now initialised and
-can be read from.
-<span style="color:red">
-BCP: Not sure I understand "returns a new resource `RW<T>(p)` with the value written as the output" -- perhaps in part because I don't understand what the output of a resource means when the resource is not in the context o a take expression.
-</span>
+  `W<T>(p)` (so, unlike reads, writes to uninitialised memory
+  are fine). The write consumes ownership of the `W` resource
+  (it destroys it) and returns a new resource `RW<T>(p)` with the
+  value written as the output. This means the resource returned from a
+  write records the fact that this memory cell is now initialised and
+  can be read from.
+  <span style="color:red">
+  BCP: Not sure I understand "returns a new resource `RW<T>(p)` with
+  the value written as the output" -- perhaps in part because I don't
+  understand what the output of a resource means when the resource is
+  not in the context o a take expression.
+  </span>
 
 Since `RW` carries the same ownership as `W`, just with the
 additional information that the `RW` memory is initalised, a
@@ -45,42 +44,37 @@ Unlike `RW`, whose output is the pointee value, `W` has no meaningful output.
 
 ## Allocation
 
-<span style="color:red">
-BCP: Again, more text is needed to set up this discussion. Maybe the
-first para should move up?
-</span>
-
 At the moment, CN does not understand the `malloc` and `free`
 functions. They are a bit tricky because they rely on a bit of
 polymorphism and a typecast between `char*` -- the result type of
 `malloc` and argument type of `free` -- and the actual type of the
 object being allocated or deallocated.
 
+<span style="color:red">
+BCP: Fix this
+</span>
 However, for any given type, we can define a type-specific function
 that allocates heap storage with exactly that type. The
 implementation of this function cannot be checked by CN, but we can
 give just the spec, together with a promise to link against an
 external C library providing a correct (but not verified!) implementation:
 
-```c title="exercises/malloc.h"
+```c title="exercises/cn_malloc.h"
 --8<--
-exercises/malloc.h
+exercises/cn_malloc.h
 --8<--
 ```
 
-(Alternatively we can include an implementation written in arbitrary C
-inside a CN file by marking it with the keyword `trusted` at the top
-of its CN specification.)
-
-Similarly:
-
-```c title="exercises/free.h"
+```c title="exercises/cn_malloc_unsigned_int.h"
 --8<--
-exercises/free.h
+exercises/cn_malloc_unsigned_int.h
 --8<--
 ```
 
 Now we can write code that allocates and frees memory:
+<span style="color:red">
+BCP: It should also malloc some memory!
+</span>
 
 ```c title="exercises/slf17_get_and_free.c"
 --8<--
@@ -110,7 +104,7 @@ exercises/slf16_basic_succ_using_incr.c
 ### Exercises
 
 <span style="color:red">
-BCP: There should be a non-ref-using version of this earlier, for comparison. 
+BCP: There should be a non-ref-using version of this earlier, for comparison.
 </span>
 
 Prove a specification for the following program that reveals _only_
@@ -122,20 +116,3 @@ pointed to by its argument.
 exercises/slf_ref_greater.c
 --8<--
 ```
-
-### Side note
-
-<span style="color:red">
-TODO: BCP: This is a bit random -- it's not clear people need to know about this alternate syntax, and it's awkwardly mixed with a semi-interesting example that's not relevant to this section. 
-</span>
-
-Here is another syntax for external / unknown
-functions, together with an example of a loose specification:
-
-```c title="exercises/slf18_two_dice.c"
---8<--
-exercises/slf18_two_dice.c
---8<--
-```
-
-

@@ -39,7 +39,7 @@ the permission to access a region of memory.
 Let’s look at a simple example. The function `read` takes an integer
 pointer `p` and returns the pointee value.
 
-```c title="exercises/read.broken.c"
+```c title="exercises/read.c"
 --8<--
 exercises/read.c
 --8<--
