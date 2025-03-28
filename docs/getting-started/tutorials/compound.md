@@ -3,11 +3,12 @@
 Verifying CN programs involving structured objects raises a number
 of new issues.
 
-## Compound RW and W resources
+## Compound RW resources
 
-While one might like to think of a struct as a single (compound) object that is manipulated as a whole, C permits more flexible struct manipulation: given a struct pointer, programmers can construct pointers to _individual struct members_ and manipulate these as values, including even passing them to other functions.
-
-CN therefore cannot treat resources for compound C types like structs as primitive, indivisible units. Instead, `RW<T>` and `W<T>` are defined inductively on the structure of the C-type `T`.
+Given a struct pointer, C programmers can construct pointers to _individual struct members_ and manipulate these as values, including even passing them to other functions. CN therefore cannot treat resources for compound C types like structs as primitive, indivisible units. Instead, `RW<T>` and `W<T>` are defined inductively on the structure of the C-type `T`.
+<span style="color:red">
+JWS: We moved the discussion of W resources to the alloc/malloc chapter, so this stuff is out of sync.
+</span>
 
 For struct types `T`, the `RW<T>` resource is defined as the collection of `RW` resources for its members (as well as `W` resources for any padding bytes in-between them). The resource `W<T>`, similarly, is made up of `W` resources for all members (and padding bytes).
 
@@ -34,7 +35,7 @@ To handle the required resource inference, CN "`eagerly`" decomposes all `struct
 We can see this if, for instance, we experimentally change the `transpose` example from above to force a type error. Let’s insert an `/*@ assert(false) @*/` CN assertion in the middle of the `transpose` function, so we can inspect CN’s proof context shown in the error report. (More on CN assertions later.)
 
 <span style="color:red">
-BCP: Recheck that what we say here matches what it actually looks like 
+BCP: Recheck that what we say here matches what it actually looks like
 </span>
 
 ```c title="exercises/transpose.broken.c"
@@ -73,9 +74,9 @@ exercises/transpose2.c
 ```
 
 <span style="color:red">
-BCP: Some more things to think about including... 
+BCP: Some more things to think about including...
 - Something about CN's version of the frame rule (see
-bcp_framerule.c, though the example is arguably a bit unnatural). 
+bcp_framerule.c, though the example is arguably a bit unnatural).
 - Examples from Basic.v with allocation - there are lots of
 interesting ones!
     CP: Agreed. For now continuing with arrays, but will return to this later.

@@ -1,33 +1,5 @@
 # Pointers and Simple Ownership
 
-<span style="color:red">
-BCP: Check that we've done everything in the outline
-    Rough notes / updated outline:
-
-    - read.c
-        - unannotated version fails tests
-             - need to explain how to figure out WHY testing fails!
-        - explain ownership (copy/move from verification tutorial)
-        - version with proper spec works better!
-        - read.broken.c demonstrates linearity of resource usage
-    - exercises:
-        - quadruple_mem
-        - abs_mem (this doesn't work with unsigned ints, but we can
-          use the other examples from the previous section)
-    - slf0_basic_incr_signed.c
-        shows the difference between W and RW
-    - exercises
-        - zero.c
-        - basic_inplace_double.c involves UB, so skip it or (maybe
-          better) replace with something that doesn't
-        - maybe something about swapping pointers?
-
-    - add_read  (but changing it to swapping or something, to avoid UB
-      issues)
-
-    - everything up through pointers to compound objects seems to work
-      well, except for some of the resource inference stuff
-
 So far we’ve only considered functions manipulating numeric
 values. Specifications become more interesting when _pointers_ are
 involved, because the safety of memory accesses via pointers has to be

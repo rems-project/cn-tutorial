@@ -8,6 +8,10 @@ To support reasoning about code manipulating arrays and computed pointers, CN ha
 each (i32 i; 0i32 <= i && i < 10i32)
 { RW<unsigned int>(array_shift<unsigned int>(p,i)) }
 ```
+<span style="color:red">
+JWS: `i32` or `u32`? `u32` is used in the example below...
+And is it `<unsigned int>` or `<int>`? It's inconsistent too...
+</span>
 
 In detail, this can be read as follows:
 
@@ -21,7 +25,8 @@ In detail, this can be read as follows:
 
 Here `array_shift<unsigned int>(p,i)` computes a pointer into the array at pointer `p`, appropriately offset for index `i`.
 
-In general, iterated resource specifications take the form
+<!--I think this part seems not worth including relative to its complexity-->
+<!-- In general, iterated resource specifications take the form
 
 ```c
 each (BT Q; GUARD) { RESOURCE }
@@ -37,7 +42,7 @@ comprising three parts:
 
 - `GUARD` is a boolean-typed expression delimiting the instances of `Q` for which ownership is asserted; and
 
-- `RESOURCE` is any non-iterated CN resource.
+- `RESOURCE` is any non-iterated CN resource. -->
 
 ### First array example
 
@@ -55,7 +60,14 @@ The CN precondition requires
 - that `i` lies within the range of RW indices.
 
 On exit the array ownership is returned again.
+<span style="color:red">
+JWS: Is it intentional that there's no post-condition about the return value?
+</span>
 
 <span style="color:red"> BCP: Do several more
 examples (e.g., maybe working up to sorting?).
+</span>
+
+<span style="color:red">
+JWS: I don't actually know how something like sorting can be specified in CN. Any pointers?
 </span>
