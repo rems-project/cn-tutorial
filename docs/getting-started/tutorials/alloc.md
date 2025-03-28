@@ -2,14 +2,57 @@
 
 Our next topic is programs that use dynamically allocated heap memory.
 
+## Malloc and free
+
+Heap-using programs in CN can be written in almost exactly the same
+way as in vanilla C.  The only difference is that, instead of calling
+`malloc` and `free`, programs should call `cn_malloc` and `cn_free_sized`.
+These are CN-specific versions of the usual `malloc` and `free` that
+do some testing-related bookkeeping in addition to their main job of
+allocating or deallocating heap memory.  The second argument to
+`cn_free_sized` is the size of the structure being freed, same as the
+argument to `cn_malloc`.
+
+```c title="exercises/cn_malloc.h"
+--8<--
+exercises/cn_malloc.h
+--8<--
+```
+
+Using `cn_malloc` and `cn_free`, we can write higher-level programs
+that manipulate the heap, as usual.
+
+```c title="exercises/slf17_get_and_free.test.c"
+--8<--
+exercises/slf17_get_and_free.test.c
+--8<--
+```
+<span style="color:red">
+BCP: The `tester` function here does not parse -- not sure why.
+</span>
+
+
+### Exercises
+
+Write a specification for the following program that reveals _only_
+that it returns a pointer to a number that is greater than the number
+pointed to by its argument.
+
+```c title="exercises/slf_greater.test.c"
+--8<--
+exercises/slf_greater.test.c
+--8<--
+```
+
 ## W resources
 
-Aside from the `RW` resources seen so far, CN has another
-built-in type of resource called `W`. Given a C-type `T` and
-pointer `p`, `W<T>(p)` asserts the same ownership as
-`RW<T>(p)` — ownership of a memory cell at `p` the size of type
-`T` — but, in contrast to `RW`, `W` memory is not assumed
-to be initialised.
+In low-level C code, it is sometimes useful to pass around memory that
+has been allocated but not yet initialized.  CN provides an alternate
+form of resource, written `W`, to address this situation.  Given a
+C-type `T` and pointer `p`, `W<T>(p)` asserts the same ownership as
+`RW<T>(p)`: ownership of a memory cell at `p` the size of type `T`.
+However, but, in contrast to `RW`, `W` memory is not assumed to be
+initialised.
 
 CN uses this distinction to prevent reads from uninitialised memory:
 
@@ -24,12 +67,6 @@ CN uses this distinction to prevent reads from uninitialised memory:
   value written as the output. This means the resource returned from a
   write records the fact that this memory cell is now initialised and
   can be read from.
-  <span style="color:red">
-  BCP: Not sure I understand "returns a new resource `RW<T>(p)` with
-  the value written as the output" -- perhaps in part because I don't
-  understand what the output of a resource means when the resource is
-  not in the context o a take expression.
-  </span>
 
 Since `RW` carries the same ownership as `W`, just with the
 additional information that the `RW` memory is initalised, a
@@ -42,77 +79,6 @@ already-initialised memory cell to be over-written again.
 
 Unlike `RW`, whose output is the pointee value, `W` has no meaningful output.
 
-## Allocation
-
-At the moment, CN does not understand the `malloc` and `free`
-functions. They are a bit tricky because they rely on a bit of
-polymorphism and a typecast between `char*` -- the result type of
-`malloc` and argument type of `free` -- and the actual type of the
-object being allocated or deallocated.
-
 <span style="color:red">
-BCP: Fix this
+BCP: An example and/or an exercise would be nice!
 </span>
-However, for any given type, we can define a type-specific function
-that allocates heap storage with exactly that type. The
-implementation of this function cannot be checked by CN, but we can
-give just the spec, together with a promise to link against an
-external C library providing a correct (but not verified!) implementation:
-
-```c title="exercises/cn_malloc.h"
---8<--
-exercises/cn_malloc.h
---8<--
-```
-
-```c title="exercises/cn_malloc_unsigned_int.h"
---8<--
-exercises/cn_malloc_unsigned_int.h
---8<--
-```
-
-Now we can write code that allocates and frees memory:
-<span style="color:red">
-BCP: It should also malloc some memory!
-</span>
-
-```c title="exercises/slf17_get_and_free.c"
---8<--
-exercises/slf17_get_and_free.c
---8<--
-```
-
-We can also define a "safer", ML-style version of `malloc` that
-handles both allocation and initialization:
-
-```c title="exercises/ref.h"
---8<--
-exercises/ref.h
---8<--
-```
-
-<span style="color:red">
-TODO: BCP: This example is a bit broken: the file `slf0_basic_incr.c` does not appear at all in the tutorial, though a slightly different version (with signed numbers) does...
-</span>
-
-```c title="exercises/slf16_basic_succ_using_incr.c"
---8<--
-exercises/slf16_basic_succ_using_incr.c
---8<--
-```
-
-### Exercises
-
-<span style="color:red">
-BCP: There should be a non-ref-using version of this earlier, for comparison.
-</span>
-
-Prove a specification for the following program that reveals _only_
-that it returns a pointer to a number that is greater than the number
-pointed to by its argument.
-
-```c title="exercises/slf_ref_greater.c"
---8<--
-exercises/slf_ref_greater.c
---8<--
-```

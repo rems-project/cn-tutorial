@@ -1,5 +1,5 @@
 /*@
-predicate { u32 P, u32 Q } BothOwned (pointer p, pointer q)
+predicate { u32 P, u32 Q } TakeBoth (pointer p, pointer q)
 {
   if (ptr_eq(p,q)) {
     take PX = RW<unsigned int>(p);
@@ -14,8 +14,8 @@ predicate { u32 P, u32 Q } BothOwned (pointer p, pointer q)
 @*/
 
 void incr2(unsigned int *p, unsigned int *q)
-/*@ requires take PQ = BothOwned(p,q);
-    ensures take PQ_post = BothOwned(p,q);
+/*@ requires take PQ = TakeBoth(p,q);
+    ensures take PQ_post = TakeBoth(p,q);
             PQ_post.P == (!ptr_eq(p,q) ? (PQ.P + 1u32) : (PQ.P + 2u32));
             PQ_post.Q == (!ptr_eq(p,q) ? (PQ.Q + 1u32) : PQ_post.P);
 @*/

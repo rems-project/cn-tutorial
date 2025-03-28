@@ -1,10 +1,5 @@
 #include "../cn_malloc.h"
 
-struct sllist {
-  int head;
-  struct sllist* tail;
-};
-
 struct sllist *malloc__sllist()
 /*@ ensures take R = W<struct sllist>(return); @*/
 {

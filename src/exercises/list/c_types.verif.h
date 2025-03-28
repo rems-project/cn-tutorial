@@ -1,8 +1,3 @@
-struct sllist {
-  int head;
-  struct sllist* tail;
-};
-
 extern struct sllist *malloc__sllist();
 /*@ spec malloc__sllist();
     requires true;

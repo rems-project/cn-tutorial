@@ -2,9 +2,9 @@
 
 struct sllist* slcopy (struct sllist *l)
 /*@ requires take L = SLList_At(l);
-    ensures take L_ = SLList_At(l);
+    ensures take L_post = SLList_At(l);
             take Ret = SLList_At(return);
-            L == L_;
+            L == L_post;
             L == Ret;
 @*/
 {

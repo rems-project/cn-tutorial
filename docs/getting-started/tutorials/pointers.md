@@ -1,6 +1,7 @@
 # Pointers and Simple Ownership
 
-<!--
+<span style="color:red">
+BCP: Check that we've done everything in the outline
     Rough notes / updated outline:
 
     - read.c
@@ -25,7 +26,7 @@
       issues)
 
     - everything up through pointers to compound objects seems to work
-      well, except for some of the resource inference stuff-->
+      well, except for some of the resource inference stuff
 
 So far we’ve only considered functions manipulating numeric
 values. Specifications become more interesting when _pointers_ are

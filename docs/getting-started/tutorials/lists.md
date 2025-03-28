@@ -1,20 +1,22 @@
 # Lists
 
-<span style="color:red">
-BCP: Maybe this should be a case study?
-</span>
-
-<span style="color:red">
-BCP: Better intro needed
-</span>
-
 Now it's time to look at some more interesting heap structures.
 
-To begin with, here is a C definition for linked list cells, together
-with allocation and deallocation functions:
+To begin with, here is a C definition for (singly) linked list cells:
 
+```c title="exercises/list/c_types.h"
+--8<--
+exercises/list/c_types.h
+--8<--
+```
+
+Here are typed allocation and deallocation functions for this type.
+(We provide separate functions for these rather than just calling
+`malloc` and `free` directly in the interest of sharing as much code
+as possible with the verification-focused variants of these examples.)
 <span style="color:red">
-BCP: break sllist out into its own separate .h file and look at it first
+BCP: ... but maybe we'd get the same amount of sharing if we directly
+used malloc?  We should check.
 </span>
 
 ```c title="exercises/list/c_types.test.h"
@@ -25,8 +27,10 @@ exercises/list/c_types.test.h
 
 To write specifications for C functions that manipulate lists, we need
 to define a CN "predicate" that describes specification-level list
-structures, as one would do in ML, Haskell, or Coq. We use the
-datatype `List` for CN-level lists.
+structures. We use the datatype `List` for CN-level lists.
+
+<span style="color:red"> BCP: Industrial developers will need a _lot_
+more help than that!  </span>
 
 Intuitively, the `SLList_At` predicate walks over a singly-linked
 pointer structure in the C heap and extracts an `RW` version of
@@ -41,10 +45,6 @@ exercises/list/cn_types.h
 We can also write _functions_ on CN-level lists by ordinary functional
 programming (in a slightly strange, unholy-union-of-C-and-Rust
 syntax):
-<span style="color:red">
-BCP: Surely we've made that point already?
-</span>
-
 
 ```c title="exercises/list/hdtl.h"
 --8<--
@@ -71,12 +71,6 @@ exercises/list/headers.test.h
 --8<--
 ```
 
-<span style="color:red">
-TODO: BCP: The 'return != NULL' should not be needed, but to remove it
-we need to change the callers of all the allocation functions to check
-for NULL and exit (which requires adding a spec for exit).
-</span>
-
 ### Append
 
 With this basic infrastructure in place, we can start specifying and
@@ -102,10 +96,6 @@ exercises/list/append.test.c
 ### List copy
 
 Here is an allocating list copy function.
-
-<span style="color:red">
-BCP: `L_` should probably be `L_post`
-</span>
 
 ```c title="exercises/list/copy.c"
 --8<--
@@ -136,9 +126,9 @@ exercises/list/mergesort.test.c
 _Allocating append_. Fill in an appropriate specification for
 `IntList_append2`.
 
-```c title="exercises/list/append2.c"
+```c title="exercises/list/append2.test.c"
 --8<--
-exercises/list/append2.c
+exercises/list/append2.test.c
 --8<--
 ```
 
@@ -163,23 +153,6 @@ exercises/list/free.c
 ```
 
 _Length with an accumulator_. Add annotations as appropriate:
-
-<span style="color:red">
-BCP: Removing / forgetting the unfold in this one gives a truly
-</span>
-<span style="color:red">
- bizarre error message saying that the constraint "n == (n + length(L1))"
-</span>
-<span style="color:red">
- is unsatisfiable...
-</span>
-
-<span style="color:red">
-Sainati: when I went through the tutorial, the file provided for this exercise was already "complete" in that
-</span>
-<span style="color:red">
- it already had all the necessary annotations present for CN to verify it
-</span>
 
 ```c title="exercises/slf_length_acc.c"
 --8<--

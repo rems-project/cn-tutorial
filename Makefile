@@ -52,6 +52,7 @@ TESTED = $(patsubst src/exercises/%, _temp/tested/%, $(TESTONLY)) \
   _temp/tested/slf_incr2_noalias.c \
   _temp/tested/slf10_basic_ref.c \
   _temp/tested/add_2.c \
+  _temp/tested/greater.c \
   _temp/tested/add_two_array.c \
   _temp/tested/transpose.c \
   _temp/tested/read2.c \
@@ -77,6 +78,10 @@ TESTED = $(patsubst src/exercises/%, _temp/tested/%, $(TESTONLY)) \
   _temp/tested/abs.c \
   _temp/tested/slf0_basic_incr.signed.c \
   _temp/tested/slf15_basic_succ_using_incr_attempt_.c
+
+# Extra dependencies
+_temp/tested/list/*.c : src/exercises/list/*.h
+_temp/verified/list/*.c : src/exercises/list/*.h
 
 # NOT WORKING?
 #  _temp/tested/slf18_two_dice.c \

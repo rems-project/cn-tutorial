@@ -1,17 +1,11 @@
-# Lists
+# Lists, verified
 
 <span style="color:red">
-BCP: Maybe this should be a case study?
+BCP: intro needed
 </span>
 
-<span style="color:red">
-BCP: Better intro needed
-</span>
-
-Now it's time to look at some more interesting heap structures.
-
-To begin with, here is a C definition for linked list cells, together
-with allocation and deallocation functions:
+As before, we need slightly different functions for allocating and
+deallocating linked list cells:
 
 ```c title="exercises/list/c_types.verif.h"
 --8<--

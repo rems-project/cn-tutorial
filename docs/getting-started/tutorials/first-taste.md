@@ -210,3 +210,18 @@ the inputs `x` and `n`. Check that `cn test` succeeds.
 exercises/id_by_div/id_by_div_n.broken.c
 --8<--
 ```
+
+_Exercise: A loose specification for `greater`_: Write a specification for this
+function that says that the result is larger than the argument passed
+to the function but that does not reveal the precise value of the
+result.  (I.e., the same specification should work for a function that
+adds `1000` instead of `42`.)  Be careful of overflow.
+```c title="exercises/greater.c"
+--8<--
+exercises/greater.c
+--8<--
+```
+
+<!-- BCP: Testing should fail for the version of this with no
+precondition, but as of 3/27/25 it did not.  Does it now? -->
+

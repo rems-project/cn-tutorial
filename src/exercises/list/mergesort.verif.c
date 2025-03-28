@@ -55,10 +55,10 @@ struct sllist_pair {
 };
 
 struct sllist_pair split_list(struct sllist *xs)
-/*@ requires take Xs = SLList_At(xs); @*/
-/*@ ensures take Ys = SLList_At(return.fst); @*/
-/*@ ensures take Zs = SLList_At(return.snd); @*/
-/*@ ensures {fst: Ys, snd: Zs} == Split_list(Xs); @*/
+/*@ requires take Xs = SLList_At(xs);
+    ensures take Ys = SLList_At(return.fst);
+            take Zs = SLList_At(return.snd);
+            {fst: Ys, snd: Zs} == Split_list(Xs); @*/
 {
   if (xs == 0) {
     /*@ unfold Split_list(Xs); @*/
@@ -82,10 +82,10 @@ struct sllist_pair split_list(struct sllist *xs)
 }
 
 struct sllist* merge(struct sllist *xs, struct sllist *ys)
-/*@ requires take Xs = SLList_At(xs); @*/
-/*@ requires take Ys = SLList_At(ys); @*/
-/*@ ensures take Zs = SLList_At(return); @*/
-/*@ ensures Zs == merge(Xs, Ys); @*/
+/*@ requires take Xs = SLList_At(xs);
+             take Ys = SLList_At(ys);
+    ensures take Zs = SLList_At(return);
+            Zs == merge(Xs, Ys); @*/
 {
   if (xs == 0) {
     /*@ unfold merge(Xs, Ys); @*/
@@ -111,9 +111,9 @@ struct sllist* merge(struct sllist *xs, struct sllist *ys)
 }
 
 struct sllist* merge_sort(struct sllist *xs)
-/*@ requires take Xs = SLList_At(xs); @*/
-/*@ ensures take Ys = SLList_At(return); @*/
-/*@ ensures Ys == merge_sort(Xs); @*/
+/*@ requires take Xs = SLList_At(xs);
+    ensures take Ys = SLList_At(return);
+            Ys == merge_sort(Xs); @*/
 {
   if (xs == 0) {
     /*@ unfold merge_sort(Xs); @*/

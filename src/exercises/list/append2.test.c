@@ -1,4 +1,4 @@
-#include "./headers.verif.h"
+#include "./headers.test.h"
 #include "./append.h"
 
 struct sllist* IntList_copy (struct sllist *xs)
@@ -30,14 +30,8 @@ struct sllist* IntList_append2 (struct sllist *xs, struct sllist *ys)
 /* --END-- */
 {
   if (xs == 0) {
-/* --BEGIN-- */
-    /*@ unfold Append(Xs, Ys); @*/
-/* --END-- */
     return IntList_copy(ys);
   } else {
-/* --BEGIN-- */
-    /*@ unfold Append(Xs, Ys); @*/
-/* --END-- */
     struct sllist *new_tail = IntList_append2(xs->tail, ys);
     return slcons(xs->head, new_tail);
   }

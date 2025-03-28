@@ -36,7 +36,7 @@ processing a method invocation at compile-time ([13, Section
 //#include <stdio.h>
 
 /*@
-predicate { u32 pv, u32 qv } BothOwned (pointer p, pointer q)
+predicate { u32 pv, u32 qv } TakeBoth (pointer p, pointer q)
 {
   if (p == q) {
     take pv = RW<Point>(p);
@@ -71,8 +71,8 @@ int ColorPoint_equal(ColorPoint *self, ColorPoint *other) {
 
 // Wrapper functions for handling inheritance
 int Point_equal_wrapper(Point *self, Point *other) 
-  /*@ requires take vs0 = BothOwned(self,other); 
-      ensures take vs1 = BothOwned(self,other); 
+  /*@ requires take vs0 = TakeBoth(self,other); 
+      ensures take vs1 = TakeBoth(self,other); 
   @*/
   {
     // Direct call to the function based on actual type

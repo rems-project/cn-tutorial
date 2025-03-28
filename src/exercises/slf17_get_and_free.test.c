@@ -1,7 +1,14 @@
 #include "cn_malloc.h"
-#include "cn_malloc_unsigned_int.h"
 
-/* ------------- */
+unsigned int *malloc_and_set (unsigned int x)
+/*@ ensures take P = RW(return);
+            P == x;
+@*/
+{
+  unsigned int *p = cn_malloc(sizeof(unsigned int));
+  *p = x;
+  return p;
+}
 
 unsigned int get_and_free (unsigned int *p)
 /*@ requires take P = RW(p);
@@ -9,18 +16,8 @@ unsigned int get_and_free (unsigned int *p)
 @*/
 {
   unsigned int v = *p;
-  free__unsigned_int (p);
+  cn_free_sized(p, sizeof(unsigned int));
   return v;
-}
-
-unsigned int *malloc_and_set (unsigned int x)
-/*@ ensures take P = RW(return);
-            P == x;
-@*/
-{
-  unsigned int *p = malloc__unsigned_int ();
-  *p = x;
-  return p;
 }
 
 /* BCP: Why doesn't this compile? */

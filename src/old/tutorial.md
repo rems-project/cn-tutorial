@@ -1053,7 +1053,7 @@ exercises/slf_incr2_alias.c
 This version does correctly state that the final values of `p` and `q` are,m respectively, `3` and `1` more than their original values. But the way we got there -- by duplicating the whole function `incr2`, is horrible.
 
 <!-- TODO: Sainati: I think it would be useful here to add an explanation for how CN's type checking works. -->
-<!-- For example, in the definition of BothOwned here, how is CN able to prove that `take pv = RW<unsigned int>(p);` -->
+<!-- For example, in the definition of TakeBoth here, how is CN able to prove that `take pv = RW<unsigned int>(p);` -->
 <!-- type checks, since all we know about `p` in the definition of the predicate is that it's a pointer? -->
 
 A better way is to define a _predicate_ that captures both the aliased
@@ -1061,7 +1061,7 @@ and the non-aliased cases together and use it in the pre- and
 postconditions:
 
 <!-- TODO: Sainati: I think it would be useful here to add an explanation for how CN's type checking works. -->
-<!-- For example, in the definition of BothOwned here, how is CN able to prove that `take pv = RW<unsigned int>(p);` -->
+<!-- For example, in the definition of TakeBoth here, how is CN able to prove that `take pv = RW<unsigned int>(p);` -->
 <!-- type checks, since all we know about `p` in the definition of the predicate is that it's a pointer? -->
 
 ```c title="exercises/slf_incr2.c"
@@ -1070,7 +1070,7 @@ exercises/slf_incr2.c
 --8<--
 ```
 
-<!-- TODO: BCP: "BothOwned" is a pretty awkward name. -->
+<!-- TODO: BCP: "TakeBoth" is a pretty awkward name. -->
 <!-- TODO: BCP: We haven't introduced CN records. In particular, C programmers may be surprised that we don't have to pre-declare record types. -->
 <!-- TODO: BCP: the annotation on incr2 needs some unpacking for readers!! -->
 <!-- TODO: BCP: first use of the "split_case" annotation -->
@@ -1111,9 +1111,9 @@ exercises/free.h
 
 Now we can write code that allocates and frees memory:
 
-```c title="exercises/slf17_get_and_free.c"
+```c title="exercises/slf17_get_and_free.verif.c"
 --8<--
-exercises/slf17_get_and_free.c
+exercises/slf17_get_and_free.verif.c
 --8<--
 ```
 
