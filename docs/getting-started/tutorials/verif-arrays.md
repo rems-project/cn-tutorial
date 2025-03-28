@@ -120,7 +120,7 @@ TODO: BCP: I wrote the following, which seemed natural but did not
 work -- I still don't fully understand why. I think this section will
 need some more examples / exercises to be fully digestible, or perhaps
 this is just yet another symptom of my imperfecdt understanding of how
-the numeric stuff works. 
+the numeric stuff works.
 
     void swap_array (unsigned int *p, unsigned int n, unsigned int i, unsigned int j)
     /*@ requires take a1 = each(i32 k; 0i32 <= k && k < n) { RW<unsigned int>(array_shift<unsigned int>(p,k)) };
@@ -150,8 +150,13 @@ In order to verify code with loops, CN requires the user to supply loop invarian
 Let's take a look at a simple first example. The following function, `init_array`, takes the base pointer `p` of a `char` array and the array length `n` and writes `0` to each array cell.
 
 <span style="color:red">
-BCP: Rename to array_init.c 
+BCP: Rename to array_init.c
 </span>
+
+<span style="color:red">
+JWS: Should this change be propagated everywhere e.g. also changing the function name, changing other function names starting with `init_`, changing `swap_array` to `array_swap`, etc.?
+</span>
+
 
 ```c title="exercises/init_array.c"
 --8<--
@@ -232,10 +237,10 @@ As before, we also have to instruct CN to `focus` ownership of individual array 
 - finally, we add `focus RW<char>, j;` to allow CN to "`attach`" this resource to the iterated `RW` resource. CN issues a warning, because nothing is, in fact, extracted: we are using `focus` only for the "`reverse`" direction.
 
 <span style="color:red">
-BCP: That last bit is mysterious. 
+BCP: That last bit is mysterious.
 </span>
 <span style="color:red">
-Dhruv: See long explanation and issue here: rems-project/cerberus#498 
+Dhruv: See long explanation and issue here: rems-project/cerberus#498
 </span>
 
 ### Exercises
