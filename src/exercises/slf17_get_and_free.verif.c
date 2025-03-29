@@ -6,6 +6,6 @@ unsigned int get_and_free (unsigned int *p)
 @*/
 {
   unsigned int v = *p;
-  freeUnsignedInt (p);
+  free__unsigned_int (p);
   return v;
 }

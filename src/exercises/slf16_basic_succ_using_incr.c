@@ -8,6 +8,6 @@ unsigned int succ_using_incr (unsigned int n)
   unsigned int *p = refUnsignedInt(n);
   incr(p);
   unsigned int x = *p;
-  freeUnsignedInt(p);
+  free__unsigned_int(p);
   return x;
 }

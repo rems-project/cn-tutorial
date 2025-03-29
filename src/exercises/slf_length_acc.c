@@ -42,6 +42,6 @@ unsigned int IntList_length_acc (struct sllist *xs)
   unsigned int *p = refUnsignedInt(0);
   IntList_length_acc_aux(xs, p);
   unsigned int x = *p;
-  freeUnsignedInt(p);
+  free__unsigned_int(p);
   return x;
 }

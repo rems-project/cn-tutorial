@@ -11,7 +11,7 @@ unsigned int *ref_greater_abstract (unsigned int *p)
 @*/
 /* --END-- */
 {
-  unsigned int* q = mallocUnsignedInt();
+  unsigned int* q = malloc__unsigned_int();
   *q = *p + 1;
   return q;
 }
