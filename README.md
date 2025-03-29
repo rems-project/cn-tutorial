@@ -2,7 +2,6 @@
 
 View the tutorial here: https://rems-project.github.io/cn-tutorial/
 
-
 ## Acknowledgment of Support and Disclaimer
 
 This material is based upon work supported by the Air Force Research Laboratory
