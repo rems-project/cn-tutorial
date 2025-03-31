@@ -140,13 +140,13 @@ Hooray!
 
 ### Exercises
 
-_Refining the specification of `min3`_: The specification we wrote is
+_Exercise:_ The specification we wrote is
 a bit loose: It says the result value should be smaller than `x`, `y`,
 and `z`, but it does not say that it must be equal to one of these.
 For example, a function that always returns `0` would satisfy this
 spec specification. Improve it.
 
-_Exercise._ Practice the workflow of specifying and testing the function `add`.
+_Exercise:_ Practice the workflow of specifying and testing the function `add`.
 
 - Write a specification with the postcondition that `add` should
   return the sum of its inputs. Remember that CN supports standard
@@ -201,7 +201,7 @@ the error message that results.
 
 ### Exercises
 
-_Exercise._ Without changing the postcondition or implementation, fix
+_Exercise:_ Without changing the postcondition or implementation, fix
 the specification in the following example by adding a precondition on
 the inputs `x` and `n`. Check that `cn test` succeeds.
 
@@ -211,7 +211,7 @@ exercises/id_by_div/id_by_div_n.broken.c
 --8<--
 ```
 
-_Exercise: Write a specification for this
+_Exercise_: Write a specification for this
 function that says that the result is between the first argument and
 the second, but that does not reveal the precise value of the
 result.  (I.e., the same specification should work for a function that
@@ -221,5 +221,4 @@ returns `p`  or `(p+q)/2` instead of `q`.)
 exercises/between.c
 --8<--
 ```
-
 

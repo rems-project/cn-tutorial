@@ -133,7 +133,9 @@ exercises/read2.c
 
     CN’s `take` notation is just an alternative syntax for quantification over the values of resources, but a useful one: the `take` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
 
-_Exercise._ Write a specification for `double_it`, which takes a pointer `p` and
+### Exercises
+
+_Exercise:_ Write a specification for `double_it`, which takes a pointer `p` and
 returns double the pointee value. Running `cn test` on this correct
 implementation should succeed,
 ```c title="exercises/double_it.c"
@@ -176,7 +178,9 @@ The precondition binds the initial pointee value to `P`. The postcondition binds
 the value _after_ function execution to `P_post`, and uses this to express that
 the value `p` points to is incremented by `incr`: `P_post == P + 1i32`.
 
-_Exercise._ Write a specification for `inplace_double`, which takes a pointer
+### Exercises
+
+_Exercise:_ Write a specification for `inplace_double`, which takes a pointer
 `p` and doubles the pointee value. Make sure your postcondition captures the
 function's intended behavior.
 
@@ -253,7 +257,9 @@ only true when `p` and `q` are disjoint; otherwise, the write to `q` would
 override the write to `p`. In CN, we can make this assumption for free — no
 extra work is needed to assert that the pointers are disjoint.
 
-_Exercise._ Write a specification for the function `transfer`, shown below.
+### Exercises
+
+_Exercise:_ Write a specification for the function `transfer`, shown below.
 
 ```c title="exercises/slf8_basic_transfer.c"
 --8<--

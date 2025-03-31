@@ -66,9 +66,9 @@ When the function returns, the two member resources are recombined "`on demand`"
 
 ### Exercises
 
-_Init point._ Insert CN `assert(false)` statements in different statement positions of `init_point` and check how the available resources evolve.
+_Exercise:_ Insert CN `assert(false)` statements in different statement positions of `init_point` and check how the available resources evolve.
 
-_Transpose (again)._ Recreate the `transpose` function from before, now
+_Exercise:_  Recreate the `transpose` function from before, now
 using the `swap` function.
 <span style="color:red">
 JWS: What exactly is it that they're supposed to do here? Seems like just copy-pasting the specification from above will work?
