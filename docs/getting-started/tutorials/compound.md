@@ -5,18 +5,12 @@ of new issues.
 
 ## Compound RW resources
 
-Given a struct pointer, C programmers can construct pointers to _individual struct members_ and manipulate these as values, including even passing them to other functions. CN therefore cannot treat resources for compound C types like structs as primitive, indivisible units. Instead, `RW<T>` and `W<T>` are defined inductively on the structure of the C-type `T`.
-<span style="color:red">
-JWS: We moved the discussion of W resources to the alloc/malloc chapter, so this stuff is out of sync.
-</span>
+Given a struct pointer, C programmers can construct pointers to _individual struct members_ and manipulate these as values, including even passing them to other functions. CN therefore cannot treat resources for compound C types like structs as indivisible units.
 
-For struct types `T`, the `RW<T>` resource is defined as the collection of `RW` resources for its members (as well as `W` resources for any padding bytes in-between them). The resource `W<T>`, similarly, is made up of `W` resources for all members (and padding bytes).
+Instead, `RW<T>` is defined inductively on the structure of the C-type `T`.
+To handle code that manipulates pointers into parts of a struct object, CN can automatically decompose a struct resource into the resources of its members, and it can recompose the struct later, as needed. The following example illustrates this.
 
-To handle code that manipulates pointers into parts of a struct object, CN can automatically decompose a struct resource into the member resources, and it can recompose the struct later, as needed. The following example illustrates this.
-
-Recall the function `zero` from our earlier exercise. It takes an `unsigned int` pointer to uninitialised memory, with `W<unsigned int>` ownership, and initialises the value to zero, returning an `RW<unsigned int>` resource with output `0`.
-
-Now consider the function `init_point`, shown below, which takes a pointer `p` to a `struct point` and zero-initialises its members by calling `zero` twice, once with a pointer to struct member `x`, and once with a pointer to `y`.
+Suppose we have a function `zero` that initializes a pointer to 0. Now consider the function `init_point` which takes a pointer `p` to a `struct point` and zero-initialises its members by calling `zero` twice, once with a pointer to struct member `x`, and once with a pointer to `y`.
 
 ```c title="exercises/init_point.c"
 --8<--
@@ -24,15 +18,15 @@ exercises/init_point.c
 --8<--
 ```
 
-As stated in its precondition, `init_point` receives ownership `W<struct point>(p)`. The `zero` function, however, works on `unsigned int` pointers and requires `W<unsigned int>` ownership.
+As stated in its precondition, `init_point` receives ownership `RW<struct point>(p)`. The `zero` function, however, works on `unsigned int` pointers and requires `RW<unsigned int>` ownership.
 
-CN can prove the calls to `zero` with `&p->x` and `&p->y` are safe because it decomposes the `W<struct point>(p)` into a `W<unsigned int>` for member `x` and a `W<unsigned int>` for member `y`. Later, the reverse happens: following the two calls to `zero`, as per `zero`’s precondition, `init_point` has ownership of two adjacent `RW<unsigned int>` resources – ownership for the two struct member pointers, with the member now initialised. Since the postcondition of `init_point` requires ownership `RW<struct point>(p)`, CN combines these back into a compound resource. The resulting `RW<point struct>` resource has for an output the struct value `P_post` that is composed of the zeroed member values for `x` and `y`.
+CN can prove the calls to `zero` with `&p->x` and `&p->y` are safe because it decomposes the `RW<struct point>(p)` into a `RW<unsigned int>` for member `x` and likewise for member `y`. Later, the reverse happens. Since the postcondition of `init_point` requires ownership `RW<struct point>(p)`, CN combines these back into a compound resource. The resulting pointee value `P_post` is a struct composed of the zeroed member values for `x` and `y`.
 
 ## Resource inference
 
 To handle the required resource inference, CN "`eagerly`" decomposes all `struct` resources into resources for the struct members, and "`lazily`" re-composes them as needed.
 
-We can see this if, for instance, we experimentally change the `transpose` example from above to force a type error. Let’s insert an `/*@ assert(false) @*/` CN assertion in the middle of the `transpose` function, so we can inspect CN’s proof context shown in the error report. (More on CN assertions later.)
+We can see this if we experimentally change the previous `transpose` example to force a type error. Let’s insert an `/*@ assert(false) @*/` CN assertion in the middle of `transpose`, so we can inspect CN’s proof context shown in the error report. (More on CN assertions later.)
 
 <span style="color:red">
 BCP: Recheck that what we say here matches what it actually looks like
