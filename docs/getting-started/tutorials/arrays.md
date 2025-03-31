@@ -12,6 +12,10 @@ each (i32 i; 0i32 <= i && i < 10i32)
 JWS: `i32` or `u32`? `u32` is used in the example below...
 And is it `<unsigned int>` or `<int>`? It's inconsistent too...
 </span>
+<span style="color:red">
+BCP: We should just use `u32` and `<unsigned int>` until we get to the
+chapter about other numeric types.
+</span>
 
 In detail, this can be read as follows:
 
@@ -63,11 +67,15 @@ On exit the array ownership is returned again.
 <span style="color:red">
 JWS: Is it intentional that there's no post-condition about the return value?
 </span>
+<span style="color:red">
+BCP: Nope!
+</span>
 
 <span style="color:red"> BCP: Do several more
 examples (e.g., maybe working up to sorting?).
 </span>
-
 <span style="color:red">
 JWS: I don't actually know how something like sorting can be specified in CN. Any pointers?
+</span>
+<span style="color:red"> BCP: Good question.  Let's ask on Mattermost.
 </span>
