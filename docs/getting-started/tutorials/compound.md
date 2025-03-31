@@ -32,6 +32,17 @@ We can see this if we experimentally change the previous `transpose` example to 
 BCP: Recheck that what we say here matches what it actually looks like
 </span>
 
+<span style="color:red">
+JWS: It appears quite different now. Seems like we can now step through the function (so is the assert still necessary?)
+and the "Available resources" at the assert line are
+RW<unsigned int>(&temp_y)(P.y)
+RW<unsigned int>(&temp_x)(P.x)
+RW<struct point*>(&ARG0)(p)
+RW<unsigned int>(&p->y)(P.y)
+RW<unsigned int>(&p->x)(P.x)
+...I would just edit the text but I'm not sure how this output aligns with the one described below
+</span>
+
 ```c title="exercises/transpose.broken.c"
 --8<--
 exercises/transpose.broken.c
@@ -57,9 +68,11 @@ When the function returns, the two member resources are recombined "`on demand`"
 
 _Init point._ Insert CN `assert(false)` statements in different statement positions of `init_point` and check how the available resources evolve.
 
-_Transpose (again)._ Recreate the `transpose` function from before,
-using the `swap` function verified earlier.
-
+_Transpose (again)._ Recreate the `transpose` function from before, now
+using the `swap` function.
+<span style="color:red">
+JWS: What exactly is it that they're supposed to do here? Seems like just copy-pasting the specification from above will work?
+</span>
 
 ```c title="exercises/transpose2.c"
 --8<--
