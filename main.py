@@ -10,7 +10,7 @@ def define_env(env):
     @env.macro
     def todo(mesg):
         "Format a TODO"
-        return common(mesg, "blue")
+        return common(mesg, "red")
 
     @env.macro
     def later(mesg):

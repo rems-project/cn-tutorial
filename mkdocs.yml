@@ -48,7 +48,10 @@ theme:
     text: Roboto
     code: Roboto Mono
 
-
+plugins:
+  - search
+  - macros
+ 
 # Extensions
 markdown_extensions:
   - abbr

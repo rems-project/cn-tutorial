@@ -214,19 +214,16 @@ void* p0 = malloc(4);
 unsigned int* p = (unsigned int*)(p0);
 read(p);
 ```
-<span style="color:red">
-BCP: Explain what that means.
-</span>
 
-<!-- CN has typechecked the function and verified (1) that it is safe to
-execute under the precondition (given ownership `RW<unsigned int>(p)`)
-and (2) that the function (vacuously) satisfies its postcondition. But
-following the check of the postcondition it finds that not all
-resources have been "used up". -->
-<!-- JWS: I propose that this paragraph is cut, seems less clear all around than the paragraph below-->
+The error from `cn test` report
+tells us (1) in which function the error occurred, (2) what happened
+("ownership leaked"), and (3) a failing input -- i.e., a snipped of C
+code that will construct a heap state on which the test fails in this
+way. 
 
-Given the above specification, `read` leaks memory: it takes ownership, does not return it, but also does not deallocate the RW memory or otherwise dispose of it. In CN this is a type error.
-
+What went wrong here is that, given the above specification, `read`
+leaks memory: it takes ownership, does not return it, but also does
+not deallocate the RW memory or otherwise dispose of it.
 CN requires that every resource passed into a function has to be either
 _returned_ to the caller or else _destroyed_ by deallocating the RW area of
 memory (as we shall see later). CN’s motivation for this choice is its focus on
@@ -293,5 +290,5 @@ how one may need to destructure the type (unions, struct fields and
 padding, arrays). The relationship is that for `take x =
 RW<ct>(expr)` we have `expr : pointer, x : to_basetype(ct)`. -->
 
-_Exercise._ <span style="color:red">TODO: it would be nice to add an
-exercise that involves using the error messages to find a bug...</span>
+{{ todo("TODO: It would be nice to add an exercise that involves
+using the error messages to find a bug.") }}
