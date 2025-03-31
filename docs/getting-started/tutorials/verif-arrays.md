@@ -21,13 +21,16 @@ return p[i];
 Resource needed: RW<signed int>(array_shift<signed int>(p, (u64)i))
 ```
 
-The reason is that, when searching for a required resource, such as the `RW` resource for `p[i]` here, CN’s resource inference does not consider iterated resources. Quantifiers, as used by iterated resources, can make verification undecidable, so, in order to maintain predictable type checking, CN delegates this aspect of the reasoning to the user.
+The reason is that, when searching for a required resource, such as
+the `RW` resource for `p[i]` here, CN’s resource inference does not
+consider iterated resources. Quantifiers, as used by iterated
+resources, can make verification undecidable, so, in order to maintain
+predictable type checking, CN delegates this aspect of the reasoning
+to the user.
 
-<span style="color:red">
-BCP: This is more verification-relevant
-</span>
-
-To make the `RW` resource required for accessing `p[i]` available to CN’s resource inference we have to explicitly "`focus`" ownership for index `i` out of the iterated resource.
+To make the `RW` resource required for accessing `p[i]` available to
+CN’s resource inference, we have to explicitly "`focus`" ownership for
+index `i` out of the iterated resource.
 
 ```c title="exercises/array_load.c"
 --8<--
@@ -35,7 +38,7 @@ exercises/array_load.c
 --8<--
 ```
 
-Here the CN comment `/*@ focus RW<unsigned int>, i; @*/` is a proof hint in the form of a "`ghost statement`" that instructs CN to instantiate any available iterated `RW<unsigned int>` resource for index `i`. In our example this operation splits the iterated resource into two:
+The CN comment `/*@ focus RW<unsigned int>, i; @*/` is a proof hint in the form of a "`ghost statement`" that instructs CN to instantiate any available iterated `RW<unsigned int>` resource for index `i`. In our example this operation splits the iterated resource into two:
 
 ```c
 each(i32 j; 0i32 <= j && j < n) { RW<unsigned int>(array_shift<unsigned int>(p,j)) }
@@ -85,44 +88,30 @@ the same — and that the value returned is `A[i]`.
 
 ### Exercises
 
-_Array read two._ Specify and verify the following function, `array_read_two`, which takes the base pointer `p` of an `unsigned int` array, the array length `n`, and two indices `i` and `j`. Assuming `i` and `j` are different, it returns the sum of the values at these two indices.
+_Exercise:_ Specify and verify the following function, `array_read_two`, which takes the base pointer `p` of an `unsigned int` array, the array length `n`, and two indices `i` and `j`. Assuming `i` and `j` are different, it returns the sum of the values at these two indices.
 
-<span style="color:red">
-BCP: When we get around to renaming files in the examples directory,
-we should call this one array_swap or something else beginning with
-"array".  Or put it in a subdirectory.
-</span>
-
-```c title="exercises/add_two_array.c"
+```c title="exercises/array_read_two.c"
 --8<--
-exercises/add_two_array.c
+exercises/array_read_two.c
+--8<--
+```
+
+_Exercise:_ Specify and verify `swap_array`, which swaps the values of two cells of an `unsigned int` array. Assume again that `i` and `j` are different, and describe the effect of `swap_array` on the array value using the CN map update expression `a[i:v]`, which denotes the same map as `a`, except with index `i` updated to `v`.
+
+```c title="exercises/array_swap.c"
+--8<--
+exercises/array_swap.c
 --8<--
 ```
 
 <span style="color:red">
-BCP: In this one I got quite tangled up in different kinds of integers, then got tangled up in (I think) putting the focus declarations in the wrong place. (I didn't save the not-working version, I'm afraid.)
-</span>
-
-<span style="color:red">
-Sainati: I think it would be useful to have a int array version of this exercise as a worked example; I am not sure, for example, how one would express bounds requirements on the contents of an array in CN, as you would need to do here to ensure that p[i] + p[j] doesn’t overflow if p's contents are signed ints
-</span>
-
-_Swap array._ Specify and verify `swap_array`, which swaps the values of two cells of an `unsigned int` array. Assume again that `i` and `j` are different, and describe the effect of `swap_array` on the array value using the CN map update expression `a[i:v]`, which denotes the same map as `a`, except with index `i` updated to `v`.
-
-```c title="exercises/swap_array.c"
---8<--
-exercises/swap_array.c
---8<--
-```
-
-<span style="color:red">
-TODO: BCP: I wrote the following, which seemed natural but did not
+BCP: I wrote the following, which seemed natural but did not
 work -- I still don't fully understand why. I think this section will
 need some more examples / exercises to be fully digestible, or perhaps
-this is just yet another symptom of my imperfecdt understanding of how
+this is just yet another symptom of my imperfect understanding of how
 the numeric stuff works.
 
-    void swap_array (unsigned int *p, unsigned int n, unsigned int i, unsigned int j)
+    void array_swap (unsigned int *p, unsigned int n, unsigned int i, unsigned int j)
     /*@ requires take a1 = each(i32 k; 0i32 <= k && k < n) { RW<unsigned int>(array_shift<unsigned int>(p,k)) };
                  0i32 <= i && i < n;
                  0i32 <= j && j < n;
@@ -157,6 +146,9 @@ BCP: Rename to array_init.c
 JWS: Should this change be propagated everywhere e.g. also changing the function name, changing other function names starting with `init_`, changing `swap_array` to `array_swap`, etc.?
 </span>
 
+<span style="color:red">
+BCP: Yes!  I've done a bit of it, but there's more.
+</span>
 
 ```c title="exercises/init_array.c"
 --8<--
@@ -174,9 +166,8 @@ solutions/init_array.c
 --8<--
 ```
 
-<span style="color:red">
-TODO: BCP: Concrete syntax: Why not write something like "unchanged {p,n}" or "unchanged: p,n"?
-</span>
+{{ later("Concrete syntax: Why not write something like \"unchanged
+{p,n}\" or \"unchanged: p,n\"?") }}
 
 The main condition here is unsurprising: we specify ownership of an iterated resource for an array just like in the the pre- and postcondition.
 
@@ -184,9 +175,7 @@ The second thing we need to do, however, is less straightforward. Recall that, a
 
 **Note.** If we forget to specify `unchanged`, this can lead to confusing errors. In this example, for instance, CN would verify the loop against the loop invariant, but would be unable to prove a function postcondition seemingly directly implied by the loop invariant (lacking the information that the postcondition's `p` and `n` are the same as the loop invariant's). Future CN versions may handle loop invariants differently and treat variables as immutable by default.
 
-<span style="color:red">
-TODO: BCP: This seems like a good idea!
-</span>
+{{ later("BCP: This seems like a good idea!") }}
 
 The final piece needed in the verification is an `focus` statement, as used in the previous examples: to separate the individual `RW<char>` resource for index `j` out of the iterated `RW` resource and make it available to the resource inference, we specify `focus RW<char>, j;`.
 

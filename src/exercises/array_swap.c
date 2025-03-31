@@ -1,4 +1,4 @@
-void swap_array (int *p, int n, int i, int j)
+void array_swap (int *p, int n, int i, int j)
 /* --BEGIN-- */
 /*@ requires take a1 = each(i32 k; 0i32 <= k && k < n) { RW<int>(array_shift<int>(p,k)) };
              0i32 <= i && i < n;

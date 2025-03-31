@@ -31,16 +31,19 @@ We can see this if we experimentally change the previous `transpose` example to 
 <span style="color:red">
 BCP: Recheck that what we say here matches what it actually looks like
 </span>
-
 <span style="color:red">
 JWS: It appears quite different now. Seems like we can now step through the function (so is the assert still necessary?)
-and the "Available resources" at the assert line are
+and the `Available resources` at the assert line are
 RW<unsigned int>(&temp_y)(P.y)
 RW<unsigned int>(&temp_x)(P.x)
 RW<struct point*>(&ARG0)(p)
 RW<unsigned int>(&p->y)(P.y)
 RW<unsigned int>(&p->x)(P.x)
 ...I would just edit the text but I'm not sure how this output aligns with the one described below
+</span>
+<span style="color:red">
+BCP: Someone just needs to look at it carefully and write down what's
+true. I've lost track. :-)
 </span>
 
 ```c title="exercises/transpose.broken.c"
@@ -73,6 +76,10 @@ using the `swap` function.
 <span style="color:red">
 JWS: What exactly is it that they're supposed to do here? Seems like just copy-pasting the specification from above will work?
 </span>
+<span style="color:red">
+BCP: Maybe that's OK?  Or maybe we can think of a more interesting variant...
+</span>
+
 
 ```c title="exercises/transpose2.c"
 --8<--
@@ -80,13 +87,12 @@ exercises/transpose2.c
 --8<--
 ```
 
-<span style="color:red">
-BCP: Some more things to think about including...
+{{ later(" BCP: Some more things to think about including...
 - Something about CN's version of the frame rule (see
 bcp_framerule.c, though the example is arguably a bit unnatural).
 - Examples from Basic.v with allocation - there are lots of
 interesting ones!
     CP: Agreed. For now continuing with arrays, but will return to this later.
-</span>
+") }}
 
 

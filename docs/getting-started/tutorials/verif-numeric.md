@@ -307,3 +307,8 @@ Note that most binary operators in CN have higher precedence than the ternary op
 exercises/abs.c
 --8<--
 ```
+
+<span style="color:red">
+Sainati: I think it would be useful to have a int array version of this exercise as a worked example; I am not sure, for example, how one would express bounds requirements on the contents of an array in CN, as you would need to do here to ensure that p[i] + p[j] doesn’t overflow if p's contents are signed ints
+</span>
+

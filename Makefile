@@ -53,14 +53,14 @@ TESTED = $(patsubst src/exercises/%, _temp/tested/%, $(TESTONLY)) \
   _temp/tested/slf10_basic_ref.c \
   _temp/tested/add_2.c \
   _temp/tested/between.c \
-  _temp/tested/add_two_array.c \
+  _temp/tested/array_read_two.c \
   _temp/tested/transpose.c \
   _temp/tested/read2.c \
   _temp/tested/read.c \
   _temp/tested/slf1_basic_example_let.c \
   _temp/tested/slf_incr2_alias.c \
   _temp/tested/abs_mem.c \
-  _temp/tested/swap_array.c \
+  _temp/tested/array_swap.c \
   _temp/tested/const_example.c \
   _temp/tested/add.partial.c \
   _temp/tested/init_point.c \
