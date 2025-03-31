@@ -5,21 +5,13 @@ Another common datatype in C is arrays. Reasoning about memory ownership for arr
 To support reasoning about code manipulating arrays and computed pointers, CN has _iterated resources_. For instance, to specify ownership of an `unsigned` array with 10 cells starting at pointer `p`, CN uses the following iterated resource:
 
 ```c
-each (i32 i; 0i32 <= i && i < 10i32)
+each (u32 i; i < 10i32)
 { RW<unsigned int>(array_shift<unsigned int>(p,i)) }
 ```
-<span style="color:red">
-JWS: `i32` or `u32`? `u32` is used in the example below...
-And is it `<unsigned int>` or `<int>`? It's inconsistent too...
-</span>
-<span style="color:red">
-BCP: We should just use `u32` and `<unsigned int>` until we get to the
-chapter about other numeric types.
-</span>
 
 In detail, this can be read as follows:
 
-- for each integer `i` of CN type `i32`, …
+- for each index `i` of CN type `u32`, …
 
 - if `i` is between `0` and `10`, …
 
@@ -63,13 +55,7 @@ The CN precondition requires
 - ownership of the array on entry — one `RW<unsigned int>` resource for each array index between `0` and `n` — and
 - that `i` lies within the range of RW indices.
 
-On exit the array ownership is returned again.
-<span style="color:red">
-JWS: Is it intentional that there's no post-condition about the return value?
-</span>
-<span style="color:red">
-BCP: Nope!
-</span>
+On exit the array ownership is returned again. The postcondition also asserts that the return value of the function is indeed equal to the value of the array at index `i`.
 
 <span style="color:red"> BCP: Do several more
 examples (e.g., maybe working up to sorting?).
