@@ -8,7 +8,7 @@
   A first taste of verification](verif-basics.md)
 - [Working with pointers](pointers.md)
 - [<span style="color:black">(V)</span>
-   Pointers to structured objects, verified](compound.md)
+   Pointers to structured objects, verified](verif-pointers.md)
 - [Arrays and loops](arrays.md)
 - [<span style="color:black">(V)</span>
    Arrays and loops, verified](verif-arrays.md)

@@ -29,6 +29,3 @@ the code until it either succeeds in constructing a formal proof
 that the function satisfies the specification, or it encounters a
 constraint that cannot be satisfied.
 
-<span style="color:red">
-TODO: What else do we need to talk about in this introductory section?
-</span>

@@ -211,28 +211,15 @@ exercises/id_by_div/id_by_div_n.broken.c
 --8<--
 ```
 
-_Exercise: A loose specification for `greater`_: Write a specification for this
-function that says that the result is larger than the argument passed
-to the function but that does not reveal the precise value of the
+_Exercise: Write a specification for this
+function that says that the result is between the first argument and
+the second, but that does not reveal the precise value of the
 result.  (I.e., the same specification should work for a function that
-adds `1000` instead of `42`.)  Be careful of overflow.
-```c title="exercises/greater.c"
+returns `p`  or `(p+q)/2` instead of `q`.)  
+```c title="exercises/between.c"
 --8<--
-exercises/greater.c
+exercises/between.c
 --8<--
 ```
-<span style="color:red">
-JWS: What is the envisioned solution to this exercise? I don't see how
-to write a precondition without a) knowing what value is added
-or b) knowing how to specify the max int.
-</span>
 
-<span style="color:red">
-JWS: Can you decide a consistent way to label exercises? There are at least
-three styles in this chapter. I prefer _Exercise._ (e.g. no Exercise sections,
-no names.) because it's nice and short and I don't feel like the name adds.
-</span>
-
-<!-- BCP: Testing should fail for the version of this with no
-precondition, but as of 3/27/25 it did not.  Does it now? -->
 

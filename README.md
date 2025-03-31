@@ -25,6 +25,7 @@ Dependencies:
 ```bash
 # Install Material for MkDocs
 pip install mkdocs-material
+pip install mkdocs-macros-plugin
 
 # Build the tutorial
 make

@@ -52,7 +52,7 @@ TESTED = $(patsubst src/exercises/%, _temp/tested/%, $(TESTONLY)) \
   _temp/tested/slf_incr2_noalias.c \
   _temp/tested/slf10_basic_ref.c \
   _temp/tested/add_2.c \
-  _temp/tested/greater.c \
+  _temp/tested/between.c \
   _temp/tested/add_two_array.c \
   _temp/tested/transpose.c \
   _temp/tested/read2.c \

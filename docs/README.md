@@ -57,8 +57,9 @@ extended exercise due to Bryan Parno.
 ??? info "BibTeX citation"
     ```
     @misc{cn-tutorial,
-      author = {Christopher Pulte and Benjamin C. Pierce and Cole Schlesinger and Elizabeth Austell},
-      title = {{CN Tutorial}},
+      author = "Christopher Pulte and Benjamin C. Pierce and Cole
+      Schlesinger and Jessica Shi and Elizabeth Austell",
+      title = "{CN Tutorial}",
       howpublished = "\url{https://rems-project.github.io/cn-tutorial/}",
       year = {2025},
     }

@@ -75,7 +75,7 @@ BCP: Nope!
 examples (e.g., maybe working up to sorting?).
 </span>
 <span style="color:red">
-JWS: I don't actually know how something like sorting can be specified in CN. Any pointers?
+JWS: I don't actually know how  something like sorting can be specified in CN. Any pointers?
 </span>
 <span style="color:red"> BCP: Good question.  Let's ask on Mattermost.
 </span>
