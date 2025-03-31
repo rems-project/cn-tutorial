@@ -140,13 +140,13 @@ Hooray!
 
 ### Exercises
 
-_Refining the specification of `min3`_: The specification we wrote is
+_Exercise:_ The specification we wrote is
 a bit loose: It says the result value should be smaller than `x`, `y`,
 and `z`, but it does not say that it must be equal to one of these.
 For example, a function that always returns `0` would satisfy this
 spec specification. Improve it.
 
-_Exercise._ Practice the workflow of specifying and testing the function `add`.
+_Exercise:_ Practice the workflow of specifying and testing the function `add`.
 
 - Write a specification with the postcondition that `add` should
   return the sum of its inputs. Remember that CN supports standard
@@ -201,7 +201,7 @@ the error message that results.
 
 ### Exercises
 
-_Exercise._ Without changing the postcondition or implementation, fix
+_Exercise:_ Without changing the postcondition or implementation, fix
 the specification in the following example by adding a precondition on
 the inputs `x` and `n`. Check that `cn test` succeeds.
 
@@ -211,7 +211,7 @@ exercises/id_by_div/id_by_div_n.broken.c
 --8<--
 ```
 
-_Exercise: A loose specification for `greater`_: Write a specification for this
+_Exercise:_ Write a specification for this
 function that says that the result is larger than the argument passed
 to the function but that does not reveal the precise value of the
 result.  (I.e., the same specification should work for a function that
@@ -225,12 +225,6 @@ exercises/greater.c
 JWS: What is the envisioned solution to this exercise? I don't see how
 to write a precondition without a) knowing what value is added
 or b) knowing how to specify the max int.
-</span>
-
-<span style="color:red">
-JWS: Can you decide a consistent way to label exercises? There are at least
-three styles in this chapter. I prefer _Exercise._ (e.g. no Exercise sections,
-no names.) because it's nice and short and I don't feel like the name adds.
 </span>
 
 <!-- BCP: Testing should fail for the version of this with no
