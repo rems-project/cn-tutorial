@@ -14,7 +14,7 @@ Here are typed allocation and deallocation functions for this type.
 (We provide separate functions for these rather than just calling
 `malloc` and `free` directly in the interest of sharing as much code
 as possible with the verification-focused variants of these examples.)
-{{ todo("BCP: ... but maybe we'd get the same amount of sharing if we directly
+{{ later("BCP: ... but maybe we'd get the same amount of sharing if we directly
 used malloc?  We should check.") }}
 
 ```c title="exercises/list/c_types.test.h"
@@ -104,7 +104,7 @@ exercises/list/copy.c
 ### Merge sort
 
 {{ todo(" BCP: This could use a gentler explanation
-(probably in pieces) We've heard from more than one reader that this
+(probably broken in pieces) We've heard from more than one reader that this
 example is particularly hard to digest without some additional help") }}
 
 Finally, here is a slightly tricky in-place version of merge sort that
@@ -120,7 +120,7 @@ exercises/list/mergesort.test.c
 
 ### Exercises
 
-_Allocating append_. Fill in an appropriate specification for
+_Exercise_. Fill in an appropriate specification for
 `IntList_append2`.
 
 ```c title="exercises/list/append2.test.c"
@@ -132,7 +132,7 @@ exercises/list/append2.test.c
 Note that it would not make sense to do the usual
 functional-programming trick of copying xs but sharing ys. (Why?)
 
-_Length_. Add annotations as appropriate:
+_Exercise_. Add annotations to the `length` function as appropriate:
 
 ```c title="exercises/list/length.c"
 --8<--
@@ -140,8 +140,8 @@ exercises/list/length.c
 --8<--
 ```
 
-_List deallocation_. Fill in the body of the following procedure and
-add annotations as appropriate:
+_Exercise_. Fill in the body of the following list deallocation
+procedure and add annotations as appropriate:
 
 ```c title="exercises/list/free.c"
 --8<--
@@ -149,7 +149,8 @@ exercises/list/free.c
 --8<--
 ```
 
-_Length with an accumulator_. Add annotations as appropriate:
+_Exercise_. Add annotations to the following "`length` with an
+accumulator" function, as appropriate:
 
 ```c title="exercises/slf_length_acc.c"
 --8<--

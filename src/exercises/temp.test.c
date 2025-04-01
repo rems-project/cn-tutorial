@@ -1,4 +1,7 @@
-#include "cn_malloc.h"
+#include <stddef.h> 
+
+extern void* cn_malloc(size_t size);
+extern void  cn_free_sized(void *ptr, size_t size);
 
 unsigned int *malloc_and_set (unsigned int x)
 /*@ ensures take P = RW(return);

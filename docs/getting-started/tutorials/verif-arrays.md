@@ -210,10 +210,12 @@ As before, we also have to instruct CN to `focus` ownership of individual array 
 
 - the store returns a matching `RW<char>` resource for index `j`;
 
-- finally, we add `focus RW<char>, j;` to allow CN to "`attach`" this resource to the iterated `RW` resource. CN issues a warning, because nothing is, in fact, extracted: we are using `focus` only for the "`reverse`" direction.
-
-{{ todo("BCP: That last bit is mysterious.") }}
-{{ todo("Dhruv: See long explanation and issue here: rems-project/cerberus#498") }}
+- finally, we add `focus RW<char>, j;` to allow CN to "`attach`" this
+  resource to the iterated `RW` resource. CN issues a warning, because
+  nothing is, in fact, extracted: we are using `focus` only for the
+  "`reverse`" direction.  {{ later("Dhruv: See long explanation and
+  issue here: rems-project/cerberus#498.  BCP: Would it be useful to
+  bring any of that discussion here?") }}
 
 ### Exercises
 
@@ -225,5 +227,5 @@ exercises/array_init_rev.c
 --8<--
 ```
 
-{{ todo("A potential case study (involving nested iteration):
+{{ later("Another potential example / case study, involving nested iteration:
     https://github.com/rems-project/cerberus/issues/848#issuecomment-2702085128") }}

@@ -39,9 +39,9 @@ conditional expressions only at the beginning of predicate
 definitions, not after a `take`, so we need to make a separate
 auxiliary predicate.)
 
-```c title="exercises/queue/cn_types_2.h"
+```c title="exercises/queue/cn_types_2.test.h"
 --8<--
-exercises/queue/cn_types_2.h
+exercises/queue/cn_types_2.test.h
 --8<--
 ```
 
@@ -110,9 +110,9 @@ exercises/queue/allocation.test.h
 _Exercise_: The function for creating an empty queue just needs to set
 both of its fields to NULL. See if you can fill in its specification.
 
-```c title="exercises/queue/empty.c"
+```c title="exercises/queue/empty.test.c"
 --8<--
-exercises/queue/empty.c
+exercises/queue/empty.test.c
 --8<--
 ```
 
@@ -167,9 +167,9 @@ plausible top-level specification and test its correctness.
 
 Here is the annotated `pop` code:
 
-```c title="exercises/queue/pop.c"
+```c title="exercises/queue/pop.test.c"
 --8<--
-exercises/queue/pop.c
+exercises/queue/pop.test.c
 --8<--
 ```
 
