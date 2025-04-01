@@ -29,7 +29,7 @@ exercises/add_0.c:3:10: error: Undefined behaviour
 return x+y;
 ~^~
 an exceptional condition occurs during the evaluation of an expression (§6.5#5)
-Consider the state in /var/folders/\_v/ndl32rvc8ph0000gn/T/state_393431.html
+Consider the state in /.../state_393431.html
 ```
 
 CN rejects the program because it has _undefined behaviour_ according to the C standard, meaning it is not safe to execute. CN points to the relevant source location, the addition `x+y`, and paragraph §6.5#5 of the standard, which specifies the undefined behaviour. It also includes a link to an HTML file with more details on the error to help in diagnosing the problem.
@@ -238,7 +238,7 @@ solutions/slf1_basic_example_let.signed.c
 --8<--
 ```
 
-{{ todo("BCP: WHy n*+n\_ in some places and n\*2i32 in others? ") }}
+{{ todo("BCP: WHy n*+n\ _ in some places and n\*2i32 in others? ") }}
 {{ todo("Dhruv: Unlikely to be meaningful, either is fine. ") }}
 
 We encode these expectations using a similar style of precondition as in the first example. We first define `N` as `n` cast to type `i64` — i.e. a type large enough to hold `n+1`, `n-1`, and `a+b` for any possible `i32` value for `n`. Then we specify that decrementing `N` does not go below the minimal `int` value, that incrementing `N` does not go above the maximal value, and that `n` doubled is also in range. These preconditions together guarantee safe execution.
