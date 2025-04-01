@@ -51,9 +51,7 @@ Alternatively we can include an actual implementation of
 inside a CN file by marking them with the keyword `trusted` at the top
 of their CN specifications.
 
-<span style="color:red">
-BCP: Make up a real example...
-</span>
+{{ todo("BCP: Make up a real example...") }}
 
 ```c title="exercises/malloc_trusted.verif.c"
 --8<--

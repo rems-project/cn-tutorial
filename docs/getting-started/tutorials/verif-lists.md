@@ -1,8 +1,6 @@
 # Lists, verified
 
-<span style="color:red">
-BCP: intro needed
-</span>
+{{ todo("BCP: intro needed") }}
 
 As before, we need slightly different functions for allocating and
 deallocating linked list cells:
@@ -13,15 +11,9 @@ exercises/list/c_types.verif.h
 --8<--
 ```
 
-<span style="color:red">
-BCP: Per discussion with Christopher, Cassia, and Daniel, the word "predicate" is quite confusing for newcomers (in logic, predicates do not return things!). A more neutral word might make for significantly easier onboarding.
-</span>
-<span style="color:red">
-Dhruv: Or no keyword? rems-project/cerberus#304 How about traversal?
-</span>
-<span style="color:red">
- BCP: No keyword sounds even better. But "traversal" in the interim is not bad. Or maybe "extractor" or something like that?
-</span>
+{{ todo("BCP: Per discussion with Christopher, Cassia, and Daniel, the word 'predicate' is quite confusing for newcomers (in logic, predicates do not return things!). A more neutral word might make for significantly easier onboarding.") }}
+{{ todo("Dhruv: Or no keyword? rems-project/cerberus#304 How about traversal?") }}
+{{ todo(" BCP: No keyword sounds even better. But 'traversal' in the interim is not bad. Or maybe 'extractor' or something like that?") }}
 
 To write specifications for C functions that manipulate lists, we need
 to define a CN "predicate" that describes specification-level list
@@ -67,11 +59,9 @@ exercises/list/headers.verif.h
 --8<--
 ```
 
-<span style="color:red">
-TODO: BCP: The 'return != NULL' should not be needed, but to remove it
+{{ todo("TODO: BCP: The 'return != NULL' should not be needed, but to remove it
 we need to change the callers of all the allocation functions to check
-for NULL and exit (which requires adding a spec for exit).
-</span>
+for NULL and exit (which requires adding a spec for exit).") }}
 
 ### Append
 
@@ -87,19 +77,15 @@ exercises/list/append.h
 --8<--
 ```
 
-<span style="color:red">
-BCP: Here's the first place where the verification version differs.
-Tidy the file above and below!
-</span>
+{{ todo("BCP: Here's the first place where the verification version differs.
+Tidy the file above and below!") }}
 
 Here is a simple destructive `append` function. Note the two uses
 of the `unfold` annotation in the body, which are needed to help the
 CN typechecker. The `unfold` annotation is an instruction to CN to replace a call to a recursive (CN) function (in this case `append`)
 with its definition, and is necessary because CN is unable to automatically determine when and where to expand recursive definitions on its own.
 
-<span style="color:red">
-BCP: Can someone add a more technical explanation of why they are needed and exactly what they do?
-</span>
+{{ todo("BCP: Can someone add a more technical explanation of why they are needed and exactly what they do?") }}
 
 ```c title="exercises/list/append.verif.c"
 --8<--
@@ -120,19 +106,15 @@ exercises/list/copy.c
 
 ### Merge sort
 
-<span style="color:red">
-BCP: This could use a gentler explanation (probably in pieces).  But
-much of it will be in lists.md, not here.
-</span>
+{{ todo("BCP: This could use a gentler explanation (probably in pieces).  But
+much of it will be in lists.md, not here.") }}
 
 Finally, here is a slightly tricky in-place version of merge sort that
 avoids allocating any new list cells in the splitting step by taking
 alternate cells from the original list and linking them together into
 two new lists of roughly equal lengths.
 
-<span style="color:red">
-BCP: Nit: Merge multiple requires and ensures clauses into one
-</span>
+{{ todo("BCP: Nit: Merge multiple requires and ensures clauses into one") }}
 
 ```c title="exercises/list/mergesort.c"
 --8<--
@@ -174,22 +156,12 @@ exercises/list/free.c
 
 _Length with an accumulator_. Add annotations as appropriate:
 
-<span style="color:red">
-BCP: Removing / forgetting the unfold in this one gives a truly
-</span>
-<span style="color:red">
- bizarre error message saying that the constraint "n == (n + length(L1))"
-</span>
-<span style="color:red">
- is unsatisfiable...
-</span>
+{{ todo("BCP: Removing / forgetting the unfold in this one gives a truly") }}
+{{ todo(" bizarre error message saying that the constraint `n == (n + length(L1))`") }}
+{{ todo(" is unsatisfiable...") }}
 
-<span style="color:red">
-Sainati: when I went through the tutorial, the file provided for this exercise was already "complete" in that
-</span>
-<span style="color:red">
- it already had all the necessary annotations present for CN to verify it
-</span>
+{{ todo("Sainati: when I went through the tutorial, the file provided for this exercise was already 'complete' in that") }}
+{{ todo(" it already had all the necessary annotations present for CN to verify it") }}
 
 ```c title="exercises/slf_length_acc.c"
 --8<--

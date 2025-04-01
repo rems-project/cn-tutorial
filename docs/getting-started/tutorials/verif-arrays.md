@@ -104,8 +104,7 @@ exercises/array_swap.c
 --8<--
 ```
 
-<span style="color:red">
-BCP: I wrote the following, which seemed natural but did not
+{{ todo("BCP: I wrote the following, which seemed natural but did not
 work -- I still don't fully understand why. I think this section will
 need some more examples / exercises to be fully digestible, or perhaps
 this is just yet another symptom of my imperfect understanding of how
@@ -127,8 +126,7 @@ the numeric stuff works.
       unsigned int tmp = p[i];
       p[i] = p[j];
       p[j] = tmp;
-    }
-</span>
+    }") }}
 
 ### Loops
 
@@ -138,17 +136,11 @@ In order to verify code with loops, CN requires the user to supply loop invarian
 
 Let's take a look at a simple first example. The following function, `init_array`, takes the base pointer `p` of a `char` array and the array length `n` and writes `0` to each array cell.
 
-<span style="color:red">
-BCP: Rename to array_init.c
-</span>
+{{ todo("BCP: Rename to array_init.c") }}
 
-<span style="color:red">
-JWS: Should this change be propagated everywhere e.g. also changing the function name, changing other function names starting with `init_`, changing `swap_array` to `array_swap`, etc.?
-</span>
+{{ todo("JWS: Should this change be propagated everywhere e.g. also changing the function name, changing other function names starting with `init_`, changing `swap_array` to `array_swap`, etc.?") }}
 
-<span style="color:red">
-BCP: Yes!  I've done a bit of it, but there's more.
-</span>
+{{ todo("BCP: Yes!  I've done a bit of it, but there's more.") }}
 
 ```c title="exercises/init_array.c"
 --8<--
@@ -225,12 +217,8 @@ As before, we also have to instruct CN to `focus` ownership of individual array 
 
 - finally, we add `focus RW<char>, j;` to allow CN to "`attach`" this resource to the iterated `RW` resource. CN issues a warning, because nothing is, in fact, extracted: we are using `focus` only for the "`reverse`" direction.
 
-<span style="color:red">
-BCP: That last bit is mysterious.
-</span>
-<span style="color:red">
-Dhruv: See long explanation and issue here: rems-project/cerberus#498
-</span>
+{{ todo("BCP: That last bit is mysterious.") }}
+{{ todo("Dhruv: See long explanation and issue here: rems-project/cerberus#498") }}
 
 ### Exercises
 
@@ -242,7 +230,5 @@ exercises/init_array_rev.c
 --8<--
 ```
 
-<span style="color:red">
-A potential case study (involving nested iteration):
-    https://github.com/rems-project/cerberus/issues/848#issuecomment-2702085128
-</span>
+{{ todo("A potential case study (involving nested iteration):
+    https://github.com/rems-project/cerberus/issues/848#issuecomment-2702085128") }}

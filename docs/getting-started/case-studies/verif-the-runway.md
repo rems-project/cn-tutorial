@@ -1,6 +1,6 @@
 # Airport Simulation, Verified
 
-<span style="color:red">BCP: I'm nervous about this case study -- it is not nearly as well debugged as the others, and it seems potentially quite confusing. I propose deleting it, but if other like it we can try to whip it into better shape... </span>
+{{ todo("BCP: I'm nervous about this case study -- it is not nearly as well debugged as the others, and it seems potentially quite confusing. I propose deleting it, but if other like it we can try to whip it into better shape... ") }}
 
 Suppose we have been tasked with writing a program that simulates a
 runway at an airport. This airport is very small, so it only has one
@@ -11,7 +11,7 @@ following informal specification:
 1. The runway has two modes: departure mode and arrival mode. The two
 modes can never be active at the same time. Neither mode is active
 at the beginning of the day.
-<span style="color:red">BCP: Would it be simpler to say it is in arrival mode at the beginning of the day? What difference would that make? (Saying there are two modes and then immediately introducing a third one is a bit confusing.) </span>
+{{ todo("BCP: Would it be simpler to say it is in arrival mode at the beginning of the day? What difference would that make? (Saying there are two modes and then immediately introducing a third one is a bit confusing.) ") }}
 
 2. At any given moment, there is a waiting list of planes that need to
    land at the airport and planes that need to leave the
@@ -135,7 +135,7 @@ This material is based upon work supported by the Air Force Research Laboratory 
 
 <!-- ====================================================================== -->
 
-<!--
+{{ todo("
 Further topics:
 
 - doubly linked lists
@@ -143,7 +143,7 @@ Further topics:
 - cn_function
 - pack
 - bitwise functions (operators are not present in the logical language)
-- "ownership" in Rust vs. CN
+- 'ownership' in Rust vs. CN
 - tips amnd tricks --
   cf. [](https://dafny.org/dafny/DafnyRef/DafnyRef.html#sec-verification)
 - more data structures to try out
@@ -181,12 +181,12 @@ Misc things to do:
 - everyplace we do storage allocation, we should really allow the
   malloc call to return NULL if it wants to; the caller should
   explicitly check that it didn't get back NULL. This requires
-  defining an "exit" function" with trivial pre- and postconditions
+  defining an 'exit' function with trivial pre- and postconditions
   (true / false).
 
 - In queue.c, when I tried /_@ unfold QueueAux (F.front, F.back,
-  B.first); @_/ I was confused by "the specification function
-  `QueueAux' is not declared". I guess this is, again, the
+  B.first); @_/ I was confused by 'the specification function
+  `QueueAux' is not declared'. I guess this is, again, the
   distinction between functions and predicates...?
 
 - In debugging the queue example, The fact that some of the
@@ -206,4 +206,4 @@ alternative: [](https://www.sphinx-doc.org/en/master/index.html)
 Misc notes:
 
 - Nb: take V = RW<t>(p) === p |-t-> V
--->
+") }}

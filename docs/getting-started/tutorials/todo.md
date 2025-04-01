@@ -117,7 +117,7 @@ Further topics:
 - cn_function
 - pack
 - bitwise functions (operators are not present in the logical language)
-- "ownership" in Rust vs. CN
+- 'ownership' in Rust vs. CN
 - tips amnd tricks --
   cf. [](https://dafny.org/dafny/DafnyRef/DafnyRef.html#sec-verification)
 - more data structures to try out
@@ -155,7 +155,7 @@ Misc things to do:
 - everyplace we do storage allocation, we should really allow the
   malloc call to return NULL if it wants to; the caller should
   explicitly check that it didn't get back NULL. This requires
-  defining an "exit" function" with trivial pre- and postconditions
+  defining an "exit" function with trivial pre- and postconditions
   (true / false).
 
 - In queue.c, when I tried /_@ unfold QueueAux (F.front, F.back,

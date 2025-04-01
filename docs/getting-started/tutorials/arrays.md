@@ -21,8 +21,8 @@ In detail, this can be read as follows:
 
 Here `array_shift<unsigned int>(p,i)` computes a pointer into the array at pointer `p`, appropriately offset for index `i`.
 
-<!--I think this part seems not worth including relative to its complexity-->
-<!-- In general, iterated resource specifications take the form
+{{ todo("I think this part seems not worth including relative to its complexity") }}
+{{ todo(" In general, iterated resource specifications take the form
 
 ```c
 each (BT Q; GUARD) { RESOURCE }
@@ -32,13 +32,10 @@ comprising three parts:
 
 - `BT Q`, for some CN type `BT` and name `Q`, introduces the quantifier `Q` of basetype `BT`, which is bound in `GUARD` and `RESOURCE`;
 
-<span style="color:red"> BCP: What is a CN type?  What is a basetype?
-</span>
-
-
 - `GUARD` is a boolean-typed expression delimiting the instances of `Q` for which ownership is asserted; and
 
-- `RESOURCE` is any non-iterated CN resource. -->
+- `RESOURCE` is any non-iterated CN resource. ") }}
+{{ todo("BCP: Also: What is a CN type?  What is a basetype?") }}
 
 ### First array example
 
@@ -57,11 +54,7 @@ The CN precondition requires
 
 On exit the array ownership is returned again. The postcondition also asserts that the return value of the function is indeed equal to the value of the array at index `i`.
 
-<span style="color:red"> BCP: Do several more
-examples (e.g., maybe working up to sorting?).
-</span>
-<span style="color:red">
-JWS: I don't actually know how  something like sorting can be specified in CN. Any pointers?
-</span>
-<span style="color:red"> BCP: Good question.  Let's ask on Mattermost.
-</span>
+{{ todo(" BCP: Do several more
+examples (e.g., maybe working up to sorting?).") }}
+{{ todo("JWS: I don't actually know how  something like sorting can be specified in CN. Any pointers?") }}
+{{ todo(" BCP: Good question.  Let's ask on Mattermost.") }}

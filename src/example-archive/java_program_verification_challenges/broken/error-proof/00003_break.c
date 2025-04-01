@@ -71,7 +71,7 @@ int main()
     for (int i = 0; i < ia_length; i++) {
       //printf("%d ", ia[i]);
     }
-    //printf("\n");
+    //printf("");
 
     free(ia); // Free the allocated memory
     return 0;

@@ -2,7 +2,7 @@
 
 ## Install CN
 
-<span style="color:red">*Write me*</span>
+{{ todo("*Write me*") }}
 
 ## Download exercise sources
 

@@ -1,6 +1,6 @@
 # Imperative Queues, Verified
 
-<span style="color:red">Need updating after testing/verif split.</span>
+{{ todo("Need updating after testing/verif split.") }}
 
 A queue is a linked list with O(1) operations for adding things to one
 end (the "back") and removing them from the other (the "front"). Here
@@ -74,13 +74,13 @@ piece of information about an invariant of the representation: The
 `back` pointer always points to the very last cell in the list, so
 its `next` field will always be NULL.
 
-<span style="color:red">BCP: First point where testing and
-verification split.  Remove most of the material above here.</span>
+{{ todo("BCP: First point where testing and
+verification split.  Remove most of the material above here.") }}
 
-<span style="color:red">BCP: What about the second assert? </span>
+{{ todo("BCP: What about the second assert? ") }}
 
-<span style="color:red">BCP: How to help people guess that these are
-needed?? </span>
+{{ todo("BCP: How to help people guess that these are
+needed?? ") }}
 
 Finally, the `QueueAux` predicate recurses down the list of
 cells and returns a list of their contents.
@@ -171,8 +171,8 @@ elements, so we should expect that validating `push` is going to
 require some reasoning about this sequence. Here, in fact, is the
 lemma we need.
 
-<span style="color:red">BCP: Not sure I can explain what "pointer" means here, or why we don't need to declare more specific types for these arguments to the lemma. </span>
-<!-- Dhruv: See above comments about strong updates: in a requires/ensures, the types are given by the arguments in scope, but here we don't have that. -->
+{{ todo("BCP: Not sure I can explain what 'pointer' means here, or why we don't need to declare more specific types for these arguments to the lemma. ") }}
+{{ todo("Dhruv: See above comments about strong updates: in a requires/ensures, the types are given by the arguments in scope, but here we don't have that.") }}
 
 ```c title="exercises/queue/push_lemma.h"
 --8<--
@@ -237,7 +237,7 @@ CN which of the branches of the `if` at the beginning of the
 unpacked immediately because it is unconditional, but `QueueFB`
 cannot.)
 
-<span style="color:red">BCP: the word "unpack" is mysterious here. </span>
+{{ todo("BCP: the word 'unpack' is mysterious here. ") }}
 
 The guard/condition for `QueueFB` is `is_null(front)`, which is
 why we need to do a `split_case` on this value. On one branch of the
@@ -282,14 +282,14 @@ clauses. (Taking them just in the `requires` clause would imply
 that they are consumed and deallocated when the lemma is applied --
 not what we want!)
 
-<span style="color:red">BCP: The thing about ghost values is mysterious. </span>
-<!-- How to say it better? -->
+{{ todo("BCP: The thing about ghost values is mysterious. ") }}
+{{ todo("How to say it better?") }}
 
 (The only reason we can't currently prove this lemma in CN is that we
 don't have `take`s in CN statements, because this is just a simple
 unfolding.)
 
-<span style="color:red">BCP: Ugh. </span>
+{{ todo("BCP: Ugh. ") }}
 
 ## Exercises
 
@@ -325,5 +325,5 @@ Can you generalize the `snoc_facts` lemma to handle both cases? You
 can get past the dereference with a `split_case` but formulating the
 lemma before the `return` will be a bit more complicated.
 
-<span style="color:red">BCP: Again, this has not been shown to be
-possible, but Dhruv believes it should be!  </span>
+{{ todo("BCP: Again, this has not been shown to be
+possible, but Dhruv believes it should be!  ") }}

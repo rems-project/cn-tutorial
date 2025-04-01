@@ -1,6 +1,6 @@
 # Doubly-linked Lists
 
-<span style="color:red">BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions. </span>
+{{ todo("BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions. ") }}
 
 A doubly linked list is a linked list where each node has a pointer
 to both the next node and the previous node. This allows for constant-time
@@ -13,7 +13,7 @@ functions that manipulate doubly linked lists.
 
 ## Types
 
-<span style="color:red">BCP: Does that work for testing?</span>
+{{ todo("BCP: Does that work for testing?") }}
 
 First, here is the C type definition:
 
@@ -42,7 +42,7 @@ we first own the node that is passed in. Then we follow all of the
 all the `next` pointers to own everything forwards from the node, to
 construct the `left` and `right` fields.
 
-<span style="color:red">BCP: Maybe rethink the Own_Forwards / Backwards naming -- would something like Queue_At_Left and Queue_At_Right be clearer?? </span>
+{{ todo("BCP: Maybe rethink the Own_Forwards / Backwards naming -- would something like Queue_At_Left and Queue_At_Right be clearer?? ") }}
 
 ```c title="exercises/dll/predicates.h"
 --8<--
@@ -54,8 +54,8 @@ Note that `Dll_at` takes ownership of the node passed in, and then
 calls `Own_Backwards` and `Own_Forwards`, which recursively take
 ownership of the rest of the list.
 
-<span style="color:red">BCP: Has ptr_eq been explained?  It's useful
--- should be! </span>
+{{ todo("BCP: Has ptr_eq been explained?  It's useful
+-- should be! ") }}
 
 Also, notice that `Own_Forwards` and `Own_Backwards` include `ptr_eq`
 assertions for the `prev` and `next` pointers. This is to ensure that
@@ -123,14 +123,14 @@ exercises/dll/add.test.c
 _Exercise_: Before reading on, see if you can figure out what
 specification is appropriate.
 
-<span style="color:red">BCP: I rather doubt they are going to be able to come up with this specification on their own! We need to set it up earlier with a simpler example (maybe in a whoile earlier section) showing how to use conditionals in specs. </span>
+{{ todo("BCP: I rather doubt they are going to be able to come up with this specification on their own! We need to set it up earlier with a simpler example (maybe in a whoile earlier section) showing how to use conditionals in specs. ") }}
 
 Now, here is the annotated version of the `add` operation:
 
-<span style="color:red">BCP: If we're not going to _discuss_ the
+{{ todo("BCP: If we're not going to _discuss_ the
 solution, there's no need to include it here in-line, since people
 already know where to find the file. (But, of course, we should
-discuss it!) </span>
+discuss it!) ") }}
 
 ```c title="solutions/dll/add.c"
 --8<--
@@ -180,7 +180,7 @@ exercises/dll/remove.test.c
 _Exercise_: Before reading on, see if you can figure out what
 specification is appropriate.
 
-<span style="color:red">BCP: Again, unlikely the reader is going to be able to figure this out without help. We need some hints. </span>
+{{ todo("BCP: Again, unlikely the reader is going to be able to figure this out without help. We need some hints. ") }}
 
 Now, here is the annotated version of the `remove` operation:
 

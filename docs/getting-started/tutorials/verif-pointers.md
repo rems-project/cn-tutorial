@@ -28,23 +28,17 @@ To handle the required resource inference, CN "`eagerly`" decomposes all `struct
 
 We can see this if we experimentally change the previous `transpose` example to force a type error. Let’s insert an `/*@ assert(false) @*/` CN assertion in the middle of `transpose`, so we can inspect CN’s proof context shown in the error report. (More on CN assertions later.)
 
-<span style="color:red">
-BCP: Recheck that what we say here matches what it actually looks like
-</span>
-<span style="color:red">
-JWS: It appears quite different now. Seems like we can now step through the function (so is the assert still necessary?)
+{{ todo("BCP: Recheck that what we say here matches what it actually looks like") }}
+{{ todo("JWS: It appears quite different now. Seems like we can now step through the function (so is the assert still necessary?)
 and the `Available resources` at the assert line are
 RW<unsigned int>(&temp_y)(P.y)
 RW<unsigned int>(&temp_x)(P.x)
 RW<struct point*>(&ARG0)(p)
 RW<unsigned int>(&p->y)(P.y)
 RW<unsigned int>(&p->x)(P.x)
-...I would just edit the text but I'm not sure how this output aligns with the one described below
-</span>
-<span style="color:red">
-BCP: Someone just needs to look at it carefully and write down what's
-true. I've lost track. :-)
-</span>
+...I would just edit the text but I'm not sure how this output aligns with the one described below") }}
+{{ todo("BCP: Someone just needs to look at it carefully and write down what's
+true. I've lost track. :-)") }}
 
 ```c title="exercises/transpose.broken.c"
 --8<--
@@ -58,10 +52,8 @@ The precondition of `transpose` asserts ownership of an `RW<struct point>(p)` re
 
 - `RW<unsigned int>(member_shift<point>(p, y))` with output `P.y`
 
-<span style="color:red">
-BCP: We should verify that it really does say this.   (It certainly
-does not, after recent syntax changes...)
-</span>
+{{ todo("BCP: We should verify that it really does say this.   (It certainly
+does not, after recent syntax changes...)") }}
 
 Here `member_shift<s>(p,m)` is the CN expression that constructs, from a `struct s` pointer `p`, the "`shifted`" pointer for its member `m`.
 
@@ -73,12 +65,8 @@ _Exercise:_ Insert CN `assert(false)` statements in different statement position
 
 _Exercise:_  Recreate the `transpose` function from before, now
 using the `swap` function.
-<span style="color:red">
-JWS: What exactly is it that they're supposed to do here? Seems like just copy-pasting the specification from above will work?
-</span>
-<span style="color:red">
-BCP: Maybe that's OK?  Or maybe we can think of a more interesting variant...
-</span>
+{{ todo("JWS: What exactly is it that they're supposed to do here? Seems like just copy-pasting the specification from above will work?") }}
+{{ todo("BCP: Maybe that's OK?  Or maybe we can think of a more interesting variant...") }}
 
 
 ```c title="exercises/transpose2.c"
@@ -92,7 +80,6 @@ exercises/transpose2.c
 bcp_framerule.c, though the example is arguably a bit unnatural).
 - Examples from Basic.v with allocation - there are lots of
 interesting ones!
-    CP: Agreed. For now continuing with arrays, but will return to this later.
-") }}
+    CP: Agreed. For now continuing with arrays, but will return to this later.") }}
 
 

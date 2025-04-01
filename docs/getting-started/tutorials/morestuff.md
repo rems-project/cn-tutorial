@@ -6,10 +6,8 @@ This file collects some material that may or may not be useful long term.
 
 We can also define a "safer", ML-style version of `malloc` that
 handles both allocation and initialization:
-<span style="color:red">
-BCP: Are these worth the trouble to present?  C programmers will not find them
-interesting, I guess.
-</span>
+{{ todo("BCP: Are these worth the trouble to present?  C programmers will not find them
+interesting, I guess.") }}
 
 ```c title="exercises/ref.h"
 --8<--
@@ -17,9 +15,7 @@ exercises/ref.h
 --8<--
 ```
 
-<span style="color:red">
-TODO: BCP: This example is a bit broken: the file `slf0_basic_incr.c` does not appear at all in the tutorial, though a slightly different version (with signed numbers) does...
-</span>
+{{ todo("TODO: BCP: This example is a bit broken: the file `slf0_basic_incr.c` does not appear at all in the tutorial, though a slightly different version (with signed numbers) does...") }}
 
 ```c title="exercises/slf16_basic_succ_using_incr.c"
 --8<--

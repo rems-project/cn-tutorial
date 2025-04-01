@@ -1,8 +1,6 @@
 # (Verification) Case Analysis
 
-<span style="color:red">
-This section needs writing...
-</span>
+{{ todo("This section needs writing...") }}
 
 To verify the `slf_incr2` example, we need one more CN annotation in
 the body of the 
@@ -13,6 +11,4 @@ exercises/slf_incr2.verif.c
 --8<--
 ```
 
-<span style="color:red">
-Explain `split-case` in detail and give more examples...
-</span>
+{{ todo("Explain `split-case` in detail and give more examples...") }}

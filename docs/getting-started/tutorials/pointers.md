@@ -43,13 +43,13 @@ Given a C-type `T` and pointer `p`, the resource `RW<T>(p)` asserts
 _ownership_ of a memory region at location `p` of the size of the C type
 `T`.
 
-<!-- If `T` is a single-word type, then `<T>` can be omitted. -->
-<!-- JWS: ^I propose that we cut this sentence, since
-I don't know what a "single-word type" is and
+{{ todo(" If `T` is a single-word type, then `<T>` can be omitted. ") }}
+{{ todo(" JWS: ^I propose that we cut this sentence, since
+I don't know what a 'single-word type' is and
 I think type annotations that are sometimes optional and sometimes not
-are less confusingly presented as always required? -->
+are less confusingly presented as always required? ") }}
 
-<!-- BCP: I feel torn about this.  On one hand, the CN specs we are
+{{ todo(" BCP: I feel torn about this.  On one hand, the CN specs we are
      asking people to read and write are pretty long and verbose,
      impeding understanding, and removing all these type annotations
      would streamline some of them significantly.  Moreover, I don't
@@ -65,12 +65,12 @@ are less confusingly presented as always required? -->
      I mildly prefer the second. But I wonder whether the decision
      should be informed by some data about whether pointers to single
      words are common in real C code...
--->
+") }}
 
-<!-- <span style="color:red">BCP: Do we mean 32-bit word here?? </span> -->
-<!-- TODO: BCP: Maybe the description of the T argument can be
+{{ todo("BCP: Do we mean 32-bit word here??  
+And BCP: Maybe the description of the T argument can be
      postponed for a while, if we remove the <unsigned int>
-     annotations...? -->
+     annotations...?") }}
 
 In this example, we can ensure the safe execution of `read` by adding
 a precondition that requires ownership of `RW<unsigned int>(p)`, as
@@ -115,13 +115,11 @@ exercises/read2.c
 ??? note "Aside (for separation-logic experts)"
     _Aside._ In standard separation logic, the equivalent specification for `read` could have been phrased as follows (where `\return` binds the return value in the postcondition):
 
-    <span style="color:red">
-    Sainati: as a separation logic noob, I would love a more detailed explanation about what is going on here.
-    </span>
+    {{ todo("    Sainati: as a separation logic noob, I would love a more detailed explanation about what is going on here.
+    ") }}
 
-    <span style="color:red">
-     Why do we need to have v2 existentially quantified, for example, when p is only pointing to a single value?
-    </span>
+    {{ todo("     Why do we need to have v2 existentially quantified, for example, when p is only pointing to a single value?
+    ") }}
 
     ```
     ∀p.
@@ -164,10 +162,8 @@ We next have an example where data is written to a pointer. The function
 `incr` takes a pointer `p` and increments the value in the memory cell that it
 points to.
 
-<!-- <span style="color:red">
-BCP: unsigned! (there are both signed and unsigned versions at the
-moment -- how do they relate?)
-</span> -->
+{{ todo("BCP: unsigned! (there are both signed and unsigned versions at the
+moment -- how do they relate?)") }}
 ```c title="exercises/slf0_basic_incr.c"
 --8<--
 exercises/slf0_basic_incr.c
@@ -233,9 +229,9 @@ _returned_ to the caller or else _destroyed_ by deallocating the RW area of
 memory (as we shall see later). CN’s motivation for this choice is its focus on
 low-level systems software in which memory is managed manually; in this context,
 memory leaks are typically very undesirable.
-<!-- As a consequence, function specifications have to do precise bookkeeping of
+{{ todo(" As a consequence, function specifications have to do precise bookkeeping of
 their resource footprint and, in particular, return any unused resources back to
-the caller. -->
+the caller. ") }}
 
 ## Disjoint memory regions
 
@@ -290,11 +286,11 @@ i.e., they are records with members `x` and `y`. The postcondition asserts the
 coordinates have been swapped by referring to the members of `P` and `P_post`
 individually.
 
-<!-- The reason `RW` needs a C-type annotation is so that it can (a)
+{{ todo(" The reason `RW` needs a C-type annotation is so that it can (a)
 figure out the size of the sub-heap being claimed and (b) figure out
 how one may need to destructure the type (unions, struct fields and
 padding, arrays). The relationship is that for `take x =
-RW<ct>(expr)` we have `expr : pointer, x : to_basetype(ct)`. -->
+RW<ct>(expr)` we have `expr : pointer, x : to_basetype(ct)`. ") }}
 
 {{ todo("TODO: It would be nice to add an exercise that involves
 using the error messages to find a bug.") }}

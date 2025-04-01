@@ -14,10 +14,8 @@ Here are typed allocation and deallocation functions for this type.
 (We provide separate functions for these rather than just calling
 `malloc` and `free` directly in the interest of sharing as much code
 as possible with the verification-focused variants of these examples.)
-<span style="color:red">
-BCP: ... but maybe we'd get the same amount of sharing if we directly
-used malloc?  We should check.
-</span>
+{{ todo("BCP: ... but maybe we'd get the same amount of sharing if we directly
+used malloc?  We should check.") }}
 
 ```c title="exercises/list/c_types.test.h"
 --8<--
@@ -29,8 +27,8 @@ To write specifications for C functions that manipulate lists, we need
 to define a CN "predicate" that describes specification-level list
 structures. We use the datatype `List` for CN-level lists.
 
-<span style="color:red"> BCP: Industrial developers will need a _lot_
-more help than that!  </span>
+{{ todo(" BCP: Industrial developers will need a _lot_
+more help than that!  ") }}
 
 Intuitively, the `SLList_At` predicate walks over a singly-linked
 pointer structure in the C heap and extracts an `RW` version of
@@ -105,10 +103,9 @@ exercises/list/copy.c
 
 ### Merge sort
 
-<span style="color:red"> BCP: This could use a gentler explanation
+{{ todo(" BCP: This could use a gentler explanation
 (probably in pieces) We've heard from more than one reader that this
-example is particularly hard to digest without some additional help
-</span>
+example is particularly hard to digest without some additional help") }}
 
 Finally, here is a slightly tricky in-place version of merge sort that
 avoids allocating any new list cells in the splitting step by taking

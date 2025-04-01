@@ -20,9 +20,7 @@ are fine). The write consumes ownership of the `W` resource
 value written as the output. This means the resource returned from a
 write records the fact that this memory cell is now initialised and
 can be read from.
-<span style="color:red">
-BCP: Not sure I understand "returns a new resource `RW<T>(p)` with the value written as the output" -- perhaps in part because I don't understand what the output of a resource means when the resource is not in the context o a take expression. 
-</span>
+{{ todo("BCP: Not sure I understand 'returns a new resource `RW<T>(p)` with the value written as the output' -- perhaps in part because I don't understand what the output of a resource means when the resource is not in the context o a take expression. ") }}
 
 Since `RW` carries the same ownership as `W`, just with the
 additional information that the `RW` memory is initalised, a

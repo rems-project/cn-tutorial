@@ -67,9 +67,9 @@ walking down the cells from the front and gathering all the rest of
 them into a sequence. We take the result from `QueueAux` and
 `snoc` on the very last element.
 
-<span style="color:red">BCP: Explain the asserts.  (Why) are they useful
+{{ todo("BCP: Explain the asserts.  (Why) are they useful
 for testing?  If they are not useful, make a testing-only version
-that omits them!  Ditto the QueueAux predicate below.</span>
+that omits them!  Ditto the QueueAux predicate below.") }}
 
 Finally, the `QueueAux` predicate recurses down the list of
 cells and returns a list of their contents.
@@ -173,4 +173,4 @@ exercises/queue/pop.c
 --8<--
 ```
 
-<span style="color:red">BCP: Needs some more exercises?</span>
+{{ todo("BCP: Needs some more exercises?") }}

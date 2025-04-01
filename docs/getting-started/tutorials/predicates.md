@@ -1,9 +1,7 @@
 # Defining Predicates
 
-<span style="color:red">
-BCP: The text becomes a bit sketchy from here on! But hopefully there's
-still enough structure here to make sense of the examples...
-</span>
+{{ todo("BCP: The text becomes a bit sketchy from here on! But hopefully there's
+still enough structure here to make sense of the examples...") }}
 
 Suppose we want to write a function that takes _two_ pointers to
 integers and increments the contents of both of them.
@@ -38,10 +36,6 @@ exercises/slf_incr2.test.c
 --8<--
 ```
 
-<span style="color:red">
-BCP: Needs quite a few more words.
-</span>
+{{ todo("BCP: Needs quite a few more words.") }}
 
-<span style="color:red">
-BCP: We haven't introduced CN records. In particular, C programmers may be surprised that we don't have to pre-declare record types.
-</span>
+{{ todo("BCP: We haven't introduced CN records. In particular, C programmers may be surprised that we don't have to pre-declare record types.") }}

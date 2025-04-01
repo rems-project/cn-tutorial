@@ -27,9 +27,7 @@ that manipulate the heap, as usual.
 exercises/slf17_get_and_free.test.c
 --8<--
 ```
-<span style="color:red">
-BCP: The `tester` function here does not parse -- not sure why.
-</span>
+{{ todo("BCP: The `tester` function here does not parse -- not sure why.") }}
 
 
 ### Exercises
@@ -79,6 +77,4 @@ already-initialised memory cell to be over-written again.
 
 Unlike `RW`, whose output is the pointee value, `W` has no meaningful output.
 
-<span style="color:red">
-BCP: An example and/or an exercise would be nice!
-</span>
+{{ todo("BCP: An example and/or an exercise would be nice!") }}

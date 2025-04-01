@@ -1,6 +1,6 @@
 # Style Guide
 
-<span style="color:red">BCP: If we are agreed on the naming conventions suggested in /NAMING-CONVENTIONS.md, we could move that material here. </span>
+{{ todo("BCP: If we are agreed on the naming conventions suggested in /NAMING-CONVENTIONS.md, we could move that material here. ") }}
 
 !!! warning
 

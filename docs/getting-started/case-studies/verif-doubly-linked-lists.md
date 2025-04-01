@@ -1,8 +1,8 @@
 # Doubly-linked Lists, Verified
 
-<span style="color:red">Need updating after testing/verif split.</span>
+{{ todo("Need updating after testing/verif split.") }}
 
-<span style="color:red">BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions. </span>
+{{ todo("BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions. ") }}
 
 A doubly linked list is a linked list where each node has a pointer
 to both the next node and the previous node. This allows for O(1)
@@ -40,7 +40,7 @@ we first own the node that is passed in. Then we follow all of the
 all the `next` pointers to own everything forwards from the node, to
 construct the `left` and `right` fields.
 
-<span style="color:red">BCP: Maybe rethink the Own_Forwards / Backwards naming -- would something like Queue_At_Left and Queue_At_Right be clearer?? </span>
+{{ todo("BCP: Maybe rethink the Own_Forwards / Backwards naming -- would something like Queue_At_Left and Queue_At_Right be clearer?? ") }}
 
 ```c title="exercises/dll/predicates.h"
 --8<--
@@ -114,7 +114,7 @@ exercises/dll/add_orig.broken.c
 _Exercise_: Before reading on, see if you can figure out what
 specification is appropriate and what other are needed.
 
-<span style="color:red">BCP: I rather doubt they are going to be able to come up with this specification on their own! We need to set it up earlier with a simpler example (maybe in a whoile earlier section) showing how to use conditionals in specs. </span>
+{{ todo("BCP: I rather doubt they are going to be able to come up with this specification on their own! We need to set it up earlier with a simpler example (maybe in a whoile earlier section) showing how to use conditionals in specs. ") }}
 
 Now, here is the annotated version of the `add` operation:
 
@@ -175,7 +175,7 @@ exercises/dll/remove_orig.broken.c
 _Exercise_: Before reading on, see if you can figure out what
 specification is appropriate and what annotations are needed.
 
-<span style="color:red">BCP: Again, unlikely the reader is going to be able to figure this out without help. We need some hints. </span>
+{{ todo("BCP: Again, unlikely the reader is going to be able to figure this out without help. We need some hints. ") }}
 
 Now, here is the fully annotated version of the `remove` operation:
 

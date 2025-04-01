@@ -1,11 +1,11 @@
 # Airport Simulation
 
-<span style="color:red">BCP: I'm nervous about this case study -- it
+{{ todo("BCP: I'm nervous about this case study -- it
 is not nearly as well debugged as the others, and it seems potentially
 quite confusing. I propose deleting it, but if others like it we can
 try to whip it into better shape... (Later: It seems people do like
 it, because it is more like SUT code than the other examples.  So we
-should make it better.) </span>
+should make it better.) ") }}
 
 Suppose we have been tasked with writing a program that simulates a
 runway at an airport. This airport is very small, so it only has one
@@ -16,7 +16,7 @@ following informal specification:
 1. The runway has two modes: departure mode and arrival mode. The two
 modes can never be active at the same time. Neither mode is active
 at the beginning of the day.
-<span style="color:red">BCP: Would it be simpler to say it is in arrival mode at the beginning of the day? What difference would that make? (Saying there are two modes and then immediately introducing a third one is a bit confusing.) </span>
+{{ todo("BCP: Would it be simpler to say it is in arrival mode at the beginning of the day? What difference would that make? (Saying there are two modes and then immediately introducing a third one is a bit confusing.) ") }}
 
 2. At any given moment, there is a waiting list of planes that need to
    land at the airport and planes that need to leave the
@@ -76,8 +76,8 @@ following fields:
   or departed while planes are waiting for the other mode. This will
   help us keep track of the 3-plane limit as described in _(6)_.
 
-<span style="color:red">BCP: Do we need these functions for the
-testing version?  Has function been explained earlier? </span>
+{{ todo("BCP: Do we need these functions for the
+testing version?  Has function been explained earlier? ") }}
 
 ```c title="exercises/runway/state.h"
 --8<--

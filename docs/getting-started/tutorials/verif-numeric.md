@@ -50,21 +50,13 @@ solutions/add_0.c
 
 In detail:
 
-- Instead of C syntax, CN uses Rust-like syntax for integer types, such as `u32` for 32-bit unsigned integers and `i64` for signed 64-bit integers, to make their sizes unambiguous. Here, `x` and `y`, of C-type `int`, have CN type `i32`.<span style="color:red">
-BCP: I understand this reasoning, but I wonder whether it introduces more confusion than it avoids -- it means there are two ways of writing everything, and people have to remember whether the particular thing they are writing right now is C or CN... 
-</span><span style="color:red">
- BCP: Hopefully we are moving toward unifying these notations anyway? 
-</span>
+- Instead of C syntax, CN uses Rust-like syntax for integer types, such as `u32` for 32-bit unsigned integers and `i64` for signed 64-bit integers, to make their sizes unambiguous. Here, `x` and `y`, of C-type `int`, have CN type `i32`.{{ todo("BCP: I understand this reasoning, but I wonder whether it introduces more confusion than it avoids -- it means there are two ways of writing everything, and people have to remember whether the particular thing they are writing right now is C or CN... ") }}{{ todo(" BCP: Hopefully we are moving toward unifying these notations anyway? ") }}
 
 - To define `Sum` we cast `x` and `y` to the larger `i64` type, using syntax `(i64)`, which is large enough to hold the sum of any two `i32` values.
 
 - Finally, we require this sum to be between the minimal and maximal `int` values. Integer constants, such as `-2147483648i64`, must specifiy their CN type (`i64`).
-  <span style="color:red">
-BCP: We should use the new ' syntax (or whatever it turned out to be) for numeric constants 
-</span>
-  <span style="color:red">
-Dhruv: Yet to be implemented: rems-project/cerberus#337 
-</span>
+  {{ todo("BCP: We should use the new ' syntax (or whatever it turned out to be) for numeric constants ") }}
+  {{ todo("Dhruv: Yet to be implemented: rems-project/cerberus#337 ") }}
 
 Running CN on the annotated program passes without errors. This means that, with our specified precondition, `add` is safe to execute.
 
@@ -97,9 +89,9 @@ coercion `(i64)`.
 
 ## Error reports
 
-<span style="color:red">*Most of this material needs to be moved to
+{{ todo("*Most of this material needs to be moved to
 the first section where we talk about verification, but it will need a
-different example (not involving i32 or UB)...*</span>
+different example (not involving i32 or UB)...*") }}
 
 In the original example, CN reported a type error due to C undefined
 behavior. While that example was perhaps simple enough to guess the
@@ -181,12 +173,8 @@ CN displays concrete values:
 
 For now, ignore the pointer values `{@0; 4}` for `x` and `{@0; 0}` for `y`.
 
-<span style="color:red">
-BCP: Where are these things discussed? Anywhere? (When) are they useful? 
-</span>
-<span style="color:red">
-Dhruv: These are part of VIP memory model things I'm working on, which will hopefully be implemented and enabled in the next few weeks. 
-</span>
+{{ todo("BCP: Where are these things discussed? Anywhere? (When) are they useful? ") }}
+{{ todo("Dhruv: These are part of VIP memory model things I'm working on, which will hopefully be implemented and enabled in the next few weeks. ") }}
 
 These concrete values are part of a _counterexample_: a concrete
 valuation of variables and pointers in the program that that leads to
@@ -200,12 +188,8 @@ _Proof context._ The second section, below the error trace, lists the proof cont
 
 "`Variables`" lists counterexample values for program variables and pointers. In addition to `x` and `y`, assigned the same values as above, this includes values for their memory locations `&ARG0` and `&ARG1`, function pointers in scope, and the `__cn_alloc_history`, all of which we ignore for now.
 
-<span style="color:red">
-BCP: Again, where are these things discussed? Should they be? 
-</span>
-<span style="color:red">
-Dhruv: Also VIP. 
-</span>
+{{ todo("BCP: Again, where are these things discussed? Should they be? ") }}
+{{ todo("Dhruv: Also VIP. ") }}
 
 Finally, "`Constraints`" records all logical facts CN has learned along the path. This includes user-specified assumptions from preconditions or loop invariants, value ranges inferred from the C-types of variables, and facts learned during the type checking of the statements. Here -- when checking `add` without precondition -- the only constraints are those inferred from C-types in the code:
 
@@ -213,34 +197,22 @@ Finally, "`Constraints`" records all logical facts CN has learned along the path
   `x` is a "`good`" `signed int` value (i.e. in range). Here
   `signed int` is the same type as `int`, CN just makes the sign
   explicit.
-  <span style="color:red">
-BCP: Yikes! This seems potentially confusing 
-</span>
+  {{ todo("BCP: Yikes! This seems potentially confusing ") }}
 
   For an integer type `T`, the type `good<T>` requires the value to
   be in range of type `T`; for pointer types `T`, it also requires
   the pointer to be aligned. For structs and arrays, this extends in the
   obvious way to struct members or array cells.
-  <span style="color:red">
-BCP: Is this information actually ever useful? Is it currently suppressed? 
-</span>
+  {{ todo("BCP: Is this information actually ever useful? Is it currently suppressed? ") }}
 
 - `repr<T>` requires representability (not alignment) at type `T`, so `repr<signed int*>(&ARGO)`, for instance, records that the pointer to `x` is representable at C-type `signed int*`;
 
 - `aligned(&ARGO, 4u64)`, moreover, states that it is 4-byte aligned.
 
-<span style="color:red">
-URGENT: BCP: Some of the above (especially the bit at the end) feels like TMI for many/most users, especially at this point in the tutorial. 
-</span>
-<span style="color:red">
-Dhruv: Probably true, we actually even hide some of these by default. 
-</span>
-<span style="color:red">
- BCP: I propose we hide the rest and move this discussion to somewhere else ("Gory Details" section of the tutorial, or better yet reference manual). 
-</span>
-<span style="color:red">
-Dhruv: Thumbs up 
-</span>
+{{ todo("URGENT: BCP: Some of the above (especially the bit at the end) feels like TMI for many/most users, especially at this point in the tutorial. ") }}
+{{ todo("Dhruv: Probably true, we actually even hide some of these by default. ") }}
+{{ todo(" BCP: I propose we hide the rest and move this discussion to somewhere else ('Gory Details' section of the tutorial, or better yet reference manual). ") }}
+{{ todo("Dhruv: Thumbs up ") }}
 
 ### Another arithmetic example
 
@@ -248,9 +220,7 @@ Let’s apply what we know so far to another simple arithmetic example.
 
 The function `doubled`, shown below, takes an int `n`, defines `a` as `n` incremented, `b` as `n` decremented, and returns the sum of the two.
 
-<span style="color:red">
-BCP: Is it important to number the slf examples? If so, we should do it consistently, but IMO it is not. Better to rename them without numbers. 
-</span>
+{{ todo("BCP: Is it important to number the slf examples? If so, we should do it consistently, but IMO it is not. Better to rename them without numbers. ") }}
 
 ```c title="exercises/slf1_basic_example_let.signed.c"
 --8<--
@@ -268,24 +238,14 @@ solutions/slf1_basic_example_let.signed.c
 --8<--
 ```
 
-<span style="color:red">
-BCP: WHy n*+n\_ in some places and n\*2i32 in others? 
-</span>
-<span style="color:red">
-Dhruv: Unlikely to be meaningful, either is fine. 
-</span>
+{{ todo("BCP: WHy n*+n\_ in some places and n\*2i32 in others? ") }}
+{{ todo("Dhruv: Unlikely to be meaningful, either is fine. ") }}
 
 We encode these expectations using a similar style of precondition as in the first example. We first define `N` as `n` cast to type `i64` — i.e. a type large enough to hold `n+1`, `n-1`, and `a+b` for any possible `i32` value for `n`. Then we specify that decrementing `N` does not go below the minimal `int` value, that incrementing `N` does not go above the maximal value, and that `n` doubled is also in range. These preconditions together guarantee safe execution.
 
-<span style="color:red">
-BCP: How about renaming N to n64? 
-</span>
-<span style="color:red">
-Dhruv: Sensible. 
-</span>
-<span style="color:red">
- BCP: (someone do it on next pass) 
-</span>
+{{ todo("BCP: How about renaming N to n64? ") }}
+{{ todo("Dhruv: Sensible. ") }}
+{{ todo(" BCP: (someone do it on next pass) ") }}
 
 To capture the functional behaviour, the postcondition specifies that `return` is twice the value of `n`.
 
@@ -308,7 +268,5 @@ exercises/abs.c
 --8<--
 ```
 
-<span style="color:red">
-Sainati: I think it would be useful to have a int array version of this exercise as a worked example; I am not sure, for example, how one would express bounds requirements on the contents of an array in CN, as you would need to do here to ensure that p[i] + p[j] doesn’t overflow if p's contents are signed ints
-</span>
+{{ todo("Sainati: I think it would be useful to have a int array version of this exercise as a worked example; I am not sure, for example, how one would express bounds requirements on the contents of an array in CN, as you would need to do here to ensure that p[i] + p[j] doesn’t overflow if p's contents are signed ints") }}
 
