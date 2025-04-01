@@ -1,106 +1,36 @@
 # Doubly-linked Lists, Verified
 
-{{ todo("Need updating after testing/verif split.") }}
+{{ todo("BCP: This chapter still needs some fixing up.") }}
 
-{{ todo("BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions. ") }}
+Verifying the doubly-linked list operations requires a few extra
+annotations. 
 
-A doubly linked list is a linked list where each node has a pointer
-to both the next node and the previous node. This allows for O(1)
-operations for adding or removing nodes anywhere in the list.
+The basic definitions are unchanged from the associated testing
+chapter, except that we need some boilerplate for allocation and deallocation.
 
-Because of all the sharing in this data structure, the separation
-reasoning is a bit tricky. We'll give you the core definitions and
-then invite you to help fill in the annotations for some of the
-functions that manipulate doubly linked lists.
-
-First, here is the C type definition:
-
-```c title="exercises/dll/c_types.h"
+```c title="exercises/dll/allocation.verif.h"
 --8<--
-exercises/dll/c_types.h
---8<--
-```
-
-The idea behind the representation of this list is that we don't keep
-track of the front or back, but rather we take any node in the list
-and have a sequence to the left and to the right of that node. The `left`
-and `right` are from the point of view of the node itself, so `left`
-is kept in reverse order. Additionally, similarly to in the
-`Imperative Queues` example, we can reuse the `List` type.
-
-```c title="exercises/dll/cn_types.h"
---8<--
-exercises/dll/cn_types.h
---8<--
-```
-
-The predicate for this datatype is a bit complicated. The idea is that
-we first own the node that is passed in. Then we follow all of the
-`prev` pointers to own everything backwards from the node, and finally
-all the `next` pointers to own everything forwards from the node, to
-construct the `left` and `right` fields.
-
-{{ todo("BCP: Maybe rethink the Own_Forwards / Backwards naming -- would something like Queue_At_Left and Queue_At_Right be clearer?? ") }}
-
-```c title="exercises/dll/predicates.h"
---8<--
-exercises/dll/predicates.h
---8<--
-```
-
-Note that `Dll_at` takes ownership of the node passed in, and then
-calls `Own_Backwards` and `Own_Forwards`, which recursively take
-ownership of the rest of the list.
-
-Also, notice that `Own_Forwards` and `Own_Backwards` include `ptr_eq`
-assertions for the `prev` and `next` pointers. This is to ensure that
-the nodes in the list are correctly doubly linked. For example, the
-line `assert (ptr_eq(n.prev, prev_pointer));` in `Own_Forwards`
-ensures that the current node correctly points backward to the
-previous node in the list. The line `assert(ptr_eq(prev_node.next,
-p));` ensures that the previous node correctly points forward to the
-current node.
-
-Before we move on to the functions that manipulate doubly linked
-lists, we need to define a few "getter" functions that will allow us
-to access the fields of our `Dll` datatype. This will make the
-specifications easier to write.
-
-```c title="exercises/dll/getters.h"
---8<--
-exercises/dll/getters.h
---8<--
-```
-
-We also need some boilerplate for allocation and deallocation.
-
-```c title="exercises/dll/malloc_free.h"
---8<--
-exercises/dll/malloc_free.h
---8<--
-```
-
-For convenience, we gather all of these files into a single header file.
-
-```c title="exercises/dll/headers.verif.h"
---8<--
-exercises/dll/headers.verif.h
+exercises/dll/allocation.verif.h
 --8<--
 ```
 
 <!-- ====================================================================== -->
+
+## Singleton
 
 Now we can move on to an initialization function. Since an empty list
 is represented as a null pointer, we will look at initializing a
 singleton list (or in other words, a list with only one item).
 
-```c title="exercises/dll/singleton.c"
+```c title="exercises/dll/singleton.verif.c"
 --8<--
-exercises/dll/singleton.c
+exercises/dll/singleton.verif.c
 --8<--
 ```
 
 <!-- ====================================================================== -->
+
+## Add
 
 The `add` and `remove` functions are where it gets a little tricker.
 Let's start with `add`. Here is the unannotated version:
@@ -144,11 +74,11 @@ right part of the list is the same as before.
 Now, let's look at the annotations in the function body. CN can
 figure out the empty list case for itself, but it needs some help with
 the non-empty list case. The `split_case` on `is_null(n->prev)`
-tells CN to unpack the `Own_Backwards` predicate. Without this
+tells CN to unpack the `Take_Left` predicate. Without this
 annotation, CN cannot reason that we didn't lose the left half of the
 list before we return, and will claim we are missing a resource for
 returning. The `split_case` on `is_null(n->next->next)` is similar,
-but for unpacking the `Own_Forwards` predicate. Note that we have to
+but for unpacking the `Take_Right` predicate. Note that we have to
 go one more node forward to make sure that everything past `n->next`
 is still RW at the end of the function.
 
@@ -215,7 +145,7 @@ Tl(Left_Sublist(Before)), curr: Node(After), right: Right(Before)};`
 
 The annotations in the function body are similar to in the `add`
 function. Both of these `split_case` annotations are needed to unpack
-the `Own_Forwards` and `Own_Backwards` predicates. Without them, CN
+the `Take_Right` and `Take_Left` predicates. Without them, CN
 will not be able to reason that we didn't lose the left or right half
 of the list before we return and will claim we are missing a resource
 for returning.

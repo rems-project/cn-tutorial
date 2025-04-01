@@ -1,9 +1,9 @@
 # (Verification) Case Analysis
 
-{{ todo("This section needs writing...") }}
+{{ todo("This section is under construction...") }}
 
 To verify the `slf_incr2` example, we need one more CN annotation in
-the body of the 
+the body of the function.
 
 ```c title="exercises/slf_incr2.verif.c"
 --8<--

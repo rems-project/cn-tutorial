@@ -5,7 +5,7 @@
 #include "../list/snoc.h"
 
 #include "./c_types.h"
-#include "./cn_types_1.h"
+#include "./cn_types_1.test.h"
 #include "./cn_types_2.test.h"
 #include "./cn_types_3.test.h"
 

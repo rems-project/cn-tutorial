@@ -16,28 +16,31 @@ the other pointing directly to the last cell in this list. If the
 queue is empty, both pointers are NULL.
 
 Abstractly, a queue just represents a list, so we can reuse the `List`
-type from the list examples earlier in the tutorial.
+type from the list examples earlier in the tutorial as the result type
+when we `take` a queue from the heap.
 
-```c title="exercises/queue/cn_types_1.h"
+```c title="exercises/queue/cn_types_1.test.h"
 --8<--
-exercises/queue/cn_types_1.h
+exercises/queue/cn_types_1.test.h
 --8<--
 ```
 
 Given a pointer to a `queue` struct, this predicate grabs ownership
-of the struct, asserts that the `front` and `back` pointers must
-either both be NULL or both be non-NULL, and then hands off to an
+of the structthen hands off to an
 auxiliary predicate `QueueFB`. Note that `QueuePtr_At` returns a
 `List` -- that is, the abstract view of a queue heap structure is
 simply the sequence of elements that it contains. The difference
 between a queue and a singly or doubly linked list is simply one of
 concrete representation.
 
-`QueueFB` is where the interesting part starts. (Conceptually,
+{{ todo("BCP: Explain why the asserts are needed.  (Testing fails if
+we remove them.)") }}
+
+`QueueFB` is where the interesting part starts. Conceptually,
 it is part of `QueuePTR`, but CN currently allows
 conditional expressions only at the beginning of predicate
 definitions, not after a `take`, so we need to make a separate
-auxiliary predicate.)
+auxiliary predicate.
 
 ```c title="exercises/queue/cn_types_2.test.h"
 --8<--
@@ -67,9 +70,9 @@ walking down the cells from the front and gathering all the rest of
 them into a sequence. We take the result from `QueueAux` and
 `snoc` on the very last element.
 
-{{ todo("BCP: Explain the asserts.  (Why) are they useful
-for testing?  If they are not useful, make a testing-only version
-that omits them!  Ditto the QueueAux predicate below.") }}
+{{ todo("BCP: The asserts here are not needed, but the ones above and
+below are.  Do we keep them and explain them?  What is the
+explanation??") }}
 
 Finally, the `QueueAux` predicate recurses down the list of
 cells and returns a list of their contents.
@@ -95,9 +98,12 @@ returning it. Again, we need to help the CN verifier by explicitly
 informing it of the invariant that we know, that `C.next` cannot be
 null if `f` and `b` are different.
 
-Now we need a bit of boilerplate: just as with linked lists, we need
-to be able to allocate and deallocate queues and queue cells. There
-are no interesting novelties here.
+{{ todo("BCP: The asserts here seem to be sort-of-needed: removing
+them leads to a ton of discards.  Why?  How do we explain this?") }}
+
+To make all this work, we also need a bit of boilerplate: just as with
+linked lists, we need to be able to allocate and deallocate queues and
+queue cells. There are no interesting novelties here.
 
 ```c title="exercises/queue/allocation.test.h"
 --8<--
@@ -106,6 +112,8 @@ exercises/queue/allocation.test.h
 ```
 
 <!-- ====================================================================== -->
+
+## Exercises
 
 _Exercise_: The function for creating an empty queue just needs to set
 both of its fields to NULL. See if you can fill in its specification.
@@ -118,10 +126,8 @@ exercises/queue/empty.test.c
 
 <!-- ====================================================================== -->
 
-The push and pop operations are more involved. Let's look at `push`
-first.
-
-Here's the unannotated C code -- make sure you understand it.
+_Exercise_: The push and pop operations are more involved. Let's look
+at `push` first.  Here's the unannotated C code.
 
 ```c title="exercises/queue/push.test.c"
 --8<--
@@ -129,31 +135,13 @@ exercises/queue/push.test.c
 --8<--
 ```
 
-_Exercise_: Before reading on, see if you can write down a reasonable
-top-level specification for this operation.
-
-One thing you might find odd about this code is that there's a
-`return` statement at the end of each branch of the conditional,
-rather than a single `return` at the bottom. The reason for this is
-that, when CN analyzes a function body containing a conditional, it
-effectively _copies_ all the code after the conditional into each of
-the branches. Then, if verification encounters an error related to
-this code -- e.g., "you didn't establish the `ensures` conditions at
-the point of returning -- the error message will be confusing because
-it will not be clear which branch of the conditional it is associated
-with.
-
-Now, here is the annotated version of the `push` operation.
-
-```c title="solutions/queue/push.test.c"
---8<--
-solutions/queue/push.test.c
---8<--
-```
+Write down a reasonable top-level specification for this function and
+test that the code satisfies it.
+{{ later("What about mutation testing?") }}
 
 <!-- ====================================================================== -->
 
-Now let's look at the `pop` operation. Here is the un-annotated
+_Exercise_: Now let's look at the `pop` operation. Here is the un-annotated
 version:
 
 ```c title="exercises/queue/pop_orig.broken.c"
@@ -162,15 +150,6 @@ exercises/queue/pop_orig.broken.c
 --8<--
 ```
 
-_Exercise_: Again, before reading on, see if you can write down a
-plausible top-level specification and test its correctness.
+Write down a top-level specification and test that the code satisfies it.
 
-Here is the annotated `pop` code:
-
-```c title="exercises/queue/pop.test.c"
---8<--
-exercises/queue/pop.test.c
---8<--
-```
-
-{{ todo("BCP: Needs some more exercises?") }}
+{{ later("BCP: Needs some more exercises?") }}

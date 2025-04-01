@@ -1,12 +1,10 @@
 # Working with External Lemmas
 
-{{ todo("BCP: This section should also show what the proof of the lemmas
+{{ later("BCP: This section should also show what the proof of the lemmas
 looks like on the Coq side! ") }}
+{{ later(" Dhruyv: There are some examples in the Cerberus repo tests? rems-project/cerberus@20d9d5c ") }}
 
-{{ todo("BCP: This needs to be filled in urgently!! ") }}
-{{ todo(" Dhruyv: There are some examples in the Cerberus repo tests? rems-project/cerberus@20d9d5c ") }}
-
-{{ todo("BCP:
+{{ later("BCP:
 think about capitalization, etc., for lemma names
 push_lemma should be Push_lemma, I guess? Or lemma_push?
 snoc_facts should be lemma_Snoc or something
@@ -44,7 +42,7 @@ Having stated these lemmas, we can now complete the specification and
 proof of `IntList_rev`. Note the two places where `apply` is used
 to tell the SMT solver where to pay attention to the lemmas.
 
-{{ todo("BCP: Why can't it always pay attention to them? (I guess
+{{ hidden("BCP: Why can't it always pay attention to them? (I guess
 'performance', but at least it would be nice to be able to declare a
 general scope where a given set of lemmas might be needed, rather than
 specifying exactly where to use them.)") }}
@@ -58,7 +56,7 @@ exercises/list/rev.c
 For comparison, here is another way to write the program, using a
 while loop instead of recursion, with its specification and proof.
 
-{{ todo("BCP: Why 0 instead of NULL?? (Is 0 better?) ") }}
+{{ hidden("BCP: Why 0 instead of NULL?? (Is 0 better?) ") }}
 
 ```c title="exercises/list/rev_alt.c"
 --8<--
@@ -77,14 +75,3 @@ exercises/list/rev_alt.c
 exercises/slf_sized_stack.c
 --8<--
 ```
-
-{{ todo(" ====================================================================== ") }}
-
-
-
-## More on CN Annotations
-
-{{ todo("Introduce all the different sorts of CN annotations (e.g.,
-  `split_case`) individually with small examples and exercises.") }}
-
-

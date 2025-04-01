@@ -1,5 +1,7 @@
 # More on Numeric Types (Verification)
 
+{{ todo("Section under construction...") }}
+
     TODO
     - We need to talk in another (non-optional) section about signed types in the
       context of specification and testing.
@@ -50,13 +52,11 @@ solutions/add_0.c
 
 In detail:
 
-- Instead of C syntax, CN uses Rust-like syntax for integer types, such as `u32` for 32-bit unsigned integers and `i64` for signed 64-bit integers, to make their sizes unambiguous. Here, `x` and `y`, of C-type `int`, have CN type `i32`.{{ todo("BCP: I understand this reasoning, but I wonder whether it introduces more confusion than it avoids -- it means there are two ways of writing everything, and people have to remember whether the particular thing they are writing right now is C or CN... ") }}{{ todo(" BCP: Hopefully we are moving toward unifying these notations anyway? ") }}
+- Instead of C syntax, CN uses Rust-like syntax for integer types, such as `u32` for 32-bit unsigned integers and `i64` for signed 64-bit integers, to make their sizes unambiguous. Here, `x` and `y`, of C-type `int`, have CN type `i32`.{{ hidden("BCP: I understand this reasoning, but I wonder whether it introduces more confusion than it avoids -- it means there are two ways of writing everything, and people have to remember whether the particular thing they are writing right now is C or CN... Hopefully we are moving toward unifying these notations anyway? ") }}
 
 - To define `Sum` we cast `x` and `y` to the larger `i64` type, using syntax `(i64)`, which is large enough to hold the sum of any two `i32` values.
 
 - Finally, we require this sum to be between the minimal and maximal `int` values. Integer constants, such as `-2147483648i64`, must specifiy their CN type (`i64`).
-  {{ todo("BCP: We should use the new ' syntax (or whatever it turned out to be) for numeric constants ") }}
-  {{ todo("Dhruv: Yet to be implemented: rems-project/cerberus#337 ") }}
 
 Running CN on the annotated program passes without errors. This means that, with our specified precondition, `add` is safe to execute.
 
@@ -89,9 +89,7 @@ coercion `(i64)`.
 
 ## Error reports
 
-{{ todo("*Most of this material needs to be moved to
-the first section where we talk about verification, but it will need a
-different example (not involving i32 or UB)...*") }}
+{{ todo("Update") }}
 
 In the original example, CN reported a type error due to C undefined
 behavior. While that example was perhaps simple enough to guess the
@@ -219,8 +217,6 @@ Finally, "`Constraints`" records all logical facts CN has learned along the path
 Let’s apply what we know so far to another simple arithmetic example.
 
 The function `doubled`, shown below, takes an int `n`, defines `a` as `n` incremented, `b` as `n` decremented, and returns the sum of the two.
-
-{{ todo("BCP: Is it important to number the slf examples? If so, we should do it consistently, but IMO it is not. Better to rename them without numbers. ") }}
 
 ```c title="exercises/slf1_basic_example_let.signed.c"
 --8<--

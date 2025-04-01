@@ -14,11 +14,10 @@ void push_queue (int x, struct queue *q)
   if (q->back == 0) {
     q->front = c;
     q->back = c;
-    return;
   } else {
     struct queue_cell *oldback = q->back;
     q->back->next = c;
     q->back = c;
-    return;
   }
+  return;
 }

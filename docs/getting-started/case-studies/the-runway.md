@@ -7,6 +7,9 @@ try to whip it into better shape... (Later: It seems people do like
 it, because it is more like SUT code than the other examples.  So we
 should make it better.) ") }}
 
+{{ todo("BCP: It also still needs some fixing up after the
+testing/verification split.") }}
+
 Suppose we have been tasked with writing a program that simulates a
 runway at an airport. This airport is very small, so it only has one
 runway, which is used for both takeoffs and landings. We want to

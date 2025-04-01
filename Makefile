@@ -82,6 +82,8 @@ TESTED = $(patsubst src/exercises/%, _temp/tested/%, $(TESTONLY)) \
 # Extra dependencies
 _temp/tested/list/*.c : src/exercises/list/*.h
 _temp/verified/list/*.c : src/exercises/list/*.h
+_temp/tested/queue/*.c : src/exercises/queue/*.h
+_temp/verified/queue/*.c : src/exercises/queue/*.h
 
 # NOT WORKING?
 #  _temp/tested/slf18_two_dice.c \

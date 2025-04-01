@@ -149,8 +149,10 @@ exercises/list/free.c
 --8<--
 ```
 
-_Exercise_. Add annotations to the following "`length` with an
-accumulator" function, as appropriate:
+_Exercise_. Add a specification to the following "`length` with an
+accumulator" function:
+
+{{ todo("BCP: move the file!") }}
 
 ```c title="exercises/slf_length_acc.c"
 --8<--

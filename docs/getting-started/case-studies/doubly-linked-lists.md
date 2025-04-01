@@ -1,6 +1,6 @@
 # Doubly-linked Lists
 
-{{ todo("BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions. ") }}
+{{ later("BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions. ") }}
 
 A doubly linked list is a linked list where each node has a pointer
 to both the next node and the previous node. This allows for constant-time
@@ -8,12 +8,10 @@ operations for adding or removing nodes anywhere in the list.
 
 Because of all the sharing in this data structure, the separation
 reasoning is a bit tricky. We'll give you the core definitions and
-then invite you to help fill in the annotations for some of the
+then invite you to help fill in the specifications for some of the
 functions that manipulate doubly linked lists.
 
 ## Types
-
-{{ todo("BCP: Does that work for testing?") }}
 
 First, here is the C type definition:
 
@@ -42,8 +40,6 @@ we first own the node that is passed in. Then we follow all of the
 all the `next` pointers to own everything forwards from the node, to
 construct the `left` and `right` fields.
 
-{{ todo("BCP: Maybe rethink the Own_Forwards / Backwards naming -- would something like Queue_At_Left and Queue_At_Right be clearer?? ") }}
-
 ```c title="exercises/dll/predicates.h"
 --8<--
 exercises/dll/predicates.h
@@ -51,20 +47,22 @@ exercises/dll/predicates.h
 ```
 
 Note that `Dll_at` takes ownership of the node passed in, and then
-calls `Own_Backwards` and `Own_Forwards`, which recursively take
+calls `Take_Left` and `Take_Right`, which recursively take
 ownership of the rest of the list.
 
 {{ todo("BCP: Has ptr_eq been explained?  It's useful
 -- should be! ") }}
 
-Also, notice that `Own_Forwards` and `Own_Backwards` include `ptr_eq`
+Also, notice that `Take_Right` and `Take_Left` include `ptr_eq`
 assertions for the `prev` and `next` pointers. This is to ensure that
 the nodes in the list are correctly doubly linked. For example, the
-line `assert (ptr_eq(n.prev, prev_pointer));` in `Own_Forwards`
+line `assert (ptr_eq(n.prev, prev_pointer));` in `Take_Right`
 ensures that the current node correctly points backward to the
 previous node in the list. The line `assert(ptr_eq(prev_node.next,
 p));` ensures that the previous node correctly points forward to the
 current node.
+
+{{ todo("BCP: Are these asserts needed for testing?  Try it and see!") }}
 
 Before we move on to the functions that manipulate doubly linked
 lists, we need to define a few "getter" functions that will allow us
@@ -132,9 +130,9 @@ solution, there's no need to include it here in-line, since people
 already know where to find the file. (But, of course, we should
 discuss it!) ") }}
 
-```c title="solutions/dll/add.c"
+```c title="solutions/dll/add.test.c"
 --8<--
-solutions/dll/add.c
+solutions/dll/add.test.c
 --8<--
 ```
 
@@ -163,9 +161,9 @@ also want all of our functions to return a pointer to the
 list. Because of this, we define a `struct` that includes an `int`
 and a `node`.
 
-```c title="exercises/dll/dllist_and_int.h"
+```c title="exercises/dll/dllist_and_int.test.h"
 --8<--
-exercises/dll/dllist_and_int.h
+exercises/dll/dllist_and_int.test.h
 --8<--
 ```
 
@@ -182,7 +180,7 @@ specification is appropriate.
 
 {{ todo("BCP: Again, unlikely the reader is going to be able to figure this out without help. We need some hints. ") }}
 
-Now, here is the annotated version of the `remove` operation:
+Now, here is the annotated version of `remove`:
 
 ```c title="solutions/dll/remove.test.c"
 --8<--
