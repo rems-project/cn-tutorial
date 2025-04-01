@@ -42,8 +42,6 @@
 
 - [TODO list and discussion](todo.md)
 
-## OLD STUFF
-
 
 
 
