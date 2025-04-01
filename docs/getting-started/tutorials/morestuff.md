@@ -15,7 +15,7 @@ exercises/ref.h
 --8<--
 ```
 
-{{ todo("TODO: BCP: This example is a bit broken: the file `slf0_basic_incr.c` does not appear at all in the tutorial, though a slightly different version (with signed numbers) does...") }}
+{{ todo("BCP: This example is a bit broken: the file `slf0_basic_incr.c` does not appear at all in the tutorial, though a slightly different version (with signed numbers) does...") }}
 
 ```c title="exercises/slf16_basic_succ_using_incr.c"
 --8<--

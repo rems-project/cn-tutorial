@@ -126,7 +126,7 @@ exercises/read2.c
     ∀v1.
     { p ↦ P }
     read(p)
-    { \return. ∃P_post. (p ↦ P_post) /\ return = P /\ P = P_post }
+    { \return. ∃P_post. (p ↦ P_post) and return = P and P = P_post }
     ```
 
     CN’s `take` notation is just an alternative syntax for quantification over the values of resources, but a useful one: the `take` notation syntactically restricts how these quantifiers can be used to ensure CN can always infer them.
@@ -292,5 +292,5 @@ how one may need to destructure the type (unions, struct fields and
 padding, arrays). The relationship is that for `take x =
 RW<ct>(expr)` we have `expr : pointer, x : to_basetype(ct)`. ") }}
 
-{{ todo("TODO: It would be nice to add an exercise that involves
+{{ todo("It would be nice to add an exercise that involves
 using the error messages to find a bug.") }}

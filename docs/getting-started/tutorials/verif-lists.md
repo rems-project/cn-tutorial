@@ -59,7 +59,7 @@ exercises/list/headers.verif.h
 --8<--
 ```
 
-{{ todo("TODO: BCP: The 'return != NULL' should not be needed, but to remove it
+{{ todo("BCP: The 'return != NULL' should not be needed, but to remove it
 we need to change the callers of all the allocation functions to check
 for NULL and exit (which requires adding a spec for exit).") }}
 
