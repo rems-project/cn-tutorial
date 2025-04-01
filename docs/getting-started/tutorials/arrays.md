@@ -152,10 +152,9 @@ array_max(p, n);
 Examining the generated counterexample, we see that the elements of the array are `{18, 0, 17}`, so the first element is the maximum. And if we generate counterexamples a few more times, we see that this pattern persists. Inspecting our implementation a bit further, we find and fix another bug: in the first line, we should initialize `max` to be `p[0]`, not `0`.
 
 (An additional debugging tip: if the generated counterexample arrays are too large, we can restrain them by adding a temporary precondition such as `n <= 3u32`, to force the array to be of length at most three, or some other suitable bound.)
-
-<span style="color:red">
-^ JWS: I personally found this a useful hack, but I don't know if we want to advertise it as an officially sanctioned tip. (How close are folks to adding shrinking?)
-</span>
+{{ later("JWS: I personally found this a useful hack, but I don't
+know if we want to advertise it as an officially sanctioned tip. (How
+close are folks to adding shrinking?)") }}
 
 Now, `cn test` will succeed!
 
@@ -169,11 +168,19 @@ exercises/array_add3.test.c
 --8<--
 ```
 
-_Exercise:_ Write a specification for `array_sort`, which should sort an array into increasing order. Your specification should succeed on this correct implementation ([yes](https://arxiv.org/abs/2110.01111), it's correct), and fail when bugs are inserted:
+_Exercise:_ Write a specification for `array_sort`, which should sort
+an array into increasing order. Your specification should succeed on
+this correct implementation below 
+(yes, [it's correct](https://arxiv.org/abs/2110.01111)), and fail 
+when bugs are inserted:
 
-<span style="color:red">
-JWS: One gnarly aspect of this is that you need to carefully avoid the `i + 1` in `i + 1 < n` overflowing. The version I got to work was to add a (seemingly redundant, but not actually) condition `i < n`. Slight variations, such as to assume a non-empty array, seems to make testing really really slow, and I'm not sure why. We should a) figure out what's the most elegant solution and b) give a hint to that effect.
-</span>
+{{ later("JWS: One gnarly aspect of this is that you need to carefully
+avoid the `i + 1` in `i + 1 < n` overflowing. The version I got to
+work was to add a (seemingly redundant, but not actually) condition `i
+< n`. Slight variations, such as to assume a non-empty array, seem to
+make testing really really slow, and I'm not sure why. We should a)
+figure out what's the most elegant solution and b) give a hint to that
+effect.") }}
 
 ```c title="exercises/array_sort.test.c"
 --8<--

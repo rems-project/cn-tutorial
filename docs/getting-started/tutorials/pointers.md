@@ -162,8 +162,6 @@ We next have an example where data is written to a pointer. The function
 `incr` takes a pointer `p` and increments the value in the memory cell that it
 points to.
 
-{{ todo("BCP: unsigned! (there are both signed and unsigned versions at the
-moment -- how do they relate?)") }}
 ```c title="exercises/slf0_basic_incr.c"
 --8<--
 exercises/slf0_basic_incr.c
@@ -229,9 +227,9 @@ _returned_ to the caller or else _destroyed_ by deallocating the RW area of
 memory (as we shall see later). CN’s motivation for this choice is its focus on
 low-level systems software in which memory is managed manually; in this context,
 memory leaks are typically very undesirable.
-{{ todo(" As a consequence, function specifications have to do precise bookkeeping of
+As a consequence, function specifications have to do precise bookkeeping of
 their resource footprint and, in particular, return any unused resources back to
-the caller. ") }}
+the caller.
 
 ## Disjoint memory regions
 
@@ -286,11 +284,5 @@ i.e., they are records with members `x` and `y`. The postcondition asserts the
 coordinates have been swapped by referring to the members of `P` and `P_post`
 individually.
 
-{{ todo(" The reason `RW` needs a C-type annotation is so that it can (a)
-figure out the size of the sub-heap being claimed and (b) figure out
-how one may need to destructure the type (unions, struct fields and
-padding, arrays). The relationship is that for `take x =
-RW<ct>(expr)` we have `expr : pointer, x : to_basetype(ct)`. ") }}
-
-{{ todo("It would be nice to add an exercise that involves
+{{ later("It would be nice to add an exercise that involves
 using the error messages to find a bug.") }}

@@ -126,7 +126,8 @@ the numeric stuff works.
       unsigned int tmp = p[i];
       p[i] = p[j];
       p[j] = tmp;
-    }") }}
+    }
+") }}
 
 ### Loops
 
@@ -134,27 +135,21 @@ The array examples covered so far manipulate one or two individual cells of an a
 
 In order to verify code with loops, CN requires the user to supply loop invariants -- CN specifications of all RW resources and the constraints required to verify each iteration of the loop.
 
-Let's take a look at a simple first example. The following function, `init_array`, takes the base pointer `p` of a `char` array and the array length `n` and writes `0` to each array cell.
+Let's take a look at a simple first example. The following function, `array_init`, takes the base pointer `p` of a `char` array and the array length `n` and writes `0` to each array cell.
 
-{{ todo("BCP: Rename to array_init.c") }}
-
-{{ todo("JWS: Should this change be propagated everywhere e.g. also changing the function name, changing other function names starting with `init_`, changing `swap_array` to `array_swap`, etc.?") }}
-
-{{ todo("BCP: Yes!  I've done a bit of it, but there's more.") }}
-
-```c title="exercises/init_array.c"
+```c title="exercises/array_init.c"
 --8<--
-exercises/init_array.c
+exercises/array_init.c
 --8<--
 ```
 
-If, for the moment, we focus just on proving safe execution of `init_array`, ignoring its functional behaviour, a specification might look as above: on entry, `init_array` takes ownership of an iterated `RW<char>` resource -- one `RW` resource for each index `i` of type `u32` (so necessarily greater or equal to `0`) up to `n`; on exit `init_array` returns the ownership.
+If, for the moment, we focus just on proving safe execution of `array_init`, ignoring its functional behaviour, a specification might look as above: on entry, `array_init` takes ownership of an iterated `RW<char>` resource -- one `RW` resource for each index `i` of type `u32` (so necessarily greater or equal to `0`) up to `n`; on exit `array_init` returns the ownership.
 
 To verify this, we have to supply a loop invariant that specifies all resource ownership and the necessary constraints that hold before and after each iteration of the loop. Loop invariants are specified using the keyword `inv`, followed by CN specifications using the same syntax as in function pre- and postconditions. The variables in scope for loop invariants are all in-scope C variables, as well as CN variables introduced in the function precondition. _In loop invariants, the name of a C variable refers to its current value_ (more on this shortly).
 
-```c title="solutions/init_array.c"
+```c title="solutions/array_init.c"
 --8<--
-solutions/init_array.c
+solutions/array_init.c
 --8<--
 ```
 
@@ -175,11 +170,11 @@ With the `inv` and `focus` statements in place, CN accepts the function.
 
 ### Second loop example
 
-The specification of `init_array` is overly strong: it requires an iterated `RW` resource for the array on entry. If, as the name suggests, the purpose of `init_array` is to initialise the array, then a precondition asserting only an iterated `W` resource for the array should also be sufficient. The modified specification is then as follows.
+The specification of `array_init` is overly strong: it requires an iterated `RW` resource for the array on entry. If, as the name suggests, the purpose of `array_init` is to initialise the array, then a precondition asserting only an iterated `W` resource for the array should also be sufficient. The modified specification is then as follows.
 
-```c title="exercises/init_array2.c"
+```c title="exercises/array_init2.c"
 --8<--
-exercises/init_array2.c
+exercises/array_init2.c
 --8<--
 ```
 
@@ -193,9 +188,9 @@ sections of the array.
 
 To do this, we partition the array ownership into two parts: for each index of the array the loop has already visited, we have an `RW` resource, for all other array indices we have the (unchanged) `W` ownership.
 
-```c title="solutions/init_array2.c"
+```c title="solutions/array_init2.c"
 --8<--
-solutions/init_array2.c
+solutions/array_init2.c
 --8<--
 ```
 
@@ -222,11 +217,11 @@ As before, we also have to instruct CN to `focus` ownership of individual array 
 
 ### Exercises
 
-**Init array reverse.** Verify the function `init_array_rev`, which has the same specification as `init_array2`, but initializes the array in decreasing index order (from right to left).
+**Init array reverse.** Verify the function `array_init_rev`, which has the same specification as `array_init2`, but initializes the array in decreasing index order (from right to left).
 
-```c title="exercises/init_array_rev.c"
+```c title="exercises/array_init_rev.c"
 --8<--
-exercises/init_array_rev.c
+exercises/array_init_rev.c
 --8<--
 ```
 

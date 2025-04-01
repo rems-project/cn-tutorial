@@ -1,4 +1,4 @@
-void init_array (char *p, unsigned int n)
+void array_init (char *p, unsigned int n)
 /*@ requires take A = each(u32 i; i < n) { 
                          RW<char>( array_shift<char>(p, i)) };
     ensures  take A_post = each(u32 i; i < n) { 
