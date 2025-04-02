@@ -167,7 +167,7 @@ void put(struct queue *q, int n)
 
 int get(struct queue *q)
 /*@ requires take queue = QueueAbs(q);
-             length(queue.content) > 1i32;
+             length(queue.content) > 0i32;
     ensures take queue_out = QueueAbs(q);
             return == hd(queue.content);
             queue_out.content == tl(queue.content);
@@ -192,10 +192,9 @@ int queueSize(struct queue *q)
 
 int main(void)
 {
-  struct queue *q = new(3);
+  struct queue *q = new(2);
   put(q, 5);
   put(q, 2);
-  put(q, 1);
   int elem1 = get(q);
   return 0;
 }

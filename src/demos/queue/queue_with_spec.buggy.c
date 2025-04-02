@@ -153,6 +153,7 @@ struct queue *new(int n)
 
 void put(struct queue *q, int n)
 /*@ requires take queue = QueueAbs(q);
+             length(queue.content) < queue.size;
              let expected_content = snoc(queue.content, n);  // Why not inline below?
     ensures take queue_out = QueueAbs(q);
             queue_out.content == expected_content;
@@ -193,7 +194,7 @@ int main(void)
 {
   struct queue *q = new(1);
   put(q, 0);
-  put(q, 1);
+  // put(q, 1);
 //   put(q, 1);
   int elem1 = get(q);
   return 0;
