@@ -15,9 +15,9 @@ functions that manipulate doubly linked lists.
 
 First, here is the C type definition:
 
-```c title="exercises/dll/c_types.h"
+```c title="exercises/dllist/c_types.h"
 --8<--
-exercises/dll/c_types.h
+exercises/dllist/c_types.h
 --8<--
 ```
 
@@ -28,9 +28,9 @@ and `right` are from the point of view of the node itself, so `left`
 is kept in reverse order. Additionally, similarly to in the
 `Imperative Queues` example, we can reuse the `List` type.
 
-```c title="exercises/dll/cn_types.h"
+```c title="exercises/dllist/cn_types.h"
 --8<--
-exercises/dll/cn_types.h
+exercises/dllist/cn_types.h
 --8<--
 ```
 
@@ -40,13 +40,13 @@ we first own the node that is passed in. Then we follow all of the
 all the `next` pointers to own everything forwards from the node, to
 construct the `left` and `right` fields.
 
-```c title="exercises/dll/predicates.h"
+```c title="exercises/dllist/predicates.h"
 --8<--
-exercises/dll/predicates.h
+exercises/dllist/predicates.h
 --8<--
 ```
 
-Note that `Dll_at` takes ownership of the node passed in, and then
+Note that `DlList_at` takes ownership of the node passed in, and then
 calls `Take_Left` and `Take_Right`, which recursively take
 ownership of the rest of the list.
 
@@ -66,28 +66,28 @@ current node.
 
 Before we move on to the functions that manipulate doubly linked
 lists, we need to define a few "getter" functions that will allow us
-to access the fields of our `Dll` datatype. This will make the
+to access the fields of our `DlList` datatype. This will make the
 specifications easier to write.
 
-```c title="exercises/dll/getters.h"
+```c title="exercises/dllist/getters.h"
 --8<--
-exercises/dll/getters.h
+exercises/dllist/getters.h
 --8<--
 ```
 
 We also need the usual boilerplate for allocation and deallocation.
 
-```c title="exercises/dll/allocation.test.h"
+```c title="exercises/dllist/allocation.test.h"
 --8<--
-exercises/dll/allocation.test.h
+exercises/dllist/allocation.test.h
 --8<--
 ```
 
 For convenience, we gather all of these files into a single header file.
 
-```c title="exercises/dll/headers.test.h"
+```c title="exercises/dllist/headers.test.h"
 --8<--
-exercises/dll/headers.test.h
+exercises/dllist/headers.test.h
 --8<--
 ```
 
@@ -99,9 +99,9 @@ Now we can move on to an initialization function. Since an empty list
 is represented as a null pointer, we will look at initializing a
 singleton list (or in other words, a list with only one item).
 
-```c title="exercises/dll/singleton.test.c"
+```c title="exercises/dllist/singleton.test.c"
 --8<--
-exercises/dll/singleton.test.c
+exercises/dllist/singleton.test.c
 --8<--
 ```
 
@@ -112,46 +112,47 @@ exercises/dll/singleton.test.c
 The `add` and `remove` functions are where it gets a little tricker.
 Let's start with `add`. Here is the unannotated version:
 
-```c title="exercises/dll/add.test.c"
+```c title="exercises/dllist/add.test.c"
 --8<--
-exercises/dll/add.test.c
+exercises/dllist/add.test.c
 --8<--
 ```
 
 _Exercise_: Before reading on, see if you can figure out what
 specification is appropriate.
 
-{{ todo("BCP: I rather doubt they are going to be able to come up with this specification on their own! We need to set it up earlier with a simpler example (maybe in a whoile earlier section) showing how to use conditionals in specs. ") }}
+{{ todo("BCP: I seriously doubt they are going to be able to come up
+with this specification on their own! We need to set it up earlier
+with a simpler example (maybe in a whole earlier section) showing how
+to use conditionals in specs. ") }}
 
 Now, here is the annotated version of the `add` operation:
 
-{{ todo("BCP: If we're not going to _discuss_ the
-solution, there's no need to include it here in-line, since people
-already know where to find the file. (But, of course, we should
-discuss it!) ") }}
-
-```c title="solutions/dll/add.test.c"
+```c title="solutions/dllist/add.test.c"
 --8<--
-solutions/dll/add.test.c
+solutions/dllist/add.test.c
 --8<--
 ```
 
 The `requires`
 clause is straightforward. We need to own the list centered around
-the node that `n` points to. `Before` is a `Dll`
+the node that `n` points to. `Before` is a `DlList`
 that is either empty, or it has a List to the left,
 the current node that `n` points to, and a List to the right.
 This corresponds to the state of the list when it is passed in.
 
 In the ensures clause, we again establish ownership of the list, but
 this time it is centered around the added node. This means that
-`After` is a `Dll` structure similar to `Before`, except that the node
+`After` is a `DlList` structure similar to `Before`, except that the node
 `curr` is now the created node. The old `curr` is pushed into the left
 part of the new list. The conditional operator in the `ensures` clause
 is saying that if the list was empty coming in, it now is a singleton
 list. Otherwise, the left left part of the list now has the data from
 the old `curr` node, the new `curr` node is the added node, and the
 right part of the list is the same as before.
+
+{{ later("BCP: More discussion might be good!") }}
+
 
 ## Remove
 
@@ -161,17 +162,17 @@ also want all of our functions to return a pointer to the
 list. Because of this, we define a `struct` that includes an `int`
 and a `node`.
 
-```c title="exercises/dll/dllist_and_int.test.h"
+```c title="exercises/dllist/dllist_and_int.test.h"
 --8<--
-exercises/dll/dllist_and_int.test.h
+exercises/dllist/dllist_and_int.test.h
 --8<--
 ```
 
 Now we can look at the code for the `remove` operation. Here is the un-annotated version:
 
-```c title="exercises/dll/remove.test.c"
+```c title="exercises/dllist/remove.test.c"
 --8<--
-exercises/dll/remove.test.c
+exercises/dllist/remove.test.c
 --8<--
 ```
 
@@ -182,19 +183,19 @@ specification is appropriate.
 
 Now, here is the annotated version of `remove`:
 
-```c title="solutions/dll/remove.test.c"
+```c title="solutions/dllist/remove.test.c"
 --8<--
-solutions/dll/remove.test.c
+solutions/dllist/remove.test.c
 --8<--
 ```
 
 First, let's look at the pre- and post-conditions. The `requires` clause says that we cannot remove a node from an empty list, so the pointer passed in must not be null. Then we take ownership of the list, and we
 assign the node of that list to the identifier `del`
-to make our spec more readable. So `Before` refers to the `Dll` when the function is called, and `del` refers to the node that will be deleted.
+to make our spec more readable. So `Before` refers to the `DlList` when the function is called, and `del` refers to the node that will be deleted.
 
 Then in the `ensures` clause, we must take ownership
-of the `node_and_int` struct as well as the `Dll` that
-the node is part of. Here, `After` refers to the `Dll`
+of the `node_and_int` struct as well as the `DlList` that
+the node is part of. Here, `After` refers to the `DlList`
 when the function returns. We ensure that the int that is returned is the value of the deleted node, as intended. Then we have a complicated nested ternary conditional that ensures that `After` is the same as `Before` except for the deleted node. Let's break down this conditional:
 
 - The first guard asks if both `del.prev` and `del.next` are null. In this case, we are removing the only node in the list, so the resulting list will be empty. The `else` branch of this conditional contains its own conditional.
@@ -205,7 +206,7 @@ when the function returns. We ensure that the int that is returned is the value 
   case, `After` is now centered around `del.next`, and the left part
   of the list is the same as before. Since `del.next` was previously
   the head of the right side, the right side loses its head in
-  `After`. This is where we get `After == Dll{left:
+  `After`. This is where we get `After == DlList{left:
 Left_Sublist(Before), curr: Node(After), right: Tl(Right(Before))}`.
 
 - The final `else` branch is the case where `del.next` is null, but
@@ -213,7 +214,7 @@ Left_Sublist(Before), curr: Node(After), right: Tl(Right(Before))}`.
   `del.prev`. This branch follows the same logic as the one before it,
   except now we are taking the head of the left side rather than the
   right side. Now the right side is unchanged, and the left side is just
-  the tail, as seen shown in `After == Dll{left:
+  the tail, as seen shown in `After == DlList{left:
 Tl(Left_Sublist(Before)), curr: Node(After), right: Right(Before)};`
 
 ## Exercises
@@ -225,6 +226,6 @@ that reverses a list. Try implementing a few of these functions and
 writing their specifications.
 
 _Exercise_: For extra practice, try coming up with one or two
-variations on the Dll data structure itself (there are many!).
+variations on the DlList data structure itself (there are many!).
 
 

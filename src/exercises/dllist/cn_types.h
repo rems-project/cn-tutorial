@@ -1,7 +1,7 @@
 /*@
-datatype Dll {
-    Empty_Dll    {},
-    Nonempty_Dll {datatype List left, 
+datatype DlList {
+    Empty_DlList    {},
+    Nonempty_DlList {datatype List left, 
                   struct dllist curr, 
                   datatype List right}
 }

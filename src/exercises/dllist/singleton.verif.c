@@ -1,8 +1,8 @@
 #include "./headers.verif.h"
 
 struct dllist *singleton(int element)
-/*@ ensures take Ret = Dll_at(return);
-        Ret == Nonempty_Dll {
+/*@ ensures take Ret = DlList_at(return);
+        Ret == Nonempty_DlList {
                  left: Nil{}, 
                  curr: struct dllist {prev: NULL, 
                                       data: element, 

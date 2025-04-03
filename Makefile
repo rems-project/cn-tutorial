@@ -80,10 +80,13 @@ TESTED = $(patsubst src/exercises/%, _temp/tested/%, $(TESTONLY)) \
   _temp/tested/slf15_basic_succ_using_incr_attempt_.c
 
 # Extra dependencies
-_temp/tested/list/*.c : src/exercises/list/*.h
-_temp/verified/list/*.c : src/exercises/list/*.h
-_temp/tested/queue/*.c : src/exercises/queue/*.h
-_temp/verified/queue/*.c : src/exercises/queue/*.h
+define extradeps
+_temp/tested/$1/*.c : src/exercises/$1/*.h
+_temp/verified/$1/*.c : src/exercises/$1/*.h
+endef
+$(eval $(call extradeps,list))
+$(eval $(call extradeps,queue))
+$(eval $(call extradeps,dllist))
 
 # NOT WORKING?
 #  _temp/tested/slf18_two_dice.c \

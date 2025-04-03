@@ -1,12 +1,12 @@
 /*@
-predicate (datatype Dll) Dll_at (pointer p) {
+predicate (datatype DlList) DlList_at (pointer p) {
     if (is_null(p)) {
-        return Empty_Dll{};
+        return Empty_DlList{};
     } else {
         take n = RW<struct dllist>(p);
         take L = Take_Left(n.prev, p, n);
         take R = Take_Right(n.next, p, n);
-        return Nonempty_Dll{left: L, curr: n, right: R};
+        return Nonempty_DlList{left: L, curr: n, right: R};
     }
 }
 
