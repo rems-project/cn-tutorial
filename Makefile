@@ -207,11 +207,13 @@ _temp/consistent/% : %
 ##############################################################################
 # Tutorial document
 
+# BCP: Added the --quiet flag to suppress a bunch of INFO messages
+# that the macros plugin was generating on every compile
 tutorial: rebuild
-	mkdocs build --strict
+	mkdocs build --strict --quiet
 
 serve: rebuild
-	mkdocs serve
+	mkdocs serve --quiet
 
 rebuild: exercises docs/exercises.zip mkdocs.yml $(shell find docs -type f)
 

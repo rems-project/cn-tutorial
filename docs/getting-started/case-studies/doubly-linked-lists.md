@@ -189,7 +189,7 @@ solutions/dllist/remove.test.c
 --8<--
 ```
 
-First, let's look at the pre- and post-conditions. The `requires` clause says that we cannot remove a node from an empty list, so the pointer passed in must not be null. Then we take ownership of the list, and we
+Let's look at the pre- and post-conditions. The `requires` clause says that we cannot remove a node from an empty list, so the pointer passed in must not be null. Then we take ownership of the list, and we
 assign the node of that list to the identifier `del`
 to make our spec more readable. So `Before` refers to the `DlList` when the function is called, and `del` refers to the node that will be deleted.
 

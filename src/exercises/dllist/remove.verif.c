@@ -23,12 +23,16 @@ struct dllist_and_int *remove(struct dllist *n)
 {
     struct dllist *temp = 0;
     if (n->prev != 0) {
+/* --BEGIN-- */
         /*@ split_case(is_null(n->prev->prev)); @*/
+/* --END-- */
         n->prev->next = n->next;
         temp = n->prev;
     }
     if (n->next != 0) {
+/* --BEGIN-- */
         /*@ split_case(is_null(n->next->next)); @*/
+/* --END-- */
         n->next->prev = n->prev;
         temp = n->next;
     }

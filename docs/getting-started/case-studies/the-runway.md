@@ -1,14 +1,8 @@
 # Airport Simulation
 
-{{ todo("BCP: I'm nervous about this case study -- it
-is not nearly as well debugged as the others, and it seems potentially
-quite confusing. I propose deleting it, but if others like it we can
-try to whip it into better shape... (Later: It seems people do like
-it, because it is more like SUT code than the other examples.  So we
-should make it better.) ") }}
-
-{{ todo("BCP: It also still needs some fixing up after the
-testing/verification split.") }}
+{{ later("BCP: This case study is not as well polished as the
+others. It's useful because it's more like real-world C code than the
+others, but we should make it better...") }}
 
 Suppose we have been tasked with writing a program that simulates a
 runway at an airport. This airport is very small, so it only has one
@@ -79,8 +73,7 @@ following fields:
   or departed while planes are waiting for the other mode. This will
   help us keep track of the 3-plane limit as described in _(6)_.
 
-{{ todo("BCP: Do we need these functions for the
-testing version?  Has function been explained earlier? ") }}
+{{ todo("Has function been explained earlier? ") }}
 
 ```c title="exercises/runway/state.h"
 --8<--
@@ -119,7 +112,7 @@ Let's walk through the specifications in `valid_state`:
 
 Now that we have the tools to reason about the state of the runway formally, let's start writing some functions.
 
-First, let's look at an initialization function and functions to update `Plane_Counter`. Step through these yourself and make sure you understand the reasoning behind each specification.
+First, let's look at an initialization function and functions to update `Plane_Counter`. Read through these yourself and make sure you understand the reasoning behind each specification.
 
 ```c title="exercises/runway/funcs1.h"
 --8<--
@@ -129,8 +122,7 @@ exercises/runway/funcs1.h
 
 _Exercise_: Now try adding your own specifications to the following
 functions. Make sure that you specify a valid state as a pre- and
-post-condition for every function. If you get stuck, the solution is
-in the solutions folder.
+post-condition for every function. 
 
 ```c title="exercises/runway/funcs2.c"
 --8<--

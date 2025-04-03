@@ -234,9 +234,6 @@ solutions/slf1_basic_example_let.signed.c
 --8<--
 ```
 
-{{ todo("BCP: WHy n*+n\\_ in some places and n\*2i32 in others? ") }}
-{{ todo("Dhruv: Unlikely to be meaningful, either is fine. ") }}
-
 We encode these expectations using a similar style of precondition as in the first example. We first define `N` as `n` cast to type `i64` — i.e. a type large enough to hold `n+1`, `n-1`, and `a+b` for any possible `i32` value for `n`. Then we specify that decrementing `N` does not go below the minimal `int` value, that incrementing `N` does not go above the maximal value, and that `n` doubled is also in range. These preconditions together guarantee safe execution.
 
 {{ todo("BCP: How about renaming N to n64? ") }}
