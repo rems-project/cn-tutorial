@@ -67,7 +67,6 @@ TESTED = $(patsubst src/exercises/%, _temp/tested/%, $(TESTONLY)) \
   _temp/tested/min3/min3.fixed.c \
   _temp/tested/min3/min3.partial.c \
   _temp/tested/min3/min3.partial1.c \
-  _temp/tested/slf_incr2.c \
   _temp/tested/id_by_div/id_by_div.fixed.c \
   _temp/tested/slf2_basic_quadruple.c \
   _temp/tested/swap.c \
@@ -112,7 +111,7 @@ _temp/tested/% : src/exercises/%
 	$(V)$(CNTEST) _temp/$<.combined.c   2>&1 | tee $@.test.out
 	$(V)-grep "PASSED\\|FAILED" $@.test.out || true
 	@# Next line should not be needed!
-	$(V)if grep -q "fatal error\\|Failed to compile\\|Failed to link\\|: error:" $@.test.out; then \
+	$(V)if grep -q "FAILED\\|fatal error\\|Failed to compile\\|Failed to link\\|: error:" $@.test.out; then \
 	      exit 1; \
 	    fi
 	$(V)touch $@

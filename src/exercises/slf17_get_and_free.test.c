@@ -22,7 +22,7 @@ unsigned int get_and_free (unsigned int *p)
 
 unsigned int tester() 
 /*@ requires true;
-    ensures return == 41u32;
+    ensures return == 42u32;
 @*/
 {
   unsigned int *p = malloc_and_set (42);
