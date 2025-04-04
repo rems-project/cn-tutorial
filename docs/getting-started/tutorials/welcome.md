@@ -9,10 +9,11 @@ This tutorial introduces CN through a series of examples and case
 studies, starting with basic usage of CN on simple arithmetic
 functions and slowly moving towards more elaborate separation logic
 specifications of data structures.
-{{ later("BCP: Once the structure of the tutorial stabilizes, we 
+{{ later("BCP: Once the structure of the tutorial stabilizes, we
      could outline the material it covers in more detail...") }}
 
 CN can be used in two distinct ways:
+
 - The simpler way is as a framework for writing down formal
   specifications of C code, in the form of logical pre- and
   post-conditions, and _testing_ that the code agrees with its
@@ -23,12 +24,11 @@ CN can be used in two distinct ways:
   of assurance, in return for a somewhat larger investment in learning
   to use the verification-oriented aspects of CN.
 
-The main thread of this tutorial is aimed at readers who want to get
-up to speed quickly with specifying and testing C programs using
-CN. Verification topics are covered in optional sections throughout
-the document. Most readers -- even readers whose primary interest is
-verification -- should skip these sections on a first reading and, if
-desired, come back to them on a second pass.
+The main thread of this tutorial is aimed at readers who want to get up to speed
+quickly with specifying and testing C programs using CN. Verification topics are
+covered in optional sections marked (V). Most readers — even readers whose
+primary interest is verification — should skip these sections on a first reading
+and, if desired, come back to them on a second pass.
 
 ## Setup Instructions
 
