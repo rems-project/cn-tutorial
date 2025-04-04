@@ -121,23 +121,23 @@ nav:
 #       - "Airport Simulation": getting-started/case-studies/the-runway.md
 #     - "Style guide":
 #       - getting-started/style-guide/README.md
-#   - Specifications:
-#     - specifications/README.md
-#     - Function specifications: specifications/function-specifications.md
-#     - Loop invariants: specifications/loop-invariants.md
-#     - Conditions: specifications/conditions.md
-#     - Expressions: specifications/expressions.md
-#     - Resource predicates: specifications/resource-predicates.md
-#     - Auxiliary definitions:
-#       - specifications/auxiliary-definitions/README.md
-#       - Data structures: specifications/auxiliary-definitions/data-structures.md
-#       - Logical functions: specifications/auxiliary-definitions/logical-functions.md
-#       - Custom resource predicates: specifications/auxiliary-definitions/custom-resource-predicates.md
-#     - Types: specifications/types.md
-#     - Scoping: specifications/scoping.md
-#     - "Tactics (proof hints)": specifications/tactics.md
-#     - Interactive theorem proving: specifications/interactive-theorem-proving.md
-#   - Reference:
-#     - reference/README.md
+  - Specifications:
+    - specifications/README.md
+    - Function specifications: specifications/function-specifications.md
+    - Loop invariants: specifications/loop-invariants.md
+    - Conditions: specifications/conditions.md
+    - Expressions: specifications/expressions.md
+    - Resource predicates: specifications/resource-predicates.md
+    - Auxiliary definitions:
+      - specifications/auxiliary-definitions/README.md
+      - Data structures: specifications/auxiliary-definitions/data-structures.md
+      - Logical functions: specifications/auxiliary-definitions/logical-functions.md
+      - Custom resource predicates: specifications/auxiliary-definitions/custom-resource-predicates.md
+    - Types: specifications/types.md
+    - Scoping: specifications/scoping.md
+    - "Tactics (proof hints)": specifications/tactics.md
+    - Interactive theorem proving: specifications/interactive-theorem-proving.md
+  - Reference:
+    - reference/README.md
 
 
