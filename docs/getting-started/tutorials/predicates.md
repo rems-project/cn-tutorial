@@ -24,7 +24,7 @@ exercises/slf_incr2_alias.c
 --8<--
 ```
 
-This version does correctly state that the final values of `p` and `q` are,m respectively, `3` and `1` more than their original values. But the way we got there -- by duplicating the whole function `incr2`, is horrible.
+This version does correctly state that the final values of `p` and `q` are, respectively, `3` and `1` more than their original values. But the way we got there -- by duplicating the whole function `incr2`, is horrible.
 
 A better way is to define a _predicate_ that captures both the aliased
 and the non-aliased cases together and use it in the pre- and

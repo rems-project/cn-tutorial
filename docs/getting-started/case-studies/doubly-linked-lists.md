@@ -26,7 +26,7 @@ track of the front or back, but rather we take any node in the list
 and have a sequence to the left and to the right of that node. The `left`
 and `right` are from the point of view of the node itself, so `left`
 is kept in reverse order. Additionally, similarly to in the
-`Imperative Queues` example, we can reuse the `List` type.
+Imperative Queues example, we can reuse the `List` type.
 
 ```c title="exercises/dllist/cn_types.h"
 --8<--
@@ -147,7 +147,7 @@ this time it is centered around the added node. This means that
 `curr` is now the created node. The old `curr` is pushed into the left
 part of the new list. The conditional operator in the `ensures` clause
 is saying that if the list was empty coming in, it now is a singleton
-list. Otherwise, the left left part of the list now has the data from
+list. Otherwise, the left part of the list now has the data from
 the old `curr` node, the new `curr` node is the added node, and the
 right part of the list is the same as before.
 
@@ -200,7 +200,7 @@ when the function returns. We ensure that the int that is returned is the value 
 
 - The first guard asks if both `del.prev` and `del.next` are null. In this case, we are removing the only node in the list, so the resulting list will be empty. The `else` branch of this conditional contains its own conditional.
 
-- For the following conditional, the guard checks if 'del.prev' is
+- For the following conditional, the guard checks if `del.prev` is
   _not_ null. This means that the returned node is `del.next`,
   regardless of whether or not `del.prev` is null. If this is the
   case, `After` is now centered around `del.next`, and the left part
@@ -226,6 +226,6 @@ that reverses a list. Try implementing a few of these functions and
 writing their specifications.
 
 _Exercise_: For extra practice, try coming up with one or two
-variations on the DlList data structure itself (there are many!).
+variations on the `DlList` data structure itself (there are many!).
 
 

@@ -88,7 +88,7 @@ the same — and that the value returned is `A[i]`.
 
 ### Exercises
 
-_Exercise:_ Specify and verify the following function, `array_read_two`, which takes the base pointer `p` of an `unsigned int` array, the array length `n`, and two indices `i` and `j`. Assuming `i` and `j` are different, it returns the sum of the values at these two indices.
+_Exercise:_ Specify and verify the following function, `array_read_two`, which takes the base pointer `p` of an `unsigned int` array, the array length `n`, and two indices `i` and `j`. *Assuming `i` and `j` are different*, it returns the sum of the values at these two indices.
 
 ```c title="exercises/array_read_two.c"
 --8<--

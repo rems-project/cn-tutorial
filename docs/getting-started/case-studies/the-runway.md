@@ -61,7 +61,7 @@ following fields:
 
 - `ModeA` and `ModeD` to represent the arrival and departure modes,
   respectively. We can define constants for `ACTIVE` and `INACTIVE`,
-  as described in the `Constants` section above.
+  as described in the Constants section above.
 
 - `W_A` and `W_D` to represent the number of planes waiting to arrive
   and depart, respectively.

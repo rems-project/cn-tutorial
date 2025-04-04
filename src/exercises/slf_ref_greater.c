@@ -7,7 +7,7 @@ unsigned int *ref_greater_abstract (unsigned int *p)
     ensures take P_post = RW<unsigned int>(p);
             take R = RW<unsigned int>(return);
             P == P_post;
-            P <= R;
+            P < R;
 @*/
 /* --END-- */
 {
