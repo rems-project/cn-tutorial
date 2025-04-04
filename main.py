@@ -28,3 +28,12 @@ def define_env(env):
         "Format a TODO that should not actually appear right now"
         return ""
         
+    @env.macro
+    def verifmarkername():
+        return "<span style=\"color:black\">(V)</span>"
+
+    @env.macro
+    def verifmarker(title):
+        "format a title with a marker that it is a verification chapter"
+        return verifmarkername() + " " + title
+        

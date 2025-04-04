@@ -43,34 +43,12 @@ Given a C-type `T` and pointer `p`, the resource `RW<T>(p)` asserts
 _ownership_ of a memory region at location `p` of the size of the C type
 `T`.
 
-{{ todo(" If `T` is a single-word type, then `<T>` can be omitted. ") }}
-{{ todo(" JWS: ^I propose that we cut this sentence, since
-I don't know what a 'single-word type' is and
-I think type annotations that are sometimes optional and sometimes not
-are less confusingly presented as always required? ") }}
-
-{{ todo(" BCP: I feel torn about this.  On one hand, the CN specs we are
-     asking people to read and write are pretty long and verbose,
-     impeding understanding, and removing all these type annotations
-     would streamline some of them significantly.  Moreover, I don't
-     find it hard to explain to a C programmer that when the type is
-     represented in 32 bits it can be omitted.  On the other hand, I
-     do agree that there is *some* overhead to telling people that the
-     annotation can be omitted. I can see a couple stable alternatives:
-       - Keep the annotations everywhere
-       - Delete them everywhere they can be deleted (i.e., for
-         one-word types) and explain, either here or when we get to the
-         first multi-word pointer target, that we need the annotation
-         there.
-     I mildly prefer the second. But I wonder whether the decision
-     should be informed by some data about whether pointers to single
-     words are common in real C code...
-") }}
-
-{{ todo("BCP: Do we mean 32-bit word here??  
-And BCP: Maybe the description of the T argument can be
-     postponed for a while, if we remove the <unsigned int>
-     annotations...?") }}
+{{ hidden("BCP: The description of the T argument could be postponed
+   for a while, if we removed `<unsigned int>` annotations everywhere.
+   But I'm not convinced that this suppressing is helpful; it really
+   depends whether real C code often uses pointers to things whose
+   size CN can determine automatically, and I don't have a clear
+   enough picture of what those are...") }}
 
 In this example, we can ensure the safe execution of `read` by adding
 a precondition that requires ownership of `RW<unsigned int>(p)`, as

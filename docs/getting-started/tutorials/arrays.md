@@ -4,12 +4,9 @@ Another common datatype in C is arrays. Reasoning about memory ownership for arr
 
 To support reasoning about code manipulating arrays and computed pointers, CN has _iterated resources_. For instance, to specify ownership of an `unsigned` array with 10 cells starting at pointer `p`, CN uses the following iterated resource:
 
-<span style="color:red">
-JWS: I think these should be `u64`s (per the warning),
+{{ todo("JWS: I think these should be `u64`s (per the warning),
 but then the sizes `n` need to be cast to `u64` from `u32`
-in the later example. Not sure what the cleanest route is here.
-</span>
-
+in the later example. Not sure what the cleanest route is here.")}}
 
 ```c
 each (u32 i; i < 10u32)
