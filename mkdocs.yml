@@ -51,7 +51,7 @@ theme:
 plugins:
   - search
   - macros
- 
+
 # Extensions
 markdown_extensions:
   - abbr
@@ -97,19 +97,20 @@ markdown_extensions:
   - pymdownx.tilde
 
 # # Page tree
-# nav:
-#   - Getting started:
-#     - README.md
-#     - Installation: getting-started/installation.md
-#     - Tutorial: getting-started/tutorials/README.md
-# #      - Testing:
-# #        - "A first taste of CN": getting-started/tutorials/first-taste.md
-# #        - "CN basics": getting-started/tutorials/cn-basics.md
-# #      - Verification:
-# #        - "Basic usage": getting-started/tutorials/verification/basic-usage.md
-# #        - "Pointers and simple ownership": getting-started/tutorials/verification/pointers-and-simple-ownership.md
-# #        - "Ownership of compound objects": getting-started/tutorials/verification/ownership-of-compound-objects.md
-# #        - "Arrays and loops": getting-started/tutorials/verification/arrays-and-loops.md
+nav:
+  - Getting Started:
+    - README.md
+    - Installation: getting-started/installation.md
+    - Tutorial:
+      - getting-started/tutorials/README.md
+      - "Welcome": getting-started/tutorials/welcome.md
+      - "A First Taste of CN: Specification and Testing": getting-started/tutorials/first-taste.md
+      - "(V) A First Taste of Verification": getting-started/tutorials/verif-basics.md
+      - "Working with Pointers": getting-started/tutorials/pointers.md
+      - "(V) Pointers to Structured Objects, Verified": getting-started/tutorials/verif-pointers.md
+      - "Arrays and Loops": getting-started/tutorials/arrays.md
+      - "(V) Arrays and Loops, Verified": getting-started/tutorials/verif-arrays.md
+
 # #        - "Defining predicates": getting-started/tutorials/verification/defining-predicates.md
 # #        - "Allocating and deallocating memory": getting-started/tutorials/verification/allocating-and-deallocating-memory.md
 # #        - "Lists": getting-started/tutorials/verification/lists.md
@@ -120,23 +121,23 @@ markdown_extensions:
 #       - "Airport Simulation": getting-started/case-studies/the-runway.md
 #     - "Style guide":
 #       - getting-started/style-guide/README.md
-#   - Specifications:
-#     - specifications/README.md
-#     - Function specifications: specifications/function-specifications.md
-#     - Loop invariants: specifications/loop-invariants.md
-#     - Conditions: specifications/conditions.md
-#     - Expressions: specifications/expressions.md
-#     - Resource predicates: specifications/resource-predicates.md
-#     - Auxiliary definitions:
-#       - specifications/auxiliary-definitions/README.md
-#       - Data structures: specifications/auxiliary-definitions/data-structures.md
-#       - Logical functions: specifications/auxiliary-definitions/logical-functions.md
-#       - Custom resource predicates: specifications/auxiliary-definitions/custom-resource-predicates.md
-#     - Types: specifications/types.md
-#     - Scoping: specifications/scoping.md
-#     - "Tactics (proof hints)": specifications/tactics.md
-#     - Interactive theorem proving: specifications/interactive-theorem-proving.md
-#   - Reference:
-#     - reference/README.md
+  - Specifications:
+    - specifications/README.md
+    - Function specifications: specifications/function-specifications.md
+    - Loop invariants: specifications/loop-invariants.md
+    - Conditions: specifications/conditions.md
+    - Expressions: specifications/expressions.md
+    - Resource predicates: specifications/resource-predicates.md
+    - Auxiliary definitions:
+      - specifications/auxiliary-definitions/README.md
+      - Data structures: specifications/auxiliary-definitions/data-structures.md
+      - Logical functions: specifications/auxiliary-definitions/logical-functions.md
+      - Custom resource predicates: specifications/auxiliary-definitions/custom-resource-predicates.md
+    - Types: specifications/types.md
+    - Scoping: specifications/scoping.md
+    - "Tactics (proof hints)": specifications/tactics.md
+    - Interactive theorem proving: specifications/interactive-theorem-proving.md
+  - Reference:
+    - reference/README.md
 
 

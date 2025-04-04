@@ -3,29 +3,40 @@
 - [Welcome](welcome.md)
 
 ## A Tour of CN
-- [A first taste of CN: Specification and testing](first-taste.md)
-- [{{ verifmarker("A first taste of verification") }}](verif-basics.md)
-- [Working with pointers](pointers.md)
-- [{{ verifmarker("Pointers to structured objects, verified") }}](verif-pointers.md)
-- [Arrays and loops](arrays.md)
-- [{{ verifmarker("Arrays and loops, verified") }}](verif-arrays.md)
-- [Allocating and deallocating memory](alloc.md)
-- [{{ verifmarker("Allocating and deallocating memory, verified") }}](verif-alloc.md)
-- [Defining predicates](predicates.md)
+- [A First Taste of CN: Specification and Testing](first-taste.md)
+- [<span style="color:black">(V)</span>
+  A First Taste of Verification](verif-basics.md)
+- [Working with Pointers](pointers.md)
+- [<span style="color:black">(V)</span>
+   Pointers to Structured Objects, Verified](verif-pointers.md)
+- [Arrays and Loops](arrays.md)
+- [<span style="color:black">(V)</span>
+   Arrays and Loops, Verified](verif-arrays.md)
+- [Allocating and Deallocating Memory](alloc.md)
+- <span style="color:black">(V)</span>
+  [Allocating and Deallocating Memory, Verified](verif-alloc.md)
+- [Defining Predicates](predicates.md)
 - [Lists](lists.md)
-- [{{ verifmarker("Lists, verified") }}](verif-lists.md)
-- [{{ verifmarker("Case analysis") }}](verif-splitcase.md)
-- [{{ verifmarker("More on numeric types") }}](verif-numeric.md)
-- [{{ verifmarker("Working with external lemmas") }}](verif-external.md)
+- [<span style="color:black">(V)</span>
+   Lists, Verified](verif-lists.md)
+- [<span style="color:black">(V)</span>
+   Case Analysis](verif-splitcase.md)
+- <span style="color:black">(V)</span>
+  [More on Numeric Types](verif-numeric.md)
+- [<span style="color:black">(V)</span>
+   Working with External Lemmas](verif-external.md)
 
 ## Case studies
 
-- [Imperative queues](../case-studies/imperative-queues.md)
-- [{{ verifmarker("Imperative queues, verified") }}](../case-studies/verif-imperative-queues.md)
-- [Doubly-linked lists](../case-studies/doubly-linked-lists.md)
-- [{{ verifmarker("Doubly-linked lists, verified") }}](../case-studies/verif-doubly-linked-lists.md)
+- [Imperative Queues](../case-studies/imperative-queues.md)
+- [<span style="color:black">(V)</span>
+   Imperative Queues, Verified](../case-studies/verif-imperative-queues.md)
+- [Doubly-Linked Lists](../case-studies/doubly-linked-lists.md)
+- [<span style="color:black">(V)</span>
+   Doubly-Linked Lists, Verified](../case-studies/verif-doubly-linked-lists.md)
 - [Airport simulation](../case-studies/the-runway.md)
-- [{{ verifmarker("Airport simulation, verified") }}](../case-studies/verif-the-runway.md)
+- [<span style="color:black">(V)</span>
+   Airport Simulation, Verified](../case-studies/verif-the-runway.md)
 
 ## TODOs
 

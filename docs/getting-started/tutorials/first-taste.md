@@ -105,14 +105,14 @@ inputs, and checks that the output satisfies the postcondition. It
 repeats this process until either some number (by default, 100) of
 tests succeed or else a failing test, called a _counterexample_, is
 encountered.  In this case, the counterexample is printed out in
-the form of a snipped of C code that will recreate the failing
-situation.
+the form of a snippet of C code that will recreate the failure.
 
 (The counterexample you will see if you run the tests yourself will
 most likely be different, due to randomness, but the debugging logic
 will be the same.)
 
-Given these three inputs, we expect the function to enter this branch:
+Given these inputs `x = 10`, `y = 2`, and `z = 14`, we expect the function to
+enter this branch:
 
 ```c
     else if (y <= x && y <= z) {
@@ -144,7 +144,9 @@ _Exercise:_ The specification we wrote is
 a bit loose: It says the result value should be smaller than `x`, `y`,
 and `z`, but it does not say that it must be equal to one of these.
 For example, a function that always returns `0` would satisfy this
-spec specification. Improve it.
+specification. Improve it.
+
+{{ later("JWS: Should explain at some point how to write multiple ensures clauses without ANDing everything etc.") }}
 
 _Exercise:_ Practice the workflow of specifying and testing the function `add`.
 
@@ -153,10 +155,9 @@ _Exercise:_ Practice the workflow of specifying and testing the function `add`.
   arithmetic and boolean operators such as `+` and `==`.
 - Write a _correct_ implementation and check that `cn test` succeeds.
 - Write an _incorrect_ implementation of `add` and check that `cn test` fails.
-- Extra credit: Can you find a way to write an incorrect
-  implementation of `add` for which testing will (incorrectly) succeed
-  -- i.e., such that `cn test` cannot find a counterexample after 100
-  tests?
+- Bonus: Can you write an incorrect implementation of `add` for which testing
+  will (incorrectly) succeed — i.e., such that `cn test` cannot find a
+  counterexample after 100 tests?
 
 ```c title="exercises/add.partial.c"
 --8<--
@@ -190,7 +191,7 @@ exercises/id_by_div/id_by_div.fixed.c
 --8<--
 ```
 
-A specification with both preconditions and postconditions says that, if
+A specification with both preconditions and postconditions says: if
 the preconditions hold at the point where the function is called, then the
 postconditions will hold when the function returns.
 
@@ -211,11 +212,11 @@ exercises/id_by_div/id_by_div_n.broken.c
 --8<--
 ```
 
-_Exercise_: Write a specification for this
-function that says that the result is between the first argument and
-the second, but that does not reveal the precise value of the
-result.  (I.e., the same specification should work for a function that
-returns `p`  or `(p+q)/2` instead of `q`.)  
+_Exercise_: Write a specification for this function that says the result is
+between the first argument and the second, but that does not reveal the precise
+value of the result.  (That is, the same specification should work for a
+function that returns `p`  or `(p+q)/2` instead of `q`.)
+{{ later("JWS: 'between the first argument and the second' is a bit confusing because it doesn't imply to me that p <= q") }}
 ```c title="exercises/between.c"
 --8<--
 exercises/between.c

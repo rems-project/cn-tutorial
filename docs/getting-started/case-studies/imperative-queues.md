@@ -37,7 +37,7 @@ concrete representation.
 we remove them.)") }}
 
 `QueueFB` is where the interesting part starts. Conceptually,
-it is part of `QueuePTR`, but CN currently allows
+it is part of `QueuePtr_At`, but CN currently allows
 conditional expressions only at the beginning of predicate
 definitions, not after a `take`, so we need to make a separate
 auxiliary predicate.
@@ -68,7 +68,7 @@ Accordingly, we begin by `take`-ing the tail cell and passing it
 separately to the `QueueAux` predicate, which has the job of
 walking down the cells from the front and gathering all the rest of
 them into a sequence. We take the result from `QueueAux` and
-`snoc` on the very last element.
+`Snoc` on the very last element.
 
 {{ todo("BCP: The asserts here are not needed, but the ones above and
 below are.  Do we keep them and explain them?  What is the
@@ -91,11 +91,11 @@ When `f` and `b` are equal, we have reached the last cell and
 there is nothing to do. We don't even have to build a singleton
 list: that's going to happen one level up, in `QueueFB`.
 
-Otherwise, we `take` the fields of the `f`, make a recurive
+Otherwise, we `take` the fields of the `f`, make a recursive
 call to `QueueAux` to process the rest of the cells, and cons the
 `first` field of this cell onto the resulting sequence before
 returning it. Again, we need to help the CN verifier by explicitly
-informing it of the invariant that we know, that `C.next` cannot be
+informing it of the invariant that we know, that `F.next` cannot be
 null if `f` and `b` are different.
 
 {{ todo("BCP: The asserts here seem to be sort-of-needed: removing

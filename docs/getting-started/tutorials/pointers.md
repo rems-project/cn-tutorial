@@ -101,7 +101,7 @@ exercises/read2.c
 
     ```
     ∀p.
-    ∀v1.
+    ∀P.
     { p ↦ P }
     read(p)
     { \return. ∃P_post. (p ↦ P_post) and return = P and P = P_post }

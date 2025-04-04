@@ -43,7 +43,7 @@ exercises/array_load.test.c
 
 The CN precondition requires
 
-- ownership of the array on entry — one `RW<unsigned int>` resource for each array index between `0` and `n` — and
+- ownership of the array on entry — one `RW<unsigned int>` resource for each array index between `0` and `n - 1` — and
 - that `i` lies within the range of RW indices.
 
 On exit the array ownership is returned again. The postcondition also asserts that the return value of the function is indeed equal to the value of the array at index `i`.

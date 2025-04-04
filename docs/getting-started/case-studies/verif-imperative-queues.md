@@ -96,7 +96,7 @@ values in some chain of queue cells of length at least 2, starting
 with the cell `front` and terminating when we get to the next cell
 _following_ some given cell `p` -- call it `c`. We can either
 gather up all the cells from `front` to `c`, or we can gather up
-just the cells from `front` to `p` and then `snoc` on the single
+just the cells from `front` to `p` and then `Snoc` on the single
 value from `c`.
 
 When we apply this lemma, `p` will be the old `back` cell and
@@ -161,14 +161,14 @@ checking proceeds.
 When `h == q->back`, we are in the case where the queue contains
 just a single element, so we just need to NULL out its `front` and
 `back` fields and deallocate the dead cell. The `unfold`
-annotation is needed because the `snoc` function is recursive, so CN
+annotation is needed because the `Snoc` function is recursive, so CN
 doesn't do the unfolding automatically.
 
 Finally, when the queue contains two or more elements, we need to
 deallocate the front cell, return its `first` field, and redirect
 the `front` field of the queue structure to point to the next cell.
 To push the verification through, we need a simple lemma about the
-`snoc` function:
+`Snoc` function:
 
 ```c title="exercises/queue/pop_lemma.h"
 --8<--
@@ -177,10 +177,10 @@ exercises/queue/pop_lemma.h
 ```
 
 The crucial part of this lemma is the last three lines, which express
-a simple, general fact about `snoc`:
-if we form a sequence by calling `snoc` to add a final element
+a simple, general fact about `Snoc`:
+if we form a sequence by calling `Snoc` to add a final element
 `B.first` to a sequence with head element `x` and tail `Q`, then the
-head of the resulting sequence is still `x`, and its tail is `snoc
+head of the resulting sequence is still `x`, and its tail is `Snoc
 (Q, B.first)`.
 
 The `requires` clause and the first three lines of the `ensures`
@@ -206,8 +206,8 @@ Investigate what happens when you make each of the following changes
 to the queue definitions. What error does CN report? Where are the
 telltale clues in the error report that suggest what the problem was?
 
-- Remove `assert (is_null(B.next));` from `InqQueueFB`.
-- Remove `assert (is_null(B.next));` from `InqQueueAux`.
+- Remove `assert (is_null(B.next));` from `QueueFB`.
+- Remove `assert (is_null(B.next));` from `QueueAux`.
 - Remove one or both of occurrences of `free_queue_cell(f)` in
   `pop_queue`.
 - Remove, in turn, each of the CN annotations in the bodies of
