@@ -75,7 +75,7 @@ With this basic infrastructure in place, we can start specifying and
 verifying list-manipulating functions. First, `append`.
 
 Here is its specification (in a separate file, because we'll want to
-use it multiple times below.)
+use it multiple times below).
 
 ```c title="exercises/list/append.h"
 --8<--

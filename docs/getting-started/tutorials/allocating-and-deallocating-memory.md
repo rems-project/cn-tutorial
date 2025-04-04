@@ -63,7 +63,7 @@ exercises/slf16_basic_succ_using_incr.c
 
 <!-- TODO: BCP: There should be a non-ref-using version of this earlier, for comparison. -->
 
-Prove a specification for the following program that reveals _only_
+Provide a specification for the following program that reveals _only_
 that it returns a pointer to a number that is greater than the number
 pointed to by its argument.
 

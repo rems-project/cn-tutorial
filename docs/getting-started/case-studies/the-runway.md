@@ -12,13 +12,11 @@ following informal specification:
 modes can never be active at the same time. Neither mode is active
 at the beginning of the day.
 <!-- TODO: BCP: Would it be simpler to say it is in arrival mode at the beginning of the day? What difference would that make? (Saying there are two modes and then immediately introducing a third one is a bit confusing.) -->
-
 2. At any given moment, there is a waiting list of planes that need to
    land at the airport and planes that need to leave the
    airport. These are modeled with counters `W_A` for the number of
    planes waiting to arrive, and `W_D` for the number of planes
    waiting to depart.
-
 3. At any moment, a plane is either waiting to arrive, waiting to
    depart, or on the runway. Once a plane has started arriving or
    departing, the corresponding counter (`W_A` or `W_D`) is
@@ -26,7 +24,6 @@ at the beginning of the day.
    have arrived or departed. Additionally, once a plane is waiting to
    arrive or depart, it continues waiting until it has arrived or
    departed.
-
 4. It takes 5 minutes for a plane to arrive or depart. During these 5
    minutes, no other plane may use the runway. We can keep track of
    how long a plane has been on the runway with the
@@ -35,11 +32,9 @@ at the beginning of the day.
    plane to begin arriving or departing. Once the `Runway_Counter`
    reaches 5, we can reset it at the next clock tick. One clock tick
    represents 1 minute.
-
 5. If there is at least one plane waiting to depart and no cars
    waiting to arrive, then the runway is set to departure mode (and
    vice versa for arrivals).
-
 6. If both modes of the runway are inactive and planes become ready to
    depart and arrive simultaneously, the runway will activate arrival
    mode first. If the runway is in arrival mode and there are planes
@@ -59,7 +54,7 @@ following fields:
 
 - `ModeA` and `ModeD` to represent the arrival and departure modes,
   respectively. We can define constants for `ACTIVE` and `INACTIVE`,
-  as described in the `Constants` section above.
+  as described in the Constants section above.
 
 - `W_A` and `W_D` to represent the number of planes waiting to arrive
   and depart, respectively.

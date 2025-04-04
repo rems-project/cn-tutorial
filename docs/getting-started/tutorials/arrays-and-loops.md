@@ -49,7 +49,7 @@ exercises/array_load.broken.c
 
 The CN precondition requires
 
-- ownership of the array on entry — one `Owned<int>` resource for each array index between `0` and `n` — and
+- ownership of the array on entry — one `Owned<int>` resource for each array index between `0` and `n - 1` — and
 - that `i` lies within the range of owned indices.
 
 On exit the array ownership is returned again.
@@ -75,7 +75,7 @@ exercises/array_load.c
 --8<--
 ```
 
-Here the CN comment `/*@ extract Owned<int>, i; @*/` is a proof hint in the form of a "`ghost statement`" that instructs CN to instantiate any available iterated `Owned<int>` resource for index `i`. In our example this operation splits the iterated resource into two:
+Here the CN comment `/*@ extract Owned<int>, i; @*/` is a proof hint in the form of a "ghost statement" that instructs CN to instantiate any available iterated `Owned<int>` resource for index `i`. In our example this operation splits the iterated resource into two:
 
 ```c
 each(i32 j; 0i32 <= j && j < n) { Owned<int>(array_shift<int>(p,j)) }
@@ -84,13 +84,10 @@ each(i32 j; 0i32 <= j && j < n) { Owned<int>(array_shift<int>(p,j)) }
 is split into
 
 1. the instantiation of the iterated resource at `i`
-
 ```c
 Owned<int>(array_shift<int>(p,i))
 ```
-
 2. the remainder of the iterated resource, the ownership for all indices except `i`
-
 ```c
   each(i32 j; 0i32 <= j && j < n && j != i)
   { Owned<int>(array_shift<int>(p,j)) }
@@ -125,7 +122,7 @@ the same — and that the value returned is `A[i]`.
 
 ### Exercises
 
-_Array read two._ Specify and verify the following function, `array_read_two`, which takes the base pointer `p` of an `unsigned int` array, the array length `n`, and two indices `i` and `j`. Assuming `i` and `j` are different, it returns the sum of the values at these two indices.
+_Array read two._ Specify and verify the following function, `array_read_two`, which takes the base pointer `p` of an `unsigned int` array, the array length `n`, and two indices `i` and `j`. *Assuming `i` and `j` are different*, it returns the sum of the values at these two indices.
 
 <!-- TODO: BCP: When we get around to renaming files in the examples directory, we should call this one array_swap or something else beginning with "array". -->
 

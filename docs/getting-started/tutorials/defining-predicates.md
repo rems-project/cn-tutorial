@@ -29,7 +29,7 @@ exercises/slf_incr2_alias.c
 --8<--
 ```
 
-This version does correctly state that the final values of `p` and `q` are,m respectively, `3` and `1` more than their original values. But the way we got there -- by duplicating the whole function `incr2`, is horrible.
+This version does correctly state that the final values of `p` and `q` are, respectively, `3` and `1` more than their original values. But the way we got there -- by duplicating the whole function `incr2`, is horrible.
 
 <!-- TODO: Sainati: I think it would be useful here to add an explanation for how CN's type checking works. -->
 <!-- For example, in the definition of BothOwned here, how is CN able to prove that `take pv = Owned<unsigned int>(p);` -->

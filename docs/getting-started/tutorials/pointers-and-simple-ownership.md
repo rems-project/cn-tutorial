@@ -94,7 +94,7 @@ _Aside._ In standard separation logic, the equivalent specification for `read` c
 
 ```
 ∀p.
-∀v1.
+∀P.
 { p ↦ P }
 read(p)
 { \return. ∃P_post. (p ↦ P_post) /\ return = P /\ P = P_post }
@@ -186,7 +186,7 @@ can be read from.
 
 Since `Owned` carries the same ownership as `Block`, just with the
 additional information that the `Owned` memory is initalised, a
-resource `Owned<T>(p)` is "`at least as good`" as `Block<T>(p)` —
+resource `Owned<T>(p)` is "at least as good" as `Block<T>(p)` —
 an `Owned<T>(p)` resource can be used whenever `Block<T>(p)` is
 needed. For instance CN’s type checking of a write to `p` requires a
 `Block<T>(p)`, but if an `Owned<T>(p)` resource is what is
@@ -197,7 +197,7 @@ Unlike `Owned`, whose output is the pointee value, `Block` has no meaningful out
 
 ### Writing through pointers
 
-Let’s explore resources and their outputs in another example. The C function `incr` takes an `int` pointer `p` and increments the value in the memory cell that it poinbts to.
+Let’s explore resources and their outputs in another example. The C function `incr` takes an `int` pointer `p` and increments the value in the memory cell that it points to.
 
 ```c title="exercises/slf0_basic_incr.signed.c"
 --8<--
