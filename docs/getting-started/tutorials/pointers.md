@@ -37,7 +37,7 @@ For the read `*p` to be safe, we need to know that the function has permission
 to access the memory pointed to by `p`. We next explain how to represent this
 permission.
 
-## RW resources
+## RW Resources
 
 Given a C-type `T` and pointer `p`, the resource `RW<T>(p)` asserts
 _ownership_ of a memory region at location `p` of the size of the C type
@@ -72,7 +72,7 @@ This specification can be read as follows:
 - the caller will receive back a resource `RW<unsigned int>(p)` when
   `read` returns.
 
-## Pointee values
+## Pointee Values
 
 In addition to reasoning about memory accesed by pointers, we likely also want
 to reason about the actual values that the pointers point to. The `take P =` in
@@ -126,7 +126,7 @@ while running `cn test` on this incorrect implementation
   *p = 0;
   return m;
 ```
-or this incorrect implementation
+and this incorrect implementation
 ```C
   unsigned int n = *p;
   unsigned int m = n + n + n;
@@ -134,7 +134,7 @@ or this incorrect implementation
 ```
 should fail.
 
-## Writing through pointers
+## Writing Through Pointers
 
 We next have an example where data is written to a pointer. The function
 `incr` takes a pointer `p` and increments the value in the memory cell that it
@@ -162,7 +162,7 @@ exercises/slf3_basic_inplace_double.c
 --8<--
 ```
 
-## No memory leaks
+## No Memory Leaks
 
 In the specifications we have written so far, functions that receive resources as part of their precondition also return this ownership in their postcondition.
 
@@ -193,23 +193,24 @@ read(p);
 
 The error from `cn test` report
 tells us (1) in which function the error occurred, (2) what happened
-("ownership leaked"), and (3) a failing input -- i.e., a snipped of C
+("ownership leaked"), and (3) a failing input — i.e., a snippet of C
 code that will construct a heap state on which the test fails in this
-way. 
+way.
 
 What went wrong here is that, given the above specification, `read`
 leaks memory: it takes ownership, does not return it, but also does
 not deallocate the RW memory or otherwise dispose of it.
 CN requires that every resource passed into a function has to be either
 _returned_ to the caller or else _destroyed_ by deallocating the RW area of
-memory (as we shall see later). CN’s motivation for this choice is its focus on
-low-level systems software in which memory is managed manually; in this context,
-memory leaks are typically very undesirable.
-As a consequence, function specifications have to do precise bookkeeping of
-their resource footprint and, in particular, return any unused resources back to
-the caller.
+memory (as we shall see later).
 
-## Disjoint memory regions
+CN’s motivation for this choice is its focus on low-level systems software in
+which memory is managed manually; in this context, memory leaks are typically
+very undesirable. As a consequence, function specifications have to do precise
+bookkeeping of their resource footprint and, in particular, return any unused
+resources back to the caller.
+
+## Disjoint Memory Regions
 
 When functions manipulate multiple pointers, we can assert ownership of each
 one, just like before. But there is an additional twist: simultaneously owning
@@ -239,7 +240,7 @@ exercises/slf8_basic_transfer.c
 --8<--
 ```
 
-## Ownership of structured objects
+## Ownership of Structured Objects
 
 So far, our examples have worked with just integers and pointers, but
 larger programs typically also manipulate compound values, often
