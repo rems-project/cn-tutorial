@@ -1,11 +1,12 @@
-int read (int *p, int n, int i)
-/*@ requires take A = each(i32 j; 0i32 <= j && j < n) { 
-                        RW<int>(array_shift<int>(p,j)) };
-             0i32 <= i && i < n; 
-    ensures take A_post = each(i32 j; 0i32 <= j && j < n) { 
-                        RW<int>(array_shift<int>(p,j)) }; 
+unsigned int read (unsigned int *p, unsigned int n, unsigned int i)
+/*@ requires take A = each(u32 j; j < n)
+                      { RW<unsigned int>(array_shift<unsigned int>(p,j)) };
+             i < n; 
+    ensures take A_post = each(u32 j; j < n) 
+                          { RW<unsigned int>(array_shift<unsigned int>(p,j)) };
+            return == A[i];
 @*/
 {
-  /*@ focus RW<int>, i; @*/
+  /*@ focus RW<unsigned int>, i; @*/
   return p[i];
 }

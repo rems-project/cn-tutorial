@@ -33,7 +33,7 @@ each (<type> <var>; <boolean expr>) { <expr> }
 
 ### First Array Example
 
-Let’s see how this applies to a simple array-manipulating function. Function `readi` takes three arguments: the base pointer `p` of an `unsigned int` array, the length `n` of the array, and an index `i` into the array; `readi` then returns the value of the `i`-th array cell.
+Let’s see how this applies to a simple array-manipulating function. Function `read` takes three arguments: the base pointer `p` of an `unsigned int` array, the length `n` of the array, and an index `i` into the array; `read` then returns the value of the `i`-th array cell.
 
 ```c title="exercises/array_load.test.c"
 --8<--
@@ -58,9 +58,9 @@ exercises/array_write.test.c
 --8<--
 ```
 
-The specification closely resembles that of `readi`, except for the last line, which now asserts that `A_post[i]`, the value of the array _after_ the function executes at index `i`, is equal to `val`.
+The specification closely resembles that of `read`, except for the last line, which now asserts that `A_post[i]`, the value of the array _after_ the function executes at index `i`, is equal to `val`.
 
-What if we additionally wanted to make assertions about values in the array _not_ being modified? In the prior `readi` example, we could add
+What if we additionally wanted to make assertions about values in the array _not_ being modified? In the prior `read` example, we could add
 ```c
 A == A_post
 ```
@@ -167,8 +167,8 @@ exercises/array_add3.test.c
 
 _Exercise:_ Write a specification for `array_sort`, which should sort
 an array into increasing order. Your specification should succeed on
-this correct implementation below 
-(yes, [it's correct](https://arxiv.org/abs/2110.01111)), and fail 
+this correct implementation below
+(yes, [it's correct](https://arxiv.org/abs/2110.01111)), and fail
 when bugs are inserted:
 
 {{ later("JWS: One gnarly aspect of this is that you need to carefully

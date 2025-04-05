@@ -2,23 +2,22 @@
 
 Recall this specification for a simple function that reads from an array:
 
-```c title="exercises/array_load.broken.c"
+```c title="exercises/array_load.test.c"
 --8<--
-exercises/array_load.broken.c
+exercises/array_load.test.c
 --8<--
 ```
 
-This specification, in principle, should ensure that the access `p[i]`
+This specification should ensure that the access `p[i]`
 is safe. However, running `cn verify` on the example produces an
 error: CN is unable to find the required ownership for reading `p[i]`.
 
 ```
-cn verify solutions/array_load.broken.c
-[1/1]: read
-build/solutions/array_load.broken.c:5:10: error: Missing resource for reading
-return p[i];
-^~~~
-Resource needed: RW<signed int>(array_shift<signed int>(p, (u64)i))
+[1/1]: read -- fail
+solutions/array_load.test.c:10:10: error: `&p[(u64)i]` out of bounds
+  return p[i];
+         ^~~~
+(UB missing short message): UB_CERB004_unspecified__pointer_add
 ```
 
 The reason is that, when searching for a required resource, such as
@@ -38,13 +37,13 @@ exercises/array_load.c
 --8<--
 ```
 
-The CN comment `/*@ focus RW<unsigned int>, i; @*/` is a proof hint in the form of a "`ghost statement`" that instructs CN to instantiate any available iterated `RW<unsigned int>` resource for index `i`. In our example this operation splits the iterated resource into two:
+The CN comment `/*@ focus RW<unsigned int>, i; @*/` is a proof hint in the form of a "ghost statement" that instructs CN to instantiate any available iterated `RW<unsigned int>` resource for index `i`. In our example this operation splits this iterated resource
 
 ```c
-each(i32 j; 0i32 <= j && j < n) { RW<unsigned int>(array_shift<unsigned int>(p,j)) }
+each(u32 j; j < n) { RW<unsigned int>(array_shift<unsigned int>(p,j)) }
 ```
 
-is split into
+into two parts:
 
 1. the instantiation of the iterated resource at `i`
 
@@ -55,48 +54,19 @@ RW<unsigned int>(array_shift<unsigned int>(p,i))
 2. the remainder of the iterated resource, the ownership for all indices except `i`
 
 ```c
-  each(i32 j; 0i32 <= j && j < n && j != i)
+  each(u32 j; j < n && j != i)
   { RW<unsigned int>(array_shift<unsigned int>(p,j)) }
 ```
 
 After this extraction step, CN can use the (former) extracted resource to justify the access `p[i]`. Note that an `focus` statement's second argument can be any arithmetic expression, not just a single identifier like in this example.
 
-Following an `focus` statement, CN remembers the extracted index and can automatically "`reverse`" the extraction when needed: after type checking the access `p[i]` CN must ensure the function’s postcondition holds, which needs the full array ownership again (including the extracted index `i`); remembering the index `i`, CN then automatically merges resources (1) and (2) again to obtain the required full array ownership, and completes the verification of the function.
-
-So far the specification only guarantees safe execution but does not
-specify the behaviour of `read`. To address this, let’s return to
-the iterated resources in the function specification. When we specify
-`take A = each ...` here, what is `A`? In CN, the output of an
-iterated resource is a _map_ from indices to resource outputs. In this
-example, where index `j` has CN type `i32` and the iterated
-resource is `RW<unsigned int>`, the output `A` is a map from `i32`
-indices to `i32` values — CN type `map<i32,i32>`. If the type of
-`j` was `i64` and the resource `RW<char>`, `A` would have
-type `map<i64,u8>`.
-
-We can use this to refine our specification with information about the functional behaviour of `read`.
-
-```c title="exercises/array_load2.c"
---8<--
-exercises/array_load2.c
---8<--
-```
-
-We specify that `read` does not change the array — the outputs of `RW`,
-`A` and `A_post`, taken before and after running the function, are
-the same — and that the value returned is `A[i]`.
+Following a `focus`, CN remembers the extracted index and can automatically "reverse" the extraction when needed, merging the resources  when ownership of the full array is required.
+<!--
+ after type checking the access `p[i]` CN must ensure the function’s postcondition holds, which needs the full array ownership again (including the extracted index `i`); remembering the index `i`, CN then automatically merges resources (1) and (2) again to obtain the required full array ownership, and completes the verification of the function. -->
 
 ### Exercises
 
-_Exercise:_ Specify and verify the following function, `array_read_two`, which takes the base pointer `p` of an `unsigned int` array, the array length `n`, and two indices `i` and `j`. *Assuming `i` and `j` are different*, it returns the sum of the values at these two indices.
-
-```c title="exercises/array_read_two.c"
---8<--
-exercises/array_read_two.c
---8<--
-```
-
-_Exercise:_ Specify and verify `swap_array`, which swaps the values of two cells of an `unsigned int` array. Assume again that `i` and `j` are different, and describe the effect of `swap_array` on the array value using the CN map update expression `a[i:v]`, which denotes the same map as `a`, except with index `i` updated to `v`.
+_Exercise:_ Add `focus` statements to verify your specification of `array_swap` from last chapter.
 
 ```c title="exercises/array_swap.c"
 --8<--
@@ -129,11 +99,18 @@ the numeric stuff works.
     }
 ") }}
 
+
+_Exercise:_ Specify and verify the following function, `array_read_two`, which takes the base pointer `p` of an `unsigned int` array, the array length `n`, and two indices `i` and `j`. *Assuming `i` and `j` are different*, it returns the sum of the values at these two indices.
+
+```c title="exercises/array_read_two.c"
+--8<--
+exercises/array_read_two.c
+--8<--
+```
+
 ### Loops
 
-The array examples covered so far manipulate one or two individual cells of an array. Another typical pattern in code working over arrays is to _loop_, uniformly accessing all cells of an array or a sub-range of it.
-
-In order to verify code with loops, CN requires the user to supply loop invariants -- CN specifications of all RW resources and the constraints required to verify each iteration of the loop.
+If we have array code with loops, CN requires the user to supply _loop invariants_ — CN specifications of the `RW` resources and constraints required to verify each iteration of the loop.
 
 Let's take a look at a simple first example. The following function, `array_init`, takes the base pointer `p` of a `char` array and the array length `n` and writes `0` to each array cell.
 
@@ -143,7 +120,7 @@ exercises/array_init.c
 --8<--
 ```
 
-If, for the moment, we focus just on proving safe execution of `array_init`, ignoring its functional behaviour, a specification might look as above: on entry, `array_init` takes ownership of an iterated `RW<char>` resource -- one `RW` resource for each index `i` of type `u32` (so necessarily greater or equal to `0`) up to `n`; on exit `array_init` returns the ownership.
+If we focus for now just on proving safe execution of `array_init`, a specification might look as above. This closely resembles specifications we have seen previously, but now with `char`s.
 
 To verify this, we have to supply a loop invariant that specifies all resource ownership and the necessary constraints that hold before and after each iteration of the loop. Loop invariants are specified using the keyword `inv`, followed by CN specifications using the same syntax as in function pre- and postconditions. The variables in scope for loop invariants are all in-scope C variables, as well as CN variables introduced in the function precondition. _In loop invariants, the name of a C variable refers to its current value_ (more on this shortly).
 
@@ -168,7 +145,10 @@ The final piece needed in the verification is an `focus` statement, as used in t
 
 With the `inv` and `focus` statements in place, CN accepts the function.
 
-### Second loop example
+
+{{ todo("JWS: removed second loop example because it is out of sync as we moved `W` resources later. could try to replace with something from the previous chapter") }}
+
+<!-- ### Second loop example
 
 The specification of `array_init` is overly strong: it requires an iterated `RW` resource for the array on entry. If, as the name suggests, the purpose of `array_init` is to initialise the array, then a precondition asserting only an iterated `W` resource for the array should also be sufficient. The modified specification is then as follows.
 
@@ -215,7 +195,7 @@ As before, we also have to instruct CN to `focus` ownership of individual array 
   nothing is, in fact, extracted: we are using `focus` only for the
   "`reverse`" direction.  {{ later("Dhruv: See long explanation and
   issue here: rems-project/cerberus#498.  BCP: Would it be useful to
-  bring any of that discussion here?") }}
+  bring any of that discussion here?") }} -->
 
 ### Exercises
 
