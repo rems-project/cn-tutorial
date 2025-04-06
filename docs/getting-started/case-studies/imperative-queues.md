@@ -1,5 +1,9 @@
 # Imperative Queues
 
+{{ todo("BCP: Zain points out that the lemma in `push_lemma.h` might
+be wrong when `P.next` is `NULL`...  To fix it, try taking ownership[
+of `p.next in both the pre- and the postcondition of the push lemma.")}}
+
 A queue is a linked list with constant-time operations for adding
 things to one end (the "back") and removing them from the other (the
 "front"). Here are the C type definitions:
