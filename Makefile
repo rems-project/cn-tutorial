@@ -96,7 +96,7 @@ CONSISTENT=$(patsubst %, _temp/consistent/%, $(MD))
 exercises: $(EXERCISES) $(SOLUTIONS) $(TESTED) $(VERIFIED) $(CONSISTENT)
 
 CN=cn verify
-CNTEST=cn test --output _temp
+CNTEST=cn test --output _temp --progress-level=function -I${OPAM_SWITCH_PREFIX}/lib/cerberus-lib/runtime/libc/include/posix
 
 # Control verbosity (run make with V= to show everything that's happening)
 V=@
