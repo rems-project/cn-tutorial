@@ -85,5 +85,7 @@ jobs:
 
       - name: Check that the tutorial builds
         run: |
+          opam switch ${{ matrix.version }}
+          eval $(opam env --switch=${{ matrix.version }})
           cd cn-tutorial
           make
