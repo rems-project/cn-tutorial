@@ -183,11 +183,7 @@ check-archive:
 	@echo Check archive examples
 	@$(MAKEFILE_DIR)/src/example-archive/check-all.sh "$(CN_PATH)"
 
-check-tutorial:
-	@echo Check tutorial exercises
-	@$(MAKEFILE_DIR)/check.sh "$(CN_PATH)"
-
-check: check-tutorial check-archive
+check: exercises check-archive
 
 ##############################################################################
 # Check for inconsistent exercise names / paths
