@@ -1,6 +1,6 @@
 # Installation
 
-To fetch and install CN, visit the [Cerberus repository](https://github.com/rems-project/cerberus) and follow the instructions in [backend/cn/README.md](https://github.com/rems-project/cerberus/blob/master/backend/cn/README.md).
+To fetch and install CN, visit the [CN repository](https://github.com/rems-project/cn) and follow the installation instructions in the [README.md](https://github.com/rems-project/cn?tab=readme-ov-file#installation).
 
 Once the installation is completed, type `cn --help` in your terminal to ensure CN is installed and found by your system. This should print the list of available options CN can be executed with.
 
