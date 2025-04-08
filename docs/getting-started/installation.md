@@ -9,7 +9,7 @@ To use CN to verify a C file, run `cn verify CFILE`.
 To use CN to test a C file, run `cn test CFILE`.
 
 Install the [language
-server](https://github.com/GaloisInc/VERSE-Toolchain/tree/main/cn-lsp/server)
+server](https://github.com/GaloisInc/VERSE-Toolchain/tree/main/cn-lsp)
 and [VSCode
-plugin](https://github.com/GaloisInc/VERSE-Toolchain/tree/main/cn-lsp/client)
+plugin](https://github.com/GaloisInc/VERSE-Toolchain/tree/main/cn-client)
 for a better IDE experience.
