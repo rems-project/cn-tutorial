@@ -1,7 +1,7 @@
 # Welcome to CN
 
 _These tutorials and docs were developed by Christopher Pulte, Benjamin C.
-Pierce, and Cole Schlesinger, with contributions from Elizbeth Austell._
+Pierce, and Cole Schlesinger, with contributions from Elizabeth Austell.
 
 CN is an extension of the C programming language for testing and verifying the
 correctness of C code, especially on low-level systems code. Compared to
