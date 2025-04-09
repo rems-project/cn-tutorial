@@ -30,6 +30,16 @@ pip install mkdocs-material mkdocs-macros-plugin
 make
 ```
 
+If you are _developing_ tutorial documentation, you may wish to include
+developer commentary in the generated output.
+To do so, simply set the `TUTORIAL_TODOS` environment variable (the value is
+unimportant, so the empty string will suffice):
+
+```bash
+# Build the tutorial, including any developer comments
+TUTORIAL_TODOS= make
+```
+
 ### Hosting locally
 
 You can start a local server that automatically renders changes to the tutorial
@@ -39,6 +49,9 @@ files.  This is useful while editing the tutorial.
 # Run the docs locally
 make serve
 ```
+
+(You can set `TUTORIAL_TODOS` as above to include developer commentary in served
+documentation, i.e. `TUTORIAL_TODOS= make serve`.)
 
 View at: http://localhost:8000/
 
