@@ -5,11 +5,11 @@ def define_env(env):
 
     def common(mesg, color):
         "Format a TODO (common)"
-        return "<span style=\"color:" + color + "\">[[" + mesg + "]]</span>"
+        return '<span style="color:' + color + '">[[' + mesg + "]]</span>"
 
     #################################################################
     # These should be suppressed for readers that are not tutorial developers:
-    
+
     @env.macro
     def todo(mesg):
         "Format a TODO"
@@ -27,13 +27,12 @@ def define_env(env):
     def hidden(mesg):
         "Format a TODO that should not actually appear right now"
         return ""
-        
+
     @env.macro
     def verifmarkername():
-        return "<span style=\"color:black\">(V)</span>"
+        return '<span style="color:black">(V)</span>'
 
     @env.macro
     def verifmarker(title):
         "format a title with a marker that it is a verification chapter"
         return verifmarkername() + " " + title
-        
