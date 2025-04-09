@@ -1,4 +1,4 @@
-# Modified from rems-project/cerberus/blob/master/.github/workflows/ci.yml
+# Modified from rems-project/cn/blob/master/.github/workflows/ci-cn.yml
 
 name: Test all examples with CN
 
@@ -24,13 +24,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:  
-        repository: rems-project/cerberus 
+        repository: rems-project/cn
 
     - name: System dependencies (ubuntu)
       run: |
         sudo apt install build-essential libgmp-dev z3 opam
-    
-    - name: Restore cached opam
+
+    - name: Restore OPAM cache
       id: cache-opam-restore
       uses: actions/cache/restore@v4
       with:
@@ -39,28 +39,31 @@ jobs:
 
     - name: Setup opam
       if: steps.cache-opam-restore.outputs.cache-hit != 'true'
-      run: opam init --yes --no-setup --shell=sh --compiler=${{ matrix.version }}
-
-    - name: Install dependencies
       run: |
-        opam switch ${{ matrix.version }}
+        opam init --yes --no-setup --shell=sh --compiler=${{ matrix.version }}
         eval $(opam env --switch=${{ matrix.version }})
-        opam install --deps-only --yes ./cerberus.opam ./cerberus-lib.opam ./cn.opam
+        opam repo add --yes --this-switch coq-released https://coq.inria.fr/opam/released
+        opam install --deps-only --yes ./cn.opam
     
-    - name: Save cached opam
-      id: cache-opam-save
+    - name: Save OPAM cache
       uses: actions/cache/save@v4
+      if: steps.cache-opam-restore.outputs.cache-hit != 'true'
       with:
         path: ~/.opam
-        key: ${{ steps.cache-opam-restore.outputs.cache-primary-key }}
+        key: ${{ matrix.version }}
 
-    - name: Install Cerberus
+    - name: Download cvc5 release
+      uses: robinraju/release-downloader@v1
+      with:
+        repository: cvc5/cvc5
+        tag: cvc5-1.2.0
+        fileName: cvc5-Linux-x86_64-static.zip
+
+    - name: Unzip and install cvc5
       run: |
-        opam switch ${{ matrix.version }}
-        eval $(opam env --switch=${{ matrix.version }})
-        opam pin --yes --no-action add cerberus-lib .
-        opam pin --yes --no-action add cerberus .
-        opam install --yes cerberus
+        unzip cvc5-Linux-x86_64-static.zip
+        chmod +x cvc5-Linux-x86_64-static/bin/cvc5
+        sudo cp cvc5-Linux-x86_64-static/bin/cvc5 /usr/local/bin/
 
     - name: Install CN
       run: |
@@ -68,19 +71,6 @@ jobs:
         eval $(opam env --switch=${{ matrix.version }})
         opam pin --yes --no-action add cn .
         opam install --yes cn
-
-    - name: Download cvc5 release 
-      uses: robinraju/release-downloader@v1 
-      with: 
-        repository: cvc5/cvc5
-        tag: cvc5-1.1.2
-        fileName: cvc5-Linux-static.zip
-
-    - name: Unzip and install cvc5
-      run: |
-        unzip cvc5-Linux-static.zip
-        chmod +x cvc5-Linux-static/bin/cvc5
-        sudo cp cvc5-Linux-static/bin/cvc5 /usr/local/bin/
 
     - name: Checkout cn-tutorial
       uses: actions/checkout@v4

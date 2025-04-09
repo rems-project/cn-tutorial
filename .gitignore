@@ -9,3 +9,4 @@ docs/solutions
 /docs/exercises.zip
 /_temp/
 *.tmp
+/__pycache__/

@@ -96,7 +96,7 @@ CONSISTENT=$(patsubst %, _temp/consistent/%, $(MD))
 exercises: $(EXERCISES) $(SOLUTIONS) $(TESTED) $(VERIFIED) $(CONSISTENT)
 
 CN=cn verify
-CNTEST=cn test --output _temp
+CNTEST=cn test --output _temp --progress-level=function
 
 # Control verbosity (run make with V= to show everything that's happening)
 V=@
@@ -183,11 +183,7 @@ check-archive:
 	@echo Check archive examples
 	@$(MAKEFILE_DIR)/src/example-archive/check-all.sh "$(CN_PATH)"
 
-check-tutorial:
-	@echo Check tutorial exercises
-	@$(MAKEFILE_DIR)/check.sh "$(CN_PATH)"
-
-check: check-tutorial check-archive
+check: exercises check-archive
 
 ##############################################################################
 # Check for inconsistent exercise names / paths
