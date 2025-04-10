@@ -212,6 +212,9 @@ serve: rebuild
 
 rebuild: exercises docs/exercises.zip mkdocs.yml $(shell find docs -type f)
 
+servecomments:
+	TUTORIAL_TODOS= $(MAKE) serve
+
 ##############################################################################
 # Misc
 

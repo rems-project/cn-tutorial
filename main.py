@@ -8,7 +8,10 @@ def define_env(env):
 
     def common(mesg, color):
         "Format a TODO (common)"
-        return '<span style="color:' + color + '">[[' + mesg + "]]</span>"
+        if show_todos:
+          return '<span style="color:' + color + '">[[' + mesg + "]]</span>"
+        else:
+          return ""
 
     #################################################################
     # These should be suppressed for readers that are not tutorial developers:
@@ -16,12 +19,12 @@ def define_env(env):
     @env.macro
     def todo(mesg):
         "Format a TODO"
-        return common(mesg, "red") if show_todos else ""
+        return common(mesg, "red") 
 
     @env.macro
     def later(mesg):
         "Format a TODO for later"
-        return common(mesg, "lightgray") if show_todos else ""
+        return common(mesg, "lightgray") 
 
     #################################################################
     # These should always be displayed / hidden
