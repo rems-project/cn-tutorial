@@ -76,3 +76,6 @@ def define_env(env):
         if len(cna) == 1:
             cna_list = cna[0]
         else:
+            cna_list = ', '.join(cna[:-1]) + ', and ' + cna[-1]
+
+        return f'{authors_list}, with contributions from {cna_list}'
