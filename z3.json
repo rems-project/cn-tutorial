@@ -1,0 +1,6 @@
+{
+    "name": "z3",
+    "args": ["verify"],
+    "filter": "^(.*\\.c)$",
+    "timeout": 60
+}
