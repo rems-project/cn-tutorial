@@ -2,7 +2,7 @@
 
 Our next topic is programs that use dynamically allocated heap memory.
 
-## Malloc and free
+## Malloc and Free
 
 Heap-using programs in CN can be written in almost exactly the same
 way as in vanilla C.  The only difference is that, instead of calling
@@ -19,7 +19,7 @@ exercises/cn_malloc.h
 --8<--
 ```
 
-Using `cn_malloc` and `cn_free`, we can write higher-level programs
+Using `cn_malloc` and `cn_free_sized`, we can write higher-level programs
 that manipulate the heap, as usual.
 
 ```c title="exercises/slf17_get_and_free.test.c"
@@ -31,9 +31,8 @@ exercises/slf17_get_and_free.test.c
 
 ### Exercises
 
-Write a specification for the following program that reveals _only_
-that it returns a pointer to a number that is greater than the number
-pointed to by its argument.
+_Exercise:_ Write a specification for the following program that returns a
+pointer to a number that is the number pointed to by its argument `+ 1`.
 
 ```c title="exercises/slf_greater.test.c"
 --8<--
@@ -41,7 +40,7 @@ exercises/slf_greater.test.c
 --8<--
 ```
 
-## W resources
+## W Resources
 
 In low-level C code, it is sometimes useful to pass around memory that
 has been allocated but not yet initialized.  CN provides an alternate

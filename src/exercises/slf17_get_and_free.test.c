@@ -20,12 +20,12 @@ unsigned int get_and_free (unsigned int *p)
   return v;
 }
 
-unsigned int tester() 
+unsigned int tester()
 /*@ requires true;
     ensures return == 42u32;
 @*/
 {
-  unsigned int *p = malloc_and_set (42);
-  unsigned int v = get_and_free (p);
+  unsigned int *p = malloc_and_set(42);
+  unsigned int v = get_and_free(p);
   return v;
 }
