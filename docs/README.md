@@ -1,7 +1,6 @@
 # Welcome to CN
 
-_These tutorials and docs were developed by Christopher Pulte, Benjamin C.
-Pierce, and Cole Schlesinger, with contributions from Elizabeth Austell.
+_These tutorials and docs were developed by {{ text_authors() }}._
 
 CN is an extension of the C programming language for testing and verifying the
 correctness of C code, especially on low-level systems code. Compared to
@@ -57,8 +56,7 @@ extended exercise due to Bryan Parno.
 ??? info "BibTeX citation"
     ```
     @misc{cn-tutorial,
-      author = "Christopher Pulte and Benjamin C. Pierce and Cole
-      Schlesinger and Jessica Shi and Elizabeth Austell",
+      author = "{{ latex_authors() }}",
       title = "{CN Tutorial}",
       howpublished = "\url{https://rems-project.github.io/cn-tutorial/}",
       year = {2025},
