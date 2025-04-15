@@ -1,6 +1,6 @@
 # A First Taste of CN: Specification and Testing
 
-This section introduces two most basic features of CN:   
+This section introduces two of the most basic features of CN:   
 
 1. A notation for writing _specifications_ of C functions, and  
 2. A tool for _testing_ the behavior of the code against those specifications.
@@ -17,8 +17,9 @@ exercises/min3/min3.partial.c
 ```
 
 The desired behavior of `min3` is to return the smallest of the three inputs.
-We expect, then, that the return value should be less than or equal to `x` and to `y`
-and to `z`. Using CN specifications, we can state this formally and attach it directly
+We expect, then, that the return value should be less than or equal to
+each of`x`, `y`, and `z`. Using CN specifications, we can state this
+formally and attach it directly 
 to the function using a special comment block `/*@ ... @*/`:
 
 ```c title="exercises/min3/min3.partial1.c"
@@ -29,8 +30,9 @@ exercises/min3/min3.partial1.c
 
 Let’s break this down...
 
-- Function specifications are written inside a special comment block `/*@ ... @*/`
-  and placed between the function argument list and the function body.
+- Function specifications are written inside a special comment block 
+  `/*@ ... @*/` and placed between the function argument list and the
+  function body. 
 
 - The keyword `ensures` introduces the function's _postcondition_ --
   that is, a logical statement that we expect should be true when the
@@ -50,9 +52,12 @@ it can be useful to explain more about pre- and post-conditions in an aside, or 
 linking references to it. For example wiki references might be enough: 
 https://en.wikipedia.org/wiki/Precondition and
 https://en.wikipedia.org/wiki/Postcondition") }}
+{{ todo("BCP: Sure.  We could also add a little more material here --
+e.g., another example or two focused just on thinking about pre- and
+postconditions.  But let's leave that for a later pass.") }} 
 
 This gives us a clear, machine-checkable description of what the function is supposed to
-do — not how it does it. Next, suppose we have implemented `min3` incorrectly as
+do — not how it does it. Next, suppose we have implemented `min3` _incorrectly_ as
 shown below.
 
 ```c title="exercises/min3/min3.broken.c"
@@ -60,9 +65,10 @@ shown below.
 exercises/min3/min3.broken.c
 --8<--
 ```
-This function contains a subtle bug: in the second case, where y is the smallest,
-it accidentally returns x instead. From a quick glance, the code looks reasonable — it
-has the right structure, and the mistake is subtle and can go uncaught. That’s where
+This function contains a subtle bug: in the second case, where `y` is the smallest,
+it accidentally returns `x` instead. From a quick glance, the code looks reasonable — it
+has the right structure — and the mistake is subtle and can go
+uncaught. That’s where 
 specification-based testing becomes useful.
 
 ## Testing
@@ -75,13 +81,21 @@ generate test inputs and check whether the implementation behaves correctly for 
 inputs.
 
 For example, if the `min3` function ever returns a value that violates the specification
-(like returning x when y is the smallest), the tool will find it and report it — giving
+(like returning `x` when `y` is the smallest), CN will notice and report it — giving
 concrete test inputs that fail the test (by violating the specifications).
 {{ todo("AZ: Might be useful to have names for the testing and verification tools.") }}
+{{ todo("BCP: Maybe better not to emphasize the difference between
+testing and verification modes -- i.e., just call it CN throughout...") }}
 
 Specification-based testing shifts the focus from writing tests manually, to letting the
 specification drive the testing process. This not only catches bugs more effectively,
 but also makes specifications an active part of the development workflow.
+{{ todo("BCP: I slightly disagree with the framing here:
+Specification-based testing can be used in different modes -- 'point
+testing' in the style of standard unit testing (but using the
+specification to judge whether the output for a given test is OK,
+rather than the using predicting what the output should be) and
+'specification-based random testing'. i.e., setandard PBT.") }}
 
 ### Running `cn test`
 
@@ -94,6 +108,9 @@ To test the implementation, CN’s command-line tool can be invoked as `cn test 
 or this is more like a 'tip' in case the user is using VS Code. If its the former, then 
 this might be a place to talk about or link to details about VS Code integrations if there
 are any. If it is the latter, then consider writing it as a 'tip'.") }}
+{{ todo("BCP: FOr VERSE, everyone will be using VSCode.  
+It's possible that people outside VERSE will have other ways, but this
+should be presented as the default.") }}
 
 ```
 $ cn test min3.broken.c
@@ -130,6 +147,13 @@ that assert what the output of a function should be on a given input.
 CN uses a different approach called _property-based random testing_. With
 property-based random testing, things are much more automatic. CN works in two important
 ways:
+{{ todo("BCP: Again, CN also supports 'specification-based unit
+testing' (or whatever it should be called -- I'm sure we don't
+actually want to call it that!).  However, I don't think we want to
+spend time here showing people how to do unit testing with CN -- that
+should come later, IMO.  Namely, it should be introduced as a tool to
+use to increase test coverage and/or deal with situations where the
+random testing is not doing a good enough job of finding bugs.") }}
 
 1.  First, instead of requiring the developer to manually construct a suite of interesting
     test _inputs_, CN automatically generates a large number of random test inputs.
@@ -145,11 +169,11 @@ implementation always satisfies them.
 
 For our example, `cn test` generates three integer inputs, runs `min3` on these
 inputs, and checks that the output satisfies the postcondition: 
-`
-  return <= x
+```
+     return <= x
   && return <= y
   && return <= z
-`.
+```
 It repeats this process until either some number of
 tests (by default, 100) succeed or else a failing test, called a _counterexample_, is
 encountered.  In the latter case, the counterexample is printed out as a snippet of
@@ -204,7 +228,9 @@ Hooray!
 
 ### Exercises
 
-{{ todo("AZ: It might be useful number the exercises.")}}
+{{ todo("AZ: It might be useful to number the exercises.")}}
+{{ todo("BCP: Keeping the numbers consistent as we edit will be a big
+pain in the neck!")}}
 
 _Exercise:_ Improve the specification.
 
@@ -264,7 +290,7 @@ exercises/id_by_div/id_by_div.fixed.c
 --8<--
 ```
 
-This updated specification says: _as long as x is even, the function must return x_.
+This updated specification says: _as long as `x` is even, the function must return `x`_.
 
 A specification with both preconditions and postconditions says: if
 the preconditions hold at the point where the function is called, then the
@@ -275,14 +301,14 @@ postconditions will hold when the function returns.
     CN specifications, numeric types need to be annotated explicitly, and
     we use `u32` for `unsigned int`.  Try removing the annotations to see
     the error message that results.
+{{ todo("BCP: Shouldn't every reader see this information?")}}
 
 ### Exercises
 
-_Exercise:_ Fix a specification by adding a precondition.
-
-Without changing the postcondition or implementation, fix
-the specification in the following example by adding a precondition on
-the inputs `x` and `n`. Check that `cn test` succeeds.
+_Exercise:_ Fix the specification in the following example by adding a
+precondition on 
+the inputs `x` and `n` (don't change the postcondition or implementation).
+Check that `cn test` succeeds.
 
 ```c title="exercises/id_by_div/id_by_div_n.broken.c"
 --8<--
@@ -290,14 +316,11 @@ exercises/id_by_div/id_by_div_n.broken.c
 --8<--
 ```
 
-_Exercise_: Write a specification for this function that says the result is
-between the first argument and the second, but that does not reveal the precise
-value of the result.  That is, the same specification should work for a
-function that returns `p`  or `(p+q)/2` instead of `q`.
-
-{{ later("JWS: 'between the first argument and the second' is a bit confusing because it doesn't imply to me that p <= q") }}
-
-{{ todo("AZ: Perhaps a hint can be added pointing the user to add p<=q in the assumptions as required?") }}
+_Exercise_: Write a specification for the following function that says
+the result is between arguments `p` and `q` (where `p` is less than or
+equal to `q`), but that does not reveal the precise value of the
+result.  That is, the same specification should work for a
+function that returns `p`  or `(p+q)/2` instead of `q`.  
 
 ```c title="exercises/between.c"
 --8<--
