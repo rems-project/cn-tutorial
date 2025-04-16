@@ -1,7 +1,7 @@
 #include "cn_malloc.h"
 
 unsigned int *malloc_and_set (unsigned int x)
-/*@ ensures take P = RW(return);
+/*@ ensures take P = RW<unsigned int>(return);
             P == x;
 @*/
 {
@@ -11,7 +11,7 @@ unsigned int *malloc_and_set (unsigned int x)
 }
 
 unsigned int get_and_free (unsigned int *p)
-/*@ requires take P = RW(p);
+/*@ requires take P = RWunsigned int>(p);
     ensures return == P;
 @*/
 {

@@ -1,5 +1,43 @@
 # Allocating and Deallocating Memory, Verified
 
+
+## W Resources
+
+In low-level C code, it is sometimes useful to pass around memory that
+has been allocated but not yet initialized.  CN provides an alternate
+form of resource, written `W`, to address this situation.  Given a
+C-type `T` and pointer `p`, `W<T>(p)` asserts the same ownership as
+`RW<T>(p)`: ownership of a memory cell at `p` the size of type `T`.
+However, but, in contrast to `RW`, `W` memory is not assumed to be
+initialised.
+
+CN uses this distinction to prevent reads from uninitialised memory:
+
+- A read at C-type `T` and pointer `p` requires a resource
+  `RW<T>(p)`, i.e., ownership of _initialised_ memory at the
+  right C-type. The load returns the `RW` resource unchanged.
+
+- A write at C-type `T` and pointer `p` needs only a
+  `W<T>(p)` (so, unlike reads, writes to uninitialised memory
+  are fine). The write consumes ownership of the `W` resource
+  (it destroys it) and returns a new resource `RW<T>(p)` with the
+  value written as the output. This means the resource returned from a
+  write records the fact that this memory cell is now initialised and
+  can be read from.
+
+Since `RW` carries the same ownership as `W`, just with the
+additional information that the `RW` memory is initalised, a
+resource `RW<T>(p)` is "at least as good" as `W<T>(p)` —
+an `RW<T>(p)` resource can be used whenever `W<T>(p)` is
+needed. For instance CN’s type checking of a write to `p` requires a
+`W<T>(p)`, but if an `RW<T>(p)` resource is what is
+available, this can be used just the same. This allows an
+already-initialised memory cell to be over-written again.
+
+Unlike `RW`, whose output is the pointee value, `W` has no meaningful output.
+
+{{ todo("BCP: An example and/or an exercise about the W resource would be nice!") }}
+
 ## Verifying programs with malloc and free
 
 Verifying programs that allocate and deallocate heap memory is a bit
@@ -12,8 +50,8 @@ standard `malloc` and `free`.
 However, at the moment, CN's verification machinery does not
 understand the types of the `malloc` and `free` functions, which are a
 bit tricky because they rely on a bit of polymorphism and a typecast
-between `char*` -- the result type of `malloc` and argument type of
-`free` -- and the actual type of the object being allocated or
+between `char*` — the result type of `malloc` and argument type of
+`free` — and the actual type of the object being allocated or
 deallocated.
 
 To work around this shortcoming, verifying programs with heap
@@ -58,3 +96,4 @@ of their CN specifications.
 exercises/malloc_trusted.verif.c
 --8<--
 ```
+{{ todo("JWS: Where is this file?") }}
