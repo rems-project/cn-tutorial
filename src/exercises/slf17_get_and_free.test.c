@@ -11,7 +11,7 @@ unsigned int *malloc_and_set (unsigned int x)
 }
 
 unsigned int get_and_free (unsigned int *p)
-/*@ requires take P = RWunsigned int>(p);
+/*@ requires take P = RW<unsigned int>(p);
     ensures return == P;
 @*/
 {
