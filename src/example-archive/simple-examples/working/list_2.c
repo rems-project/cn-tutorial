@@ -12,7 +12,7 @@
 /*@
 lemma IntListSeqSnoc(pointer p, pointer tail)
   requires take l1 = IntListSeg(p, tail);
-           take v = Owned<struct list_node>(tail);
+           take v = RW<struct list_node>(tail);
   ensures take l2 = IntListSeg(p, v.next);
           l2 == append(l1, Seq_Cons { val: v.val, next: Seq_Nil {} });
 @*/

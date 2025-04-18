@@ -1,4 +1,4 @@
-#include "./headers.h"
+#include "./headers.verif.h"
 // Sums up the data values of the nodes of the binary tree
 
 /* FILL IN CN FUNCTION SPEC DEFINTION HERE */

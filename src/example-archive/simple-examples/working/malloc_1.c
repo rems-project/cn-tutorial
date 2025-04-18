@@ -5,17 +5,17 @@
 
 int *my_malloc__int()
 /*@ trusted; @*/
-/*@ ensures take New = Block<int>(return); @*/
+/*@ ensures take New = W<int>(return); @*/
 {}
 
 int *malloc__1()
 /*@ ensures 
-      take New = Owned<int>(return);
+      take New = RW<int>(return);
       New == 7i32;
       *return == 7i32; @*/  // <-- Alternative syntax 
 {
   int *new;
   new = my_malloc__int();
-  *new = 7; // Have to initialize the memory before it's owned
+  *new = 7; // Have to initialize the memory before it's RW
   return new;
 }

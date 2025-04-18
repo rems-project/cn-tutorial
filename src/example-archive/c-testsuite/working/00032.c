@@ -7,9 +7,9 @@ main()
 	int arr[2];
 	int *p;
 
-	/*@ extract Block<int>, 0u64; @*/
+	/*@ focus W<int>, 0u64; @*/
 	arr[0] = 2;
-	/*@ extract Block<int>, 1u64; @*/
+	/*@ focus W<int>, 1u64; @*/
 	arr[1] = 3;
 	p = &arr[0];
 	if(*(p++) != 2)

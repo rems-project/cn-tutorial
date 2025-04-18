@@ -4,3 +4,9 @@ check
 **.swp
 docs/exercises
 docs/solutions
+/_opam/
+/_tests/
+/docs/exercises.zip
+/_temp/
+*.tmp
+/__pycache__/

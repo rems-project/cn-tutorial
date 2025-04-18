@@ -1,9 +1,9 @@
 int
 f1(char *p)
 /*@ requires 
-			take PreP = Owned<char>(p); @*/
+			take PreP = RW<char>(p); @*/
 /*@ ensures 
-			take PostP = Owned<char>(p);
+			take PostP = RW<char>(p);
 			return == 1i32 + (i32) PreP; @*/
 {
 	return *p+1;

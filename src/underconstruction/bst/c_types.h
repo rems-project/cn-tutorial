@@ -10,12 +10,12 @@ struct node {
 extern struct node* malloc_node();
 /*@ spec malloc_node();
     requires true;
-    ensures take R = Block<struct node>(return);
+    ensures take R = W<struct node>(return);
             !ptr_eq(return, NULL);
 @*/ 
 
 extern void freenode (struct node *t);
 /*@ spec freenode(pointer t);
-    requires take R = Block<struct node>(t);
+    requires take R = W<struct node>(t);
     ensures true;
 @*/

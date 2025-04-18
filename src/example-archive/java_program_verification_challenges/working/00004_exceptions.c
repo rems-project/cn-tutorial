@@ -17,7 +17,7 @@ November 5-8, 2002, Revised Lectures 1. Springer Berlin Heidelberg,
 and catching. They require a suitable control flow semantics. Special care is
 needed for the ‘finally’ part of a try-catch-finally construction. Figure 4 contains
 a simple example (adapted from [17]) that combines many aspects. The subtle
-point is that the assignment m+=10 in the finally block will still be executed,
+point is that the assignment m+=10 in the finally W will still be executed,
 despite the earlier return statements, but has no effect on the value that is
 returned. The reason is that this value is bound earlier.
 
@@ -38,10 +38,10 @@ int m; // Global variable m
  *           && m == \old(m) + 10;
  */
 int returnfinally(int d)
-  /*@ requires take vp0 = Owned<int>(&m);
+  /*@ requires take vp0 = RW<int>(&m);
                let m10 = (i64)vp0 + 10i64;
                m10 <= 2147483647i64; 
-      ensures take vp1 = Owned<int>(&m); 
+      ensures take vp1 = RW<int>(&m); 
   @*/
   {
     int result;
@@ -52,14 +52,14 @@ int returnfinally(int d)
         result = m / d; // Normal division
     }
 
-    m += 10; // This corresponds to the 'finally' block in Java, executed regardless of exception
+    m += 10; // This corresponds to the 'finally' W in Java, executed regardless of exception
 
     return result;
 }
 
 int main()
-  /*@ requires take vp0 = Owned<int>(&m); 
-      ensures take vp1 = Block<int>(&m);
+  /*@ requires take vp0 = RW<int>(&m); 
+      ensures take vp1 = W<int>(&m);
 	      return == 0i32; 
   @*/
 {

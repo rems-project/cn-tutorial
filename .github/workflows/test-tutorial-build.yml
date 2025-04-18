@@ -8,11 +8,67 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [4.14.1]
+
+    runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:  
+          repository: rems-project/cn
+
+      - name: System dependencies (ubuntu)
+        run: |
+          sudo apt install build-essential libgmp-dev z3 opam
+
+      - name: Restore OPAM cache
+        id: cache-opam-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.opam
+          key: ${{ matrix.version }}
+
+      - name: Setup opam
+        if: steps.cache-opam-restore.outputs.cache-hit != 'true'
+        run: |
+          opam init --yes --no-setup --shell=sh --compiler=${{ matrix.version }}
+          eval $(opam env --switch=${{ matrix.version }})
+          opam repo add --yes --this-switch coq-released https://coq.inria.fr/opam/released
+          opam install --deps-only --yes ./cn.opam
+      
+      - name: Save OPAM cache
+        uses: actions/cache/save@v4
+        if: steps.cache-opam-restore.outputs.cache-hit != 'true'
+        with:
+          path: ~/.opam
+          key: ${{ matrix.version }}
+
+      - name: Download cvc5 release
+        uses: robinraju/release-downloader@v1
+        with:
+          repository: cvc5/cvc5
+          tag: cvc5-1.2.0
+          fileName: cvc5-Linux-x86_64-static.zip
+
+      - name: Unzip and install cvc5
+        run: |
+          unzip cvc5-Linux-x86_64-static.zip
+          chmod +x cvc5-Linux-x86_64-static/bin/cvc5
+          sudo cp cvc5-Linux-x86_64-static/bin/cvc5 /usr/local/bin/
+
+      - name: Install CN
+        run: |
+          opam switch ${{ matrix.version }}
+          eval $(opam env --switch=${{ matrix.version }})
+          opam pin --yes --no-action add cn .
+          opam install --yes cn
+
+      - name: Checkout cn-tutorial
+        uses: actions/checkout@v4
+        with: 
+          path: cn-tutorial
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -23,7 +79,13 @@ jobs:
         run: pip install mkdocs-material
 
       - name: Clean the build directory 
-        run: make clean
+        run: |
+          cd cn-tutorial
+          make clean
 
       - name: Check that the tutorial builds
-        run: make
+        run: |
+          opam switch ${{ matrix.version }}
+          eval $(opam env --switch=${{ matrix.version }})
+          cd cn-tutorial
+          make

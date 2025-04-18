@@ -1,5 +1,8 @@
 site_name: CN Docs
 site_dir: build
+repo_url: https://github.com/rems-project/cn-tutorial
+repo_name: rems-project/cn-tutorial
+edit_uri: edit/main/docs
 theme:
   name: material
   features:
@@ -24,6 +27,7 @@ theme:
     - search.share
     - search.suggest
     - toc.follow
+    - toc.integrate
   language: en
   palette:
     - media: "(prefers-color-scheme)"
@@ -47,7 +51,12 @@ theme:
   font:
     text: Roboto
     code: Roboto Mono
+  icon:
+    repo: fontawesome/brands/github
 
+plugins:
+  - search
+  - macros
 
 # Extensions
 markdown_extensions:
@@ -93,27 +102,31 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.tilde
 
-# Page tree
+# # Page tree
 nav:
-  - Getting started:
+  - Getting Started:
     - README.md
     - Installation: getting-started/installation.md
-    - Tutorials:
+    - Tutorial:
       - getting-started/tutorials/README.md
-      - "Basic usage": getting-started/tutorials/basic-usage.md
-      - "Pointers and simple ownership": getting-started/tutorials/pointers-and-simple-ownership.md
-      - "Ownership of compound objects": getting-started/tutorials/ownership-of-compound-objects.md
-      - "Arrays and loops": getting-started/tutorials/arrays-and-loops.md
-      - "Defining predicates": getting-started/tutorials/defining-predicates.md
-      - "Allocating and deallocating memory": getting-started/tutorials/allocating-and-deallocating-memory.md
-      - "Lists": getting-started/tutorials/lists.md
-      - "Working with external lemmas": getting-started/tutorials/external-lemmas.md
-    - "Case studies":
-      - "Imperative queues": getting-started/case-studies/imperative-queues.md
-      - "Doubly-linked lists": getting-started/case-studies/doubly-linked-lists.md
-      - "Airport Simulation": getting-started/case-studies/the-runway.md
-    - "Style guide": 
-      - getting-started/style-guide/README.md
+      - "Welcome": getting-started/tutorials/welcome.md
+      - "A first taste of CN: specification and testing": getting-started/tutorials/first-taste.md
+      - "(V) A first taste of verification": getting-started/tutorials/verif-basics.md
+      - "Working with pointers": getting-started/tutorials/pointers.md
+      - "(V) Pointers to structured objects, verified": getting-started/tutorials/verif-pointers.md
+      - "Arrays and loops": getting-started/tutorials/arrays.md
+      - "(V) Arrays and loops, verified": getting-started/tutorials/verif-arrays.md
+
+# #        - "Defining predicates": getting-started/tutorials/verification/defining-predicates.md
+# #        - "Allocating and deallocating memory": getting-started/tutorials/verification/allocating-and-deallocating-memory.md
+# #        - "Lists": getting-started/tutorials/verification/lists.md
+# #        - "Working with external lemmas": getting-started/tutorials/verification/external-lemmas.md
+#     - "Case studies":
+#       - "Imperative queues": getting-started/case-studies/imperative-queues.md
+#       - "Doubly-linked lists": getting-started/case-studies/doubly-linked-lists.md
+#       - "Airport Simulation": getting-started/case-studies/the-runway.md
+#     - "Style guide":
+#       - getting-started/style-guide/README.md
   - Specifications:
     - specifications/README.md
     - Function specifications: specifications/function-specifications.md
@@ -132,4 +145,5 @@ nav:
     - Interactive theorem proving: specifications/interactive-theorem-proving.md
   - Reference:
     - reference/README.md
+
 

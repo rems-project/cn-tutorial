@@ -1,34 +1,45 @@
-# CN Tutorials
+# CN Tutorial
 
-These tutorials introduce CN through a series of examples, starting with basic
-usage of CN on simple arithmetic functions and slowly moving towards more
-elaborate separation logic specifications of data structures.
+- [Welcome](welcome.md)
 
-!!! warning
-
-    These tutorials focus on verifying CN specifications and do not cover
-    runtime testing.  Runtime testing will be introduced in future
-    documentation.
-
-## Source files
-
-The source files for all the exercises and examples below can be downloaded
-from [here](../../exercises.zip).
-<!-- Note: `../../exercises.zip` is meant to be created via `make` -->
-
-## Tutorials
-
-- [Basic usage](basic-usage.md)
-- [Pointers and simple ownership](pointers-and-simple-ownership.md)
-- [Ownership of compound objects](ownership-of-compound-objects.md)
-- [Arrays and loops](arrays-and-loops.md)
-- [Defining predicates](defining-predicates.md)
-- [Allocating and deallocating memory](allocating-and-deallocating-memory.md)
+## A Tour of CN
+- [A first taste of CN: specification and testing](first-taste.md)
+- [{{ verifmarker("A first taste of verification") }}](verif-basics.md)
+- [Working with pointers](pointers.md)
+- [{{ verifmarker("Pointers to structured objects, verified") }}](verif-pointers.md)
+- [Arrays and loops](arrays.md)
+- [{{ verifmarker("Arrays and loops, verified") }}](verif-arrays.md)
+- [Allocating and deallocating memory](alloc.md)
+- [{{ verifmarker("Allocating and deallocating memory, verified") }}](verif-alloc.md)
+- [Defining predicates](predicates.md)
 - [Lists](lists.md)
-- [Working with external lemmas](external-lemmas.md)
+- [{{ verifmarker("Lists, verified") }}](verif-lists.md)
+- [{{ verifmarker("Case analysis") }}](verif-splitcase.md)
+
+## More on Testing
+
+- [Unit testing](unit-testing.md)
+- [Understanding and controlling test distributions](test-distribs.md)
+
+## More on Verification
+
+- [{{ verifmarker("More on numeric types") }}](verif-numeric.md)
+- [{{ verifmarker("Working with external lemmas") }}](verif-external.md)
 
 ## Case studies
 
 - [Imperative queues](../case-studies/imperative-queues.md)
-- [Doubly-linked lists](../case-studies/doubly-linked-lists.md)
-- [Airport Simulation](../case-studies/the-runway.md)
+- [{{ verifmarker("Imperative queues, verified") }}](../case-studies/verif-imperative-queues.md)
+- [Doubly-Linked Lists](../case-studies/doubly-linked-lists.md)
+- [{{ verifmarker("Doubly-linked lists, verified") }}](../case-studies/verif-doubly-linked-lists.md)
+- [Airport simulation](../case-studies/the-runway.md)
+- [{{ verifmarker("Airport simulation, verified") }}](../case-studies/verif-the-runway.md)
+
+## TODOs
+
+- [TODO list and discussion](todo.md)
+
+
+
+
+

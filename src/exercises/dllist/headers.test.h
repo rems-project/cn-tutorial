@@ -1,0 +1,8 @@
+#include "../list/headers.test.h"
+#include "../list/append.h"
+#include "../list/rev.h"
+#include "./c_types.h"
+#include "./cn_types.h"
+#include "./getters.h"
+#include "./allocation.test.h"
+#include "./predicates.h"

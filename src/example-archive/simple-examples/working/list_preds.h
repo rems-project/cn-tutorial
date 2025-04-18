@@ -28,7 +28,7 @@ predicate (datatype seq) IntListSeg(pointer p, pointer tail) {
   if (ptr_eq(p,tail)) {
     return Seq_Nil{};
   } else {
-    take H = Owned<struct list_node>(p);
+    take H = RW<struct list_node>(p);
     take tl = IntListSeg(H.next, tail);
     return (Seq_Cons { val: H.val, next: tl });
   }

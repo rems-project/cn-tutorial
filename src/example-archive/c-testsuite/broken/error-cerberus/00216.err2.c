@@ -131,7 +131,7 @@ void print_ (const char *name, const u8 *p, long size)
   while (size--) {
       printf (" %x", *p++);
   }
-  printf ("\n");
+  printf ("");
 }
 #define print(x) print_(#x, (u8*)&x, sizeof (x))
 #if 1

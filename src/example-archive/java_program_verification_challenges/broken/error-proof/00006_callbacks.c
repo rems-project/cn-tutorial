@@ -72,11 +72,11 @@ struct A {
  * @ ensures k == \old(k) - 1 && m == \old(m) + 1;
  */
 void decrement_k(A *a)
-  /*@ requires take va0 = Owned<A>(a);
+  /*@ requires take va0 = RW<A>(a);
                va0.m < 2147483647i32;
                -2147483648i32 < va0.k;
 	       va0.k + va0.m == 0i32
-      ensures take va1 = Owned<A>(a);
+      ensures take va1 = RW<A>(a);
               va1.k == va0.k-1i32;
               va1.m == va0.m+1i32;
 	      va1.k + va1.m == 0i32
@@ -97,12 +97,12 @@ void decrement_k(A *a)
  * @ ensures true;
  */
 void increment_k(A *a)
-  /*@ requires take va0 = Owned<A>(a);
+  /*@ requires take va0 = RW<A>(a);
                va0.k < 2147483647i32;
                va0.m < 2147483647i32;
                -2147483648i32 < va0.m;
 	       va0.k + va0.m == 0i32
-      ensures take va1 = Owned<A>(a);
+      ensures take va1 = RW<A>(a);
               va1.k == va0.k;
               va1.m == va0.m;
 	      va1.k + va1.m == 0i32

@@ -15,7 +15,7 @@ predicate (datatype Tree) Tree_At (pointer t)
     }
     else
     {
-        take T = Owned<struct node>(t);
+        take T = RW<struct node>(t);
         take L = Tree_At(T.left);
         assert (L == Leaf{} || Data_Of(L) < T.data);
         take R = Tree_At(T.right);

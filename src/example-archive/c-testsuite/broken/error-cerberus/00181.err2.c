@@ -51,15 +51,15 @@ void PrintAll()
 
    printf("A: ");
    for(i=0;i<N;i++)printf(" %d ",A[i]);
-   printf("\n");
+   printf("");
 
    printf("B: ");
    for(i=0;i<N;i++)printf(" %d ",B[i]);
-   printf("\n");
+   printf("");
 
    printf("C: ");
    for(i=0;i<N;i++)printf(" %d ",C[i]);
-   printf("\n");
+   printf("");
    printf("------------------------------------------\n");
    return;
 }
@@ -111,7 +111,7 @@ int main()
    /* Print the starting state */
    printf("Starting state:\n");
    PrintAll();
-   printf("\n\nSubsequent states:\n\n");
+   printf("\nSubsequent states:\n\n");
 
    /* Do it! Use A = Source, B = Destination, C = Spare */
    Hanoi(N,A,B,C);

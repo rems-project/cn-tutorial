@@ -2,12 +2,12 @@
 
 void assert_2(int *x, int *y)
 /*@ requires 
-      take Xpre = Owned<int>(x); 
-      take Ypre = Owned<int>(y);
+      take Xpre = RW<int>(x); 
+      take Ypre = RW<int>(y);
       *x == 7i32; *y == 7i32; @*/
 /*@ ensures 
-      take Xpost = Owned<int>(x);
-      take Ypost = Owned<int>(y);
+      take Xpost = RW<int>(x);
+      take Ypost = RW<int>(y);
       *x == 0i32; *y == 0i32; @*/
 {
   *x = 0;

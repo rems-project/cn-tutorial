@@ -28,8 +28,8 @@ also return their contents.
 
 | Condition | Syntax | Example |
 | --------- | ------ | ------- |
-| Single resource condition | `take <id> = <resource-predicate>` | `take v = Owned(p)` |
-| Iterated resource condition | <p><code>take &#x3C;id> = each (&#x3C;type> &#x3C;id>; &#x3C;expr>)</code><br><code>{</code><br>  <code>&emsp;&#x3C;resource-predicate></code><br><code>}</code></p> | <p><code>take vs = each (u32 i; 0u32 &#x3C;= i &#x26;&#x26; i &#x3C; 10i32)</code><br><code>{</code><br>  <code>&emsp;Owned(p + i)</code><br><code>}</code></p> |
+| Single resource condition | `take <id> = <resource-predicate>` | `take v = RW(p)` |
+| Iterated resource condition | <p><code>take &#x3C;id> = each (&#x3C;type> &#x3C;id>; &#x3C;expr>)</code><br><code>{</code><br>  <code>&emsp;&#x3C;resource-predicate></code><br><code>}</code></p> | <p><code>take vs = each (u32 i; 0u32 &#x3C;= i &#x26;&#x26; i &#x3C; 10i32)</code><br><code>{</code><br>  <code>&emsp;RW(p + i)</code><br><code>}</code></p> |
 
 !!! info
     See [resource predicates](resource-predicates.md) for more
@@ -44,15 +44,15 @@ void add_all(int *p, int arr[], int len)
 /*@
   requires
     0i32 <= len;
-    take v_in = Owned(p);
+    take v_in = RW(p);
     take arr_in = each (i32 j; 0i32 <= j && j < len) {
-      Owned(arr + j)
+      RW(arr + j)
     };
     
   ensures
-    take v_out = Owned(p);
+    take v_out = RW(p);
     take arr_out = each (i32 j; 0i32 <= j && j < len) {
-      Owned(arr + j)
+      RW(arr + j)
     };
     each (i32 j; 0i32 <= j && j < len) {
       arr_out[j] = arr_in[j] + v_in;

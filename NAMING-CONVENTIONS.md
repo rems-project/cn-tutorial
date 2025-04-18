@@ -40,8 +40,8 @@ aim for maximal correspondence between
         to a final sequence `L_post` such that `L == L_post`.
         (Moreover, it returns a new sequence `Ret` with `L == Ret`.)
 
-- Predicates that extract some structure from the heap should be named
-  the same as the structure they extract, plus the suffix `_At`.
+- Predicates that focus some structure from the heap should be named
+  the same as the structure they focus, plus the suffix `_At`.
   E.g., the result type of the `Queue` predicate is also called
   `Queue_At`.
 

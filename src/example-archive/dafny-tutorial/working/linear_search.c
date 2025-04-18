@@ -4,10 +4,10 @@ int linear_search(int *a, int length, int key)
 /*@ requires 
       0i32 < length; 
       take IndexPre = each (i32 j; 0i32 <= j && j < length)
-                           {Owned<int>(a + j)}; @*/
+                           {RW<int>(a + j)}; @*/
 /*@ ensures 
       take IndexPost = each (i32 j; 0i32 <= j && j < length)
-                            {Owned<int>(a + j)};
+                            {RW<int>(a + j)};
       (return < 0i32) || (IndexPost[return] == key); 
       each (i32 j; 0i32 <= j && j < length) 
            {return >= 0i32 || IndexPre[j] != key}; 
@@ -21,11 +21,11 @@ int linear_search(int *a, int length, int key)
         0i32 <= idx; 
         idx <= length; 
         take IndexInv = each (i32 j; 0i32 <= j && j < length)
-                             {Owned<int>(a + j)}; 
+                             {RW<int>(a + j)}; 
         IndexInv == IndexPre; 
         each (i32 j; 0i32 <= j && j < idx) {IndexPre[j] != key}; @*/
   {
-    /*@ extract Owned<int>, idx; @*/
+    /*@ focus RW<int>, idx; @*/
     if (*(a + idx) == key)
     {
       return idx;

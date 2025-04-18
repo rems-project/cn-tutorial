@@ -101,10 +101,10 @@ point ZERO = {0, 0};
 
 // Check whether two points are equal
 bool point_eq(const point *p1, const point *p2)
-/*@ requires take vp10 = Owned<struct point>(p1);
-             take vp20 = Owned<struct point>(p2); 
-    ensures  take vp11 = Owned<struct point>(p1);
-             take vp21 = Owned<struct point>(p2);
+/*@ requires take vp10 = RW<struct point>(p1);
+             take vp20 = RW<struct point>(p2); 
+    ensures  take vp11 = RW<struct point>(p1);
+             take vp21 = RW<struct point>(p2);
 	     vp10 == vp11 ; vp20 == vp21;
 	     if (vp11.x == vp21.x && vp11.y == vp21.x) {
 	        return == 1u8
@@ -118,13 +118,13 @@ bool point_eq(const point *p1, const point *p2)
 
 /*@ spec malloc();
     requires true; 
-    ensures take v = Block<struct point>(return); 
+    ensures take v = W<struct point>(return); 
 @*/
 
 // Allocate and return a new point
 point* point_new(uint32_t x, uint32_t y) 
 /*@ requires true; 
-    ensures  take vp1 = Owned<struct point>(return);
+    ensures  take vp1 = RW<struct point>(return);
 	     vp1.x == x ; vp1.y == y; 
 @*/
 {
@@ -136,9 +136,9 @@ point* point_new(uint32_t x, uint32_t y)
 
 // Return a new point containing a copy of `p`
 point* point_copy(const point* p) 
-/*@ requires take vp0 = Owned<struct point>(p); 
-    ensures  take vp1 = Owned<struct point>(p);
-             take vr1 = Owned<struct point>(return);
+/*@ requires take vp0 = RW<struct point>(p); 
+    ensures  take vp1 = RW<struct point>(p);
+             take vr1 = RW<struct point>(return);
 	     vp0.x == vp1.x ; vp0.y == vp1.y;
 	     vr1.x == vp1.x ; vr1.y == vp1.y; 
 	     @*/
@@ -148,14 +148,14 @@ point* point_copy(const point* p)
 
 // Add two points
 point* point_add(const point *p1, const point *p2) 
-/*@ requires take vp10 = Owned<struct point>(p1);
-             take vp20 = Owned<struct point>(p2);
-	     take vZ0 = Owned<struct point>(&ZERO);
+/*@ requires take vp10 = RW<struct point>(p1);
+             take vp20 = RW<struct point>(p2);
+	     take vZ0 = RW<struct point>(&ZERO);
 	     vZ0.x == 0u32 ; vZ0.y == 0u32; 
-    ensures  take vp11 = Owned<struct point>(p1);
-             take vp21 = Owned<struct point>(p2);
-	     take vZ1 = Owned<struct point>(&ZERO);
-             take vr1 = Owned<struct point>(return);
+    ensures  take vp11 = RW<struct point>(p1);
+             take vp21 = RW<struct point>(p2);
+	     take vZ1 = RW<struct point>(&ZERO);
+             take vr1 = RW<struct point>(return);
 	     vr1.x == vp11.x + vp21.x ; vr1.y == vp11.y + vp21.y; 
 @*/
 {

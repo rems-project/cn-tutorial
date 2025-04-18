@@ -60,10 +60,10 @@ void m() {
 }
 
 int main()
-  /*@ requires take vr0 = Block<bool>(result1);
-               take vr0 = Block<bool>(result2)
-      ensures take vp1 = Block<bool>(result1);
-              take vb1 = Block<bool>(result2)
+  /*@ requires take vr0 = W<bool>(result1);
+               take vr0 = W<bool>(result2)
+      ensures take vp1 = W<bool>(result1);
+              take vb1 = W<bool>(result2)
   @*/
   {
     m();  // Execute the function m

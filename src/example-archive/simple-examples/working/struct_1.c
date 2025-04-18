@@ -7,9 +7,9 @@ struct s
 };
 
 void struct_1(struct s *p)
-/*@ requires take StructPre  = Owned<struct s>(p); @*/
+/*@ requires take StructPre  = RW<struct s>(p); @*/
 /*@ ensures  
-      take StructPost = Owned<struct s>(p);
+      take StructPost = RW<struct s>(p);
       StructPre.x == StructPost.x;
       StructPost.y == 0i32; @*/
 {
