@@ -27,6 +27,7 @@ theme:
     - search.share
     - search.suggest
     - toc.follow
+    - toc.integrate
   language: en
   palette:
     - media: "(prefers-color-scheme)"
