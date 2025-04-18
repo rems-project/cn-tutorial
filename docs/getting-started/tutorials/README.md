@@ -15,6 +15,14 @@
 - [Lists](lists.md)
 - [{{ verifmarker("Lists, verified") }}](verif-lists.md)
 - [{{ verifmarker("Case analysis") }}](verif-splitcase.md)
+
+## More on Testing
+
+- [Unit testing](unit-testing.md)
+- [Understanding and controlling test distributions](test-distribs.md)
+
+## More on Verification
+
 - [{{ verifmarker("More on numeric types") }}](verif-numeric.md)
 - [{{ verifmarker("Working with external lemmas") }}](verif-external.md)
 
