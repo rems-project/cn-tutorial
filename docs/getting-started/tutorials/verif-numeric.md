@@ -1,4 +1,4 @@
-# More on Numeric Types (Verification)
+# More on numeric types (verification)
 
 {{ todo("Section under construction...") }}
 
@@ -12,7 +12,7 @@ So far, we have worked entirely with unsigned 32-bit integers. These
 are simpler to deal with than C's signed integers, which introduce the
 possibility of _undefined behavior_.
 
-## Signed Arithmetic and Undefined Behavior
+## Signed arithmetic and undefined behavior
 
 The simple arithmetic function `add` shown below takes `int` arguments `x` and `y` and returns their sum.
 

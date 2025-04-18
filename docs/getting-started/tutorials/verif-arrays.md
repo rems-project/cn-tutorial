@@ -1,4 +1,4 @@
-# Verifying Programs with Arrays and Loops
+# Arrays and loops, verified
 
 Recall this specification for a simple function that reads from an array:
 

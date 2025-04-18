@@ -109,12 +109,12 @@ nav:
     - Tutorial:
       - getting-started/tutorials/README.md
       - "Welcome": getting-started/tutorials/welcome.md
-      - "A First Taste of CN: Specification and Testing": getting-started/tutorials/first-taste.md
-      - "(V) A First Taste of Verification": getting-started/tutorials/verif-basics.md
-      - "Working with Pointers": getting-started/tutorials/pointers.md
-      - "(V) Pointers to Structured Objects, Verified": getting-started/tutorials/verif-pointers.md
-      - "Arrays and Loops": getting-started/tutorials/arrays.md
-      - "(V) Arrays and Loops, Verified": getting-started/tutorials/verif-arrays.md
+      - "A first taste of CN: specification and testing": getting-started/tutorials/first-taste.md
+      - "(V) A first taste of verification": getting-started/tutorials/verif-basics.md
+      - "Working with pointers": getting-started/tutorials/pointers.md
+      - "(V) Pointers to structured objects, verified": getting-started/tutorials/verif-pointers.md
+      - "Arrays and loops": getting-started/tutorials/arrays.md
+      - "(V) Arrays and loops, verified": getting-started/tutorials/verif-arrays.md
 
 # #        - "Defining predicates": getting-started/tutorials/verification/defining-predicates.md
 # #        - "Allocating and deallocating memory": getting-started/tutorials/verification/allocating-and-deallocating-memory.md

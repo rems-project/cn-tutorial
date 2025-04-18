@@ -27,17 +27,17 @@ CN can be used in two distinct ways:
 The main thread of this tutorial is aimed at readers who want to get up to speed
 quickly with specifying and testing C programs using CN. Verification topics are
 covered in optional sections marked "{{ verifmarkername() }}". Most
-readers — even readers whose 
+readers — even readers whose
 primary interest is verification — should skip these sections on a first reading
 and, if desired, come back to them on a second pass.
 
-## Setup Instructions
+## Setup instructions
 
 Before getting started, make sure you have a running installation of
 CN and a local copy of the source files for all the exercises and
 examples; these can be downloaded from [here](link:exercises.zip).
 
-## Acknowledgment of Support and Disclaimer
+## Acknowledgment of support and disclaimer
 
 This material is based upon work supported by the Air Force Research
 Laboratory (AFRL) and Defense Advanced Research Projects Agencies

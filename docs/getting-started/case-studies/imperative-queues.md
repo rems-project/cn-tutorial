@@ -1,4 +1,4 @@
-# Imperative Queues
+# Imperative queues
 
 {{ todo("BCP: Zain points out that the lemma in `push_lemma.h` might
 be wrong when `P.next` is `NULL`...  To fix it, try taking ownership[

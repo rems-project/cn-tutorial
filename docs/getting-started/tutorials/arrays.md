@@ -1,4 +1,4 @@
-# Arrays and Loops
+# Arrays and loops
 
 Another common datatype in C is arrays. Reasoning about memory ownership for arrays is more difficult than for the datatypes we have seen so far, for two reasons: (1) C allows the programmer to access arrays using _computed pointers_, and (2) the size of an array does not need to be known as a constant at compile time.
 
@@ -31,7 +31,7 @@ In general, the syntax of `each` is as follows:
 each (<type> <var>; <boolean expr>) { <expr> }
 ```
 
-### First Array Example
+### First array example
 
 Let’s see how this applies to a simple array-manipulating function. Function `read` takes three arguments: the base pointer `p` of an `unsigned int` array, the length `n` of the array, and an index `i` into the array; `read` then returns the value of the `i`-th array cell.
 
@@ -48,7 +48,7 @@ The CN precondition requires
 
 On exit the array ownership is returned again. The postcondition also asserts that the return value of the function is indeed equal to the value of the array at index `i`.
 
-### Writing to Arrays
+### Writing to arrays
 
 Consider this next function `writei`, which sets the value of the `i`-th array cell to be `val`.
 
@@ -80,7 +80,7 @@ exercises/array_swap.c
 --8<--
 ```
 
-### Iterated Conditions
+### Iterated conditions
 
 Suppose we are writing a function that returns the maximum value in an array. Informally, we would want a postcondition that asserts that the returned value is greater than or equal to _each_ value in the array. Formally, for an array `A` of length `n`, we use an _iterated condition_ to write
 

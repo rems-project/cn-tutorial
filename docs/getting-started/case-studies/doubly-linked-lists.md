@@ -1,4 +1,4 @@
-# Doubly-linked Lists
+# Doubly-linked lists
 
 {{ later("BCP: The rest of the tutorial (from here to the end) needs to be checked for consistency of naming and capitalization conventions. ") }}
 

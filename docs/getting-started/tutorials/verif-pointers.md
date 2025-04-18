@@ -1,4 +1,4 @@
-# Verification with Pointers to Structured Objects
+# Pointers to structured objects, verified
 
 Verifying CN programs involving structured objects raises a number
 of new issues.
@@ -18,7 +18,7 @@ exercises/init_point.c
 --8<--
 ```
 
-As stated in its precondition, `init_point` receives ownership `RW<struct point>(p)`. The `zero` function, however, works on `unsigned int` pointers and requires ownership `RW<unsigned int>`, so CN cannot simply pass `init_point`'s struct ownership to `zero`. Instead, CN decomposes the `RW<struct point>(p)` resource into two `RW<unsigned int>` resources, one for each member pointer, and proves that the calls to `zero` with `&p->x` and `&p->y` are safe by supplying the respective `RW<unsigned int>` resources. 
+As stated in its precondition, `init_point` receives ownership `RW<struct point>(p)`. The `zero` function, however, works on `unsigned int` pointers and requires ownership `RW<unsigned int>`, so CN cannot simply pass `init_point`'s struct ownership to `zero`. Instead, CN decomposes the `RW<struct point>(p)` resource into two `RW<unsigned int>` resources, one for each member pointer, and proves that the calls to `zero` with `&p->x` and `&p->y` are safe by supplying the respective `RW<unsigned int>` resources.
 
 Later, the reverse happens. Since the postcondition of `init_point` requires ownership `RW<struct point>(p)`, CN re-assembles the two `RW<unsigned int>` resources (now both zero-initialised) back into a compound struct resource. The resulting pointee value `P_post` is a struct composed of the zeroed member values for `x` and `y`.
 
@@ -65,7 +65,7 @@ The assignments to `p->x` and `p->y` update these member resources with new valu
 _Exercise:_ Insert CN `assert(false)` statements in different statement positions of `init_point` and check how the available resources evolve.
 
 _Exercise:_  Recreate the `transpose` function from before, now
-using the `swap` function: write a specification for `swap` (as defined below) and verify the result in CN. 
+using the `swap` function: write a specification for `swap` (as defined below) and verify the result in CN.
 {{ todo("JWS: What exactly is it that they're supposed to do here? Seems like just copy-pasting the specification from above will work?") }}
 {{ todo("BCP: Maybe that's OK?  Or maybe we can think of a more interesting variant...") }}
 {{ todo("CP: I tweaked the exercise so it includes (at least) giving a specification for `swap`; that's still an easy exercise and we could use more+more interesting ones, but maybe it's better than nothing, for now.") }}

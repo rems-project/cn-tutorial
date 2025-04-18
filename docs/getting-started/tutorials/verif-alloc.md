@@ -1,7 +1,7 @@
-# Allocating and Deallocating Memory, Verified
+# Allocating and deallocating memory, verified
 
 
-## W Resources
+## W resources
 
 In low-level C code, it is sometimes useful to pass around memory that
 has been allocated but not yet initialized.  CN provides an alternate

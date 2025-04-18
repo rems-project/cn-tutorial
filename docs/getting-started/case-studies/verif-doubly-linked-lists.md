@@ -1,4 +1,4 @@
-# Doubly-linked Lists, Verified
+# Doubly-linked lists, verified
 
 Verifying the doubly-linked list operations requires a few extra
 annotations. 

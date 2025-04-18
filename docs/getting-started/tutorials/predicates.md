@@ -1,4 +1,4 @@
-# Defining Predicates
+# Defining predicates
 
 {{ todo("BCP: The text becomes a bit sketchy from here on! But hopefully there's
 still enough structure here to make sense of the examples...") }}

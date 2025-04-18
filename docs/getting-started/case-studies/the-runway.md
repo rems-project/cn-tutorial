@@ -1,4 +1,4 @@
-# Airport Simulation
+# Airport simulation
 
 {{ later("BCP: This case study is not as well polished as the
 others. It's useful because it's more like real-world C code than the

@@ -1,4 +1,4 @@
-# Pointers and Simple Ownership
+# Working with pointers
 
 So far we’ve only considered functions manipulating numeric
 values. Specifications become more interesting when _pointers_ are
@@ -37,7 +37,7 @@ For the read `*p` to be safe, we need to know that the function has permission
 to access the memory pointed to by `p`. We next explain how to represent this
 permission.
 
-## RW Resources
+## RW resources
 
 Given a C-type `T` and pointer `p`, the resource `RW<T>(p)` asserts
 _ownership_ of a memory region at location `p` of the size of the C type
@@ -72,7 +72,7 @@ This specification can be read as follows:
 - the caller will receive back a resource `RW<unsigned int>(p)` when
   `read` returns.
 
-## Pointee Values
+## Pointee values
 
 In addition to reasoning about memory accesed by pointers, we likely also want
 to reason about the actual values that the pointers point to. The `take P =` in
@@ -134,7 +134,7 @@ and this incorrect implementation
 ```
 should fail.
 
-## Writing Through Pointers
+## Writing through pointers
 
 We next have an example where data is written to a pointer. The function
 `incr` takes a pointer `p` and increments the value in the memory cell that it
@@ -162,7 +162,7 @@ exercises/slf3_basic_inplace_double.c
 --8<--
 ```
 
-## No Memory Leaks
+## No memory leaks
 
 In the specifications we have written so far, functions that receive resources as part of their precondition also return this ownership in their postcondition.
 
@@ -210,7 +210,7 @@ very undesirable. As a consequence, function specifications have to do precise
 bookkeeping of their resource footprint and, in particular, return any unused
 resources back to the caller.
 
-## Disjoint Memory Regions
+## Disjoint memory regions
 
 When functions manipulate multiple pointers, we can assert ownership of each
 one, just like before. But there is an additional twist: simultaneously owning
@@ -240,7 +240,7 @@ exercises/slf8_basic_transfer.c
 --8<--
 ```
 
-## Ownership of Structured Objects
+## Ownership of structured objects
 
 So far, our examples have worked with just integers and pointers, but
 larger programs typically also manipulate compound values, often

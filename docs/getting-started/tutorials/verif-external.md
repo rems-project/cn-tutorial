@@ -1,4 +1,4 @@
-# Working with External Lemmas
+# Working with external lemmas
 
 {{ later("BCP: This section should also show what the proof of the lemmas
 looks like on the Coq side! ") }}

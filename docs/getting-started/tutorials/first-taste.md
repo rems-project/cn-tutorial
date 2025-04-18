@@ -1,10 +1,10 @@
-# A First Taste of CN: Specification and Testing
+# A first taste of CN: specification and testing
 
 This section introduces the most basic features of CN: a notation for
 writing _specifications_ of C functions and a tool for _testing_ the
 behavior of the code against those specifications.
 
-## A First Specification
+## A first specification
 
 Suppose we are writing a function `min3`, which takes three `unsigned int` arguments.
 
@@ -165,7 +165,7 @@ exercises/add.partial.c
 --8<--
 ```
 
-## Specifications with Preconditions
+## Specifications with preconditions
 
 Here's a silly way of writing a function that
 returns whatever number it is given as input:

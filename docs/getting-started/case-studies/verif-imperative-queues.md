@@ -1,4 +1,4 @@
-# Imperative Queues, Verified
+# Imperative queues, verified
 
 To verify the queue operations, we'll need to add some annotations,
 as usual.
