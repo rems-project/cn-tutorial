@@ -36,7 +36,16 @@ already-initialised memory cell to be over-written again.
 
 Unlike `RW`, whose output is the pointee value, `W` has no meaningful output.
 
-{{ todo("BCP: An example and/or an exercise about the W resource would be nice!") }}
+### Exercises
+
+_Exercise:_ This specification is broken. (Run `cn verify` to see the error
+message.) Fix the specification by fixing which kinds of resources are used.
+
+```c title="exercises/w_resources_ex.broken.c"
+--8<--
+exercises/w_resources_ex.broken.c
+--8<--
+```
 
 ## Verifying programs with malloc and free
 
@@ -44,7 +53,7 @@ Verifying programs that allocate and deallocate heap memory is a bit
 different from testing such programs, in two respects:
 
 On one hand, there is no need to link against the nonstandard
-`cn_malloc` and `cn_free` functions: programs can just use the
+`cn_malloc` and `cn_free_sized` functions: programs can just use the
 standard `malloc` and `free`.
 
 However, at the moment, CN's verification machinery does not
