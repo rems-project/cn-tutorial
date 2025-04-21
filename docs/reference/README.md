@@ -1,4 +1,4 @@
-# Reference
+# Quick Reference
 
 A quick reference for CN keywords, symbols, and operations.
 

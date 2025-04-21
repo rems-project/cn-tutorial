@@ -1,3 +1,9 @@
+---
+hide:
+    - navigation
+    - toc
+---
+
 # Welcome to CN
 
 _These tutorials and docs were developed by {{ text_authors() }}._
@@ -33,7 +39,7 @@ appreciated!
     Check out the tutorial to learn how to write, test, and verify your first
     spec
 
-    [:octicons-arrow-right-24: Tutorial](getting-started/tutorials/README.md)
+    [:octicons-arrow-right-24: Tutorial](getting-started/tutorials/welcome.md)
 
 -   :material-scale-balance:{ .lg .middle } __Language reference__
 

@@ -1,4 +1,4 @@
-# CN Basics (with Verification)
+# A first taste of verification
 
 ## Verifying `min3`
 
