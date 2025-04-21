@@ -18,7 +18,16 @@ Two reasons would be regression testing and fixing flaky tests.
 
 ### Regression testing
 
-Using the counterexample from [First Taste](./first-taste.md):
+Consider the `min3` example from [First Taste](./first-taste.md).
+Suppose we fix the bug, but want to prevent a later regression.
+
+We can define a new function that will test the previous counterexample:
+
+{{ todo("""ZKA:
+    I should add a compiler flag `__CN_TESTING`, which is true when running with `cn test`.
+    Then we can put unit tests like this inside an `#ifdef`.
+    Should also look into supporting user assertions (via a user-available library).""")
+}}
 
 ```c
 void test_min3() {
@@ -51,10 +60,13 @@ void capitalize(char *str)
 }
 ```
 
-- Run `cn test` multiple times
-- Note how it passes sometimes
-- `--print-seed` and `--seed` to reproduce?
-- Tests that sometimes pass and sometimes fail are known as "flaky tests"
-- We can make our tests less flaky by removing the randomness and making a unit test.
-  - Now we can be confident when re-running `cn test` that `'z'` is being included in our testing.
-  - Maybe include in main PBT pages to demonstrate how to handle flaky PBT.
+1. Run `cn test` multiple times
+    1. Note how it passes sometimes
+    2. Tests that sometimes pass and sometimes fail are known as "flaky tests"
+
+2. `--print-seed` and `--seed` to reproduce?
+    1. However, depends on the full testing workflow (functions under test, order tested)
+    2. Could be better via per-input seeds...
+
+3. A more robust solution for making our tests less flaky would be to add a unit test.
+    1. Now we can be confident that, when re-running `cn test`, `'z'` is being tested.
