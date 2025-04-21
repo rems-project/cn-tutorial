@@ -59,6 +59,9 @@ plugins:
   - macros:
       module_name: macros
 
+hooks:
+  - hooks.py
+
 # Extensions
 markdown_extensions:
   - abbr
