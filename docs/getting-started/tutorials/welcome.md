@@ -26,7 +26,7 @@ CN can be used in two distinct ways:
 
 The main thread of this tutorial is aimed at readers who want to get up to speed
 quickly with specifying and testing C programs using CN. Verification topics are
-covered in optional sections marked "{{ verifmarkername() }}". Most
+covered in optional sections whose names are italicized. Most
 readers — even readers whose
 primary interest is verification — should skip these sections on a first reading
 and, if desired, come back to them on a second pass.
