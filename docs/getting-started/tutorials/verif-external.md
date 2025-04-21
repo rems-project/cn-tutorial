@@ -1,3 +1,7 @@
+---
+flow: Verification
+---
+
 # Working with external lemmas
 
 {{ later("BCP: This section should also show what the proof of the lemmas

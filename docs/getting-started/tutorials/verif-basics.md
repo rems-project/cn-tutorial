@@ -1,3 +1,7 @@
+---
+flow: Verification
+---
+
 # A first taste of verification
 
 ## Verifying `min3`

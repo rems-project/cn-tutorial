@@ -1,3 +1,7 @@
+---
+flow: Verification
+---
+
 # Pointers to structured objects, verified
 
 Verifying CN programs involving structured objects raises a number

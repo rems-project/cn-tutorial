@@ -1,3 +1,7 @@
+---
+flow: Verification
+---
+
 # Lists, verified
 
 Now let's see what's needed to fully verify linked-list operations.
