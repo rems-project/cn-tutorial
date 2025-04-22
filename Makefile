@@ -191,11 +191,11 @@ check: exercises check-archive
 
 _temp/consistent/% : %
 	$(V)perl -0777 -ne \
-	   'while (/c title=\"(.+)\"\n.+\n(.+)\n/g) { \
-	     if ($$1 ne $$2) { \
-	       print "Bad .md file ($<): $$1 does not match $$2\n"; \
-	       exit 1;  \
-	   } }' \
+	   'while (/c title=\"(.+)\"\n.+\n(.+)\n/g) {' \
+	     -e 'if ($$1 ne $$2) {' \
+	       -e 'print "Bad .md file ($<): $$1 does not match $$2\n";' \
+	       -e 'exit 1;' \
+	   -e '} }' \
 	   $<
 	$(V)-mkdir -p $(dir $@)
 	$(V)touch $@
