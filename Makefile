@@ -95,8 +95,9 @@ CONSISTENT=$(patsubst %, _temp/consistent/%, $(MD))
 
 exercises: $(EXERCISES) $(SOLUTIONS) $(TESTED) $(VERIFIED) $(CONSISTENT)
 
-CN=cn verify
-CNTEST=cn test --output _temp --progress-level=function
+CNWAR=--include $(MAKEFILE_DIR)/src/exercises/cn_wars.h
+CN=cn verify $(CNWAR)
+CNTEST=cn test --output _temp --progress-level=function $(CNWAR)
 
 # Control verbosity (run make with V= to show everything that's happening)
 V=@
@@ -177,7 +178,7 @@ WORKING_AUX=$(patsubst src/exercises/%, docs/solutions/%, $(WORKING))
 ##############################################################################
 # Check that the examples all run correctly
 
-CN_PATH?=cn verify
+CN_PATH?=cn verify $(CNWAR)
 
 check-archive:
 	@echo Check archive examples
