@@ -2,8 +2,8 @@
 
 This section introduces two of the most basic features of CN:   
 
-1. A notation for writing _specifications_ of C functions, and  
-2. A tool for _testing_ the behavior of the code against those specifications.
+- A notation for writing _specifications_ of C functions, and  
+- A tool for _testing_ the behavior of the code against those specifications.
 
 ## A First Specification
 
@@ -47,12 +47,13 @@ Let’s break this down...
 
 - Each clause of the specification concludes with a semicolon.
 
-{{ todo("AZ: Since these terms might be unfamiliar to a practicing software engineer, 
+{{ later("AZ: Since these terms might be unfamiliar to a practicing software engineer, 
 it can be useful to explain more about pre- and post-conditions in an aside, or by 
 linking references to it. For example wiki references might be enough: 
 https://en.wikipedia.org/wiki/Precondition and
 https://en.wikipedia.org/wiki/Postcondition") }}
-{{ todo("BCP: Sure.  We could also add a little more material here --
+
+{{ later("BCP: Sure.  We could also add a little more material here --
 e.g., another example or two focused just on thinking about pre- and
 postconditions.  But let's leave that for a later pass.") }} 
 
@@ -83,19 +84,16 @@ inputs.
 For example, if the `min3` function ever returns a value that violates the specification
 (like returning `x` when `y` is the smallest), CN will notice and report it — giving
 concrete test inputs that fail the test (by violating the specifications).
-{{ todo("AZ: Might be useful to have names for the testing and verification tools.") }}
-{{ todo("BCP: Maybe better not to emphasize the difference between
-testing and verification modes -- i.e., just call it CN throughout...") }}
 
 Specification-based testing shifts the focus from writing tests manually, to letting the
-specification drive the testing process. This not only catches bugs more effectively,
-but also makes specifications an active part of the development workflow.
-{{ todo("BCP: I slightly disagree with the framing here:
-Specification-based testing can be used in different modes -- 'point
-testing' in the style of standard unit testing (but using the
-specification to judge whether the output for a given test is OK,
-rather than the using predicting what the output should be) and
-'specification-based random testing'. i.e., setandard PBT.") }}
+specification drive the testing process. This approach can be more effective at catching
+bugs. Specification-based testing can be used in different modes:
+
+- _point testing_ similar to standard unit testing, but instead of predicting the
+  expected output, the specification is used to judge whether the result is correct.
+- _specification-based random testing_ which is essentially standard property-based
+  testing (PBT).
+{{ later("AZ: Perhaps expand on PBT or add a reference to PBT.") }} 
 
 ### Running `cn test`
 
@@ -104,13 +102,6 @@ To test the implementation, CN’s command-line tool can be invoked as `cn test 
     To open a terminal inside VSCode (which will ensure your paths are set up correctly, 
     etc.), use `View > Terminal`.
 
-{{ todo("AZ: The bit about VS Code appears abruptly. Is the user expected to use VS Code,
-or this is more like a 'tip' in case the user is using VS Code. If its the former, then 
-this might be a place to talk about or link to details about VS Code integrations if there
-are any. If it is the latter, then consider writing it as a 'tip'.") }}
-{{ todo("BCP: FOr VERSE, everyone will be using VSCode.  
-It's possible that people outside VERSE will have other ways, but this
-should be presented as the default.") }}
 
 ```
 $ cn test min3.broken.c
@@ -140,13 +131,14 @@ CN reports that there seems to be an issue with our
 implementation. We'll return to that in a second, but first, let's
 explain what happened when we ran `cn test`.
 
-#### Property-Based Testing vs Input-Output Testing
+#### Property-Based Random Testing vs Input-Output Testing
 
 You may be accustomed to input-output testing, where the developer writes _unit tests_
 that assert what the output of a function should be on a given input.
-CN uses a different approach called _property-based random testing_. With
-property-based random testing, things are much more automatic. CN works in two important
-ways:
+Though CN also supports a similar approach, here, CN uses a different approach called
+_property-based random testing_. With property-based random testing, things are much more
+automatic. CN works in two important ways:
+
 {{ todo("BCP: Again, CN also supports 'specification-based unit
 testing' (or whatever it should be called -- I'm sure we don't
 actually want to call it that!).  However, I don't think we want to
@@ -154,6 +146,10 @@ spend time here showing people how to do unit testing with CN -- that
 should come later, IMO.  Namely, it should be introduced as a tool to
 use to increase test coverage and/or deal with situations where the
 random testing is not doing a good enough job of finding bugs.") }}
+
+{{ later("AZ: Modified the text above to highlight the 2 different approaches.
+          Need to address BCP's above comments about increasing test coverage.") }}
+
 
 1.  First, instead of requiring the developer to manually construct a suite of interesting
     test _inputs_, CN automatically generates a large number of random test inputs.
@@ -228,10 +224,6 @@ Hooray!
 
 ### Exercises
 
-{{ todo("AZ: It might be useful to number the exercises.")}}
-{{ todo("BCP: Keeping the numbers consistent as we edit will be a big
-pain in the neck!")}}
-
 _Exercise:_ Improve the specification.
 
 The specification we wrote is
@@ -296,12 +288,11 @@ A specification with both preconditions and postconditions says: if
 the preconditions hold at the point where the function is called, then the
 postconditions will hold when the function returns.
 
-!!! note
-    The other new piece of syntax here is the `u32` type annotations. In
-    CN specifications, numeric types need to be annotated explicitly, and
-    we use `u32` for `unsigned int`.  Try removing the annotations to see
-    the error message that results.
-{{ todo("BCP: Shouldn't every reader see this information?")}}
+
+The other new piece of syntax here is the `u32` type annotations. In
+CN specifications, numeric types need to be annotated explicitly, and
+we use `u32` for `unsigned int`.  Try removing the annotations to see
+the error message that results.
 
 ### Exercises
 
