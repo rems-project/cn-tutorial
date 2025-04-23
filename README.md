@@ -19,15 +19,27 @@ The CN tutorial is built using [Material for
 MkDocs](https://squidfunk.github.io/mkdocs-material/).
 
 Dependencies:
-* python 3.x
-* pip
+* python >=3.10
 
-```bash
-# Install Material for MkDocs
-pip install mkdocs-material mkdocs-macros-plugin
+A suitable Python virtual environment can be created by running:
 
-# Build the tutorial
-make
+```console
+> scripts/setup_env.sh
+```
+
+This script only needs to be run once.
+
+It will create a `.venv/` with the dependencies necessary to build the CN
+tutorial, which can be activated with:
+
+```console
+> source .venv/bin/activate
+```
+
+From here, building the tutorial is straightforward:
+
+```console
+> make
 ```
 
 If you are _developing_ tutorial documentation, you may wish to include
@@ -39,6 +51,9 @@ unimportant, so the empty string will suffice):
 # Build the tutorial, including any developer comments
 TUTORIAL_TODOS= make
 ```
+
+Running `deactivate` will "turn off" the virtual environment; it can be
+reactivated any time using the above `source .venv/bin/activate` command.
 
 ### Hosting locally
 
