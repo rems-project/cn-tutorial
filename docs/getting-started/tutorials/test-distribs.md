@@ -20,7 +20,7 @@ To generate coverage data, run CN with the `--coverage` switch. This will cause 
 
 ![*Line-by-line data in lcov*](images/lcov-screenshot-2.png)
 
- *N.B.:* `lcov`'s line-by-line data is not broken down by individual tests or input values, but shows only totals for the entire test run.
+ *N.B.:* `lcov`'s line-by-line data is not broken down by individual test inputs, but shows only totals for the entire test run.
 
 ## Analytics with Tyche
 
