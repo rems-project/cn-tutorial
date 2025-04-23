@@ -34,7 +34,7 @@ To start, run `cn test` with the `--output-tyche` switch. The following command 
 
  When the output file is loaded into Tyche, the first view will be a list of functions tested (if more than one). Clicking on any one of these will bring up the main view as shown in the screenshot following. This provides access to detailed information about the test run, including the total number of inputs, timing data, pass/fail numbers, and a serialization of each different input. If there was a failure, the "counterexample" input that caused the failure will be shown.
 
-![*Tyche example*](images/tyche_screenshot.png)
+![*Tyche example*](images/tyche-screenshot.png)
 
 ## Tweaking the distributions
 
