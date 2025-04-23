@@ -66,7 +66,6 @@ TESTED = $(patsubst src/exercises/%, _temp/tested/%, $(TESTONLY)) \
   _temp/tested/init_point.c \
   _temp/tested/min3/min3.fixed.c \
   _temp/tested/min3/min3.partial.c \
-  _temp/tested/min3/min3.partial1.c \
   _temp/tested/id_by_div/id_by_div.fixed.c \
   _temp/tested/slf2_basic_quadruple.c \
   _temp/tested/swap.c \
@@ -97,7 +96,7 @@ exercises: $(EXERCISES) $(SOLUTIONS) $(TESTED) $(VERIFIED) $(CONSISTENT)
 
 CNWAR=--include $(MAKEFILE_DIR)/src/exercises/cn_wars.h
 CN=cn verify $(CNWAR)
-CNTEST=cn test --output _temp --progress-level=function $(CNWAR)
+CNTEST=cn test --output-dir _temp --progress-level=function $(CNWAR)
 
 # Control verbosity (run make with V= to show everything that's happening)
 V=@
