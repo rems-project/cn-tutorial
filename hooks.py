@@ -1,9 +1,9 @@
 from mkdocs.structure.nav import Navigation
 from mkdocs.structure.pages import Page
+from typing import Union
 from mkdocs.utils.templates import TemplateContext
 
-
-def on_page_markdown(markdown: str, page: Page, **kwargs) -> str | None:
+def on_page_markdown(markdown: str, page: Page, **kwargs) -> Union [str, None]:
     if page.meta.get('flow') != 'Verification':
         return markdown
 
@@ -23,7 +23,7 @@ def on_page_markdown(markdown: str, page: Page, **kwargs) -> str | None:
     return markdown
 
 
-def on_page_context(context: TemplateContext, **kwargs) -> TemplateContext | None:
+def on_page_context(context: TemplateContext, **kwargs) -> Union [TemplateContext, None]:
     nav: Navigation = context.get('nav')  # type: ignore
 
     for page in nav.pages:
