@@ -1,4 +1,4 @@
-#include "./headers.h"
+#include "./headers.verif.h"
 // Extracts the members of a given Tree node
 
 int get_Tree_Data (struct node *t)
@@ -23,10 +23,10 @@ int get_Tree_Data (struct node *t)
 struct node* get_Tree_Left (struct node *t)
 /* FILL IN HERE */
 /* --BEGIN-- */
-/*@ requires take v1 = Owned<struct node>(t);
-             take v1_left = Owned<struct node>(v1.left);
-    ensures  take v2 = Owned<struct node>(t);
-             take v2_left = Owned<struct node>(v2.left);
+/*@ requires take v1 = RW<struct node>(t);
+             take v1_left = RW<struct node>(v1.left);
+    ensures  take v2 = RW<struct node>(t);
+             take v2_left = RW<struct node>(v2.left);
              v1 == v2 && v1_left == v2_left;
     ptr_eq(return, ((is_null(t)) ? (t) : (v1.left))); @*/
 /* --END-- */
@@ -44,10 +44,10 @@ struct node* get_Tree_Left (struct node *t)
 struct node* get_Tree_Right (struct node *t)
 /* FILL IN HERE */
 /* --BEGIN-- */
-/*@ requires take v1 = Owned<struct node>(t);
-             take v1_right = Owned<struct node>(v1.right);
-    ensures  take v2 = Owned<struct node>(t);
-             take v2_right = Owned<struct node>(v2.right);
+/*@ requires take v1 = RW<struct node>(t);
+             take v1_right = RW<struct node>(v1.right);
+    ensures  take v2 = RW<struct node>(t);
+             take v2_right = RW<struct node>(v2.right);
              v1 == v2 && v1_right == v2_right;
     ptr_eq(return, ((is_null(t)) ? (t) : (v1.right))); @*/
 /* --END-- */

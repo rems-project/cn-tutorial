@@ -27,7 +27,7 @@ int main() {
 	printf("cases[%d].b=%ld\n", j, cases[j].b);
 	printf("cases[%d].e=%ld\n", j, cases[j].e);
 	printf("cases[%d].k=%ld\n", j, cases[j].k);
-	printf("\n");
+	printf("");
     }
     return 0;
 }

@@ -1,4 +1,4 @@
-# Reference
+# Quick Reference
 
 A quick reference for CN keywords, symbols, and operations.
 
@@ -25,8 +25,8 @@ specification language.
 | `true` | Boolean true literal. | [Expressions](../specifications/expressions.md) |
 | `trusted` | Prevents CN from attempting to verify a function. | [Function specifications](../specifications/function-specifications.md) |
 | `unchanged` | TODO: is this a condition or expression? | |
-| `Block` | Resource predicate indicating an uninitialized, non-null memory object. | [Resource predicates](../specifications/resource-predicates.md) |
-| `Owned` | Resource predicate indicating an initialized, non-null memory object. | [Resource predicates](../specifications/resource-predicates.md) |
+| `W` | Resource predicate indicating an uninitialized, non-null memory object. | [Resource predicates](../specifications/resource-predicates.md) |
+| `RW` | Resource predicate indicating an initialized, non-null memory object. | [Resource predicates](../specifications/resource-predicates.md) |
 | `NULL` | The null value. | [Expressions](../specifications/expressions.md) |
 
 ## Operators

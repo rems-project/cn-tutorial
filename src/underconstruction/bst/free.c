@@ -1,4 +1,4 @@
-#include "./headers.h"
+#include "./headers.verif.h"
 // deallocates all the nodes in the binary tree
 
 void node_free_tree (struct node* t)

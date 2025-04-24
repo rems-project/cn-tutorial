@@ -68,14 +68,14 @@ int main()
    for (i = 0; i < 16; i++)
       printf("%d ", array[i]);
 
-   printf("\n");
+   printf("");
 
    quicksort(0, 15);
 
    for (i = 0; i < 16; i++)
       printf("%d ", array[i]);
 
-   printf("\n");
+   printf("");
 
    return 0;
 }

@@ -2,11 +2,11 @@
 
 void swap_1(int *a, int *b)
 /*@ requires 
-    take Pa = Owned(a); 
-    take Pb = Owned(b); @*/
+    take Pa = RW(a); 
+    take Pb = RW(b); @*/
 /*@ ensures 
-    take Qa = Owned(a);
-    take Qb = Owned(b);
+    take Qa = RW(a);
+    take Qb = RW(b);
     Qb == Pa;
     Qa == Pb; @*/
 {

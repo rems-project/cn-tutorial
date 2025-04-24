@@ -1,4 +1,4 @@
-// Defines basic CN functions to extract a member of the Tree datatype
+// Defines basic CN functions to focus a member of the Tree datatype
 
 /*@
 function (i32) Data_Of (datatype Tree sapling) 

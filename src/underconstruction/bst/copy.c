@@ -1,4 +1,4 @@
-#include "./headers.h"
+#include "./headers.verif.h"
 #include "./constructors.h"
 // takes in binary tree, Returns copy of it
 

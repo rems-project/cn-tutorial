@@ -1,5 +1,8 @@
 site_name: CN Docs
 site_dir: build
+repo_url: https://github.com/rems-project/cn-tutorial
+repo_name: rems-project/cn-tutorial
+edit_uri: edit/main/docs
 theme:
   name: material
   features:
@@ -11,12 +14,12 @@ theme:
     # - content.code.select
     - content.tooltips
     - navigation.footer
-    - navigation.indexes
+    # - navigation.indexes
     # - navigation.instant
     # - navigation.instant.prefetch
     # - navigation.instant.progress
     # - navigation.prune
-    - navigation.sections
+    # - navigation.sections
     - navigation.tabs
     - navigation.top
     - navigation.tracking
@@ -24,6 +27,7 @@ theme:
     - search.share
     - search.suggest
     - toc.follow
+    - toc.integrate
   language: en
   palette:
     - media: "(prefers-color-scheme)"
@@ -47,7 +51,16 @@ theme:
   font:
     text: Roboto
     code: Roboto Mono
+  icon:
+    repo: fontawesome/brands/github
 
+plugins:
+  - search
+  - macros:
+      module_name: macros
+
+hooks:
+  - hooks.py
 
 # Extensions
 markdown_extensions:
@@ -93,43 +106,60 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.tilde
 
-# Page tree
+# # Page tree
 nav:
-  - Getting started:
-    - README.md
-    - Installation: getting-started/installation.md
-    - Tutorials:
-      - getting-started/tutorials/README.md
-      - "Basic usage": getting-started/tutorials/basic-usage.md
-      - "Pointers and simple ownership": getting-started/tutorials/pointers-and-simple-ownership.md
-      - "Ownership of compound objects": getting-started/tutorials/ownership-of-compound-objects.md
-      - "Arrays and loops": getting-started/tutorials/arrays-and-loops.md
-      - "Defining predicates": getting-started/tutorials/defining-predicates.md
-      - "Allocating and deallocating memory": getting-started/tutorials/allocating-and-deallocating-memory.md
-      - "Lists": getting-started/tutorials/lists.md
-      - "Working with external lemmas": getting-started/tutorials/external-lemmas.md
-    - "Case studies":
-      - "Imperative queues": getting-started/case-studies/imperative-queues.md
-      - "Doubly-linked lists": getting-started/case-studies/doubly-linked-lists.md
-      - "Airport Simulation": getting-started/case-studies/the-runway.md
-    - "Style guide": 
-      - getting-started/style-guide/README.md
-  - Specifications:
-    - specifications/README.md
-    - Function specifications: specifications/function-specifications.md
-    - Loop invariants: specifications/loop-invariants.md
-    - Conditions: specifications/conditions.md
-    - Expressions: specifications/expressions.md
-    - Resource predicates: specifications/resource-predicates.md
-    - Auxiliary definitions:
-      - specifications/auxiliary-definitions/README.md
-      - Data structures: specifications/auxiliary-definitions/data-structures.md
-      - Logical functions: specifications/auxiliary-definitions/logical-functions.md
-      - Custom resource predicates: specifications/auxiliary-definitions/custom-resource-predicates.md
-    - Types: specifications/types.md
-    - Scoping: specifications/scoping.md
-    - "Tactics (proof hints)": specifications/tactics.md
-    - Interactive theorem proving: specifications/interactive-theorem-proving.md
+  - Home: README.md
+
+  - Docs:
+    - Getting Started:
+      - getting-started/installation.md
+
+    - A Tour of CN:
+      - getting-started/tutorials/welcome.md
+      - getting-started/tutorials/first-taste.md
+      - getting-started/tutorials/verif-basics.md
+      - getting-started/tutorials/pointers.md
+      - getting-started/tutorials/verif-pointers.md
+      - getting-started/tutorials/arrays.md
+      - getting-started/tutorials/verif-arrays.md
+      - getting-started/tutorials/alloc.md
+      - getting-started/tutorials/verif-alloc.md
+      - getting-started/tutorials/predicates.md
+      - getting-started/tutorials/verif-lists.md
+      - getting-started/tutorials/verif-splitcase.md
+
+    - More on Testing:
+      - getting-started/tutorials/unit-testing.md
+      - getting-started/tutorials/test-distribs.md
+
+    - More on Verification:
+      - getting-started/tutorials/verif-numeric.md
+      - getting-started/tutorials/verif-external.md
+
+    - Case Studies:
+      - getting-started/case-studies/imperative-queues.md
+      - getting-started/case-studies/verif-imperative-queues.md
+      - getting-started/case-studies/doubly-linked-lists.md
+      - getting-started/case-studies/verif-doubly-linked-lists.md
+      - getting-started/case-studies/the-runway.md
+      - getting-started/case-studies/verif-the-runway.md
+
   - Reference:
     - reference/README.md
+    - specifications/README.md
+    - specifications/function-specifications.md
+    - specifications/loop-invariants.md
+    - specifications/conditions.md
+    - specifications/expressions.md
+    - specifications/resource-predicates.md
+    - Auxiliary definitions:
+      - specifications/auxiliary-definitions/README.md
+      - specifications/auxiliary-definitions/data-structures.md
+      - specifications/auxiliary-definitions/logical-functions.md
+      - specifications/auxiliary-definitions/custom-resource-predicates.md
+    - specifications/types.md
+    - specifications/scoping.md
+    - specifications/tactics.md
+    - specifications/interactive-theorem-proving.md
+
 

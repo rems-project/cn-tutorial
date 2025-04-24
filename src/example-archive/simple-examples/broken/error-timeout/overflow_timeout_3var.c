@@ -18,10 +18,10 @@ typedef struct {
 } example_t;
 int overflow_timeout_3var(example_t* p1,example_t* p2)
 /*@
-        requires take x = Owned<example_t>(p1);
-        take y = Owned<example_t>(p2);
-        ensures take x2 = Owned<example_t>(p1);
-        take y2 = Owned<example_t>(p2);
+        requires take x = RW<example_t>(p1);
+        take y = RW<example_t>(p2);
+        ensures take x2 = RW<example_t>(p1);
+        take y2 = RW<example_t>(p2);
 @*/
 {
     int distance = 0;

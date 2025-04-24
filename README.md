@@ -2,7 +2,6 @@
 
 View the tutorial here: https://rems-project.github.io/cn-tutorial/
 
-
 ## Acknowledgment of Support and Disclaimer
 
 This material is based upon work supported by the Air Force Research Laboratory
@@ -25,10 +24,20 @@ Dependencies:
 
 ```bash
 # Install Material for MkDocs
-pip install mkdocs-material
+pip install mkdocs-material mkdocs-macros-plugin
 
 # Build the tutorial
 make
+```
+
+If you are _developing_ tutorial documentation, you may wish to include
+developer commentary in the generated output.
+To do so, simply set the `TUTORIAL_TODOS` environment variable (the value is
+unimportant, so the empty string will suffice):
+
+```bash
+# Build the tutorial, including any developer comments
+TUTORIAL_TODOS= make
 ```
 
 ### Hosting locally
@@ -41,13 +50,16 @@ files.  This is useful while editing the tutorial.
 make serve
 ```
 
+(You can set `TUTORIAL_TODOS` as above to include developer commentary in served
+documentation, i.e. `TUTORIAL_TODOS= make serve`.)
+
 View at: http://localhost:8000/
 
 Install dependencies: [asciidoctor](https://asciidoctor.org/).
 
 ## Tutorial examples
 
-The tutorial examples live in [src/examples](./src/examples).
+The tutorial examples live in [src/exercises](./src/exercises).
 
 As part of building the tutorial, the examples are lightly preprocessed to
 produce solutions and exercises (solutions with the CN specifications removed).
