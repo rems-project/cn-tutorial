@@ -161,7 +161,7 @@ and this incorrect implementation
 ```
 should fail.
 
-## Writing through pointers
+## Writing Through Pointers
 
 Now let’s look at a function that modifies memory. Here, we have an 
 example where data is written to a pointer. The function `incr` takes 
@@ -247,7 +247,7 @@ very undesirable. As a consequence, function specifications have to do precise
 bookkeeping of their resource footprint and, in particular, return any unused
 resources back to the caller.
 
-## Disjoint memory regions
+## Disjoint Memory Regions
 
 When functions manipulate multiple pointers, we can assert ownership of each
 one, just like before. But there is an additional twist: simultaneously owning
