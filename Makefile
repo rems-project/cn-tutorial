@@ -1,5 +1,5 @@
 .PHONY: default check-archive check-tutorial check clean tidy \
-	exercises rebuild tutorial
+	exercises rebuild tutorial setup-env
 
 MAKEFILE_DIR:=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -202,13 +202,16 @@ _temp/consistent/% : %
 ##############################################################################
 # Tutorial document
 
+setup-env:
+	scripts/setup_env.sh
+
 # BCP: Added the --quiet flag to suppress a bunch of INFO messages
 # that the macros plugin was generating on every compile
-tutorial: rebuild
-	mkdocs build --strict --quiet
+tutorial: rebuild setup-env
+	. .venv/bin/activate && mkdocs build --strict --quiet
 
-serve: rebuild
-	mkdocs serve --quiet
+serve: rebuild setup-env
+	. .venv/bin/activate && mkdocs serve --quiet
 
 rebuild: exercises docs/exercises.zip mkdocs.yml $(shell find docs -type f)
 
