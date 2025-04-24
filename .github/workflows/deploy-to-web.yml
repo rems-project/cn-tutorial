@@ -34,7 +34,7 @@ jobs:
         run: make clean
 
       - name: Build the tutorial 
-        run: make 
+        run: make CN=true CN_PATH=true CNTEST=true
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
