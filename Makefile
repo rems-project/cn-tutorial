@@ -177,11 +177,12 @@ WORKING_AUX=$(patsubst src/exercises/%, docs/solutions/%, $(WORKING))
 ##############################################################################
 # Check that the examples all run correctly
 
-CN_PATH?=cn verify $(CNWAR)
+CN_PATH?=cn verify
+CN_PATH+=$(CNWAR)
 
 check-archive:
 	@echo Check archive examples
-	@$(MAKEFILE_DIR)/src/example-archive/check-all.sh "$(CN_PATH)"
+	$(V)$(MAKEFILE_DIR)/src/example-archive/check-all.sh "$(CN_PATH)"
 
 check: exercises check-archive
 
