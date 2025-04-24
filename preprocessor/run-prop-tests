@@ -1,0 +1,17 @@
+#!/bin/bash
+# Do property based testing for a non-mutated file
+##################################################
+
+if [ $# -ne 1 ]; then
+  echo "USAGE: $0 CFILE"
+  echo "  Run all property based tests in a given C file."
+  exit 1
+fi
+
+SCRIPT_DIR=$(dirname "$0")
+CFILE=$1
+PREPROC_FLAGS="--no-test"
+CN_TEST_FLAGS=""
+source "$SCRIPT_DIR/run-cn-test"
+
+

@@ -1,0 +1,11 @@
+
+PREPROC="$SCRIPT_DIR/preproc_tut"
+
+CC="gcc"
+# -P: do not emit line pragmas
+# -CC: do not discard comments
+CPP="$CC -E -P -CC"
+
+CN="cn"
+CN_INSTALL="$OPAM_SWITCH_PREFIX/lib/cn/runtime"
+

@@ -28,13 +28,13 @@ jobs:
           python-version: 3.x
 
       - name: Install Material for MkDocs
-        run: pip install mkdocs-material
+        run: pip install mkdocs-material mkdocs-macros-plugin
 
       - name: Clean the build directory 
         run: make clean
 
       - name: Build the tutorial 
-        run: make 
+        run: make CN=true CN_PATH=true CNTEST=true
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
