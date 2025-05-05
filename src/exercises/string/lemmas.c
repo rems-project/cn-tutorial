@@ -24,7 +24,7 @@ ensures
     }
     else
     {
-        len_lt_buf_size(&s[1], n - (unsigned long long)1);
+        len_lt_buf_size(&s[1], n - (size_t)1);
         /*@ unfold string_len(sIn);@*/
     }
 }
@@ -85,18 +85,11 @@ ensures
 @*/
 {
     char c = s[0];
-    if (c == '\0')
-    {
-        /* impossible */
-        /*@ assert (false); @*/
-    }
-    else
-    {
-        string_len_not_max(&s[1], n - (unsigned long long)1);
-        len_lt_buf_size(&s[1], n - (unsigned long long)1);
-        plus_one_gt_zero(str_buf_len(&s[1], n - (unsigned long long)1));
-        one_plus_string_len(s, n);
-    }
+    /*@ split_case (c == 0u8); @*/
+    string_len_not_max(&s[1], n - (size_t)1);
+    len_lt_buf_size(&s[1], n - (size_t)1);
+    plus_one_gt_zero(str_buf_len(&s[1], n - (size_t)1));
+    one_plus_string_len(s, n);
 }
 
 // equal strings have the same length
@@ -125,10 +118,10 @@ ensures
     else
     {
         /*@ unfold string_equal(s1In, s2In); @*/
-        /*@ split_case (c2 == 0u8); @*/
         /*@ unfold string_len(s1In); @*/
         /*@ unfold string_len(s2In); @*/
-        string_equal_impl_equal_len(&s1[1], n1 - (unsigned long long)1, &s2[1], n2 - (unsigned long long)1);
+        /*@ split_case (c2 == 0u8); @*/
+        string_equal_impl_equal_len(&s1[1], n1 - (size_t)1, &s2[1], n2 - (size_t)1);
     }
 }
 
@@ -152,7 +145,140 @@ ensures
     else
     {
         /*@ unfold string_buf_nth(sIn, 0u64); @*/
-        nonzero_up_to_len(&s[1], n - (unsigned long long)1);
+        nonzero_up_to_len(&s[1], n - (size_t)1);
         /*@ apply nonzero_up_to_len_step(s, n); @*/
+    }
+}
+
+void update_empty_buf_preserves_string(char *s, size_t n, size_t new_empty_buf)
+/*@
+requires
+    take sIn = String_Buf_At(s, n);
+ensures
+    take sOut = String_Buf_At(s, n);
+    sIn == sOut;
+    string_equal(sIn, update_empty_buf(sIn, new_empty_buf));
+@*/
+{
+    char c = s[0];
+    if (c == '\0')
+    {
+        /*@ unfold update_empty_buf(sIn, new_empty_buf); @*/
+        /*@ unfold string_equal(sIn, update_empty_buf(sIn, new_empty_buf)); @*/
+    }
+    else
+    {
+        update_empty_buf_preserves_string(&s[1], n - (size_t)1, new_empty_buf);
+        /*@ unfold update_empty_buf(sIn, new_empty_buf); @*/
+        /*@ unfold string_equal(sIn, update_empty_buf(sIn, new_empty_buf)); @*/
+    }
+}
+
+void update_empty_buf_preserves_len(char *s, size_t n, size_t new_empty_buf)
+/*@
+requires
+    take sIn = String_Buf_At(s, n);
+ensures
+    take sOut = String_Buf_At(s, n);
+    sIn == sOut;
+    string_len(sIn) == string_len(update_empty_buf(sIn, new_empty_buf));
+@*/
+{
+    char c = s[0];
+    if (c == '\0')
+    {
+        /*@ unfold update_empty_buf(sIn, new_empty_buf); @*/
+        /*@ unfold string_len(update_empty_buf(sIn, new_empty_buf)); @*/
+        /*@ unfold string_len(sIn); @*/
+    }
+    else
+    {
+        update_empty_buf_preserves_len(&s[1], n - (size_t)1, new_empty_buf);
+        /*@ unfold update_empty_buf(sIn, new_empty_buf); @*/
+        /*@ unfold string_len(update_empty_buf(sIn, new_empty_buf)); @*/
+        /*@ unfold string_len(sIn); @*/
+    }
+}
+
+// void concat_nil_len(char *dest, char *src, size_t dest_size, size_t src_size)
+// /*@
+// requires
+//     take srcIn = String_Buf_At(src, src_size);
+//     take destIn = String_Buf_At(dest, dest_size);
+//     is_nil_string_buf(destIn);
+//     string_len(srcIn) + string_len(destIn) < dest_size;
+// ensures
+//     take srcOut = String_Buf_At(src, src_size);
+//     take destOut = String_Buf_At(dest, dest_size);
+//     srcIn == srcOut;
+//     destIn == destOut;
+//     string_len(string_buf_concat(destIn, srcIn)) == string_len(srcIn);
+// @*/
+// {
+//     // char c = src[0];
+//     // if (c == '\0')
+//     // {
+//     //     /*@ unfold string_len(srcIn); @*/
+//     //     /*@ unfold string_len(destIn); @*/
+//     //     /*@ unfold string_buf_concat(destIn, srcIn); @*/
+//     //     /*@ unfold string_len(string_buf_concat(destIn, srcIn)); @*/
+//     // }
+//     // else
+//     // {
+//     //     nonempty_string_len(src, src_size);
+//     //     /*@ unfold string_len(destIn); @*/
+//     //     /*@ assert (dest_size > 1u64); @*/
+//     //     concat_nil_len(&dest[1], &src[1], dest_size - (size_t)1, src_size - (size_t)1);
+//     // }
+// }
+
+/*
+// in-place string concat
+// assumes destination buffer has enough space for source string
+function [rec] (datatype String_Buf) string_buf_concat(String_Buf dest, String_Buf src) {
+    match dest {
+        String_Buf_Nil { empty_buf : nDest } => {
+            // string_len(src) should be strictly less than nDest
+            update_empty_buf(src, nDest - string_len(src))
+        }
+        String_Buf_Cons { head : h , tail : tl } => {
+            String_Buf_Cons { head : h, tail : string_buf_concat(tl, src) }
+        }
+    }
+}
+
+        }*/
+
+void concat_len(char *dest, char *src, size_t dest_size, size_t src_size)
+/*@
+requires
+    take srcIn = String_Buf_At(src, src_size);
+    take destIn = String_Buf_At(dest, dest_size);
+    let len_sum = string_len(srcIn) + string_len(destIn);
+    string_len(srcIn) + string_len(destIn) < dest_size;
+ensures
+    take srcOut = String_Buf_At(src, src_size);
+    take destOut = String_Buf_At(dest, dest_size);
+    srcIn == srcOut;
+    destIn == destOut;
+    string_len(string_buf_concat(destIn, srcIn)) == string_len(srcIn) + string_len(destIn);
+@*/
+{
+    char c = dest[0];
+    if (c == '\0')
+    {
+        update_empty_buf_preserves_len(src, src_size, dest_size - str_buf_len(src, src_size));
+        /*@ unfold string_len(srcIn); @*/
+        /*@ unfold string_len(destIn); @*/
+        /*@ unfold string_buf_concat(destIn, srcIn); @*/
+        /*@ unfold string_len(string_buf_concat(destIn, srcIn)); @*/
+    }
+    else
+    {
+        /*@ unfold string_len(destIn); @*/
+        concat_len(&dest[1], src, dest_size - (size_t)1, src_size);
+        /*@ unfold string_len(srcIn); @*/
+        /*@ unfold string_buf_concat(destIn, srcIn); @*/
+        /*@ unfold string_len(string_buf_concat(destIn, srcIn)); @*/
     }
 }

@@ -5,60 +5,6 @@ Trusted string lemmas.
 */
 
 /*@
-lemma array_owned_shift_one_l(pointer s, u64 tail_owned_len) //TODO
-
-requires
-    take first = RW<char>(s);
-    take rest = each (u64 i; i < tail_owned_len) {
-        RW<char>(array_shift<char>(array_shift<char>(s, 1u64), i))};
-    tail_owned_len < 18446744073709551615u64;
-ensures
-    take all = each (u64 i; i < 1u64 + tail_owned_len) {
-        RW<char>(array_shift<char>(s, i))};
-@*/
-
-/*@
-lemma array_blocked_shift_one_l(pointer s, u64 tail_low, u64 tail_high) //TODO
-
-requires
-    take blockedIn = each (u64 i; tail_low < i && i < tail_high) {
-        W<char>(array_shift<char>(array_shift<char>(s, 1u64), i))};
-    tail_high < 18446744073709551615u64;
-ensures
-    take blockedOut = each (u64 i; tail_low + 1u64 < i && i < 1u64 + tail_high) {
-        W<char>(array_shift<char>(s, i))};
-@*/
-
-/*@
-lemma array_shift_one_r(pointer s, size_t tail_string_len, size_t tail_buf_len)
-
-requires
-    take ownedIn = each (u64 i; i < 1u64 + tail_string_len) {
-        RW<char>(array_shift<char>(s, i))};
-    take blockedIn = each (u64 i; tail_string_len + 1u64 < i && i < 1u64 + tail_buf_len) {
-        W<char>(array_shift<char>(s, i))};
-    tail_string_len < tail_buf_len;
-    tail_buf_len < 18446744073709551615u64;
-    take nullIn = RW<char>(array_shift<char>(s, 1u64 + tail_string_len));
-    nullIn == 0u8;
-    each (u64 i; i < 1u64 + tail_string_len) {
-        ownedIn[i] != 0u8
-    };
-ensures
-    take first = RW<char>(s);
-    first != 0u8;
-    take ownedOut = each (u64 i; i < tail_string_len) {
-        RW<char>(array_shift<char>(array_shift<char>(s, 1u64), i))};
-    take blockedOut = each (u64 i; tail_string_len < i && i < tail_buf_len) {
-        W<char>(array_shift<char>(array_shift<char>(s, 1u64), i))};
-    take nullOut = RW<char>(array_shift<char>(array_shift<char>(s, 1u64), tail_string_len));
-    nullOut == 0u8;
-    each (u64 i; i < tail_string_len) {
-        ownedOut[i] != 0u8
-    };
-@*/
-
-/*@
 lemma array_to_string_buf(pointer s, u64 n, u64 string_len)
 requires
     take sArray = each(u64 i; i < string_len) {
@@ -100,7 +46,7 @@ ensures
 @*/
 
 /*@
-lemma nonzero_up_to_len_step(pointer s, size_t n)
+lemma nonzero_up_to_len_step(pointer s, u64 n)
 
 requires
     n > 1u64;

@@ -32,7 +32,7 @@ ensures
     /*@ focus RW<char>, 0u64; @*/
     char c = s[0];
     /*@split_case (c == 0u8); @*/
-    if (string_len == (unsigned long long)0)
+    if (string_len == (size_t)0)
     {
         if (c == '\0')
         {
@@ -48,7 +48,7 @@ ensures
     else
     {
         /*@ apply array_shift_one_r(s, string_len - 1u64, n - 1u64); @*/
-        array_to_string_buf_c(&s[1], string_len - (unsigned long long)1, n - (unsigned long long)1);
+        array_to_string_buf_c(&s[1], string_len - (size_t)1, n - (size_t)1);
         one_plus_string_len(s, n);
     }
 }
@@ -64,12 +64,12 @@ ensures
         RW<char>( array_shift<char>(s, i) ) };
     take sRem = each (u64 i; string_len(sBuf) < i && i < n) {
         W<char>( array_shift<char>(s, i) ) };
+    take sNull = RW<char>(array_shift<char>(s, string_len(sBuf)));
+    sNull == 0u8;
     // we need some "fix arbitrary i" tactic for the below
     each (u64 i; i < string_len(sBuf)) {
         string_buf_nth(sBuf, i) == sArray[i]
     };
-    take sNull = RW<char>(array_shift<char>(s, string_len(sBuf)));
-    sNull == 0u8;
 @*/
 {
     char c = s[0];
@@ -80,11 +80,28 @@ ensures
     else
     {
         char c1 = s[1];
-        string_buf_to_array_c(&s[1], n - (unsigned long long)1);
+        string_buf_to_array_c(&s[1], n - (size_t)1);
         /*@ unfold string_len(sBuf); @*/
         /*@ apply array_owned_shift_one_l(s, string_len(sBuf) - 1u64); @*/
         /*@ apply array_blocked_shift_one_l(s, string_len(sBuf) - 1u64, n - 1u64); @*/
     }
+}
+
+void nonzero_up_to_len_step(char *s, size_t n)
+/*@
+requires
+    n > 1u64;
+    take sHead = RW<char>(s);
+    take sTail = String_Buf_At(array_shift<char>(s, 1u64), n - 1u64);
+    each (u64 i; i < string_len(sTail)) {
+        string_buf_nth(sTail, i) != 0u8 };
+ensures
+    take sOut = String_Buf_At(s, n);
+    sOut == String_Buf_Cons { head : sHead, tail : sTail };
+    each (u64 i; i < string_len(sOut)) {
+        string_buf_nth(sOut, i) != 0u8 };
+@*/
+{
 }
 
 /*

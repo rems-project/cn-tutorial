@@ -1,10 +1,12 @@
 #include <stddef.h>
 #include "spec_funs.h"
 
-// /* NULL-TERMINATED STRING STANDARD LIBRARY FUNCTIONS */
+/*
+Specifications for external standard library functions for null-terminated strings.
+*/
 
 extern char *malloc_str(size_t n);
-/*@ spec malloc_str(size_t n);
+/*@ spec malloc_str(u64 n);
     requires
       1u64 <= n; // 1 byte is required for null termination
     ensures
@@ -27,7 +29,7 @@ extern size_t str_buf_len(const char *s, size_t n);
     ensures
       take sOut = String_Buf_At(s, n);
       sIn == sOut;
-      return == string_buf_len(sIn);
+      return == string_len(sIn);
 @*/
 
 // buffer version of strcpy
@@ -36,12 +38,13 @@ extern char *str_buf_cpy(char *dest, const char *src, size_t dest_size, size_t s
     requires
       take srcIn = String_Buf_At(src, src_size);
       take destIn = String_Buf_At(dest, dest_size);
-      string_buf_len(srcIn) < dest_size; // < to leave room for the null
+      string_len(srcIn) < dest_size; // < to leave room for the null
     ensures
       take srcOut = String_Buf_At(src, src_size);
       take destOut = String_Buf_At(dest, dest_size);
       srcIn == srcOut;
-      destOut == String_Buf { chars : chars(srcIn), buf_len : dest_size };
+      string_equal(srcOut, destOut);
+      buf_len(destIn) == buf_len(destOut);
       ptr_eq(return, dest);
 @*/
 
@@ -56,7 +59,7 @@ extern int str_buf_cmp(char *s1, char *s2, size_t n1, size_t n2);
       take s2Out = String_Buf_At(s2, n2);
       s1In == s1Out;
       s2In == s2Out;
-      (return == 0i32) ? s1In == s2In : s1In != s2In;
+      (return == 0i32) == string_equal(s1In, s2In);
 @*/
 
 // buffer version of strcat
@@ -65,10 +68,11 @@ extern char *str_buf_cat(char *dest, const char *src, size_t dest_size, size_t s
     requires
       take srcIn = String_Buf_At(src, src_size);
       take destIn = String_Buf_At(dest, dest_size);
-      string_buf_len(srcIn) + string_buf_len(destIn) < dest_size; // < to leave room for the null
+      (u128) string_len(srcIn) + (u128) string_len(destIn) < (u128) dest_size; // < to leave room for the null
     ensures
       take srcOut = String_Buf_At(src, src_size);
       take destOut = String_Buf_At(dest, dest_size);
       srcIn == srcOut;
-      destOut == String_Buf { chars : string_concat( chars(srcIn), chars(destIn)), buf_len : dest_size};
+      destOut == string_buf_concat(destIn, srcIn);
+      ptr_eq(return, dest);
 @*/
