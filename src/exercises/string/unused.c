@@ -2,7 +2,7 @@
 #include "string_buf.c"
 
 /*
-Not used for current example, but potentially useful, including for `unproven.c`.
+Not used for current example, but potentially useful, including for `more_lemmas.broken.c`.
 */
 
 /* CN lemmas */
