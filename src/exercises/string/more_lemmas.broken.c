@@ -1,5 +1,5 @@
 #include <stddef.h>
-#include "string_buf.c"
+#include "lemmas.c"
 
 /*
 In progress CN versions of trusted lemmas.
@@ -146,4 +146,40 @@ ensures
     /*@ apply string_buf_to@*/
     s[0] = '\0';
     return s;
+}
+
+void concat_len(char *dest, char *src, size_t dest_size, size_t src_size)
+/*@
+requires
+    take srcIn = String_Buf_At(src, src_size);
+    take destIn = String_Buf_At(dest, dest_size);
+    (u128) string_len(srcIn) + (u128) string_len(destIn) < (u128) dest_size;
+ensures
+    take srcOut = String_Buf_At(src, src_size);
+    take destOut = String_Buf_At(dest, dest_size);
+    srcIn == srcOut;
+    destIn == destOut;
+    string_len(string_buf_concat(destIn, srcIn)) == string_len(srcIn) + string_len(destIn);
+@*/
+{
+    char c = dest[0];
+    if (c == '\0')
+    {
+        update_empty_buf_preserves_len(src, src_size, dest_size - str_buf_len(src, src_size));
+        /*@ unfold string_len(srcIn); @*/
+        /*@ unfold string_len(destIn); @*/
+        /*@ unfold string_buf_concat(destIn, srcIn); @*/
+        /*@ unfold string_len(string_buf_concat(destIn, srcIn)); @*/
+    }
+    else
+    {
+        /*@ split_case (c == 0u8); @*/
+        /*@ unfold string_len(destIn); @*/
+        /*@ assert (string_len(destIn) > 0u64); @*/
+        one_plus_string_len(dest, dest_size);
+        concat_len(&dest[1], src, dest_size - (size_t)1, src_size);
+        /*@ unfold string_len(srcIn); @*/
+        /*@ unfold string_buf_concat(destIn, srcIn); @*/
+        /*@ unfold string_len(string_buf_concat(destIn, srcIn)); @*/
+    }
 }
