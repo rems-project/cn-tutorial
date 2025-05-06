@@ -72,7 +72,7 @@ lemma array_owned_shift_one_r(pointer s, u64 tail_owned_len) //TODO
 requires
     take all = each (u64 i; i < 1u64 + tail_owned_len) {
         RW<char>(array_shift<char>(s, i))};
-    tail_owned_len < 18446744073709551615u64;
+    tail_owned_len < MAXu64();
 ensures
     take first = RW<char>(s);
     take rest = each (u64 i; i < tail_owned_len) {
@@ -85,7 +85,7 @@ lemma array_blocked_shift_one_r(pointer s, u64 tail_low, u64 tail_high) //TODO
 requires
     take blockedIn = each (u64 i; tail_low + 1u64 < i && i < 1u64 + tail_high) {
         W<char>(array_shift<char>(s, i))};
-    tail_high < 18446744073709551615u64;
+    tail_high < MAXu64();
 ensures
     take blockedOut = each (u64 i; tail_low < i && i < tail_high) {
         W<char>(array_shift<char>(array_shift<char>(s, 1u64), i))};
@@ -115,7 +115,7 @@ requires
     take first = RW<char>(s);
     take rest = each (u64 i; i < tail_owned_len) {
         RW<char>(array_shift<char>(array_shift<char>(s, 1u64), i))};
-    tail_owned_len < 18446744073709551615u64;
+    tail_owned_len < MAXu64();
 ensures
     take all = each (u64 i; i < 1u64 + tail_owned_len) {
         RW<char>(array_shift<char>(s, i))};
@@ -127,7 +127,7 @@ lemma array_blocked_shift_one_l(pointer s, u64 tail_low, u64 tail_high) //TODO
 requires
     take blockedIn = each (u64 i; tail_low < i && i < tail_high) {
         W<char>(array_shift<char>(array_shift<char>(s, 1u64), i))};
-    tail_high < 18446744073709551615u64;
+    tail_high < MAXu64();
 ensures
     take blockedOut = each (u64 i; tail_low + 1u64 < i && i < 1u64 + tail_high) {
         W<char>(array_shift<char>(s, i))};
@@ -142,7 +142,7 @@ requires
     take blockedIn = each (u64 i; tail_string_len + 1u64 < i && i < 1u64 + tail_buf_len) {
         W<char>(array_shift<char>(s, i))};
     tail_string_len < tail_buf_len;
-    tail_buf_len < 18446744073709551615u64;
+    tail_buf_len < MAXu64();
     take nullIn = RW<char>(array_shift<char>(s, 1u64 + tail_string_len));
     nullIn == 0u8;
     each (u64 i; i < 1u64 + tail_string_len) {

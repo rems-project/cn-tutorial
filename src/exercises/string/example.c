@@ -10,7 +10,6 @@ void simple_ex(char *s1, size_t n1, size_t n2, char c1, char c2)
         take sIn = String_Buf_At(s1, n1);
         !is_nil_string_buf(sIn);
         (u128) string_len(sIn) + (u128) string_len(sIn) < (u128) n2; // so it fits in allocated buffer twice
-        // string_len(sIn) < 9223372036854775808u64; // n1 + n1 < maximum u64
         c1 != c2;
         c1 != 0u8;
         c2 != 0u8;
@@ -26,7 +25,7 @@ void simple_ex(char *s1, size_t n1, size_t n2, char c1, char c2)
 
     // compare s1 and s2
     int j = str_buf_cmp(s1, s2, n1, n2);
-    /*@ assert (j == 0i64); @*/
+    /*@ assert (j == 0i32); @*/
 
     // edit s1
     size_t s1Len = str_buf_len(s1, n1);

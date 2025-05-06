@@ -33,18 +33,21 @@ ensures
 void one_plus_string_len(char *s, size_t n)
 /*@
 requires
-    take sIn = String_Buf_At(s, n);
-    !is_nil_string_buf(sIn);
+    n > 1u64;
+    take hIn = RW<char>(s);
+    hIn != 0u8;
+    take tlIn = String_Buf_At(array_shift<char>(s, 1u64), n - 1u64);
 ensures
-    take h = RW<char>(s);
-    take tl = String_Buf_At(array_shift<char>(s, 1u64), n - 1u64);
-    sIn == String_Buf_Cons { head : h, tail : tl };
-    string_len(sIn) == 1u64 + string_len(tl);
+    take hOut = RW<char>(s);
+    hOut != 0u8;
+    take tlOut = String_Buf_At(array_shift<char>(s, 1u64), n - 1u64);
+    hIn == hOut;
+    tlIn == tlOut;
+    string_len(String_Buf_Cons { head : hIn, tail : tlIn }) == 1u64 + string_len(tlIn);
 @*/
 {
-    char c = s[0];
-    /*@ split_case (c == 0u8); @*/
-    /*@ unfold string_len(sIn); @*/
+    /*@ split_case (hIn == 0u8); @*/
+    /*@ unfold string_len(String_Buf_Cons { head : hIn, tail : tlIn }); @*/
 }
 
 // string length is less than max u64
@@ -55,7 +58,7 @@ requires
 ensures
     take sOut = String_Buf_At(s, n);
     sIn == sOut;
-    string_len(sIn) < 18446744073709551615u64;
+    string_len(sIn) < MAXu64();
 @*/
 {
     len_lt_buf_size(s, n);
@@ -65,7 +68,7 @@ ensures
 void plus_one_gt_zero(size_t n)
 /*@
 requires
-    n < 18446744073709551615u64;
+    n < MAXu64();
 ensures
     1u64 + n > 0u64;
 @*/
@@ -197,88 +200,5 @@ ensures
         /*@ unfold update_empty_buf(sIn, new_empty_buf); @*/
         /*@ unfold string_len(update_empty_buf(sIn, new_empty_buf)); @*/
         /*@ unfold string_len(sIn); @*/
-    }
-}
-
-// void concat_nil_len(char *dest, char *src, size_t dest_size, size_t src_size)
-// /*@
-// requires
-//     take srcIn = String_Buf_At(src, src_size);
-//     take destIn = String_Buf_At(dest, dest_size);
-//     is_nil_string_buf(destIn);
-//     string_len(srcIn) + string_len(destIn) < dest_size;
-// ensures
-//     take srcOut = String_Buf_At(src, src_size);
-//     take destOut = String_Buf_At(dest, dest_size);
-//     srcIn == srcOut;
-//     destIn == destOut;
-//     string_len(string_buf_concat(destIn, srcIn)) == string_len(srcIn);
-// @*/
-// {
-//     // char c = src[0];
-//     // if (c == '\0')
-//     // {
-//     //     /*@ unfold string_len(srcIn); @*/
-//     //     /*@ unfold string_len(destIn); @*/
-//     //     /*@ unfold string_buf_concat(destIn, srcIn); @*/
-//     //     /*@ unfold string_len(string_buf_concat(destIn, srcIn)); @*/
-//     // }
-//     // else
-//     // {
-//     //     nonempty_string_len(src, src_size);
-//     //     /*@ unfold string_len(destIn); @*/
-//     //     /*@ assert (dest_size > 1u64); @*/
-//     //     concat_nil_len(&dest[1], &src[1], dest_size - (size_t)1, src_size - (size_t)1);
-//     // }
-// }
-
-/*
-// in-place string concat
-// assumes destination buffer has enough space for source string
-function [rec] (datatype String_Buf) string_buf_concat(String_Buf dest, String_Buf src) {
-    match dest {
-        String_Buf_Nil { empty_buf : nDest } => {
-            // string_len(src) should be strictly less than nDest
-            update_empty_buf(src, nDest - string_len(src))
-        }
-        String_Buf_Cons { head : h , tail : tl } => {
-            String_Buf_Cons { head : h, tail : string_buf_concat(tl, src) }
-        }
-    }
-}
-
-        }*/
-
-void concat_len(char *dest, char *src, size_t dest_size, size_t src_size)
-/*@
-requires
-    take srcIn = String_Buf_At(src, src_size);
-    take destIn = String_Buf_At(dest, dest_size);
-    let len_sum = string_len(srcIn) + string_len(destIn);
-    string_len(srcIn) + string_len(destIn) < dest_size;
-ensures
-    take srcOut = String_Buf_At(src, src_size);
-    take destOut = String_Buf_At(dest, dest_size);
-    srcIn == srcOut;
-    destIn == destOut;
-    string_len(string_buf_concat(destIn, srcIn)) == string_len(srcIn) + string_len(destIn);
-@*/
-{
-    char c = dest[0];
-    if (c == '\0')
-    {
-        update_empty_buf_preserves_len(src, src_size, dest_size - str_buf_len(src, src_size));
-        /*@ unfold string_len(srcIn); @*/
-        /*@ unfold string_len(destIn); @*/
-        /*@ unfold string_buf_concat(destIn, srcIn); @*/
-        /*@ unfold string_len(string_buf_concat(destIn, srcIn)); @*/
-    }
-    else
-    {
-        /*@ unfold string_len(destIn); @*/
-        concat_len(&dest[1], src, dest_size - (size_t)1, src_size);
-        /*@ unfold string_len(srcIn); @*/
-        /*@ unfold string_buf_concat(destIn, srcIn); @*/
-        /*@ unfold string_len(string_buf_concat(destIn, srcIn)); @*/
     }
 }
