@@ -256,10 +256,10 @@ unsigned int IntList_length (struct int_list *xs)
 
 
 struct int_list* IntList_rev_aux(struct int_list* xs, struct int_list* ys)
-/*@ requires take L1 = IntList(xs); @*/
-/*@ requires take L2 = IntList(ys); @*/
-/*@ ensures take R = IntList(return); @*/
-/*@ ensures R == append(rev(L2), L1); @*/
+/*@ requires take L1 = IntList(xs);
+             take L2 = IntList(ys);
+    ensures take R = IntList(return);
+            R == append(rev(L2), L1); @*/
 {
   if (ys == 0) {
     /*@ unfold rev(L2); @*/
@@ -275,9 +275,9 @@ struct int_list* IntList_rev_aux(struct int_list* xs, struct int_list* ys)
 }
 
 struct int_list* IntList_rev(struct int_list* xs)
-/*@ requires take L1 = IntList(xs); @*/
-/*@ ensures take L1_rev = IntList(return); @*/
-/*@ ensures L1_rev == rev(L1); @*/
+/*@ requires take L1 = IntList(xs);
+    ensures take L1_rev = IntList(return);
+            L1_rev == rev(L1); @*/
 {
   /*@ apply append_nil_r(rev(L1)); @*/
   return IntList_rev_aux (0, xs);
@@ -338,10 +338,10 @@ struct int_list_pair {
 };
 
 struct int_list_pair IntList_split(struct int_list *xs)
-/*@ requires take Xs = IntList(xs); @*/
-/*@ ensures take Ys = IntList(return.fst); @*/
-/*@ ensures take Zs = IntList(return.snd); @*/
-/*@ ensures {fst: Ys, snd: Zs} == split(Xs); @*/
+/*@ requires take Xs = IntList(xs);
+    ensures take Ys = IntList(return.fst);
+            take Zs = IntList(return.snd);
+            {fst: Ys, snd: Zs} == split(Xs); @*/
 {
   if (xs == 0) {
     /*@ unfold split(Xs); @*/
@@ -365,10 +365,10 @@ struct int_list_pair IntList_split(struct int_list *xs)
 }
 
 struct int_list* IntList_merge(struct int_list *xs, struct int_list *ys)
-/*@ requires take Xs = IntList(xs); @*/
-/*@ requires take Ys = IntList(ys); @*/
-/*@ ensures take Zs = IntList(return); @*/
-/*@ ensures Zs == merge(Xs, Ys); @*/
+/*@ requires take Xs = IntList(xs);
+             take Ys = IntList(ys);
+    ensures take Zs = IntList(return);
+            Zs == merge(Xs, Ys); @*/
 {
   if (xs == 0) {
     /*@ unfold merge(Xs, Ys); @*/
@@ -394,9 +394,9 @@ struct int_list* IntList_merge(struct int_list *xs, struct int_list *ys)
 }
 
 struct int_list* IntList_mergesort(struct int_list *xs)
-/*@ requires take Xs = IntList(xs); @*/
-/*@ ensures take Ys = IntList(return); @*/
-/*@ ensures Ys == cn_mergesort(Xs); @*/
+/*@ requires take Xs = IntList(xs);
+    ensures take Ys = IntList(return);
+            Ys == cn_mergesort(Xs); @*/
 {
   if (xs == 0) {
     /*@ unfold cn_mergesort(Xs); @*/
@@ -481,10 +481,10 @@ unsigned int IntList_length_acc (struct int_list *xs)
 }
 
 struct int_list* IntList_append(struct int_list* xs, struct int_list* ys)
-/*@ requires take L1 = IntList(xs); @*/
-/*@ requires take L2 = IntList(ys); @*/
-/*@ ensures take L3 = IntList(return); @*/
-/*@ ensures L3 == append(L1, L2); @*/
+/*@ requires take L1 = IntList(xs);
+             take L2 = IntList(ys);
+    ensures take L3 = IntList(return);
+            L3 == append(L1, L2); @*/
 {
   if (xs == 0) {
     /*@ unfold append(L1, L2); @*/
@@ -499,14 +499,14 @@ struct int_list* IntList_append(struct int_list* xs, struct int_list* ys)
 
 struct int_list* IntList_append2 (struct int_list *xs, struct int_list *ys)
 /* --BEGIN-- */
-/*@ requires take L1 = IntList(xs); @*/
-/*@ requires take L2 = IntList(ys); @*/
-/*@ ensures take L1_ = IntList(xs); @*/
-/*@ ensures take L2_ = IntList(ys); @*/
-/*@ ensures take L3 = IntList(return); @*/
-/*@ ensures L3 == append(L1, L2); @*/
-/*@ ensures L1 == L1_; @*/
-/*@ ensures L2 == L2_; @*/
+/*@ requires take L1 = IntList(xs);
+             take L2 = IntList(ys);
+    ensures take L1_ = IntList(xs);
+            take L2_ = IntList(ys);
+            take L3 = IntList(return);
+            L3 == append(L1, L2);
+            L1 == L1_;
+            L2 == L2_; @*/
 /* --END-- */
 {
   if (xs == 0) {

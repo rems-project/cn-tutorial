@@ -148,10 +148,10 @@ struct int_list_pair {
 };
 
 struct int_list_pair IntList_split(struct int_list *xs)
-/*@ requires take Xs = IntList(xs); @*/
-/*@ ensures take Ys = IntList(return.fst); @*/
-/*@ ensures take Zs = IntList(return.snd); @*/
-/*@ ensures {fst: Ys, snd: Zs} == cn_split(Xs); @*/
+/*@ requires take Xs = IntList(xs);
+    ensures take Ys = IntList(return.fst);
+            take Zs = IntList(return.snd);
+            {fst: Ys, snd: Zs} == cn_split(Xs); @*/
 {
   if (xs == 0) {
     /*@ unfold cn_split(Xs); @*/
@@ -175,10 +175,10 @@ struct int_list_pair IntList_split(struct int_list *xs)
 }
 
 struct int_list* IntList_merge(struct int_list *xs, struct int_list *ys)
-/*@ requires take Xs = IntList(xs); @*/
-/*@ requires take Ys = IntList(ys); @*/
-/*@ ensures take Zs = IntList(return); @*/
-/*@ ensures Zs == merge(Xs, Ys); @*/
+/*@ requires take Xs = IntList(xs);
+             take Ys = IntList(ys);
+    ensures take Zs = IntList(return);
+            Zs == merge(Xs, Ys); @*/
 {
   if (xs == 0) {
     /*@ unfold merge(Xs, Ys); @*/
@@ -204,9 +204,9 @@ struct int_list* IntList_merge(struct int_list *xs, struct int_list *ys)
 }
 
 struct int_list* IntList_mergesort(struct int_list *xs)
-/*@ requires take Xs = IntList(xs); @*/
-/*@ ensures take Ys = IntList(return); @*/
-/*@ ensures Ys == cn_mergesort(Xs); @*/
+/*@ requires take Xs = IntList(xs);
+    ensures take Ys = IntList(return);
+            Ys == cn_mergesort(Xs); @*/
 {
   if (xs == 0) {
     /*@ unfold cn_mergesort(Xs); @*/
