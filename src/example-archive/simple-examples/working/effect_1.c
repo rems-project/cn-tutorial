@@ -7,8 +7,8 @@ int g;
 void
 write_g_to_1()
 /*@ requires 
-        take Pre = W<int>(&g); @*/
-/*@ ensures 
+        take Pre = W<int>(&g);
+    ensures 
         take Post = RW<int>(&g); 
         Post == 1i32; @*/
 {
@@ -19,8 +19,8 @@ write_g_to_1()
 int
 effect_1()
 /*@ requires 
-      take Pre = W<int>(&g); @*/
-/*@ ensures 
+      take Pre = W<int>(&g);
+    ensures 
       take Post = RW<int>(&g); 
       return == 1i32; @*/
 {

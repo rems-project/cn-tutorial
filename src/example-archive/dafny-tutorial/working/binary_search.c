@@ -8,8 +8,8 @@ int binary_search(int *a, int length, int value)
       0i32 <= length; 
       (2i64 * (i64) length) <= MAXi32; 
       take IndexPre = each (i32 j; 0i32 <= j && j < length)
-                           {RW<int>(a + j)}; @*/
-/*@ ensures 
+                           {RW<int>(a + j)};
+    ensures 
       take IndexPost = each (i32 j; 0i32 <= j && j < length)
                             {RW<int>(a + j)}; 
       IndexPost == IndexPre; 

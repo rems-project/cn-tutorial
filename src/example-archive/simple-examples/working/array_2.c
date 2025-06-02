@@ -5,8 +5,8 @@ int array_2(int *arr, int size, int off)
       take arrayStart = each (i32 j; 0i32  <= j && j < size) {RW(arr + j)};
       0i32 <= off; 
       off < size; 
-      arrayStart[off] != 0i32; @*/
-/*@ ensures  
+      arrayStart[off] != 0i32;
+    ensures  
       take arrayEnd = each (i32 j; 0i32  <= j && j < size) {RW(arr + j)};
       arrayEnd[off] == 7i32; 
       return == arrayStart[off]; @*/

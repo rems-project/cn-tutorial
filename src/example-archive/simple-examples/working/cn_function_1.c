@@ -9,8 +9,8 @@ function (i32) bw_or(i32 x, i32 y)
 // Define bitwise-OR in code
 int c_bw_or(int x, int y)
 // Lift the bitwise-OR function to a specification function 
-/*@ cn_function bw_or; @*/
-/*@ ensures return == bw_or(x,y); @*/  // <-- Trivial, should hold by construction 
+/*@ cn_function bw_or;
+    ensures return == bw_or(x,y); @*/  // <-- Trivial, should hold by construction 
 {
   return x | y;
 }

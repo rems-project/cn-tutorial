@@ -1,8 +1,8 @@
 // Pre and post-read decrement 
 
 int dec_1_pre(int i) 
-/*@ requires i >= 1i32; @*/
-/*@ ensures return == i - 1i32; @*/
+/*@ requires i >= 1i32;
+    ensures return == i - 1i32; @*/
 { 
   int start, pre, post; 
   start = i; 
@@ -12,8 +12,8 @@ int dec_1_pre(int i)
 }
 
 int dec_1_post(int i) 
-/*@ requires i >= 1i32; @*/
-/*@ ensures return == i - 1i32; @*/
+/*@ requires i >= 1i32;
+    ensures return == i - 1i32; @*/
 { 
   int start, pre, post; 
   start = i; 

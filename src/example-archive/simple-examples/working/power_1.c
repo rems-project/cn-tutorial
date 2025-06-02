@@ -8,9 +8,9 @@
 //   2. the inductive case - power(2,y+1) == 2 * power_uf(2,y)
 
 void lemma_power_uf_def(int y)
-/*@ trusted; @*/
-/*@ requires y >= 0i32; @*/
-/*@ ensures 
+/*@ trusted;
+    requires y >= 0i32;
+    ensures 
       (power_uf(2i32,0i32)) == 1i32; 
       (power_uf(2i32,y+1i32)) == (2i32 * power_uf(2i32,y)); @*/
 {}

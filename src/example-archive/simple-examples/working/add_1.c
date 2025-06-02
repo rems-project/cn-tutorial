@@ -3,8 +3,8 @@
 // non-faulting.
 
 signed int add_1(signed int x, signed int y)
-/*@ requires x == 0i32; y == 0i32; @*/
-/*@ ensures return == x + y; @*/
+/*@ requires x == 0i32; y == 0i32;
+    ensures return == x + y; @*/
 {
   signed int i;
   i = x + y;

@@ -1,8 +1,8 @@
 int
 f1(char *p)
 /*@ requires 
-			take PreP = RW<char>(p); @*/
-/*@ ensures 
+			take PreP = RW<char>(p);
+    ensures 
 			take PostP = RW<char>(p);
 			return == 1i32 + (i32) PreP; @*/
 {

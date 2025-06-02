@@ -3,8 +3,8 @@ int g;
 int
 effect()
 /*@ requires 
-        take Pre = RW<int>(&g); @*/
-/*@ ensures 
+        take Pre = RW<int>(&g);
+    ensures 
         take Post = RW<int>(&g); 
         Post == 1i32;  
         return == 1i32; @*/
@@ -16,10 +16,10 @@ effect()
 int
 main()
 /*@ requires 
-        take Pre = RW<int>(&g); @*/
-/*@ ensures 
-        take Post = RW<int>(&g); @*/
-/*@ ensures return == 0i32; @*/
+        take Pre = RW<int>(&g);
+    ensures 
+        take Post = RW<int>(&g);
+        return == 0i32; @*/
 {
     int x;
     

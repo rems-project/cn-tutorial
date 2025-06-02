@@ -14,8 +14,8 @@ function (i32) abs_spec(i32 x)
 int abs(int x)
 /*@ requires 
       let MINi32 = (i64) -2147483647i64;
-      MINi32 < (i64) x; @*/
-/*@ ensures 
+      MINi32 < (i64) x;
+    ensures 
       0i32 <= return; 
       (x < 0i32 && return == (0i32 - x)) || (0i32 <= x && return == x); 
       0i32 <= return && (return == x || return == (0i32 - x));  // Same property
