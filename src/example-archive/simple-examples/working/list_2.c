@@ -18,8 +18,8 @@ lemma IntListSeqSnoc(pointer p, pointer tail)
 @*/
 
 void list_2(struct list_node *head)
-/*@ requires take Xs = IntListSeg(head,NULL); @*/
-/*@ ensures take Ys = IntListSeg(head,NULL); @*/
+/*@ requires take Xs = IntListSeg(head,NULL);
+    ensures take Ys = IntListSeg(head,NULL); @*/
 {
   struct list_node *curr;
   curr = head;

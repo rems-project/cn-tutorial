@@ -4,13 +4,13 @@ int a[3] = {0, 1, 2};
 
 int
 main()
-/*@ accesses a; @*/
-/*@ requires 
+/*@ accesses a;
+    requires 
 			a[0u64] == 0i32; 
 			a[1u64] == 1i32; 
 			a[2u64] == 2i32; 
-			@*/
-/*@ ensures return == 0i32; @*/
+
+    ensures return == 0i32; @*/
 {
 	/*@ focus RW<int>, 0u64; @*/
 	/*@ focus RW<int>, 1u64; @*/

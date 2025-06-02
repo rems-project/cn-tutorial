@@ -4,8 +4,8 @@
 // function that only works on ints.
 
 int *my_malloc__int()
-/*@ trusted; @*/
-/*@ ensures take New = W<int>(return); @*/
+/*@ trusted;
+    ensures take New = W<int>(return); @*/
 {}
 
 int *malloc__1()

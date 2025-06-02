@@ -17,8 +17,8 @@ void multiple_returns(int x, int y, struct int_pair *ret)
       MINi32 <= (i64) x + (i64) y; 
       (i64) x + (i64) y <= MAXi32;
       MINi32 <= (i64) x - (i64) y; 
-      (i64) x - (i64) y <= MAXi32;  @*/
-/*@ ensures 
+      (i64) x - (i64) y <= MAXi32;
+    ensures 
       take PairPost = RW<struct int_pair>(ret);
       PairPost.fst == x + y;
       PairPost.snd == x - y; @*/

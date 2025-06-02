@@ -4,8 +4,8 @@ int linear_search(int *a, int length, int key)
 /*@ requires 
       0i32 < length; 
       take IndexPre = each (i32 j; 0i32 <= j && j < length)
-                           {RW<int>(a + j)}; @*/
-/*@ ensures 
+                           {RW<int>(a + j)};
+    ensures 
       take IndexPost = each (i32 j; 0i32 <= j && j < length)
                             {RW<int>(a + j)};
       (return < 0i32) || (IndexPost[return] == key); 

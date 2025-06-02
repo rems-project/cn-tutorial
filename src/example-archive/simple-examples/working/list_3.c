@@ -30,8 +30,8 @@ lemma IntListSeqSnocVal(pointer p, pointer tail, i32 tval)
 
 
 void list_3(struct list_node *head)
-/*@ requires take Xs = IntListSeg(head,NULL); @*/
-/*@ ensures  take Ys = IntListSegVal(head,NULL,7i32); @*/
+/*@ requires take Xs = IntListSeg(head,NULL);
+    ensures  take Ys = IntListSegVal(head,NULL,7i32); @*/
 {
   struct list_node *curr;
   curr = head;
