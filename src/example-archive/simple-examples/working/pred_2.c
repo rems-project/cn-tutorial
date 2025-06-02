@@ -21,8 +21,8 @@ function (i32) test_if_zero(i32 x) {
 void pred_2_var1(int *p) 
 /*@ requires 
       take PreP = RW<int>(p); 
-      PreP == 0i32; @*/
-/*@ ensures 
+      PreP == 0i32;
+    ensures 
       take TestP = TestMemoryEqZero_2_var1(p); 
       TestP == 1i32; @*/
 { 
@@ -49,8 +49,8 @@ predicate (i32) TestMemoryEqZero_2_Helper(pointer p, i32 x) {
 void pred_2_var2(int *p) 
 /*@ requires 
       take PreP = RW<int>(p); 
-      PreP == 0i32; @*/
-/*@ ensures 
+      PreP == 0i32;
+    ensures 
       take TestP = TestMemoryEqZero_2_var2(p); 
       TestP == 1i32; @*/
 { 
@@ -69,8 +69,8 @@ predicate (i32) TestMemoryEqZero_2_var3(pointer p) {
 void pred_2_var3(int *p) 
 /*@ requires 
       take PreP = RW<int>(p); 
-      PreP == 0i32; @*/
-/*@ ensures 
+      PreP == 0i32;
+    ensures 
       take TestP = TestMemoryEqZero_2_var3(p); 
       TestP == 1i32; @*/
 { 
