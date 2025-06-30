@@ -72,12 +72,15 @@ struct int_queueCell {
 };
 
 /*@
-predicate (datatype seq) IntQueuePtr (pointer q) {
-  take Q = Owned<struct int_queue>(q);
-  assert (   (is_null(Q.front)  && is_null(Q.back))
-          || (!is_null(Q.front) && !is_null(Q.back)));
-  take L = IntQueueFB(Q.front, Q.back);
-  return L;
+predicate [rec] (datatype seq) IntQueueAux (pointer f, pointer b) {
+  if (ptr_eq(f,b)) {
+    return Seq_Nil{};
+  } else {
+    take F = Owned<struct int_queueCell>(f);
+    assert (!is_null(F.next));
+    take B = IntQueueAux(F.next, b);
+    return Seq_Cons{head: F.first, tail: B};
+  }
 }
 @*/
 
@@ -95,15 +98,12 @@ predicate (datatype seq) IntQueueFB (pointer front, pointer back) {
 @*/
 
 /*@
-predicate (datatype seq) IntQueueAux (pointer f, pointer b) {
-  if (ptr_eq(f,b)) {
-    return Seq_Nil{};
-  } else {
-    take F = Owned<struct int_queueCell>(f);
-    assert (!is_null(F.next));
-    take B = IntQueueAux(F.next, b);
-    return Seq_Cons{head: F.first, tail: B};
-  }
+predicate (datatype seq) IntQueuePtr (pointer q) {
+  take Q = Owned<struct int_queue>(q);
+  assert (   (is_null(Q.front)  && is_null(Q.back))
+          || (!is_null(Q.front) && !is_null(Q.back)));
+  take L = IntQueueFB(Q.front, Q.back);
+  return L;
 }
 @*/
 

@@ -1,5 +1,5 @@
 /*@
-predicate (datatype seq) IntQueueAux (pointer f, pointer b) {
+predicate [rec] (datatype seq) IntQueueAux (pointer f, pointer b) {
   if (ptr_eq(f,b)) {
     return Seq_Nil{};
   } else {

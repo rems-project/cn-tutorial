@@ -7,7 +7,7 @@
 // must store this value. 
 
 /*@
-predicate (datatype seq) IntListSegVal(pointer p, pointer tail, i32 tval) {
+predicate [rec] (datatype seq) IntListSegVal(pointer p, pointer tail, i32 tval) {
   if (addr_eq(p,tail)) {
     return Seq_Nil{};
   } else {
