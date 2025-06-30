@@ -31,18 +31,19 @@ void pred_2_var1(int *p)
 
 // Variant 2 - this works: 
 /*@ 
-predicate (i32) TestMemoryEqZero_2_var2(pointer p) {
-  take PVal = RW<int>(p); 
-  take rval = TestMemoryEqZero_2_Helper(p, PVal); 
-  return rval; 
-}
-
 predicate (i32) TestMemoryEqZero_2_Helper(pointer p, i32 x) {
   if (x == 0i32) {
     return 1i32; 
   } else { 
     return 0i32; 
   }
+}
+
+
+predicate (i32) TestMemoryEqZero_2_var2(pointer p) {
+  take PVal = RW<int>(p); 
+  take rval = TestMemoryEqZero_2_Helper(p, PVal); 
+  return rval; 
 }
 @*/
 
