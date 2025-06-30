@@ -24,7 +24,7 @@ datatype seq {
 // a pure sequence of values.
 
 /*@
-predicate (datatype seq) IntListSeg(pointer p, pointer tail) {
+predicate [rec] (datatype seq) IntListSeg(pointer p, pointer tail) {
   if (ptr_eq(p,tail)) {
     return Seq_Nil{};
   } else {
