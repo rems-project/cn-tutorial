@@ -7,7 +7,7 @@ datatype Tree {
     Node {datatype Tree Left, i32 Data, datatype Tree Right}
 } 
 
-predicate (datatype Tree) Tree_At (pointer t) 
+predicate [rec] (datatype Tree) Tree_At (pointer t) 
 {
     if (is_null(t))
     {

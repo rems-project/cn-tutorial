@@ -1,16 +1,5 @@
 /*@
-predicate (datatype DlList) DlList_at (pointer p) {
-    if (is_null(p)) {
-        return Empty_DlList{};
-    } else {
-        take n = RW<struct dllist>(p);
-        take L = Take_Left(n.prev, p, n);
-        take R = Take_Right(n.next, p, n);
-        return Nonempty_DlList{left: L, curr: n, right: R};
-    }
-}
-
-predicate (datatype List) Take_Right (pointer p, 
+predicate [rec] (datatype List) Take_Right (pointer p, 
                                         pointer prev_pointer, 
                                         struct dllist prev_dllist) {
     if (is_null(p)) {
@@ -24,7 +13,7 @@ predicate (datatype List) Take_Right (pointer p,
     }
 }
 
-predicate (datatype List) Take_Left (pointer p, 
+predicate [rec] (datatype List) Take_Left (pointer p, 
                                          pointer next_pointer, 
                                          struct dllist next_dllist) {
     if (is_null(p)) {
@@ -37,4 +26,17 @@ predicate (datatype List) Take_Left (pointer p,
         return Cons{Head: P.data, Tail: T};
     }
 }
+
+
+predicate (datatype DlList) DlList_at (pointer p) {
+    if (is_null(p)) {
+        return Empty_DlList{};
+    } else {
+        take n = RW<struct dllist>(p);
+        take L = Take_Left(n.prev, p, n);
+        take R = Take_Right(n.next, p, n);
+        return Nonempty_DlList{left: L, curr: n, right: R};
+    }
+}
+
 @*/

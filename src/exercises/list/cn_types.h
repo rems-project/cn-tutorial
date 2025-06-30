@@ -4,7 +4,7 @@ datatype List {
   Cons {i32 Head, datatype List Tail}
 }
 
-predicate (datatype List) SLList_At(pointer p) {
+predicate [rec] (datatype List) SLList_At(pointer p) {
   if (is_null(p)) {
     return Nil{};
   } else {
