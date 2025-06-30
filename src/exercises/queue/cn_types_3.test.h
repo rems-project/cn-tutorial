@@ -1,5 +1,5 @@
 /*@
-predicate (datatype List) QueueAux (pointer f, pointer b) {
+predicate [rec] (datatype List) QueueAux (pointer f, pointer b) {
   if (ptr_eq(f,b)) {
     return Nil{};
   } else {
