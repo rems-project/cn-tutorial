@@ -19,11 +19,11 @@ jobs:
       matrix:
         version: [4.14.1]
     
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
     - uses: actions/checkout@v4
-      with:  
+      with:
         repository: rems-project/cn
 
     - name: System dependencies (ubuntu)
@@ -43,7 +43,7 @@ jobs:
         opam init --yes --no-setup --shell=sh --compiler=${{ matrix.version }}
         eval $(opam env --switch=${{ matrix.version }})
         opam repo add --yes --this-switch coq-released https://coq.inria.fr/opam/released
-        opam install --deps-only --yes ./cn.opam
+        opam install --deps-only --yes ./cn.opam z3
     
     - name: Save OPAM cache
       uses: actions/cache/save@v4
@@ -56,7 +56,7 @@ jobs:
       uses: robinraju/release-downloader@v1
       with:
         repository: cvc5/cvc5
-        tag: cvc5-1.2.0
+        tag: cvc5-1.3.0
         fileName: cvc5-Linux-x86_64-static.zip
 
     - name: Unzip and install cvc5
@@ -74,11 +74,11 @@ jobs:
 
     - name: Checkout cn-tutorial
       uses: actions/checkout@v4
-      with: 
+      with:
         path: cn-tutorial
 
     - name: Run CN Tutorial CI tests
       run: |
         opam switch ${{ matrix.version }}
         eval $(opam env --switch=${{ matrix.version }})
-        USE_OPAM='' tests/run-cn-tutorial-ci.sh cn-tutorial
+        tests/run-cn-tutorial-ci.sh cn-tutorial
