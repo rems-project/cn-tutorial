@@ -1,0 +1,10 @@
+return code: 0
+./src/examples/array_load.c:2:19: warning: 'each' expects a 'u64', but 'j' with type 'i32' was provided. This will become an error in the future.
+/*@ requires take A = each(i32 j; 0i32 <= j && j < n) { 
+                  ^
+./src/examples/array_load.c:5:18: warning: 'each' expects a 'u64', but 'j' with type 'i32' was provided. This will become an error in the future.
+    ensures take A_post = each(i32 j; 0i32 <= j && j < n) { 
+                 ^
+other location (Cn__Compile.UsingLoads.handle.load)  warning: 'extract' expects a 'u64', but 'read_&i0' with type 'i32' was provided. This will become an error in the future.
+
+[1/1]: read -- pass

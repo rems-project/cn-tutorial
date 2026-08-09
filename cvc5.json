@@ -1,0 +1,6 @@
+{
+    "name": "cvc5",
+    "args": ["verify", "--solver-type=cvc5"],
+    "filter": "^(.*\\.c)$",
+    "timeout": 60
+}
