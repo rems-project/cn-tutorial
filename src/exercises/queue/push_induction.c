@@ -19,9 +19,11 @@ void push_induction(struct queue_cell* front
 @*/
 {
     if (front == second_last) {
+        /*@ derive_constraints(RW(second_last), RW(last)); @*/
         /*@ unfold Snoc(Q, Second_last.first); @*/
         return;
     } else {
+        /*@ derive_constraints(RW(front), RW(second_last), RW(last)); @*/
         push_induction(front->next, second_last, last);
         /*@ unfold Snoc(Q, Second_last.first); @*/
         return;
