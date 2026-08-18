@@ -7,6 +7,8 @@
 //   1. the base case - power_uf(2,0) = 1 
 //   2. the inductive case - power(2,y+1) == 2 * power_uf(2,y)
 
+/*@ function (i32) power_uf(i32 x, i32 y) @*/
+
 void lemma_power_uf_def(int y)
 /*@ trusted;
     requires y >= 0i32;
