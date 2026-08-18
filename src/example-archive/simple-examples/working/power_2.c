@@ -1,5 +1,8 @@
 // Compute 2^1
 
+/*@ function (i32) power_uf(i32 x, i32 y) @*/
+
+
 /*@
 lemma LemmaPowerUFDef(i32 y)
   requires 
