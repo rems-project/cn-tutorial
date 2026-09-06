@@ -39,8 +39,9 @@ int m; // Global variable m
  */
 int returnfinally(int d)
   /*@ requires take vp0 = RW<int>(&m);
-               let m10 = (i64)vp0 + 10i64;
-               m10 <= 2147483647i64; 
+               let m10 = vp0 + 10;
+               m10 <= 2147483647; 
+	       MINi32() <= vp0/d && vp0/d <= MAXi32();  // CP: added
       ensures take vp1 = RW<int>(&m); 
   @*/
   {
@@ -60,7 +61,7 @@ int returnfinally(int d)
 int main()
   /*@ requires take vp0 = RW<int>(&m); 
       ensures take vp1 = W<int>(&m);
-	      return == 0i32; 
+	      return == 0; 
   @*/
 {
     m = 20; // Initialize m

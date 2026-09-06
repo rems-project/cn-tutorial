@@ -61,7 +61,7 @@ int iabs(int x)
  *          x < (iabs(\result) + 1) * (iabs(\result) + 1);
  */
 int isqrt(int x)
-  /*@ requires 0i32 <= x ; x<= 2147390966i32; 
+  /*@ requires 0 <= x ; x<= 2147390966; 
       ensures true; 
   @*/
 {
@@ -74,11 +74,11 @@ int isqrt(int x)
      * @ decreasing x - count;
      */
     while (sum <= x)
-    /*@ inv 0i32 <= count;
-            count < 46340i32;
+    /*@ inv 0 <= count;
+            count < 46340;
 	    count * count <= x;
-	    sum == (count + 1i32 ) * (count + 1i32);
-	    sum <= x + 2i32 *count+1i32; 
+	    sum == (count + 1 ) * (count + 1);
+	    sum <= x + 2 *count+1; 
       @*/
     {
         count++;

@@ -2,7 +2,7 @@
 // requires-clause sets one integer to be zero 
 
 signed int add_2(signed int x, signed int y)
-/*@ requires x == 0i32;
+/*@ requires x == 0;
     ensures return == y; @*/
 {
   signed int i;

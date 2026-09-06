@@ -2,7 +2,7 @@
 
 int cond_1 (int i) 
 /*@ ensures 
-      return == (i == 0i32 ? 0i32 : 1i32); @*/
+      return == (i == 0 ? 0 : 1); @*/
 {
   if (i == 0) {
     return 0; 

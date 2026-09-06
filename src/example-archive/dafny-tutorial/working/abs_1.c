@@ -1,10 +1,10 @@
 // Compute the absolute value a function.
 
 /*@
-function (i32) abs_spec(i32 x)
+function (integer) abs_spec(integer x)
 {
-  if (x < 0i32) {
-    (0i32 - x)
+  if (x < 0) {
+    (0 - x)
   } else {
     x
   }
@@ -13,13 +13,13 @@ function (i32) abs_spec(i32 x)
 
 int abs(int x)
 /*@ requires 
-      let MINi32 = (i64) -2147483647i64;
-      MINi32 < (i64) x;
+      let MINi32 = -2147483647;
+      MINi32 < x;
     ensures 
-      0i32 <= return; 
-      (x < 0i32 && return == (0i32 - x)) || (0i32 <= x && return == x); 
-      0i32 <= return && (return == x || return == (0i32 - x));  // Same property
-      return == abs_spec(x); @*/                                // Same property
+      0 <= return; 
+      (x < 0 && return == (0 - x)) || (0 <= x && return == x); 
+      0 <= return && (return == x || return == (0 - x));  // Same property
+      return == abs_spec(x); @*/                          // Same property
 {
   if (x < 0)
   {

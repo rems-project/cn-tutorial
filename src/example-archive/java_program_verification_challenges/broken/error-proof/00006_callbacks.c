@@ -73,13 +73,13 @@ struct A {
  */
 void decrement_k(A *a)
   /*@ requires take va0 = RW<A>(a);
-               va0.m < 2147483647i32;
-               -2147483648i32 < va0.k;
-	       va0.k + va0.m == 0i32
+               va0.m < 2147483647;
+               -2147483648 < va0.k;
+	       va0.k + va0.m == 0
       ensures take va1 = RW<A>(a);
-              va1.k == va0.k-1i32;
-              va1.m == va0.m+1i32;
-	      va1.k + va1.m == 0i32
+              va1.k == va0.k-1;
+              va1.m == va0.m+1;
+	      va1.k + va1.m == 0
   @*/
 {
     a->k--;
@@ -98,14 +98,14 @@ void decrement_k(A *a)
  */
 void increment_k(A *a)
   /*@ requires take va0 = RW<A>(a);
-               va0.k < 2147483647i32;
-               va0.m < 2147483647i32;
-               -2147483648i32 < va0.m;
-	       va0.k + va0.m == 0i32
+               va0.k < 2147483647;
+               va0.m < 2147483647;
+               -2147483648 < va0.m;
+	       va0.k + va0.m == 0
       ensures take va1 = RW<A>(a);
               va1.k == va0.k;
               va1.m == va0.m;
-	      va1.k + va1.m == 0i32
+	      va1.k + va1.m == 0
   @*/
 {
     a->k++;

@@ -10,14 +10,14 @@ struct int_pair
 
 void multiple_returns(int x, int y, struct int_pair *ret)
 /*@ requires 
-      let MAXi32 = (i64) 2147483647i64; 
-      let MINi32 = (i64) -2147483647i64;
+      let MAXi32 = 2147483647; 
+      let MINi32 = -2147483647;
 
       take PairPre = RW<struct int_pair>(ret);
-      MINi32 <= (i64) x + (i64) y; 
-      (i64) x + (i64) y <= MAXi32;
-      MINi32 <= (i64) x - (i64) y; 
-      (i64) x - (i64) y <= MAXi32;
+      MINi32 <= x + y; 
+      x + y <= MAXi32;
+      MINi32 <= x - y; 
+      x - y <= MAXi32;
     ensures 
       take PairPost = RW<struct int_pair>(ret);
       PairPost.fst == x + y;

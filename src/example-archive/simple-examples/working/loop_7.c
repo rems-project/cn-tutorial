@@ -3,12 +3,12 @@
 // that the value of `n` is unknown, which causes the proof to fail 
 
 int loop_7(int n)
-/*@ requires 0i32 < n;
+/*@ requires 0 < n;
     ensures return == n; @*/
 {
   int i = 0;
   while (i < n)
-  /*@ inv 0i32 <= i; 
+  /*@ inv 0 <= i; 
           i <= n;
           {n}unchanged; @*/ 
   {

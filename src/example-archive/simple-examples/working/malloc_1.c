@@ -11,8 +11,8 @@ int *my_malloc__int()
 int *malloc__1()
 /*@ ensures 
       take New = RW<int>(return);
-      New == 7i32;
-      *return == 7i32; @*/  // <-- Alternative syntax 
+      New == 7;
+      *return == 7; @*/  // <-- Alternative syntax 
 {
   int *new;
   new = my_malloc__int();

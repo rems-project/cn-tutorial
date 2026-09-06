@@ -10,7 +10,7 @@ write_g_to_1()
         take Pre = W<int>(&g);
     ensures 
         take Post = RW<int>(&g); 
-        Post == 1i32; @*/
+        Post == 1; @*/
 {
 	g = 1;
 }
@@ -22,7 +22,7 @@ effect_1()
       take Pre = W<int>(&g);
     ensures 
       take Post = RW<int>(&g); 
-      return == 1i32; @*/
+      return == 1; @*/
 {
   int x;
   

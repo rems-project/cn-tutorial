@@ -7,7 +7,7 @@
 int cast_4(int *ptr_original)
 /*@ requires take Pre = W<int>(ptr_original);
     ensures take Post = RW<int>(ptr_original);
-            return == 7i32; @*/
+            return == 7; @*/
 {
   *ptr_original = 7;
   // Cast pointer to uintptr_t

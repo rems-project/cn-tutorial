@@ -3,8 +3,8 @@
 
 signed int add_5(signed int x, signed int y)
 /*@ requires 
-      let sum = (i64) x + (i64) y;
-      (i64) MINi32() <= sum; sum <= (i64) MAXi32();
+      let sum = x + y;
+      MINi32() <= sum; sum <= MAXi32();
     ensures return == x + y; @*/
 {
   signed int i;

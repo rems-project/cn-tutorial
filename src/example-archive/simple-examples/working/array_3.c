@@ -4,20 +4,20 @@
 
 void array_3(int *arr, int n)
 /*@ requires 
-      0i32 < n;
-      take arrayStart = each (i32 j; 0i32 <= j && j < n) {RW<int>(arr + j)};
+      0 < n;
+      take arrayStart = each (integer j; 0 <= j && j < n) {RW<int>(arr + j)};
     ensures 
-      take arrayEnd = each (i32 j; 0i32 <= j && j < n) {RW<int>(arr + j)};
-      each (i32 j; 0i32 <= j && j < n) {arrayEnd[j] == 7i32}; @*/
+      take arrayEnd = each (integer j; 0 <= j && j < n) {RW<int>(arr + j)};
+      each (integer j; 0 <= j && j < n) {arrayEnd[j] == 7}; @*/
 {
   int i = 0;
   while (i < n)
   /*@ inv {n}unchanged; 
           {arr}unchanged;
-          0i32 <= i; 
+          0 <= i; 
           i <= n;
-          take arrayInv = each (i32 j; 0i32 <= j && j < n) {RW<int>(arr + j)};
-          each (i32 j; 0i32 <= j && j < i) {arrayInv[j] == 7i32}; @*/ 
+          take arrayInv = each (integer j; 0 <= j && j < n) {RW<int>(arr + j)};
+          each (integer j; 0 <= j && j < i) {arrayInv[j] == 7}; @*/ 
   {
     /*@ focus RW<int>, i; @*/
     *(arr + i) = 7;

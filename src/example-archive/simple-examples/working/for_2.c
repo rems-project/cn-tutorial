@@ -5,9 +5,9 @@ int for_2()
   int acc = 0; 
   int i; 
   for(i = 0; i < 10; i++)
-  /*@ inv 0i32 <= i; 
-          i <= 10i32;
-          acc <= 10i32; @*/
+  /*@ inv 0 <= i; 
+          i <= 10;
+          acc <= 10; @*/
   {
     acc = i; 
   }; 

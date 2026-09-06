@@ -2,17 +2,18 @@
 
 int array_2(int *arr, int size, int off)
 /*@ requires 
-      take arrayStart = each (i32 j; 0i32  <= j && j < size) {RW(arr + j)};
-      0i32 <= off; 
+      take arrayStart = each (integer j; 0  <= j && j < size) {RW(arr + j)};
+      0 <= off; 
       off < size; 
-      arrayStart[off] != 0i32;
+      arrayStart[off] != 0;
     ensures  
-      take arrayEnd = each (i32 j; 0i32  <= j && j < size) {RW(arr + j)};
-      arrayEnd[off] == 7i32; 
+      take arrayEnd = each (integer j; 0  <= j && j < size) {RW(arr + j)};
+      arrayEnd[off] == 7; 
       return == arrayStart[off]; @*/
 {
   /*@ focus RW<int>, off; @*/
-  int tmp = arr[off];
+  /*@ instantiate off; @*/
+ int tmp = arr[off];
   arr[off] = 7;
   return tmp; 
 }

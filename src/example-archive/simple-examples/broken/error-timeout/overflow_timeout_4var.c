@@ -4,7 +4,7 @@
 
 extern int pow(int a, int b);
 /*@
-        spec pow(i32 a, i32 b);
+        spec pow(integer a, integer b);
         requires true;
         ensures true;
 @*/

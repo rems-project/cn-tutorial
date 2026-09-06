@@ -3,11 +3,11 @@
 
 int abs_3(int x)
 /*@ requires 
-      x == (0i32 - 1i32);  // TODO: syntax is bad 
+      x == (0 - 1);  // TODO: syntax is bad 
     ensures 
-      0i32 <= return;
-      (return == x || return == (0i32 - x)); 
-      return == 1i32; @*/
+      0 <= return;
+      (return == x || return == (0 - x)); 
+      return == 1; @*/
 {
   return x + 2;
 }

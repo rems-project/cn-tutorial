@@ -2,7 +2,7 @@
 // equivalent to the same algorithm implemented in the spec language 
 
 /*@
-function (i32) max_spec (i32 a, i32 b)
+function (integer) max_spec (integer a, integer b)
 {
   if (a > b){
     a

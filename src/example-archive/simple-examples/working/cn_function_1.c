@@ -3,7 +3,7 @@
 
 // Give the CN-level signature for bitwise-OR 
 /*@
-function (i32) bw_or(i32 x, i32 y)
+function (integer) bw_or(integer x, integer y)
 @*/
 
 // Define bitwise-OR in code

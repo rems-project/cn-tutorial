@@ -1,19 +1,19 @@
 // Compute 2^1
 
-/*@ function (i32) power_uf(i32 x, i32 y) @*/
+/*@ function (integer) power_uf(integer x, integer y) @*/
 
 
 /*@
-lemma LemmaPowerUFDef(i32 y)
+lemma LemmaPowerUFDef(integer y)
   requires 
-    y >= 0i32; 
+    y >= 0; 
   ensures 
-    (power_uf(2i32,0i32)) == 1i32; 
-    (power_uf(2i32,y+1i32)) == (2i32 * power_uf(2i32,y)); 
+    (power_uf(2,0)) == 1; 
+    (power_uf(2,y+1)) == (2 * power_uf(2,y)); 
 @*/
 
 int power_2()
-/*@ ensures return == power_uf(2i32,1i32); @*/
+/*@ ensures return == power_uf(2,1); @*/
 {
   int i = 0;
   int pow = 1;
