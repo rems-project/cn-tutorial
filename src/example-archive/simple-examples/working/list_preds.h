@@ -15,7 +15,7 @@ struct list_node
 /*@
 datatype seq {
   Seq_Nil {},
-  Seq_Cons { i32 val, datatype seq next}
+  Seq_Cons { integer val, datatype seq next}
 }
 @*/
 
@@ -51,7 +51,7 @@ function [rec] (datatype seq) append(datatype seq xs, datatype seq ys) {
 @*/
 
 // /*@
-// function [rec] (boolean) fold_eq(datatype seq xs, i32 test) {
+// function [rec] (boolean) fold_eq(datatype seq xs, integer test) {
 //   match xs {
 //     Seq_Nil {} => {
 //       true 

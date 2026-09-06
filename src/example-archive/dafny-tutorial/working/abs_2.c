@@ -3,13 +3,13 @@
 
 int abs_2(int x)
 /*@ requires 
-      let MINi32 = (i64) -2147483647i64;
+      let MINi32 = -2147483647;
 
-      MINi32 <= (i64) x; 
-      x < 0i32;
+      MINi32 <= x; 
+      x < 0;
     ensures 
-      0i32 <= return; 
-      (return == x || return == (0i32 - x)); @*/
+      0 <= return; 
+      (return == x || return == (0 - x)); @*/
 {
   return -x;
 }

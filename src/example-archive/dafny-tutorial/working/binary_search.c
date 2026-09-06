@@ -3,17 +3,17 @@
 
 int binary_search(int *a, int length, int value)
 /*@ requires 
-      let MAXi32 = (i64) 2147483647i64; // TODO: lift to library 
+      let MAXi32 = 2147483647; // TODO: lift to library 
 
-      0i32 <= length; 
-      (2i64 * (i64) length) <= MAXi32; 
-      take IndexPre = each (i32 j; 0i32 <= j && j < length)
+      0 <= length; 
+      (2 * length) <= MAXi32; 
+      take IndexPre = each (integer j; 0 <= j && j < length)
                            {RW<int>(a + j)};
     ensures 
-      take IndexPost = each (i32 j; 0i32 <= j && j < length)
+      take IndexPost = each (integer j; 0 <= j && j < length)
                             {RW<int>(a + j)}; 
       IndexPost == IndexPre; 
-      (return < 0i32) || (IndexPost[return] == value); @*/
+      (return < 0) || (IndexPost[return] == value); @*/
 {
   int low = 0;
   int high = length;
@@ -21,17 +21,17 @@ int binary_search(int *a, int length, int value)
   while (low < high)
   /*@ inv 
         {a}unchanged; {length}unchanged; {value}unchanged;  
-        0i32 <= low; 
+        0 <= low; 
         low <= high; 
         high <= length; 
-        ((i64) low + (i64) high) <= MAXi32; 
-        take IndexInv = each (i32 j; 0i32 <= j && j < length)
+        (low + high) <= MAXi32; 
+        take IndexInv = each (integer j; 0 <= j && j < length)
                              {RW<int>(a + j)}; 
         IndexInv == IndexPre; @*/
   {
     int mid = (low + high) / 2;
     /*@ focus RW<int>, mid; @*/
-    /*@ instantiate good<int>, mid;  @*/
+    /*@ instantiate mid;  @*/
     if (a[mid] < value)
     {
       low = mid + 1;

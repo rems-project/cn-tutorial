@@ -7,18 +7,18 @@
 //   1. the base case - power_uf(2,0) = 1 
 //   2. the inductive case - power(2,y+1) == 2 * power_uf(2,y)
 
-/*@ function (i32) power_uf(i32 x, i32 y) @*/
+/*@ function (integer) power_uf(integer x, integer y) @*/
 
 void lemma_power_uf_def(int y)
 /*@ trusted;
-    requires y >= 0i32;
+    requires y >= 0;
     ensures 
-      (power_uf(2i32,0i32)) == 1i32; 
-      (power_uf(2i32,y+1i32)) == (2i32 * power_uf(2i32,y)); @*/
+      (power_uf(2,0)) == 1; 
+      (power_uf(2,y+1)) == (2 * power_uf(2,y)); @*/
 {}
 
 int power_1()
-/*@ ensures return == power_uf(2i32,0i32); @*/
+/*@ ensures return == power_uf(2,0); @*/
 {
   int i = 0;
   int pow = 1;
@@ -29,16 +29,16 @@ int power_1()
 // Variant 2 - define the lemma at the specification level 
 
 /*@
-lemma LemmaPowerUFDef(i32 y)
+lemma LemmaPowerUFDef(integer y)
   requires 
-    y >= 0i32;
+    y >= 0;
   ensures 
-    (power_uf(2i32,0i32)) == 1i32; 
-    (power_uf(2i32,y+1i32)) == (2i32 * power_uf(2i32,y));
+    (power_uf(2,0)) == 1; 
+    (power_uf(2,y+1)) == (2 * power_uf(2,y));
 @*/
 
 int power_1_alt()
-/*@ ensures return == power_uf(2i32,0i32); @*/
+/*@ ensures return == power_uf(2,0); @*/
 {
   int i = 0;
   int pow = 1;

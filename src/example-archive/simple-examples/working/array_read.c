@@ -2,22 +2,22 @@
 int head(int *arr, unsigned long len)
 /*@
 requires
-    take arr_in = each(u64 i; i < len) {
+    take arr_in = each(integer i; i < len) {
         RW(array_shift<int>(arr, i))
     };
-    each(u64 i; i < len) {
-        arr_in[i] == 0i32
+    each(integer i; i < len) {
+        arr_in[i] == 0
     };
-    len > 0u64;
+    len > 0;
 
 ensures
-    take arr_out = each(u64 i; i < len) {
+    take arr_out = each(integer i; i < len) {
         RW(array_shift<int>(arr, i))
     };
-    each(u64 i; i < len) {
-        arr_out[i] == 0i32
+    each(integer i; i < len) {
+        arr_out[i] == 0
     };
-    return == 0i32;
+    return == 0;
 @*/
 {
     unsigned long idx = 0;
@@ -26,6 +26,7 @@ ensures
     // iterated resource `arr_in`, which it needs in order to verify the
     // following read:
     /*@ focus RW<int>, idx; @*/
+    /*@ instantiate idx; @*/
 
     int hd = arr[idx];
 

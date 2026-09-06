@@ -2,15 +2,15 @@
 
 int linear_search(int *a, int length, int key)
 /*@ requires 
-      0i32 < length; 
-      take IndexPre = each (i32 j; 0i32 <= j && j < length)
+      0 < length; 
+      take IndexPre = each (integer j; 0 <= j && j < length)
                            {RW<int>(a + j)};
     ensures 
-      take IndexPost = each (i32 j; 0i32 <= j && j < length)
+      take IndexPost = each (integer j; 0 <= j && j < length)
                             {RW<int>(a + j)};
-      (return < 0i32) || (IndexPost[return] == key); 
-      each (i32 j; 0i32 <= j && j < length) 
-           {return >= 0i32 || IndexPre[j] != key}; 
+      (return < 0) || (IndexPost[return] == key); 
+      each (integer j; 0 <= j && j < length) 
+           {return >= 0 || IndexPre[j] != key}; 
       IndexPre == IndexPost; @*/
 {
   int idx = 0;
@@ -18,14 +18,15 @@ int linear_search(int *a, int length, int key)
   while (idx < length)
   /*@ inv 
         {a}unchanged; {length}unchanged; {key}unchanged; 
-        0i32 <= idx; 
+        0 <= idx; 
         idx <= length; 
-        take IndexInv = each (i32 j; 0i32 <= j && j < length)
+        take IndexInv = each (integer j; 0 <= j && j < length)
                              {RW<int>(a + j)}; 
         IndexInv == IndexPre; 
-        each (i32 j; 0i32 <= j && j < idx) {IndexPre[j] != key}; @*/
+        each (integer j; 0 <= j && j < idx) {IndexPre[j] != key}; @*/
   {
     /*@ focus RW<int>, idx; @*/
+    /*@ instantiate idx; @*/
     if (*(a + idx) == key)
     {
       return idx;

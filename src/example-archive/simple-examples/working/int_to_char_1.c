@@ -5,8 +5,8 @@
 void 
 int_to_char_1(int a) 
 /*@ requires 
-      (i32) MINu8() <= (i32) a; 
-      (i32) a <= (i32) MAXu8(); @*/
+      MINu8() <= a; 
+      a <= MAXu8(); @*/
 {
   char b; 
   b = a; 

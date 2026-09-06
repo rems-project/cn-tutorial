@@ -2,7 +2,7 @@
 
 // Give the CN-level signature for bitwise-OR 
 /*@
-function (i32) bw_or_tern(i32 x, i32 y, i32 z)
+function (integer) bw_or_tern(integer x, integer y, integer z)
 @*/
 
 // Define bitwise-OR in code

@@ -3,11 +3,11 @@
 
 #include "list_preds.h"
 
-// This version of the predicate takes an i32 argument. Every node in the list
+// This version of the predicate takes an integer argument. Every node in the list
 // must store this value. 
 
 /*@
-predicate [rec] (datatype seq) IntListSegVal(pointer p, pointer tail, i32 tval) {
+predicate [rec] (datatype seq) IntListSegVal(pointer p, pointer tail, integer tval) {
   if (addr_eq(p,tail)) {
     return Seq_Nil{};
   } else {
@@ -20,7 +20,7 @@ predicate [rec] (datatype seq) IntListSegVal(pointer p, pointer tail, i32 tval) 
 }
 @*/
 /*@
-lemma IntListSeqSnocVal(pointer p, pointer tail, i32 tval)
+lemma IntListSeqSnocVal(pointer p, pointer tail, integer tval)
   requires take l1 = IntListSegVal(p, tail, tval);
            take v = RW<struct list_node>(tail);
            v.val == tval; 
@@ -31,13 +31,13 @@ lemma IntListSeqSnocVal(pointer p, pointer tail, i32 tval)
 
 void list_3(struct list_node *head)
 /*@ requires take Xs = IntListSeg(head,NULL);
-    ensures  take Ys = IntListSegVal(head,NULL,7i32); @*/
+    ensures  take Ys = IntListSegVal(head,NULL,7); @*/
 {
   struct list_node *curr;
   curr = head;
 
   while (curr != 0)
-  /*@ inv take Visited = IntListSegVal(head,curr,7i32);
+  /*@ inv take Visited = IntListSegVal(head,curr,7);
           take Remaining = IntListSeg(curr,NULL);
           {head}unchanged;
           let i_curr = curr; 
@@ -45,7 +45,7 @@ void list_3(struct list_node *head)
   {
     curr->val = 7;
     curr = curr->next;
-    /*@ apply IntListSeqSnocVal(head, i_curr, 7i32); @*/
+    /*@ apply IntListSeqSnocVal(head, i_curr, 7); @*/
   }
   return;
 }
