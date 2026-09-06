@@ -23,11 +23,11 @@ typedef uint8_t w8;
     (a&&b) || ((a||b) && (c||d)) || (c&&d)
   }
 
-  function (u8) Bool_to_u8(boolean b) {
+  function (integer) Bool_to_u8(boolean b) {
     if(b) {
-      1u8
+      1
     } else {
-      0u8
+      0
     }
   }
 @*/
@@ -39,10 +39,10 @@ w1 Coincidence_2_4(w8 trips[4])
     take tb = RW<uint8_t>(array_shift<uint8_t>(trips, 1));
     take tc = RW<uint8_t>(array_shift<uint8_t>(trips, 2));
     take td = RW<uint8_t>(array_shift<uint8_t>(trips, 3));
-    let a = ta != 0u8;
-    let b = tb != 0u8;
-    let c = tc != 0u8;
-    let d = td != 0u8;
+    let a = ta != 0;
+    let b = tb != 0;
+    let c = tc != 0;
+    let d = td != 0;
   ensures
     take ta_out = RW<uint8_t>(array_shift<uint8_t>(trips, 0));
     take tb_out = RW<uint8_t>(array_shift<uint8_t>(trips, 1));
