@@ -16,23 +16,23 @@ int
 main(void)
 /*@ accesses a, b, c, d, e, f, g, h, i, j, k;
 
-    requires (i128) MINi32() <= (i128) b; (i128) b <= (i128) MAXi32();
+    requires  MINi32() <=  b;  b <=  MAXi32();
 
-             (i128) MINu8() <= (i128) d; (i128) d <= (i128) MAXu8();
-             (i128) MINu8() <= (i128) f; (i128) f <= (i128) MAXu8();
-             (i128) MINu8() <= (i128) h; (i128) h <= (i128) MAXu8();
-             (i128) MINu8() <= (i128) i; (i128) i <= (i128) MAXu8();
-             (i128) MINu8() <= (i128) j; (i128) j <= (i128) MAXu8();
+              MINu8() <=  d;  d <=  MAXu8();
+              MINu8() <=  f;  f <=  MAXu8();
+              MINu8() <=  h;  h <=  MAXu8();
+              MINu8() <=  i;  i <=  MAXu8();
+              MINu8() <=  j;  j <=  MAXu8();
 
-             (i128) MINi8() <= (i128) e; (i128) e <= (i128) MAXi8();
-             (i128) MINi8() <= (i128) f; (i128) f <= (i128) MAXi8();
-             (i128) MINi8() <= (i128) g; (i128) g <= (i128) MAXi8();
-             (i128) MINi8() <= (i128) h; (i128) h <= (i128) MAXi8();
-             (i128) MINi8() <= (i128) i; (i128) i <= (i128) MAXi8();
-             (i128) MINi8() <= (i128) j; (i128) j <= (i128) MAXi8();
-             (i128) MINi8() <= (i128) k; (i128) k <= (i128) MAXi8();
+              MINi8() <=  e;  e <=  MAXi8();
+              MINi8() <=  f;  f <=  MAXi8();
+              MINi8() <=  g;  g <=  MAXi8();
+              MINi8() <=  h;  h <=  MAXi8();
+              MINi8() <=  i;  i <=  MAXi8();
+              MINi8() <=  j;  j <=  MAXi8();
+              MINi8() <=  k;  k <=  MAXi8();
 
-    ensures return == 0i32; @*/
+    ensures return == 0; @*/
 {
 	a = b;
 	a = c;

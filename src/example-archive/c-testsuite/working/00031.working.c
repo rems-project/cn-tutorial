@@ -1,20 +1,20 @@
 int
 zero()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	return 0;
 }
 
 int
 one()
-/*@ ensures return == 1i32; @*/
+/*@ ensures return == 1; @*/
 {
 	return 1;
 }
 
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	int x;
 	int y;

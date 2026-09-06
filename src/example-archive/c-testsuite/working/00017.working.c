@@ -1,6 +1,6 @@
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	struct { int x; int y; } s;
 	

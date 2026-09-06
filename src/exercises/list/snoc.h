@@ -1,5 +1,5 @@
 /*@
-function [rec] (datatype List) Snoc(datatype List Xs, i32 Y) {
+function [rec] (datatype List) Snoc(datatype List Xs, integer Y) {
   match Xs {
     Nil {} => {
       Cons {Head: Y, Tail: Nil{}}

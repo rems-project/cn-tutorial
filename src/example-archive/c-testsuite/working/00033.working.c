@@ -6,8 +6,8 @@ effect()
         take Pre = RW<int>(&g);
     ensures 
         take Post = RW<int>(&g); 
-        Post == 1i32;  
-        return == 1i32; @*/
+        Post == 1;  
+        return == 1; @*/
 {
 	g = 1;
 	return 1;
@@ -19,7 +19,7 @@ main()
         take Pre = RW<int>(&g);
     ensures 
         take Post = RW<int>(&g);
-        return == 0i32; @*/
+        return == 0; @*/
 {
     int x;
     

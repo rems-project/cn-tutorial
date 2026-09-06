@@ -1,12 +1,12 @@
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	int x;
 
 	x = 50;
 	while (x)
-		/*@ inv 0i32 <= x; x <= 50i32; @*/
+		/*@ inv 0 <= x; x <= 50; @*/
 		x = x - 1;
 	return x;
 }

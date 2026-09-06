@@ -1,7 +1,7 @@
 /*@
 datatype List {
   Nil {},
-  Cons {i32 Head, datatype List Tail}
+  Cons {integer Head, datatype List Tail}
 }
 
 predicate [rec] (datatype List) SLList_At(pointer p) {

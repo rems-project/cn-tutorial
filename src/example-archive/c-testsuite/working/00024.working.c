@@ -5,7 +5,7 @@ s v;
 int
 main()
 /*@ accesses v;
-    ensures return == 0i32; @*/
+    ensures return == 0; @*/
 {
 	v.x = 1;
 	v.y = 2;

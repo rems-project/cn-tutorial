@@ -1,6 +1,6 @@
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	short s = 1;
 	long l = 1;

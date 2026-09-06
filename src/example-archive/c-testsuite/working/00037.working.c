@@ -1,10 +1,10 @@
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	int x[2];
 	int *p;
-	/*@ focus W<int>, 1u64; @*/
+	/*@ focus W<int>, 1; @*/
 	x[1] = 7;
 	p = &x[0];
 	p = p + 1;

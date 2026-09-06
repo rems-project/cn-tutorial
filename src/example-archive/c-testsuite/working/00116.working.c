@@ -7,7 +7,7 @@ f(int f)
 
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	return f(0);
 }
