@@ -1,6 +1,6 @@
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	if(0 ? 1 : 0)
 		return 1;

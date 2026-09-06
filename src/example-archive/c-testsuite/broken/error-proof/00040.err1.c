@@ -47,7 +47,7 @@ go(int n, int x, int y)
 
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
         t = calloc(64, sizeof(int));
         go(0, 0, 0);

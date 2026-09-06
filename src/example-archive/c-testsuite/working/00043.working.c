@@ -8,7 +8,7 @@ struct s {
 
 int
 main() 
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
     struct s v;
     v.x = 1;

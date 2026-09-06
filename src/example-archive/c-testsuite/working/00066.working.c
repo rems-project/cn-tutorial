@@ -4,7 +4,7 @@
 
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	if(FOO(1, 2, A) != 6)
 		return 1 SEMI

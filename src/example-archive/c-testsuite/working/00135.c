@@ -2,7 +2,7 @@
 
 int
 main(void)
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	long long i;
 	unsigned long long u;

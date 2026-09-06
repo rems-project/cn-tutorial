@@ -4,14 +4,14 @@ f1(char *p)
 			take PreP = RW<char>(p);
     ensures 
 			take PostP = RW<char>(p);
-			return == 1i32 + (i32) PreP; @*/
+			return == 1 + PreP; @*/
 {
 	return *p+1;
 }
 
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	char s = 1;
 	int v[1000];

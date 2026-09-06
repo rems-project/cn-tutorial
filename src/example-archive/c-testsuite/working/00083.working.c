@@ -3,7 +3,7 @@
 int
 one(int a)
 /*@ ensures 
-			return == (a != 1i32 ? 1i32 : 0i32); @*/
+			return == (a != 1 ? 1 : 0); @*/
 {
 	if (a != 1)
 		return 1;
@@ -14,8 +14,8 @@ one(int a)
 int
 two(int a, int b)
 /*@ ensures 
-			return == (a != 1i32 ? 1i32 : 
-									(b != 2i32 ? 1i32 : 0i32 )); @*/
+			return == (a != 1 ? 1 : 
+									(b != 2 ? 1 : 0 )); @*/
 {
 	if (a != 1)
 		return 1;
@@ -28,9 +28,9 @@ two(int a, int b)
 int
 three(int a, int b, int c)
 /*@ ensures 
-			return == (a != 1i32 ? 1i32 : 
-									(b != 2i32 ? 1i32 : 
-										(c != 3i32 ? 1i32 : 0i32 ))); @*/
+			return == (a != 1 ? 1 : 
+									(b != 2 ? 1 : 
+										(c != 3 ? 1 : 0 ))); @*/
 {
 	if (a != 1)
 		return 1;
@@ -44,7 +44,7 @@ three(int a, int b, int c)
 
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	if (CALL(one, 1))
 		return 2;

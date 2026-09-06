@@ -6,10 +6,10 @@ int
 main()
 /*@ accesses x, y, p;
     requires
-			x == 5i32;
-			y == 6i64;
+			x == 5;
+			y == 6;
 			p == &x;
-    ensures return == 0i32; @*/
+    ensures return == 0; @*/
 {
 	if (x != 5)
 		return 1;

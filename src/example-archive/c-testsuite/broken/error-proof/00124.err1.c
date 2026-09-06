@@ -14,7 +14,7 @@ f1(int a, int b))(int c, int b)
 
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	int (* (*p)(int a, int b))(int c, int d) = f1;
 

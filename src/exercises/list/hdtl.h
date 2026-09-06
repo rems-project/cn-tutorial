@@ -1,8 +1,8 @@
 /*@
-function (i32) Hd (datatype List L) {
+function (integer) Hd (datatype List L) {
   match L {
     Nil {} => {
-      0i32
+      0
     }
     Cons {Head : H, Tail : _} => {
       H

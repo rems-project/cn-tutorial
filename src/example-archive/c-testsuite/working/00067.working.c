@@ -14,8 +14,8 @@ int x = 1;
 
 int main()
 /*@ accesses x;
-    requires x == 0i32;
-    ensures return == 0i32; @*/
+    requires x == 0;
+    ensures return == 0; @*/
 {
 	return x;
 }

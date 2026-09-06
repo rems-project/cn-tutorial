@@ -1,13 +1,13 @@
 int
 f()
-/*@ ensures return == 100i32; @*/
+/*@ ensures return == 100; @*/
 {
 	return 100;
 }
 
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	if (f() > 1000)
 		return 1;

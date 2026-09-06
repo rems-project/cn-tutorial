@@ -2,13 +2,13 @@
 
 /* --BEGIN-- */
 /*@
-function [rec] (u32) Length(datatype List L) {
+function [rec] (integer) Length(datatype List L) {
   match L {
     Nil {} => {
-      0u32
+      0
     }
     Cons {Head: H, Tail : T}  => {
-      1u32 + Length(T)
+      1 + Length(T)
     }
   }
 }
@@ -18,6 +18,7 @@ function [rec] (u32) Length(datatype List L) {
 unsigned int length (struct sllist *l)
 /* --BEGIN-- */
 /*@ requires take L = SLList_At(l);
+             Length(L) < MAXu32();
     ensures take L_post = SLList_At(l);
             L == L_post;
             return == Length(L);

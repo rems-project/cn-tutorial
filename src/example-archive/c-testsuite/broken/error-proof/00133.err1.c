@@ -1,5 +1,5 @@
 int main(void)
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	int i;
 	unsigned u;

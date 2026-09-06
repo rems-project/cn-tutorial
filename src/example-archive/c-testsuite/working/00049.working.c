@@ -7,9 +7,9 @@ int
 main()
 /*@ accesses s, x;
     requires
-			x == 10i32;
-			s.p == &x; s.a == 1i32;
-    ensures return == 0i32; @*/
+			x == 10;
+			s.p == &x; s.a == 1;
+    ensures return == 0; @*/
 {
 	if(s.a != 1)
 		return 1;

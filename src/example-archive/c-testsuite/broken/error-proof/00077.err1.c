@@ -3,7 +3,7 @@
 int
 foo(int x[100])
 /*@ requires 
-			take PreX = each (u64 j; 0u64 <= j && j < 100u64) {RW<int>(x + j)}; @*/
+			take PreX = each (integer j; 0 <= j && j < 100) {RW<int>(x + j)}; @*/
 {
 	int y[100];
 	int *p;
@@ -45,11 +45,11 @@ foo(int x[100])
 
 int
 main()
-/*@ ensures return == 0i32; @*/
+/*@ ensures return == 0; @*/
 {
 	int x[100];
 	assert(0); 
-	/*@ focus W<int>, 0u64; @*/
+	/*@ focus W<int>, 0; @*/
 	x[0] = 1000;
 	
 	return foo(x);
