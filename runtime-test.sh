@@ -16,7 +16,7 @@ function exits_with_code() {
   local expected_exit_code=$2
 
   printf "[$file]... "
-  timeout 20 cn instrument --run "$file" --no-debug-info --tmp --print-steps &> /dev/null
+  timeout 20 cn instrument --run "$file" --no-debug-info --tmp --print-steps -DCN_INSTRUMENT &> /dev/null
   local result=$?
 
   if [ $result -eq $expected_exit_code ]; then
