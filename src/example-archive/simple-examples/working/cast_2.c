@@ -27,3 +27,9 @@ int cast_2()
     return 7; 
   }
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  cast_2();
+}

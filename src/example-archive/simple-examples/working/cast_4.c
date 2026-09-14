@@ -28,3 +28,10 @@ int cast_4(int *ptr_original)
     return 7; 
   }
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  int x = 42;
+  cast_4(&x);
+}

@@ -28,3 +28,9 @@ int cast_3()
     return 7; 
   }
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  cast_3();
+}
