@@ -10,3 +10,9 @@ int cond_1 (int i)
     return 1; 
   }
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  cond_1(0);
+}

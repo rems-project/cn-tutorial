@@ -7,7 +7,11 @@ int dec_1_pre(int i)
   int start, pre, post; 
   start = i; 
   pre = --i; 
+  #ifdef CN_INSTRUMENT
+  /*@ assert(pre == start-1); @*/
+  #else
   assert(pre == start-1);
+  #endif
   return i; 
 }
 
@@ -18,6 +22,18 @@ int dec_1_post(int i)
   int start, pre, post; 
   start = i; 
   pre = i--; 
+  #ifdef CN_INSTRUMENT
+  /*@ assert(pre == start); @*/
+  #else
   assert(pre == start);
-  return i; 
+  #endif
+  return i;
+}
+
+int main(void)
+/*@ trusted; @*/
+{
+  int i = 42;
+  dec_1_pre(i);
+  dec_1_post(i);
 }

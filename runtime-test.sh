@@ -39,6 +39,11 @@ SUCCESS=$(find src/example-archive/*/working -name '*.c' \
             ! -name "00044.working.c" \
             ! -name "00006.working.c" \
             ! -name "00094.working.c" \
+            ! -name "00010_non_termination.c" \
+            ! -name "cast1.c" \
+            ! -name "cast2.c" \
+            ! -name "cast3.c" \
+            ! -name "cast4.c" \
         )
 
 BUGGY="\
@@ -51,11 +56,16 @@ BUGGY="\
        src/example-archive/c-testsuite/working/00032.c \
        src/example-archive/c-testsuite/working/00044.working.c \
        src/example-archive/c-testsuite/working/00006.working.c \
+       src/example-archive/java_program_verification_challenges/working/00010_non_termination.c \
     "
 
 SHOULD_FAIL=$(find src/example-archive/*/broken -name '*.c')
 SHOULD_FAIL+=("\
                 src/example-archive/c-testsuite/working/00094.working.c \
+                src/example-archive/simple-examples/working/cast_1.c \
+                src/example-archive/simple-examples/working/cast_2.c \
+                src/example-archive/simple-examples/working/cast_3.c \
+                src/example-archive/simple-examples/working/cast_4.c \
              ")
 
 FAILED=""

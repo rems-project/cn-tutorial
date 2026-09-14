@@ -21,3 +21,9 @@ int cast_1()
 
   return ret;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  cast_1();
+}
