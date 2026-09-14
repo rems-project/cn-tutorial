@@ -4,7 +4,7 @@ int abs_mem (int *p)
              MINi32() < x;
     ensures take x_post = RW<int>(p);
             x == x_post;
-            return == ((x >= 0) ? x : (0-x));
+            return == ((x >= 0i32) ? x : (0i32-x));
 @*/
 /* --END-- */
 {
@@ -15,9 +15,4 @@ int abs_mem (int *p)
   else {
     return -x;
   }
-}
-
-int main(void) {
-  int x = 10;
-  int abs_x = abs_mem(&x);
 }
