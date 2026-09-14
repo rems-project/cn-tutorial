@@ -4,7 +4,6 @@
 int abs_2(int x)
 /*@ requires 
       let MINi32 = -2147483647;
-
       MINi32 <= x; 
       x < 0;
     ensures 
@@ -14,3 +13,7 @@ int abs_2(int x)
   return -x;
 }
 
+int main(void) {
+  int x = -42;
+  int abs_x = abs_2(x);
+}

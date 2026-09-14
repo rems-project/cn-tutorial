@@ -32,6 +32,13 @@ void max_test()
 {
   int v;
   v = max(-2, 7);
+  #ifdef CN_INSTRUMENT
+  /*@ assert (v == 7); @*/
+  #else
   assert(v == 7);
+  #endif
 }
 
+int main(void) {
+  max_test();
+}

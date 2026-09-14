@@ -8,3 +8,8 @@ f (int *x)
 {
   return ((*x) + (*x));
 }
+
+int main(void) {
+  int y = 12;
+  f(&y);
+}

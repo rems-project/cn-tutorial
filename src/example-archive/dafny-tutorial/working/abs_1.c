@@ -34,6 +34,15 @@ int abs(int x)
 void abs_testing()
 {
   int v = abs(3);
+  #ifdef CN_INSTRUMENT
+  /*@ assert(0 <= v);
+      assert(v == 3); @*/
+  #else
   assert(0 <= v);
   assert(v == 3);
+  #endif
+}
+
+int main(void) {
+  abs_testing();
 }

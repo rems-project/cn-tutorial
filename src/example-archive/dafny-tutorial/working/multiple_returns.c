@@ -27,3 +27,10 @@ void multiple_returns(int x, int y, struct int_pair *ret)
   ret->snd = x - y;
   return;
 }
+
+void *cn_malloc(unsigned long size);
+
+int main(void) {
+  struct int_pair *is = cn_malloc(sizeof(struct int_pair));
+  multiple_returns(10, 100, is);
+}

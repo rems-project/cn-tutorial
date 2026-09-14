@@ -37,3 +37,8 @@ int linear_search(int *a, int length, int key)
   return idx;
 }
 
+
+int main(void) {
+  int xs[6] = {2,4,6,8,10,12};
+  linear_search(xs, 6, 12);
+}
