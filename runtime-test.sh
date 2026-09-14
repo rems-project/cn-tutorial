@@ -34,7 +34,7 @@ function exits_with_code() {
   fi
 }
 
-SUCCESS=$(find src/examples -name '*.c' \
+SUCCESS=$(find src/exercises -name '*.c' \
     ! -path '*/Dbl_Linked_List/*' \
     ! -path '*/runway/*' \
     ! -path '*/runtime-extras/*.broken.c' \
@@ -43,8 +43,8 @@ SUCCESS=$(find src/examples -name '*.c' \
 
 BUGGY=("")
 
-SHOULD_FAIL=$(find src/examples/runtime-extras -name '*.broken.c')
-SHOULD_FAIL+=("src/examples/read.broken.c" "src/examples/slf14_basic_succ_using_incr_attempt.broken.c")
+SHOULD_FAIL=$(find src/exercises/runtime-extras -name '*.broken.c')
+SHOULD_FAIL+=("src/exercises/read.broken.c" "src/exercises/slf14_basic_succ_using_incr_attempt.broken.c")
 
 FAILED=""
 
