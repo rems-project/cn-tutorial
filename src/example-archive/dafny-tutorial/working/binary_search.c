@@ -48,7 +48,9 @@ int binary_search(int *a, int length, int value)
   return -1;
 }
 
-int main(void) {
+int main(void)
+/*@ trusted; @*/
+{
   int xs[6] = {2,4,6,8,10,12};
   binary_search(xs, 6, 12);
 }

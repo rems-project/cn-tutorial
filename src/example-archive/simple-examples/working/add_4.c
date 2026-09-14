@@ -10,6 +10,8 @@ signed int inc_1(signed int i)
   return i;
 }
 
-int main(void) {
+int main(void)
+/*@ trusted; @*/
+{
   signed int r = inc_1(24);
 }

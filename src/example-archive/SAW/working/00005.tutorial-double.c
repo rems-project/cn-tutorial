@@ -40,7 +40,9 @@ int double_imp(int x)
   return x << 1;
 }
 
-int main(void) {
+int main(void)
+/*@ trusted; @*/
+{
   int x = 42;
   double_imp(x);
   double_ref(x);

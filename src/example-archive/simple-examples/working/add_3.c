@@ -14,6 +14,8 @@ signed int add_3(signed int x, signed int y)
   return i;
 }
 
-int main(void) {
+int main(void)
+/*@ trusted; @*/
+{
   signed int r = add_3(500, 504);
 }

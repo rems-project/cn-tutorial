@@ -6,6 +6,8 @@ f (int x) {
   return x + 2;
 }
 
-int main(void) {
+int main(void)
+/*@ trusted; @*/
+{
   f(406);
 }

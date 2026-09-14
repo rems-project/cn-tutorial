@@ -26,7 +26,9 @@ void array_3(int *arr, int n)
   return;
 }
 
-int main(void) {
+int main(void)
+/*@ trusted; @*/
+{
   int arr[5] = {1, 4, 6, 9, 10};
   array_3(arr, 5);
 }
