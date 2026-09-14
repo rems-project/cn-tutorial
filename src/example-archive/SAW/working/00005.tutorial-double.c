@@ -24,7 +24,7 @@ print "Done.";
 
 int double_ref(int x)
   /*@ requires let prod = 2 * x;
-               -2147483648 <= prod; prod<2147483647; 
+               -2147483648 <= prod; prod < 2147483647; 
       ensures return == prod; 
 @*/
 {
@@ -33,9 +33,15 @@ int double_ref(int x)
 
 int double_imp(int x) 
   /*@ requires let prod = 2 * x;
-               0 <= x; prod<2147483647; 
+               0 <= x; prod < 2147483647; 
       ensures return == prod; 
       @*/
 {
   return x << 1;
+}
+
+int main(void) {
+  int x = 42;
+  double_imp(x);
+  double_ref(x);
 }

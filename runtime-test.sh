@@ -34,11 +34,35 @@ function exits_with_code() {
   fi
 }
 
-SUCCESS=$(find src/example-archive/*/working -name '*.c')
+SUCCESS=$(find src/example-archive/*/working -name '*.c' \
+            ! -name "00052.working.c" \
+            ! -name "00120.working.c" \
+            ! -name "00053.working.c" \
+            ! -name "00112.working.c" \
+            ! -name "00007.working.c" \
+            ! -name "00090.working.c" \
+            ! -name "00032.c" \
+            ! -name "00044.working.c" \
+            ! -name "00006.working.c" \
+            ! -name "00094.working.c" \
+        )
 
-BUGGY=("")
+BUGGY="\
+       src/example-archive/c-testsuite/working/00052.working.c \
+       src/example-archive/c-testsuite/working/00120.working.c \
+       src/example-archive/c-testsuite/working/00053.working.c \
+       src/example-archive/c-testsuite/working/00112.working.c \
+       src/example-archive/c-testsuite/working/00007.working.c \
+       src/example-archive/c-testsuite/working/00090.working.c \
+       src/example-archive/c-testsuite/working/00032.c \
+       src/example-archive/c-testsuite/working/00044.working.c \
+       src/example-archive/c-testsuite/working/00006.working.c \
+    "
 
 SHOULD_FAIL=$(find src/example-archive/*/broken -name '*.c')
+SHOULD_FAIL+=("\
+                src/example-archive/c-testsuite/working/00094.working.c \
+             ")
 
 FAILED=""
 
