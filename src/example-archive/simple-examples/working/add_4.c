@@ -9,3 +9,7 @@ signed int inc_1(signed int i)
   i = i + 1;
   return i;
 }
+
+int main(void) {
+  signed int r = inc_1(24);
+}

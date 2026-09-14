@@ -11,3 +11,7 @@ unsigned int add_uint_1(unsigned int x, unsigned int y)
   i = x + y;
   return i;
 }
+
+int main(void) {
+  unsigned int r = add_uint_1(5, 42);
+}
