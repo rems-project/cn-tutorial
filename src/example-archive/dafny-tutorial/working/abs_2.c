@@ -13,7 +13,9 @@ int abs_2(int x)
   return -x;
 }
 
-int main(void) {
-  int x = -42;
-  int abs_x = abs_2(x);
+int main(void)
+/*@ trusted; @*/
+{
+int x = -42;
+int abs_x = abs_2(x);
 }

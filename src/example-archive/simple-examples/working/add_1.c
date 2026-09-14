@@ -11,6 +11,8 @@ signed int add_1(signed int x, signed int y)
   return i;
 }
 
-int main(void) {
+int main(void)
+/*@ trusted; @*/
+{
   signed int r = add_1(0, 0);
 }

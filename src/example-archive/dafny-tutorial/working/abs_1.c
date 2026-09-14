@@ -43,6 +43,8 @@ void abs_testing()
   #endif
 }
 
-int main(void) {
+int main(void)
+/*@ trusted; @*/
+{
   abs_testing();
 }

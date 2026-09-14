@@ -2,19 +2,19 @@
 int head(int *arr, unsigned long len)
 /*@
 requires
-    take arr_in = each(integer i; i < len) {
+    take arr_in = each(integer i; i >= 0 && i < len) {
         RW(array_shift<int>(arr, i))
     };
-    each(integer i; i < len) {
+    each(integer i; i >= 0 && i < len) {
         arr_in[i] == 0
     };
     len > 0;
 
 ensures
-    take arr_out = each(integer i; i < len) {
+    take arr_out = each(integer i; i >= 0 && i < len) {
         RW(array_shift<int>(arr, i))
     };
-    each(integer i; i < len) {
+    each(integer i; i >= 0 && i < len) {
         arr_out[i] == 0
     };
     return == 0;
@@ -42,4 +42,11 @@ ensures
     // here, verification of this constraint can proceed automatically. (Recall
     // that we already required that `len > 0u64`.)
     return hd;
+}
+
+int main(void)
+/*@ trusted; @*/
+{
+  int arr[5] = {0, 0, 0, 0, 0};
+  head(arr, 5);
 }

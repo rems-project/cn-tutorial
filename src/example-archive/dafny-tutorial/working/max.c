@@ -39,6 +39,8 @@ void max_test()
   #endif
 }
 
-int main(void) {
+int main(void)
+/*@ trusted; @*/
+{
   max_test();
 }

@@ -23,7 +23,9 @@ int mult_timeout(int a, int b){
   return 0;
 }
 
-int main(void) {
+int main(void)
+/*@ trusted; @*/
+{
   int r = mult_timeout(5, 42);
   /*@ assert (r == 210); @*/
 }
