@@ -11,18 +11,12 @@ function echo_and_err() {
 RUNTIME_PREFIX="$OPAM_SWITCH_PREFIX/lib/cn/runtime"
 [ -d "${RUNTIME_PREFIX}" ] || echo_and_err "Could not find CN's runtime directory (looked at: '${RUNTIME_PREFIX}')"
 
-CHECK_SCRIPT="${RUNTIME_PREFIX}/libexec/cn-runtime-single-file.sh"
-
-[ -f "${CHECK_SCRIPT}" ] || echo_and_err "Could not find single file helper script: ${CHECK_SCRIPT}"
-
-SCRIPT_OPT="-q"
-
 function exits_with_code() {
   local file=$1
   local expected_exit_code=$2
 
   printf "[$file]... "
-  timeout 20 "${CHECK_SCRIPT}" "${SCRIPT_OPT}" "$file" &> /dev/null
+  timeout 20 cn instrument --run "$file" --no-debug-info --tmp --print-steps &> /dev/null
   local result=$?
 
   if [ $result -eq $expected_exit_code ]; then
