@@ -1,7 +1,7 @@
 int abs (int x)
 /* --BEGIN-- */
 /*@ requires MINi32() < x;
-    ensures return == ((x >= 0i32) ? x : (0i32-x));
+    ensures return == ((x >= 0) ? x : (0-x));
 @*/
 /* --END-- */
 {
@@ -10,4 +10,9 @@ int abs (int x)
   } else {
     return -x;
   }
+}
+
+int main(void) {
+  int x = 42;
+  int ret = abs(x);
 }
