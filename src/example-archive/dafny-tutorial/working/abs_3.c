@@ -11,3 +11,8 @@ int abs_3(int x)
 {
   return x + 2;
 }
+
+int main(void) {
+  int x = -1;
+  int abs_x = abs_3(x);
+}
