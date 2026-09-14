@@ -67,13 +67,13 @@ for FILE in ${SUCCESS}; do
 done
 
 for FILE in ${SHOULD_FAIL}; do
-  if ! exits_with_code "${FILE}" 1; then
+  if exits_with_code "${FILE}" 0; then
     FAILED+=" ${FILE}"
   fi
 done
 
 for FILE in ${BUGGY}; do
-  if ! exits_with_code "${FILE}" 1; then
+  if exits_with_code "${FILE}" 0; then
     FAILED+=" ${FILE}"
   fi
 done
