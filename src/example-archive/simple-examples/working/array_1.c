@@ -13,3 +13,8 @@ void array_1(int *arr, int size, int off)
   i++;
   return;
 }
+
+int main(void) {
+  int arr[5] = {1, 4, 6, 9, 10};
+  array_1(arr, 5, 3);
+}

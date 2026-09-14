@@ -17,3 +17,8 @@ int array_2(int *arr, int size, int off)
   arr[off] = 7;
   return tmp; 
 }
+
+int main(void) {
+  int arr[5] = {1, 4, 6, 9, 10};
+  array_2(arr, 5, 3);
+}

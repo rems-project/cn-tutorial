@@ -10,3 +10,7 @@ signed int add_1(signed int x, signed int y)
   i = x + y;
   return i;
 }
+
+int main(void) {
+  signed int r = add_1(0, 0);
+}
