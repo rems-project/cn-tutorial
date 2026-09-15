@@ -20,3 +20,9 @@ int case_timeout(int a, int b){
   }
   return 0;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+    case_timeout(5, 10);
+}
