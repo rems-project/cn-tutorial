@@ -2,10 +2,12 @@
 void incr2a (unsigned int *p, unsigned int *q)
 /*@ requires take P = RW<unsigned int>(p);
              take Q = RW<unsigned int>(q);
+	     P < MAXu32();
+	     Q < MAXu32();
     ensures take P_post = RW<unsigned int>(p);
             take Q_post = RW<unsigned int>(q);
-            P_post == P + 1u32;
-            Q_post == Q + 1u32;
+            P_post == P + 1;
+            Q_post == Q + 1;
 @*/
 {
   unsigned int n = *p;
@@ -19,10 +21,11 @@ void incr2a (unsigned int *p, unsigned int *q)
 // Increment the same pointer twice
 void incr2b (unsigned int *p, unsigned int *q)
 /*@ requires take P = RW<unsigned int>(p);
+	     P+2 <= MAXu32();
              ptr_eq(q,p);
     ensures take P_post = RW<unsigned int>(p);
             ptr_eq(q,p);
-            P_post == P + 2u32;
+            P_post == P + 2;
 @*/
 {
   unsigned int n = *p;
@@ -36,10 +39,12 @@ void incr2b (unsigned int *p, unsigned int *q)
 void call_both (unsigned int *p, unsigned int *q)
 /*@ requires take pv = RW<unsigned int>(p);
              take qv = RW<unsigned int>(q);
+	     pv+3 <= MAXu32();
+	     qv+1 <= MAXu32();
     ensures take pv_ = RW<unsigned int>(p);
             take qv_ = RW<unsigned int>(q);
-            pv_ == pv + 3u32;
-            qv_ == qv + 1u32;
+            pv_ == pv + 3;
+            qv_ == qv + 1;
 @*/
 {
   incr2a(p, q);   // increment two different pointers

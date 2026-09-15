@@ -1,9 +1,8 @@
 int doubled (int n)
 /* --BEGIN-- */
-/*@ requires let N = (i64) n;
-             (i64)MINi32() <= N - 1i64; N + 1i64 <= (i64)MAXi32();
-             (i64)MINi32() <= N + N; N + N <= (i64)MAXi32();
-    ensures return == n * 2i32;
+/*@ requires MINi32() <= n - 1; n + 1 <= MAXi32();
+             MINi32() <= n + n; n + n <= MAXi32();
+    ensures return == n * 2;
 @*/
 /* --END-- */
 {

@@ -2,10 +2,11 @@ void transfer (unsigned int *p, unsigned int *q)
 /* --BEGIN-- */
 /*@ requires take P = RW(p);
              take Q = RW(q);
+	     P+Q <= MAXu32();
     ensures  take P_post = RW(p);
              take Q_post = RW(q);
              P_post == P + Q;
-             Q_post == 0u32;
+             Q_post == 0;
 @*/
 /* --END-- */
 {

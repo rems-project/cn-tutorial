@@ -3,13 +3,13 @@
 #include "free.h"
 
 /*@
-function [rec] (u32) length(datatype List xs) {
+function [rec] (integer) length(datatype List xs) {
   match xs {
     Nil {} => {
-      0u32
+      0
     }
     Cons {Head: h, Tail: zs}  => {
-      1u32 + length(zs)
+      1 + length(zs)
     }
   }
 }
@@ -19,6 +19,7 @@ void IntList_length_acc_aux (struct sllist *xs, unsigned int *p)
 /* --BEGIN-- */
 /*@ requires take L1 = SLList_At(xs);
              take P = RW<unsigned int>(p);
+	     P + length(L1) <= MAXu32();
     ensures take L1_post = SLList_At(xs);
             take P_post = RW<unsigned int>(p);
             L1 == L1_post;
@@ -39,6 +40,7 @@ void IntList_length_acc_aux (struct sllist *xs, unsigned int *p)
 unsigned int IntList_length_acc (struct sllist *xs)
 /* --BEGIN-- */
 /*@ requires take Xs = SLList_At(xs);
+             length(Xs) <= MAXu32();
     ensures take Xs_post = SLList_At(xs);
             Xs == Xs_post;
             return == length(Xs);
