@@ -3,8 +3,15 @@
 // Precondition includes access to the resource RW(p), which disappears in
 // the postcondition 
 void ownership_neg_1(int *p) 
-/*@ requires take P = RW(p); @*/
-/*@ ensures true; @*/
+/*@ requires take P = RW(p);
+    ensures true; @*/
 {
   ; 
+}
+
+int main(void)
+/*@ trusted; @*/
+{
+  int x = 42;
+  ownership_neg_1(&x);
 }
