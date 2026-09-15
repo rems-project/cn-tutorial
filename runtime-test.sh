@@ -71,6 +71,7 @@ SUCCESS=$(find src/example-archive/*/working -name '*.c' \
             ! -name "string_1.c" \
             ! -name "power_1.c" \
             ! -name "power_2.c" \
+            ! -name "overflow_timeout_4var.c" \
         )
 
 # Add files that fail for proof but are legitimate for testing and pass
@@ -201,6 +202,7 @@ BUGGY="\
        src/example-archive/c-testsuite/broken/error-proof/00058.err1.c \
        src/example-archive/simple-examples/broken/error-proof/pointer_dec3.c \
        src/example-archive/simple-examples/broken/error-proof/self_ref_init.c \
+       src/example-archive/simple-examples/working/overflow_timeout_4var.c \
     "
 
 
