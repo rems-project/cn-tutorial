@@ -6,3 +6,9 @@ void trivial_neg_1()
 {
   ; 
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  trivial_neg_1();
+}

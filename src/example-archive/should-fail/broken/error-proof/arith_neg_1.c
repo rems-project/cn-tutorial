@@ -7,3 +7,10 @@ int arith_neg_1()
 {
   return 0; 
 }
+
+
+int main(void)
+/*@ trusted; @*/
+{
+  arith_neg_1();
+}

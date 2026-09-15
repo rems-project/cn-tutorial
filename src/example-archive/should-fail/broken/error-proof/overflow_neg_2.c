@@ -7,3 +7,10 @@ void overflow_neg_2(int i)
 {
   i = i - 1; 
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  int x = -2147483648;
+  overflow_neg_2(x);
+}
