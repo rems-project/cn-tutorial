@@ -2,6 +2,10 @@
 
 View the tutorial here: https://rems-project.github.io/cn-tutorial/
 
+Note: the current tutorial text is not yet updated for a recent change
+in CN (treating C integers as mathematical integers with range constraints).
+
+
 ## Acknowledgment of Support and Disclaimer
 
 This material is based upon work supported by the Air Force Research Laboratory
