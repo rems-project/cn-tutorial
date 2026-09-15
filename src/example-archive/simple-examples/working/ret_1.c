@@ -4,3 +4,9 @@ int ret_1()
 {
   return 0;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  ret_1();
+}

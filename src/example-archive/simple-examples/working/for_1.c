@@ -9,3 +9,9 @@ int for_1()
   }; 
   return acc;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  int r = for_1();
+}

@@ -69,3 +69,16 @@ int overflow_timeout_4var(example_t* p1,example_t* p2)
         return distance;
 
 }
+
+void* cn_malloc(unsigned long size);
+
+int main(void)
+/*@ trusted; @*/
+{
+  example_t *p1 = cn_malloc(sizeof(example_t));
+  p1->x = 1; p1->y = 4; p1->z = 9; p1->a = 5; p1->b = 7;
+  example_t *p2 = cn_malloc(sizeof(example_t));
+  p2->x = 3; p2->y = 4; p2->z = 7; p2->a = 1; p2->b = 3;
+
+  int r = overflow_timeout_4var(p1, p2);
+}

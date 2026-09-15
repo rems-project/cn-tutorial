@@ -45,3 +45,10 @@ int power_1_alt()
   /*@ apply LemmaPowerUFDef(i); @*/
   return pow;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  power_1();
+  power_1_alt();
+}

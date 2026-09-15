@@ -8,3 +8,10 @@ void write_1(int *cell)
 {
   *cell = 7;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  int x = 10;
+  write_1(&x);
+}

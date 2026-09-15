@@ -3,3 +3,10 @@ int neg_1(int i)
 {
   return -i; 
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  int r = neg_1(42);
+  /*@ assert (r == -42); @*/
+}

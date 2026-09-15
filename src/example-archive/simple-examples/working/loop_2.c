@@ -13,3 +13,9 @@ int loop_2()
   };
   return 7; 
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  loop_2();
+}

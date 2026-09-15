@@ -16,3 +16,9 @@ int loop_7(int n)
   };
   return i;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  loop_7(500);
+}

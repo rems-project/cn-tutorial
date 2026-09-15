@@ -15,3 +15,12 @@ void write_4()
   *cell1 = 7;
   *cell2 = 8;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  int x, y;
+  // Need to initialise the cells for write_4's spec to read from them
+  cell1 = &x, cell2 = &y;
+  write_4();
+}

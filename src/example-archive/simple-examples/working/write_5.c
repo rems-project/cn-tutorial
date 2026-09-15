@@ -30,3 +30,14 @@ void write_5_alt(int *pair)
   /*@ focus RW<int>, 1; @*/
   pair[1] = 8;
 }
+
+void *cn_malloc(unsigned long size);
+
+int main(void)
+/*@ trusted; @*/
+{
+  int *pair = cn_malloc(sizeof(int) * 2);
+  write_5(pair);
+  int *pair2 = cn_malloc(sizeof(int) * 2);
+  write_5_alt(pair2);
+}

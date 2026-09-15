@@ -13,3 +13,9 @@ int loop_8()
   }
   return j;
 } 
+
+int main(void)
+/*@ trusted; @*/
+{
+  loop_8();
+}

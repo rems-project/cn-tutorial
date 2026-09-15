@@ -18,3 +18,8 @@ int loop_4()
   return acc;
 }
 
+int main(void)
+/*@ trusted; @*/
+{
+  loop_4();
+}

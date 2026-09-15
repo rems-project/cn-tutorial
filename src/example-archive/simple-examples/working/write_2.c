@@ -10,3 +10,10 @@ void write_2(int *cell1, int *cell2)
   *cell1 = 7;
   *cell2 = 8;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  int x, y;
+  write_2(&x, &y);
+}

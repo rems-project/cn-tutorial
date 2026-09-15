@@ -4,7 +4,7 @@
 int loop_1()
 /*@ ensures return == 7; @*/
 {
-  int i = 0;
+  int i = 7;
   while (i != 7)
   {
     i = 42; // Unreachable 
@@ -12,3 +12,8 @@ int loop_1()
   return i;
 }
 
+int main(void)
+/*@ trusted; @*/
+{
+  loop_1();
+}
