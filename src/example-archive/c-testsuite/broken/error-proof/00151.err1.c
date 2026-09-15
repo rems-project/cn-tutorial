@@ -11,8 +11,8 @@ int arr[][3][5] = {
 
 int
 main(void)
-/*@ accesses arr; @*/
-/*@ ensures return == 0; @*/
+/*@ accesses arr;
+	ensures return == 0; @*/
 {
 	return !(arr[0][1][4] == arr[1][1][4]);
 }

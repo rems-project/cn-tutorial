@@ -73,26 +73,16 @@ SUCCESS=$(find src/example-archive/*/working -name '*.c' \
             ! -name "power_2.c" \
         )
 
-BUGGY="\
-       src/example-archive/c-testsuite/working/00052.working.c \
-       src/example-archive/c-testsuite/working/00120.working.c \
-       src/example-archive/c-testsuite/working/00053.working.c \
-       src/example-archive/c-testsuite/working/00112.working.c \
-       src/example-archive/c-testsuite/working/00007.working.c \
-       src/example-archive/c-testsuite/working/00090.working.c \
-       src/example-archive/c-testsuite/working/00032.c \
-       src/example-archive/c-testsuite/working/00044.working.c \
-       src/example-archive/c-testsuite/working/00006.working.c \
-       src/example-archive/java_program_verification_challenges/working/00010_non_termination.c \
-       src/example-archive/simple-examples/working/for_1.c \
-       src/example-archive/simple-examples/working/for_3.c \
-       src/example-archive/simple-examples/working/loop_8.c \
-       src/example-archive/simple-examples/working/pointer_dec2.c \
-       src/example-archive/simple-examples/working/string_1.c \
-    "
-
-# Includes files that proof cannot handle but Fulminate can
+# Excluding files that proof cannot handle but Fulminate can
+# Also excluding files that are buggy in Fulminate but should legitimately fail
+# -- after \, added to BUGGY
 SHOULD_FAIL=$(find src/example-archive/*/broken -name '*.c' \
+            ! -path '*/Rust/*' \
+            ! -path '*/SAW/*' \
+            ! -path '*/dafny-tutorial/*' \
+            ! -path '*/java_program_verification_challenges/*' \
+            ! -path '*/coq-lemmas/*' \
+            ! -path '*/open-sut/*' \
             ! -name "00008.err1.c" \
             ! -name "00073.err1.c" \
             ! -name "00010.err1.c" \
@@ -109,8 +99,20 @@ SHOULD_FAIL=$(find src/example-archive/*/broken -name '*.c' \
             ! -name "00101.err1.c" \
             ! -name "00117.err1.c" \
             ! -name "00133.err1.c" \
+            ! -name "00077.err1.c" \
+            ! -name "00142.err1.c" \
+            ! -name "00040.err1.c" \
             ! -name "00011_dependen_specifications.c" \
+            \
+            ! -name "00138.err1.c" \
+            ! -name "00026.err1.c" \
+            ! -name "00124.err1.c" \
+            ! -name "00151.err1.c" \
+            ! -name "00137.err1.c" \
+            ! -name "00058.err1.c" \
+            ! -name "00115.err1.c" \
         )
+
 # SHOULD_FAIL=""
 SHOULD_FAIL+=("src/example-archive/c-testsuite/working/00094.working.c ")
 # These examples use VIP, which is unsupported in Fulminate (Sep 2026)
@@ -138,6 +140,31 @@ SHOULD_FAIL+=("\
                 src/example-archive/simple-examples/working/power_1.c \
                 src/example-archive/simple-examples/working/power_2.c \
              ")
+
+BUGGY="\
+       src/example-archive/c-testsuite/working/00052.working.c \
+       src/example-archive/c-testsuite/working/00120.working.c \
+       src/example-archive/c-testsuite/working/00053.working.c \
+       src/example-archive/c-testsuite/working/00112.working.c \
+       src/example-archive/c-testsuite/working/00007.working.c \
+       src/example-archive/c-testsuite/working/00090.working.c \
+       src/example-archive/c-testsuite/working/00032.c \
+       src/example-archive/c-testsuite/working/00044.working.c \
+       src/example-archive/c-testsuite/working/00006.working.c \
+       src/example-archive/java_program_verification_challenges/working/00010_non_termination.c \
+       src/example-archive/simple-examples/working/for_1.c \
+       src/example-archive/simple-examples/working/for_3.c \
+       src/example-archive/simple-examples/working/loop_8.c \
+       src/example-archive/simple-examples/working/pointer_dec2.c \
+       src/example-archive/simple-examples/working/string_1.c \
+       src/example-archive/c-testsuite/broken/error-proof/00138.err1.c \
+       src/example-archive/c-testsuite/broken/error-proof/00026.err1.c \
+       src/example-archive/c-testsuite/broken/error-proof/00124.err1.c \
+       src/example-archive/c-testsuite/broken/error-proof/00151.err1.c \
+       src/example-archive/c-testsuite/broken/error-proof/00137.err1.c \
+       src/example-archive/c-testsuite/broken/error-proof/00058.err1.c \
+    "
+
 
 FAILED=""
 

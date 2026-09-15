@@ -10,8 +10,8 @@ int d;
 
 int
 main(void)
-/*@ accesses c; @*/
-/*@ ensures return == 0; @*/
+/*@ accesses c;
+	ensures return == 0; @*/
 {
 	return c;
 }
