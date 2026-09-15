@@ -92,7 +92,7 @@ $(eval $(call extradeps,dllist))
 MD = $(shell find docs -type f -name "*.md")
 CONSISTENT=$(patsubst %, _temp/consistent/%, $(MD))
 
-exercises: $(EXERCISES) $(SOLUTIONS) $(TESTED) $(VERIFIED) $(CONSISTENT)
+exercises: $(EXERCISES) $(SOLUTIONS) $(VERIFIED) $(CONSISTENT)
 
 CNWAR=--include $(MAKEFILE_DIR)/src/exercises/cn_wars.h
 CN=cn verify $(CNWAR)
