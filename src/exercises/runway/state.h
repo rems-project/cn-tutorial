@@ -1,12 +1,12 @@
 #define INACTIVE 0
-/*@ function (i32) INACTIVE() { 0i32 } @*/
+/*@ function (integer) INACTIVE() { 0 } @*/
 static int c_INACTIVE()
 /*@ requires true; 
     ensures return == INACTIVE(); @*/
 { return INACTIVE; }
 
 #define ACTIVE 1
-/*@ function (i32) ACTIVE() { 1i32 } @*/
+/*@ function (integer) ACTIVE() { 1 } @*/
 static int c_ACTIVE()
 /*@ requires true; 
     ensures return == ACTIVE(); @*/

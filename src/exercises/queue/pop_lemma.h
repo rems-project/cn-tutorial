@@ -1,5 +1,5 @@
 /*@
-lemma snoc_facts (pointer front, pointer back, i32 x)
+lemma snoc_facts (pointer front, pointer back, integer x)
   requires
       take Q = QueueAux(front, back);
       take B = RW<struct queue_cell>(back);

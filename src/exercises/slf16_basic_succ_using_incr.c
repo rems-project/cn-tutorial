@@ -3,7 +3,8 @@
 #include "slf0_basic_incr.c"
 
 unsigned int succ_using_incr (unsigned int n)
-/*@ ensures return == n + 1u32; @*/
+/*@ requires n < MAXu32();
+    ensures return == n + 1; @*/
 {
   unsigned int *p = refUnsignedInt(n);
   incr(p);

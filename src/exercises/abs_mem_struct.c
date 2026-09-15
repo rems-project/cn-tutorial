@@ -4,7 +4,7 @@ int abs_mem (int *p)
              MINi32() < x;
     ensures take x2 = RW<int>(p);
             x == x2;
-            return == ((x >= 0i32) ? x : (0i32-x));
+            return == ((x >= 0) ? x : (0-x));
 @*/
 /* --END-- */
 {
@@ -30,7 +30,7 @@ int abs_y (struct tuple *p)
              MINi32() < s.y;
     ensures  take s2 = RW(p);
              s == s2;
-             return == ((s.y >= 0i32) ? s.y : (0i32-s.y));
+             return == ((s.y >= 0) ? s.y : (0-s.y));
 @*/
 {
   return abs_mem(&p->y);

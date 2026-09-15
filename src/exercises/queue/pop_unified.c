@@ -3,7 +3,7 @@
 /*@
 type_synonym result = { datatype List after, datatype List before }
 
-predicate (result) Queue_pop_lemma(pointer front, pointer back, i32 popped) {
+predicate (result) Queue_pop_lemma(pointer front, pointer back, integer popped) {
   if (is_null(front)) {
     return { after: Nil{}, before: Snoc(Nil{}, popped) };
   } else {

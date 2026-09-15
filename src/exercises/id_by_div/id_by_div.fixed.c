@@ -1,5 +1,5 @@
 unsigned int id_by_div(unsigned int x)
-/*@ requires x % 2u32 == 0u32;
+/*@ requires rem(x, 2) == 0;
 	ensures return == x; @*/ 
 {
 	return (x / 2) * 2;

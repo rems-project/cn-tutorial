@@ -8,7 +8,7 @@ struct sized_stack
 };
 
 /*@
-type_synonym SizedStack = {u32 Size, datatype List Data}
+type_synonym SizedStack = {integer Size, datatype List Data}
 
 predicate (SizedStack) SizedStack_At (pointer p) {
     take P = RW<struct sized_stack>(p);
@@ -34,7 +34,7 @@ spec free__sized_stack(pointer s);
 
 struct sized_stack *create()
 /*@ ensures take R = SizedStack_At(return);
-            R.Size == 0u32;
+            R.Size == 0;
 @*/
 {
   struct sized_stack *s = malloc__sized_stack();
@@ -61,6 +61,7 @@ void push(struct sized_stack *s, int x)
 /* FILL IN HERE */
 /* ---BEGIN--- */
 /*@ requires take S = SizedStack_At(s);
+             S.Size < MAXu32();
     ensures take S_post = SizedStack_At(s);
             S_post.Data == Cons {Head:x, Tail:S.Data};
 @*/
@@ -78,7 +79,7 @@ int pop(struct sized_stack *s)
 /* FILL IN HERE */
 /* ---BEGIN--- */
 /*@ requires take S = SizedStack_At(s);
-             S.Size > 0u32;
+             S.Size > 0;
     ensures  take S_post = SizedStack_At(s);
              S_post.Data == Tl(S.Data);
              return == Hd(S.Data);
@@ -88,7 +89,7 @@ int pop(struct sized_stack *s)
   struct sllist *data = s->data;
   /* ---BEGIN--- */
   /*@ unfold Length(S.Data); @*/
-  // from S.Size > 0u32 it follows that the 'else' branch is impossible
+  // from S.Size > 0 it follows that the 'else' branch is impossible
   /* ---END--- */
   if (data != 0)
   {
@@ -104,14 +105,14 @@ int pop(struct sized_stack *s)
 
 int top(struct sized_stack *s)
 /*@ requires take S = SizedStack_At(s);
-             S.Size > 0u32;
+             S.Size > 0;
     ensures  take S_post = SizedStack_At(s);
              S_post == S;
              return == Hd(S.Data);
 @*/
 {
   /*@ unfold Length(S.Data); @*/
-  // from S.Size > 0u32 it follows that the 'else' branch is impossible
+  // from S.Size > 0 it follows that the 'else' branch is impossible
   if (s->data != 0)
   {
     return (s->data)->head;

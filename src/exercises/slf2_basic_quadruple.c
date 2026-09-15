@@ -1,5 +1,6 @@
 unsigned int quadruple (unsigned int n)
-/*@ ensures return == 4u32 * n; @*/
+/*@ requires 4 * n <= MAXu32();
+    ensures return == 4 * n; @*/
 {
   unsigned int m = n + n;
   return m + m;

@@ -1,8 +1,7 @@
 int quadruple (int n)
 /* --BEGIN-- */
-/*@ requires let N = (i64) n;
-             (i64)MINi32() <= N * 4i64; N * 4i64 <= (i64)MAXi32();
-    ensures return == 4i32 * n;
+/*@ requires MINi32() <= n * 4; n * 4 <= MAXi32();
+    ensures return == 4 * n;
  @*/
 /* --END-- */
 {

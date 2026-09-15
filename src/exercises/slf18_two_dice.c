@@ -1,11 +1,11 @@
 unsigned int val_rand (unsigned int n);
-/*@ spec val_rand(u32 n);
-    requires n > 0u32;
-    ensures 0u32 <= return && return < n;
+/*@ spec val_rand(integer n);
+    requires n > 0;
+    ensures 0 <= return && return < n;
 @*/
 
 unsigned int two_dice ()
-/*@ ensures 2u32 <= return && return <= 12u32; @*/
+/*@ ensures 2 <= return && return <= 12; @*/
 {
   unsigned int n1 = val_rand (6);
   unsigned int n2 = val_rand (6);

@@ -1,8 +1,8 @@
 int add(int x, int y)
 /* --BEGIN-- */
-/*@ requires let Sum = (i64) x + (i64) y;
-             (i64)MINi32() <= Sum; Sum <= (i64)MAXi32();
-    ensures return == (i32) Sum;
+/*@ requires let Sum = x + y;
+             MINi32() <= Sum; Sum <= MAXi32();
+    ensures return == Sum;
 @*/
 /* --END-- */
 {
