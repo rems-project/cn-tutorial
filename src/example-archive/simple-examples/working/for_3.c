@@ -1,5 +1,6 @@
 // A trivial for-loop 
 // TODO: doesn't parse 
+// TODO: Fix for-loops in Fulminate
 
 int for_3() 
 {
@@ -12,4 +13,10 @@ int for_3()
     acc = i; 
   }; 
   return acc;
+}
+
+int main(void)
+/*@ trusted; @*/
+{
+  int r = for_3();
 }

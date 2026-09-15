@@ -12,3 +12,10 @@ int_to_char_1(int a)
   b = a; 
   return; 
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  int i = 42;
+  int_to_char_1(i);
+}

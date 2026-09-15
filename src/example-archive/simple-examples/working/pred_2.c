@@ -78,3 +78,11 @@ void pred_2_var3(int *p)
   ; 
 }
 
+int main(void)
+/*@ trusted; @*/
+{
+  int x = 0;
+  pred_2_var1(&x);
+  pred_2_var2(&x);
+  pred_2_var3(&x);
+}

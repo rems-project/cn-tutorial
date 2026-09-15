@@ -14,3 +14,9 @@ int loop_5()
   }; // The exit condition implies the post-condition 
   return ret;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  loop_5();
+}

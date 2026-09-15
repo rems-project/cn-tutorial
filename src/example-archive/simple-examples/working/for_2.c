@@ -13,3 +13,9 @@ int for_2()
   }; 
   return acc;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  int r = for_2();
+}

@@ -8,7 +8,11 @@ int inc_1_pre(int i)
   int start, pre, post; 
   start = i; 
   pre = ++i; 
+  #ifdef CN_INSTRUMENT
+  /*@ assert(pre == start+1); @*/
+  #else
   assert(pre == start+1);
+  #endif
   return i; 
 }
 
@@ -21,6 +25,18 @@ int inc_1_post(int i)
   int start, pre, post; 
   start = i; 
   pre = i++; 
+  #ifdef CN_INSTRUMENT
+  /*@ assert(pre == start); @*/
+  #else
   assert(pre == start);
+  #endif
   return i; 
+}
+
+int main(void)
+/*@ trusted; @*/
+{
+  int i = 42;
+  inc_1_pre(i);
+  inc_1_post(i);
 }

@@ -15,3 +15,10 @@ void swap_1(int *a, int *b)
   // *a = 0;  // <-- This would fail
   *b = temp;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  int x = 42, y = 7;
+  swap_1(&x, &y);
+}

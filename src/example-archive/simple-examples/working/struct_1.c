@@ -16,3 +16,12 @@ void struct_1(struct s *p)
   p->y = 0;
   // p->x = 7;  // <-- This would fail
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  struct s s;
+  s.x = 5;
+  s.y = 15;
+  struct_1(&s);
+}

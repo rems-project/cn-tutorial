@@ -6,3 +6,9 @@ void long_type_err_1() {
   -1l; 
   return; 
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  long_type_err_1();
+}

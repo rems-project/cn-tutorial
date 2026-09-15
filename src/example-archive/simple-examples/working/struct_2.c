@@ -24,6 +24,16 @@ int struct_2()
 
   // Read from field y via pointer arithmetic 
   int ret = *fieldPtr;
-  assert(target.x == 8); 
+  #ifdef CN_INSTRUMENT
+  /*@ assert(target.x == 8); @*/
+  #else
+  assert(target.x == 8);
+  #endif
   return ret;
+}
+
+int main(void)
+/*@ trusted; @*/
+{
+  struct_2();
 }

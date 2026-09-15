@@ -11,3 +11,9 @@ void lemma_1()
   /*@ apply lem_trivial(); @*/
   ; 
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  lemma_1();
+}

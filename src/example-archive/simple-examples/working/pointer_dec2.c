@@ -5,3 +5,9 @@ void b() {
   int *c = &a[1];
   --c;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  b();
+}

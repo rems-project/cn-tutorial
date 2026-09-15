@@ -12,3 +12,9 @@ int loop_6(int n)
   };
   return i;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  loop_6(410);
+}

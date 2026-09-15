@@ -23,3 +23,9 @@ int loop_3(int i)
   };
   return acc;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  loop_3(42);
+}

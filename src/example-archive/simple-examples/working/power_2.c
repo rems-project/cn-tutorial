@@ -22,3 +22,9 @@ int power_2()
   i = i + 1;
   return pow;
 }
+
+int main(void)
+/*@ trusted; @*/
+{
+  power_2();
+}

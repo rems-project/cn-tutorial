@@ -32,3 +32,9 @@ effect_1()
     return 1;
   return 0; 
 } 
+
+int main(void)
+/*@ trusted; @*/
+{
+    int r = effect_1();
+}
