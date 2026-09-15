@@ -74,7 +74,7 @@ SUCCESS=$(find src/example-archive/*/working -name '*.c' \
         )
 
 # Add files that fail for proof but are legitimate for testing and pass
-SUCCESS+=("\
+SUCCESS+=("\ 
             src/example-archive/c-testsuite/broken/error-proof/00008.err1.c \
             src/example-archive/c-testsuite/broken/error-proof/00073.err1.c \
             src/example-archive/c-testsuite/broken/error-proof/00010.err1.c \
@@ -96,10 +96,13 @@ SUCCESS+=("\
             src/example-archive/c-testsuite/broken/error-proof/00040.err1.c \
             src/example-archive/should-fail/broken/error-proof/overflow_neg_1.c \
             src/example-archive/should-fail/broken/error-proof/overflow_neg_2.c \
+            src/example-archive/simple-examples/broken/error-proof/loop_4.c \
+            src/example-archive/simple-examples/broken/error-proof/case_timeout.c \
+            src/example-archive/simple-examples/broken/error-proof/ownership_1.c \
 ")
 
 # Excluding files that:
-# - are ported from other test suites (time reasons)
+# - are ported from other test suites (time/bandwidth reasons)
 # - proof is not supposed to handle but testing passes for
 # - are buggy in Fulminate but should legitimately fail
 SHOULD_FAIL=$(find src/example-archive/*/broken -name '*.c' \
@@ -130,6 +133,9 @@ SHOULD_FAIL=$(find src/example-archive/*/broken -name '*.c' \
             ! -name "00040.err1.c" \
             ! -name "overflow_neg_1.c" \
             ! -name "overflow_neg_2.c" \
+            ! -name "loop_4.c" \
+            ! -name "case_timeout.c" \
+            ! -name "ownership_1.c" \
             ! -name "00011_dependen_specifications.c" \
             \
             ! -name "00138.err1.c" \
@@ -139,6 +145,8 @@ SHOULD_FAIL=$(find src/example-archive/*/broken -name '*.c' \
             ! -name "00137.err1.c" \
             ! -name "00058.err1.c" \
             ! -name "00115.err1.c" \
+            ! -name "pointer_dec3.c" \
+            ! -name "self_ref_init.c" \
         )
 
 # SHOULD_FAIL=""
@@ -191,16 +199,18 @@ BUGGY="\
        src/example-archive/c-testsuite/broken/error-proof/00151.err1.c \
        src/example-archive/c-testsuite/broken/error-proof/00137.err1.c \
        src/example-archive/c-testsuite/broken/error-proof/00058.err1.c \
+       src/example-archive/simple-examples/broken/error-proof/pointer_dec3.c \
+       src/example-archive/simple-examples/broken/error-proof/self_ref_init.c \
     "
 
 
 FAILED=""
 
-# for FILE in ${SUCCESS}; do
-#   if ! exits_with_code "${FILE}" 0; then
-#     FAILED+=" ${FILE}"
-#   fi
-# done
+for FILE in ${SUCCESS}; do
+  if ! exits_with_code "${FILE}" 0; then
+    FAILED+=" ${FILE}"
+  fi
+done
 
 for FILE in ${SHOULD_FAIL}; do
   if ! exits_with_error_code "${FILE}"; then
@@ -208,11 +218,11 @@ for FILE in ${SHOULD_FAIL}; do
   fi
 done
 
-# for FILE in ${BUGGY}; do
-#   if ! exits_with_error_code "${FILE}"; then
-#     FAILED+=" ${FILE}"
-#   fi
-# done
+for FILE in ${BUGGY}; do
+  if ! exits_with_error_code "${FILE}"; then
+    FAILED+=" ${FILE}"
+  fi
+done
 
 if [ -z "${FAILED}" ]; then
   exit 0
