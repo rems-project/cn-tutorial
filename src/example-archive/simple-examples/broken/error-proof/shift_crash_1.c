@@ -3,3 +3,9 @@
 
 #include <stdint.h>
 uint8_t a(uint32_t b, uint32_t c, uint8_t ch) { a(b, c, 1) << 1; }
+
+int main(void)
+/*@ trusted; @*/
+{
+    a(1,2,3);
+}

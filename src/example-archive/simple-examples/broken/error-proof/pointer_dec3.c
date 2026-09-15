@@ -7,3 +7,10 @@ pointerdec_crash_3()
   int *p = &arr[1];
   *(--p); 
 }
+
+
+int main(void)
+/*@ trusted; @*/
+{
+  pointerdec_crash_3();
+}

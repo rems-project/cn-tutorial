@@ -9,8 +9,17 @@ requires
   take P2 = RW(b);
 ensures 
   a != b; 
+  take P1_ = RW(a); 
+  take P2_ = RW(b);
 @*/
 {
   /*@ split_case a == b; @*/
   ; 
+}
+
+int main(void)
+/*@ trusted; @*/
+{
+  int x = 10, y = 42;
+  ownership_1(&x, &y);
 }

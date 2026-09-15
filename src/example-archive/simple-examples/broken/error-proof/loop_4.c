@@ -44,3 +44,10 @@ void loop_4_with_redundant_write ()
   }
 }
 
+int main(void)
+/*@ trusted; @*/
+{
+  loop_4();
+  loop_4_unrolled();
+  loop_4_with_redundant_write();
+}

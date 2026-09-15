@@ -17,3 +17,8 @@ int f (int x)
   return str_inst.y;
 }
 
+int main(void)
+/*@ trusted; @*/
+{
+  int r = f(42);
+}
