@@ -40,18 +40,21 @@ SUCCESS=$(find src/example-archive/*/working -name '*.c' \
             ! -name "00006.working.c" \
             ! -name "00094.working.c" \
             ! -name "00010_non_termination.c" \
-            ! -name "cast1.c" \
-            ! -name "cast2.c" \
-            ! -name "cast3.c" \
-            ! -name "cast4.c" \
+            ! -name "cast_1.c" \
+            ! -name "cast_2.c" \
+            ! -name "cast_3.c" \
+            ! -name "cast_4.c" \
             ! -name "for_1.c" \
             ! -name "for_3.c" \
             ! -name "list_2.c" \
             ! -name "list_3.c" \
             ! -name "loop_2.c" \
+            ! -name "loop_6.c" \
             ! -name "loop_8.c" \
             ! -name "pointer_dec2.c" \
             ! -name "string_1.c" \
+            ! -name "power_1.c" \
+            ! -name "power_2.c" \
         )
 
 BUGGY="\
@@ -88,9 +91,10 @@ SHOULD_FAIL+=("\
                 src/example-archive/simple-examples/working/list_3.c \
              ")
 
-# Infinite loop times out
+# Loop timeout. loop_2 is infinite, loop_6 just a large # of iterations
 SHOULD_FAIL+=("\ 
                 src/example-archive/simple-examples/working/loop_2.c \
+                src/example-archive/simple-examples/working/loop_6.c \
              ")
 
 # Uninterpreted functions unsupported for testing
@@ -107,17 +111,17 @@ for FILE in ${SUCCESS}; do
   fi
 done
 
-# for FILE in ${SHOULD_FAIL}; do
-#   if exits_with_code "${FILE}" 0; then
-#     FAILED+=" ${FILE}"
-#   fi
-# done
+for FILE in ${SHOULD_FAIL}; do
+  if exits_with_code "${FILE}" 0; then
+    FAILED+=" ${FILE}"
+  fi
+done
 
-# for FILE in ${BUGGY}; do
-#   if exits_with_code "${FILE}" 0; then
-#     FAILED+=" ${FILE}"
-#   fi
-# done
+for FILE in ${BUGGY}; do
+  if exits_with_code "${FILE}" 0; then
+    FAILED+=" ${FILE}"
+  fi
+done
 
 if [ -z "${FAILED}" ]; then
   exit 0
