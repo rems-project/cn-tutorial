@@ -28,6 +28,22 @@ function exits_with_code() {
   fi
 }
 
+function exits_with_error_code() {
+  local file=$1
+
+  printf "[$file]... "
+  timeout 20 cn instrument --run "$file" --no-debug-info --tmp --print-steps -DCN_INSTRUMENT &> /dev/null
+  local result=$?
+
+  if [ $result -gt 0 ]; then
+    printf "\033[32mPASS\033[0m\n"
+    return 0
+  else
+    printf "\033[31mFAIL\033[0m (Unexpected return code: $result)\n"
+    return 1
+  fi
+}
+
 SUCCESS=$(find src/example-archive/*/working -name '*.c' \
             ! -name "00052.working.c" \
             ! -name "00120.working.c" \
@@ -75,7 +91,27 @@ BUGGY="\
        src/example-archive/simple-examples/working/string_1.c \
     "
 
-SHOULD_FAIL=$(find src/example-archive/*/broken -name '*.c')
+# Includes files that proof cannot handle but Fulminate can
+SHOULD_FAIL=$(find src/example-archive/*/broken -name '*.c' \
+            ! -name "00008.err1.c" \
+            ! -name "00073.err1.c" \
+            ! -name "00010.err1.c" \
+            ! -name "00034.err1.c" \
+            ! -name "00092.err1.c" \
+            ! -name "00147.err1.c" \
+            ! -name "00143.err1.c" \
+            ! -name "00130.err1.c" \
+            ! -name "00141.err1.c" \
+            ! -name "00041.err1.c" \
+            ! -name "00088.err1.c" \
+            ! -name "00148.err1.c" \
+            ! -name "00103.err1.c" \
+            ! -name "00101.err1.c" \
+            ! -name "00117.err1.c" \
+            ! -name "00133.err1.c" \
+            ! -name "00011_dependen_specifications.c" \
+        )
+# SHOULD_FAIL=""
 SHOULD_FAIL+=("src/example-archive/c-testsuite/working/00094.working.c ")
 # These examples use VIP, which is unsupported in Fulminate (Sep 2026)
 SHOULD_FAIL+=("\
@@ -112,13 +148,13 @@ for FILE in ${SUCCESS}; do
 done
 
 for FILE in ${SHOULD_FAIL}; do
-  if exits_with_code "${FILE}" 0; then
+  if ! exits_with_error_code "${FILE}"; then
     FAILED+=" ${FILE}"
   fi
 done
 
 for FILE in ${BUGGY}; do
-  if exits_with_code "${FILE}" 0; then
+  if ! exits_with_error_code "${FILE}"; then
     FAILED+=" ${FILE}"
   fi
 done
