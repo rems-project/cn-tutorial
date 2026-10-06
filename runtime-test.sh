@@ -97,6 +97,7 @@ SUCCESS+=("\
             src/example-archive/c-testsuite/broken/error-proof/00040.err1.c \
             src/example-archive/should-fail/broken/error-proof/overflow_neg_1.c \
             src/example-archive/should-fail/broken/error-proof/overflow_neg_2.c \
+            src/example-archive/should-fail/broken/error-proof/memory_neg_1.c \
             src/example-archive/simple-examples/broken/error-proof/loop_4.c \
             src/example-archive/simple-examples/broken/error-proof/case_timeout.c \
             src/example-archive/simple-examples/broken/error-proof/ownership_1.c \
@@ -134,6 +135,7 @@ SHOULD_FAIL=$(find src/example-archive/*/broken -name '*.c' \
             ! -name "00040.err1.c" \
             ! -name "overflow_neg_1.c" \
             ! -name "overflow_neg_2.c" \
+            ! -name "memory_neg_1.c" \
             ! -name "loop_4.c" \
             ! -name "case_timeout.c" \
             ! -name "ownership_1.c" \
