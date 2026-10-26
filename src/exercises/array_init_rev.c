@@ -10,7 +10,7 @@ void array_init_rev (char *p, unsigned int n)
 /* --BEGIN-- */
   /*@ inv take Al = each(integer i; 0 <= i && i < n-j) {
                       RW<char>( array_shift<char>(p, i)) };
-          take Ar = each(integer i; n-j <= i && i < n) {
+          take Ar = each(integer i; n-j <= i && i < n) { 
                       RW<char>( array_shift<char>(p, i)) };
           {p} unchanged; {n} unchanged;
           j <= n;
