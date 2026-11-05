@@ -1,4 +1,7 @@
 // Write to a memory cell through two aliased pointer variables
+#ifndef CN_INSTRUMENT
+#include <assert.h>
+#endif
 
 void write_3(int *cell1, int *cell2)
 /*@ requires 

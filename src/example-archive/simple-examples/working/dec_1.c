@@ -1,5 +1,9 @@
 // Pre and post-read decrement 
 
+#ifndef CN_INSTRUMENT
+#include <assert.h>
+#endif
+
 int dec_1_pre(int i) 
 /*@ requires i >= 1;
     ensures return == i - 1; @*/

@@ -10,3 +10,6 @@ docs/solutions
 /_temp/
 *.tmp
 /__pycache__/
+*.exec.c
+*.exec.o
+*.exec.out

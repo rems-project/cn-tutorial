@@ -1,6 +1,10 @@
 // Assert and prove a property about memory cells. Uses the lemma-hack way of
 // asserting memory properties 
 
+#ifndef CN_INSTRUMENT
+#include <assert.h>
+#endif
+
 // Define a lemma that asserts ownership of a particular memory cell 
 /*@
   lemma assert_own (pointer p)
