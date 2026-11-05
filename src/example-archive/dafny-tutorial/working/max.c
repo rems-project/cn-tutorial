@@ -1,5 +1,8 @@
 // Compute the maximum of two values, a and b. The proof shows that the code is
 // equivalent to the same algorithm implemented in the spec language 
+#ifndef CN_INSTRUMENT
+#include <assert.h>
+#endif
 
 /*@
 function (integer) max_spec (integer a, integer b)

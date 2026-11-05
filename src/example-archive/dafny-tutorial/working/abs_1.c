@@ -1,4 +1,7 @@
 // Compute the absolute value a function.
+#ifndef CN_INSTRUMENT
+#include <assert.h>
+#endif
 
 /*@
 function (integer) abs_spec(integer x)

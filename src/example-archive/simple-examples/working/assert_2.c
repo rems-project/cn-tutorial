@@ -1,4 +1,7 @@
 // Assert and prove a property about memory cells 
+#ifndef CN_INSTRUMENT
+#include <assert.h>
+#endif
 
 void assert_2(int *x, int *y)
 /*@ requires 

@@ -1,5 +1,9 @@
 // In progress... 
 
+#ifndef CN_INSTRUMENT
+#include <assert.h>
+#endif
+
 int
 foo(int x[100])
 /*@ requires 

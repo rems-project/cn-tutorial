@@ -1,3 +1,6 @@
+#ifndef CN_INSTRUMENT
+#include <assert.h>
+#endif
 
 int inc_1_pre(int i) 
 /*@ requires 

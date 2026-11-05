@@ -1,6 +1,9 @@
 // Assign directly into a struct field using pointer arithmetic
 
 #include <stddef.h> // For offsetof macro
+#ifndef CN_INSTRUMENT
+#include <assert.h>
+#endif
 
 struct s
 {
