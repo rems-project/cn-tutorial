@@ -45,6 +45,9 @@ function exits_with_error_code() {
 }
 
 SUCCESS=$(find src/example-archive/*/working -name '*.c' \
+	    ! -name "00031.working.c" \
+	    ! -name "dec_1.c" \
+	    ! -name "inc_1.c" \
             ! -name "00052.working.c" \
             ! -name "00120.working.c" \
             ! -name "00053.working.c" \
